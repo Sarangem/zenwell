@@ -20,14 +20,17 @@ import com.sarangem.zenwell.ServiceOnStart
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.makeVerboseServiceNotification
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 
 class AppBlockerService : Service() {
 
     private val TAG = "AppBlocker Service"
     private val context = this
+    private var jobList: MutableList<Deferred<Unit>> = mutableListOf()
 
     override fun onCreate() {
         super.onCreate()
@@ -41,7 +44,7 @@ class AppBlockerService : Service() {
         val status = this.startForeground()
         if (status != 0) {
             Log.d(TAG, ServiceNoPermission)
-            return START_NOT_STICKY
+            stopSelf()
         }
         Log.d(TAG, ServiceForeground)
 
@@ -49,14 +52,16 @@ class AppBlockerService : Service() {
         val scheduleId = intent.getIntExtra(ScheduleIdString, 0)
 
         Log.d(TAG, "Creating thread for schedule id $scheduleId")
-        CoroutineScope(Dispatchers.IO).launch {
+        val job = CoroutineScope(Dispatchers.IO).async {
             checkAndBlockApp(
                 context = context,
                 schedule = schedulesRepository.getScheduleInfoById(scheduleId).firstOrNull(),
-                appList = schedulesRepository.getAppNames(scheduleId).firstOrNull(),
+                appList = schedulesRepository.getAppNames(scheduleId).first(),
                 coroutineScope = this
             )
+            stopSelf()
         }
+        jobList.add(job)
 
         return START_STICKY
     }
@@ -78,6 +83,7 @@ class AppBlockerService : Service() {
                 packageName
             )
         } else {
+            @Suppress("DEPRECATION")
             appOpsManager.checkOpNoThrow(
                 AppOpsManager.OPSTR_GET_USAGE_STATS,
                 Process.myUid(),
@@ -92,7 +98,6 @@ class AppBlockerService : Service() {
 
         try {
             val notification = makeVerboseServiceNotification(
-                message = "Zenwell checking for blocked apps...",
                 context = this
             )
             ServiceCompat.startForeground(
@@ -119,6 +124,9 @@ class AppBlockerService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        jobList.forEach { job ->
+            job.cancel()
+        }
         Log.e(TAG, ServiceOnDestroy)
     }
 }

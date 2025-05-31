@@ -41,8 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.convertToTimePickerState
 import com.sarangem.zenwell.getAmPm
 import com.sarangem.zenwell.minutesToString
+import com.sarangem.zenwell.toMinutes
 import com.sarangem.zenwell.ui.theme.OrbitronClockNumber
 import com.sarangem.zenwell.ui.theme.OrbitronClockType
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -165,7 +167,7 @@ fun AdvancedTimePickerDialog(
                 ),
         ) {
             Column(
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_large)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -206,20 +208,6 @@ fun AdvancedTimePickerDialog(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-fun convertToTimePickerState(timeInMinutes: Int): TimePickerState {
-    return TimePickerState(
-        initialHour = (timeInMinutes / 60).toInt(),
-        initialMinute = (timeInMinutes % 60).toInt(),
-        is24Hour = false
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-fun TimePickerState.toMinutes(): Int {
-    return (this.hour * 60) + (this.minute)
 }
 
 

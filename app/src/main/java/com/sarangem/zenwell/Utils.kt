@@ -5,14 +5,17 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TimePickerState
 import androidx.core.app.NotificationCompat
 import java.util.Calendar
 
-fun makeVerboseServiceNotification(message: String, context: Context): Notification {
+// -- NOTIFICATIONS -- //
+fun makeVerboseServiceNotification(message: String = "", context: Context): Notification {
 
     val channelName: CharSequence = "Verbose Background Service Notifications"
     val channelDescription = "Shows notifications whenever Zenwell runs in background"
-    val notificationTitle = "Zenwell starting"
+    val notificationTitle = "Zenwell running..."
     val channelId = "VERBOSE_NOTIFICATION"
 
     // Make a channel if necessary
@@ -37,11 +40,21 @@ fun makeVerboseServiceNotification(message: String, context: Context): Notificat
         .setSmallIcon(R.drawable.ic_launcher_foreground)
         .setContentTitle(notificationTitle)
         .setContentText(message)
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setPriority(NotificationCompat.PRIORITY_LOW)
         .setVibrate(LongArray(0))
         .build()
 
     return builder
+}
+
+
+// -- TIME -- //
+
+fun getCurrentTimeInMinutes(): Int {
+    val calendar = Calendar.getInstance()
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    val minute = calendar.get(Calendar.MINUTE)
+    return (hour * 60) + minute
 }
 
 fun minutesToString(num: Int): String {
@@ -62,8 +75,16 @@ fun getAmPm(num: Int): String {
     return if (hours < 12) "AM" else "PM"
 }
 
-fun getCurrentTimeInMinutes(): Int {
-    val hour = Calendar.HOUR_OF_DAY
-    val minute = Calendar.MINUTE
-    return (hour * 60) + minute
+@OptIn(ExperimentalMaterial3Api::class)
+fun convertToTimePickerState(timeInMinutes: Int): TimePickerState {
+    return TimePickerState(
+        initialHour = (timeInMinutes / 60).toInt(),
+        initialMinute = (timeInMinutes % 60).toInt(),
+        is24Hour = false
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+fun TimePickerState.toMinutes(): Int {
+    return (this.hour * 60) + (this.minute)
 }

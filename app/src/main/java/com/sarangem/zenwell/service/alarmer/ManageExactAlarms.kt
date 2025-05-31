@@ -40,7 +40,7 @@ class ManageExactAlarms(
             if (schedule.startTimeInMinutes < currentTime &&
                 schedule.endTimeInMinutes > currentTime
             ){
-                Log.d(TAG,"Immediately starting foreground service")
+                Log.d(TAG,"Immediately starting foreground service for schedule id $schedule.id")
                 startAppBlockerForegroundService(
                     context = context,
                     id = schedule.id

@@ -42,7 +42,7 @@ class EditScreenViewModel(private val schedulesRepository: SchedulesRepository) 
             schedulesRepository.saveToDatabase(
                 schedule = _uiState.value.scheduleInfo,
                 appNames = _uiState.value.appNames,
-                pastAppList = pastAppList
+                pastAppSet = pastAppList.toMutableSet(),
             )
             Log.d(TAG, "Resetting all alarms")
             alarmClass.setExactAlarms()

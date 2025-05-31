@@ -8,9 +8,8 @@ import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
-import java.lang.Exception
-import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
@@ -18,10 +17,14 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 
 class BlockingWindow(
     context: Context,
-    content: @Composable () -> Unit
+    content: @Composable (Float, Float) -> Unit
 ) {
     // define window manager
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+    private val density = context.resources.displayMetrics.density
+    private val screenHeight = context.resources.displayMetrics.heightPixels / density
+    private val screenWidth = context.resources.displayMetrics.widthPixels / density
 
     // overlay window layout
     private val layoutParams =
@@ -38,10 +41,9 @@ class BlockingWindow(
             null
         }
 
-    private val lifecycleOwner = BlockingScreenLifecycleOwner()
     private val composeView = ComposeView(context).apply {
         setContent {
-            content()
+            content(screenHeight, screenWidth)
         }
     }
 
@@ -52,26 +54,21 @@ class BlockingWindow(
             val viewModelStoreOwner = object : ViewModelStoreOwner {
                 override val viewModelStore = viewModelStore
             }
-            val lifecycleOwner= BlockingScreenLifecycleOwner()
+            val lifecycleOwner = BlockingScreenLifecycleOwner()
             lifecycleOwner.performRestore(null)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
             composeView.setViewTreeLifecycleOwner(lifecycleOwner)
             composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
             composeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
             windowManager.addView(composeView, layoutParams)
-            lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
-            lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         } catch (e: Exception) {
             Log.e("BlockingWindow", "Error adding ComposeView", e)
         }
     }
 
-    fun close(){
+    fun close() {
         if (composeView.isAttachedToWindow == true) {
             try {
-                lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-                lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
-                lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                 windowManager.removeView(composeView)
             } catch (e: Exception) {
                 Log.e("BlockingWindow", "Error removing ComposeView", e)

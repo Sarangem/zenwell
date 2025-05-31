@@ -16,8 +16,8 @@ interface SchedulesRepository {
     suspend fun saveToDatabase(
         schedule: Schedules,
         appNames: List<String>,
-        pastAppList: MutableList<String>
-    )
+        pastAppSet: MutableSet<String>
+    ): Boolean
 }
 
 class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : SchedulesRepository {
@@ -25,48 +25,53 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
     override fun getAllSchedules(): Flow<List<Schedules>> = scheduleDao.getAllSchedules()
     override fun getScheduleInfoById(id: Int): Flow<Schedules> = scheduleDao.getScheduleInfoById(id)
     override fun getAppNames(id: Int): Flow<List<String>> = scheduleDao.getAppNames(id)
-    override suspend fun addNewSchedule(schedule: Schedules): Int =
-        scheduleDao.addNewSchedule(schedule).toInt()
+    override suspend fun addNewSchedule(schedule: Schedules): Int = scheduleDao.addNewSchedule(schedule).toInt()
 
     override suspend fun saveToDatabase(
         schedule: Schedules,
         appNames: List<String>,
-        pastAppList: MutableList<String>
-    ) {
+        pastAppSet: MutableSet<String>
+    ): Boolean {
         // first update the schedule table
         scheduleDao.updateSchedule(schedules = schedule)
 
         for (app in appNames) {
 
-            // insert app if not exists
-            this.insertAppNameIfNotExists(
-                app = app,
-                id = scheduleDao.getAppId(app).firstOrNull()
-            )
+            if (app !in pastAppSet) {
 
-            // update app to schedule relation
-            if (app !in pastAppList) {
+                // insert new app name
+                this.insertAppNameIfNotExists(
+                    app = app,
+                    id = scheduleDao.getAppId(app).firstOrNull()
+                )
+
+                // insert app to schedule relation
                 scheduleDao.insertAppRelation(
                     BlockedApps(
                         scheduleId = schedule.id,
                         appId = scheduleDao.getAppId(app).firstOrNull() ?: 0
                     )
                 )
+
             } else {
-                pastAppList.remove(app)
+                pastAppSet.remove(app)
             }
+
         }
 
-        for (app in pastAppList) { // remove unnecessary schedule relations
-            val scheduleId = schedule.id
-            val appId = scheduleDao.getAppId(app).firstOrNull() ?: -1
+        for (pastApp in pastAppSet) {
 
+            // remove unnecessary schedule relations
+            val appId = scheduleDao.getAppId(pastApp).firstOrNull() ?: 0
             scheduleDao.deleteAppRelation(
-                scheduleDao.getAppRelation(appId = appId, scheduleId = scheduleId).first()
+                scheduleDao.getAppRelation(appId = appId, scheduleId = schedule.id).firstOrNull() ?: BlockedApps()
             )
+
         }
 
         this.removeAppNameIfUnused()
+
+        return true
     }
 
     override suspend fun deleteSchedule(schedule: Schedules) {
