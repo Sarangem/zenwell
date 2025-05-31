@@ -1,10 +1,14 @@
 package com.sarangem.zenwell
 
+import android.app.AppOpsManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Context.APP_OPS_SERVICE
 import android.os.Build
+import android.os.Process
+import android.provider.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
 import androidx.core.app.NotificationCompat
@@ -87,4 +91,34 @@ fun convertToTimePickerState(timeInMinutes: Int): TimePickerState {
 @OptIn(ExperimentalMaterial3Api::class)
 fun TimePickerState.toMinutes(): Int {
     return (this.hour * 60) + (this.minute)
+}
+
+
+// -- PERMISSIONS -- //
+
+fun checkSystemAlertWindowPermission(context: Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        Settings.canDrawOverlays(context)
+    } else {
+        true
+    }
+}
+
+fun checkPackageUsageStatsPermission(context: Context): Boolean {
+    val appOpsManager = context.getSystemService(APP_OPS_SERVICE) as AppOpsManager
+    val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        appOpsManager.unsafeCheckOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            Process.myUid(),
+            context.packageName
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        appOpsManager.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            Process.myUid(),
+            context.packageName
+        )
+    }
+    return (mode == AppOpsManager.MODE_ALLOWED)
 }

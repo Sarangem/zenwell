@@ -1,5 +1,6 @@
 package com.sarangem.zenwell.ui.homescreen
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -53,6 +54,7 @@ fun HomeScreen(
     homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ZenwellAppViewModelProvider.Factory),
     openEditScreen: (Int) -> Unit = {},
     openSettingsScreen: (Int) -> Unit = {},
+    startPermissionActivity: (Intent) -> Unit = {}
 ) {
     val schedulesList by homeScreenViewModel.getAllSchedules().collectAsState(emptyList())
 
@@ -64,6 +66,7 @@ fun HomeScreen(
         addNewSchedule = {
             homeScreenViewModel.addNewSchedule(it)
         },
+        startPermissionActivity = startPermissionActivity
     )
 }
 
@@ -75,6 +78,7 @@ fun HomeScreenBody(
     openSettingsScreen: (Int) -> Unit = {},
     schedulesList: List<Schedules>,
     addNewSchedule: suspend (List<Schedules>) -> Int = { _ -> 0 },
+    startPermissionActivity: (Intent) -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -120,11 +124,20 @@ fun HomeScreenBody(
             )
         },
     ) { innerPadding ->
-        SchedulesList(
-            schedulesList = schedulesList,
-            openEditScreen = openEditScreen,
-            modifier = Modifier.padding(innerPadding)
-        )
+        Column(modifier = Modifier.padding(innerPadding)) {
+
+            AskPermissions(
+                startPermissionActivity = startPermissionActivity
+            )
+
+            Spacer(Modifier.padding(dimensionResource(R.dimen.padding_small)))
+
+            SchedulesList(
+                schedulesList = schedulesList,
+                openEditScreen = openEditScreen,
+            )
+
+        }
     }
 }
 

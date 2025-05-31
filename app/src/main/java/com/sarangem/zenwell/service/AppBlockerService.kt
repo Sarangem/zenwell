@@ -1,13 +1,10 @@
 package com.sarangem.zenwell.service
 
-import android.app.AppOpsManager
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
-import android.os.Process
-import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ServiceCompat
 import com.sarangem.zenwell.ScheduleIdString
@@ -18,6 +15,8 @@ import com.sarangem.zenwell.ServiceOnCreate
 import com.sarangem.zenwell.ServiceOnDestroy
 import com.sarangem.zenwell.ServiceOnStart
 import com.sarangem.zenwell.ZenwellApplication
+import com.sarangem.zenwell.checkPackageUsageStatsPermission
+import com.sarangem.zenwell.checkSystemAlertWindowPermission
 import com.sarangem.zenwell.makeVerboseServiceNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -69,29 +68,8 @@ class AppBlockerService : Service() {
 
     private fun startForeground(): Int {
 
-        val overlayPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Settings.canDrawOverlays(this)
-        } else {
-            true
-        }
-
-        val appOpsManager = getSystemService(APP_OPS_SERVICE) as AppOpsManager
-        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            appOpsManager.unsafeCheckOpNoThrow(
-                AppOpsManager.OPSTR_GET_USAGE_STATS,
-                Process.myUid(),
-                packageName
-            )
-        } else {
-            @Suppress("DEPRECATION")
-            appOpsManager.checkOpNoThrow(
-                AppOpsManager.OPSTR_GET_USAGE_STATS,
-                Process.myUid(),
-                packageName
-            )
-        }
-        val usageStatsPermission = (mode == AppOpsManager.MODE_ALLOWED)
-
+        val overlayPermission = checkSystemAlertWindowPermission(this)
+        val usageStatsPermission = checkPackageUsageStatsPermission(this)
         if (!overlayPermission || !usageStatsPermission) {
             return 1
         }

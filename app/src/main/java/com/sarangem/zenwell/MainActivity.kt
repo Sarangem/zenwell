@@ -13,7 +13,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ZenwellTheme {
-                ZenwellApp()
+                ZenwellApp(
+                    startPermissionActivity = { intent ->
+                        startActivity(intent)
+                    }
+                )
             }
         }
     }

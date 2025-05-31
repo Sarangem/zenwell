@@ -19,4 +19,9 @@
     <string name="go_back">"Go back"</string>
     <string name="to">" to "</string>
     <string name="edit">"Edit"</string>
+    <string name="grant_permission">"Grant permission"</string>
+    <string name="display_over_other_apps">"Display over other apps"</string>
+    <string name="display_over_other_apps_explanation">" permission not granted. The app would not be able to show blocking message in top of other apps."</string>
+    <string name="app_usage_access">"Usage access"</string>
+    <string name="app_usage_access_explanation">" permission not granted. The app would not be able to see which app are you using currently to block."</string>
 </resources>

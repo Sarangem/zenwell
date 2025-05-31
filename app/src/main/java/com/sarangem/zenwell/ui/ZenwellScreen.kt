@@ -1,5 +1,6 @@
 package com.sarangem.zenwell.ui
 
+import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -25,7 +26,9 @@ enum class ZenwellScreen(val route: String, @StringRes val title: Int) {
 }
 
 @Composable
-fun ZenwellApp() {
+fun ZenwellApp(
+    startPermissionActivity: (Intent) -> Unit = {}
+) {
     val navController: NavHostController = rememberNavController()
 
     NavHost(
@@ -36,6 +39,7 @@ fun ZenwellApp() {
         composable(route = ZenwellScreen.Home.route) {
             HomeScreen(
                 openEditScreen = { navController.navigate(ZenwellScreen.editScheduleWithId(it)) },
+                startPermissionActivity = startPermissionActivity,
                 modifier = Modifier.fillMaxSize()
             )
         }
