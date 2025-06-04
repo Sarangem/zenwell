@@ -3,8 +3,8 @@ package com.sarangem.zenwell.ui.editscreen
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -41,7 +41,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun EditScreen(
@@ -61,6 +60,9 @@ fun EditScreen(
         },
         saveToDatabase = {
             editScreenViewModel.saveToDatabase(context = it)
+        },
+        deleteSchedule = {
+            editScreenViewModel.deleteSchedule(context = it)
         },
         goBack = goBack
     )
@@ -82,6 +84,7 @@ fun EditScreenBody(
     editScreenUiState: EditScreenUiState,
     updateUiState: (EditScreenUiState) -> Unit = {},
     saveToDatabase: suspend (Context) -> Unit = {},
+    deleteSchedule: suspend (Context) -> Unit = {},
     goBack: () -> Unit = {}
 ) {
 
@@ -115,6 +118,7 @@ fun EditScreenBody(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .fillMaxHeight()
                 .verticalScroll(rememberScrollState())
         ) {
 
@@ -132,8 +136,6 @@ fun EditScreenBody(
                 }
             )
 
-            Spacer(Modifier.height(dimensionResource(R.dimen.padding_small)))
-
             ChooseBlockType(
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                 blockType = editScreenUiState.scheduleInfo.blockType,
@@ -148,8 +150,6 @@ fun EditScreenBody(
                 }
             )
 
-            Spacer(Modifier.height(dimensionResource(R.dimen.padding_small)))
-
             ChooseAppList(
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                 checkedAppList = editScreenUiState.appNames,
@@ -161,8 +161,6 @@ fun EditScreenBody(
                     )
                 }
             )
-
-            Spacer(Modifier.height(dimensionResource(R.dimen.padding_small)))
 
             ChooseRunningTime(
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
@@ -192,17 +190,21 @@ fun EditScreenBody(
 
             val coroutineScope = rememberCoroutineScope()
             val context = LocalContext.current
-            SaveButton(
+            SaveAndDeleteButton(
                 onSave = {
                     coroutineScope.launch(Dispatchers.IO) {
                         saveToDatabase(context)
-                        withContext(Dispatchers.Main) {
-                            goBack()
-                        }
                     }
+                    goBack()
+                },
+                onDelete = {
+                    coroutineScope.launch(Dispatchers.IO) {
+                        deleteSchedule(context)
+                    }
+                    goBack()
                 },
                 modifier = Modifier
-                    .padding(dimensionResource(R.dimen.padding_medium))
+                    .padding(dimensionResource(R.dimen.padding_small))
                     .fillMaxWidth()
             )
         }
@@ -242,13 +244,10 @@ fun EditScreenPreview() {
             scheduleInfo = Schedules(
                 title = "Schedule 1",
                 blockType = BlockType.FullBlock,
-                startTimeInMinutes = 100,
-                endTimeInMinutes = 1000,
+                startTimeInMinutes = 179,
+                endTimeInMinutes = 1079,
             ),
-            appNames = listOf(
-                "Calendar",
-                "Youtube"
-            )
+            appNames = listOf()
         )
     )
 }

@@ -198,12 +198,12 @@ fun AdvancedTimePickerDialog(
                             } else {
                                 Icons.Filled.Schedule
                             },
-                            contentDescription = "Time picker type toggle",
+                            contentDescription = stringResource(R.string.time_picker_type_toggle),
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    TextButton(onClick = onDismiss) { Text("Cancel") }
-                    TextButton(onClick = { onConfirm(timePickerState) }) { Text("OK") }
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
+                    TextButton(onClick = { onConfirm(timePickerState) }) { Text(stringResource(R.string.ok)) }
                 }
             }
         }

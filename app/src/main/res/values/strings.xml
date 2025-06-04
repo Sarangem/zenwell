@@ -24,4 +24,10 @@
     <string name="display_over_other_apps_explanation">" permission not granted. The app would not be able to show blocking message in top of other apps."</string>
     <string name="app_usage_access">"Usage access"</string>
     <string name="app_usage_access_explanation">" permission not granted. The app would not be able to see which app are you using currently to block."</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="ok">OK</string>
+    <string name="time_picker_type_toggle">Time picker type toggle</string>
+    <string name="delete_confirmation">Are you sure you want to delete this schedule? You would not be able to restore it back again.</string>
+    <string name="cancel">Cancel</string>
 </resources>

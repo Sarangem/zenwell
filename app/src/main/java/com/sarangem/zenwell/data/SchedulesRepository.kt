@@ -75,11 +75,11 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
     }
 
     override suspend fun deleteSchedule(schedule: Schedules) {
-        scheduleDao.deleteSchedule(schedule)
         scheduleDao.getAppRelationByScheduleId(schedule.id).first().forEach { blockedApps ->
             scheduleDao.deleteAppRelation(blockedApps)
         }
         this.removeAppNameIfUnused()
+        scheduleDao.deleteSchedule(schedule)
     }
 
     private fun insertAppNameIfNotExists(app: String, id: Int?) {

@@ -26,7 +26,7 @@ val Typography = Typography(
 val OrbitronClockNumber = TextStyle(
     fontFamily = Orbitron,
     fontWeight = FontWeight.ExtraBold,
-    fontSize = 30.sp,
+    fontSize = 25.sp,
 )
 val OrbitronClockType = TextStyle(
     fontFamily = Orbitron,

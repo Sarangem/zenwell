@@ -35,16 +35,27 @@ class EditScreenViewModel(private val schedulesRepository: SchedulesRepository) 
                 schedulesList = schedulesRepository.getAllSchedules().first()
             )
 
-            val TAG = "EditScreen ViewModel"
-            Log.d(TAG, "Cancelling all alarms")
             alarmClass.cancelAllExactAlarms()
-            Log.d(TAG, "Saving to database")
             schedulesRepository.saveToDatabase(
                 schedule = _uiState.value.scheduleInfo,
                 appNames = _uiState.value.appNames,
                 pastAppSet = pastAppList.toMutableSet(),
             )
-            Log.d(TAG, "Resetting all alarms")
+            alarmClass.setExactAlarms()
+
+        }
+    }
+
+    suspend fun deleteSchedule(context: Context) {
+        if (isInitialized) {
+
+            val alarmClass = ManageExactAlarms(
+                context = context,
+                schedulesList = schedulesRepository.getAllSchedules().first()
+            )
+
+            alarmClass.cancelAllExactAlarms()
+            schedulesRepository.deleteSchedule(_uiState.value.scheduleInfo)
             alarmClass.setExactAlarms()
 
         }
