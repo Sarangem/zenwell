@@ -1,6 +1,5 @@
 package com.sarangem.zenwell.service.alarmer
 
-import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -38,7 +37,7 @@ class ResetAlarmService: Service() {
         Log.d(TAG, ServiceForeground)
 
         val schedulesRepository = (application as ZenwellApplication).container
-        CoroutineScope(Dispatchers.IO).launch{
+        CoroutineScope(Dispatchers.IO).launch {
             Log.d(TAG,"Trying to reset alarms.")
             val schedulesList = schedulesRepository.getAllSchedules().first()
             ManageExactAlarms(
@@ -46,9 +45,10 @@ class ResetAlarmService: Service() {
                 schedulesList = schedulesList
             ).setExactAlarms()
             Log.d(TAG, "Alarms successfully reset.")
+            stopSelf()
         }
 
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     private fun startForeground() {
@@ -70,10 +70,7 @@ class ResetAlarmService: Service() {
                 },
             )
         } catch (e: Exception) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && e is ForegroundServiceStartNotAllowedException) {
-                Log.e(TAG, ServiceForegroundFail)
-            }
+            Log.e(TAG, ServiceForegroundFail)
         }
     }
 

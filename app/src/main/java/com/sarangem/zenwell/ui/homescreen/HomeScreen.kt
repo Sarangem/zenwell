@@ -4,140 +4,53 @@ import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.tables.Schedules
 import com.sarangem.zenwell.getAmPm
 import com.sarangem.zenwell.minutesToString
-import com.sarangem.zenwell.ui.ZenwellAppViewModelProvider
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
-@Composable
-fun HomeScreen(
-    modifier: Modifier = Modifier,
-    homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ZenwellAppViewModelProvider.Factory),
-    openEditScreen: (Int) -> Unit = {},
-    openSettingsScreen: (Int) -> Unit = {},
-    startPermissionActivity: (Intent) -> Unit = {}
-) {
-    val schedulesList by homeScreenViewModel.getAllSchedules().collectAsState(emptyList())
-
-    HomeScreenBody(
-        modifier = modifier,
-        openEditScreen = openEditScreen,
-        openSettingsScreen = openSettingsScreen,
-        schedulesList = schedulesList,
-        addNewSchedule = {
-            homeScreenViewModel.addNewSchedule(it)
-        },
-        startPermissionActivity = startPermissionActivity
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun HomeScreenBody(
+fun HomeScreen(
     modifier: Modifier = Modifier,
-    openEditScreen: (Int) -> Unit = {},
-    openSettingsScreen: (Int) -> Unit = {},
     schedulesList: List<Schedules>,
-    addNewSchedule: suspend (List<Schedules>) -> Int = { _ -> 0 },
+    openEditScreen: (Int) -> Unit = {},
     startPermissionActivity: (Intent) -> Unit = {}
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
-            )
-        },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        val scheduleId = addNewSchedule(schedulesList)
-                        withContext(Dispatchers.Main) {
-                            openEditScreen(scheduleId)
-                        }
-                    }
-                },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null
-                    )
-                },
-                text = {
-                    Text(
-                        text = stringResource(R.string.new_schedule)
-                    )
-                },
-                modifier = Modifier
-                    .padding(
-                        end = WindowInsets.safeDrawing.asPaddingValues()
-                            .calculateEndPadding(LocalLayoutDirection.current)
-                    )
-            )
-        },
-    ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
+    Column(modifier = modifier) {
 
-            AskPermissions(
-                startPermissionActivity = startPermissionActivity
-            )
+        AskPermissions(
+            startPermissionActivity = startPermissionActivity
+        )
 
-            Spacer(Modifier.padding(dimensionResource(R.dimen.padding_small)))
+        Spacer(Modifier.padding(dimensionResource(R.dimen.padding_small)))
 
-            SchedulesList(
-                schedulesList = schedulesList,
-                openEditScreen = openEditScreen,
-            )
+        SchedulesList(
+            schedulesList = schedulesList,
+            openEditScreen = openEditScreen,
+        )
 
-        }
     }
 }
 
@@ -193,7 +106,7 @@ fun SchedulesList(
 // -- Preview -- //
 @Composable
 fun HomeScreenPreview() {
-    HomeScreenBody(
+    HomeScreen(
         schedulesList = listOf(
             Schedules(
                 title = "Schedule 1",

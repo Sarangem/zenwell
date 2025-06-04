@@ -19,17 +19,19 @@ import com.sarangem.zenwell.checkPackageUsageStatsPermission
 import com.sarangem.zenwell.checkSystemAlertWindowPermission
 import com.sarangem.zenwell.makeVerboseServiceNotification
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import java.util.concurrent.atomic.AtomicInteger
 
 class AppBlockerService : Service() {
 
     private val TAG = "AppBlocker Service"
     private val context = this
-    private var jobList: MutableList<Deferred<Unit>> = mutableListOf()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val activeCoroutines = AtomicInteger(0)
 
     override fun onCreate() {
         super.onCreate()
@@ -51,20 +53,24 @@ class AppBlockerService : Service() {
         val scheduleId = intent.getIntExtra(ScheduleIdString, 0)
 
         Log.d(TAG, "Creating thread for schedule id $scheduleId")
-        val job = CoroutineScope(Dispatchers.IO).async {
-            checkAndBlockApp(
-                context = context,
-                schedule = schedulesRepository.getScheduleInfoById(scheduleId).firstOrNull(),
-                appList = schedulesRepository.getAppNames(scheduleId).first(),
-                coroutineScope = this
-            )
-            stopSelf()
+        activeCoroutines.incrementAndGet()
+        coroutineScope.async {
+            try {
+                checkAndBlockApp(
+                    context = context,
+                    schedule = schedulesRepository.getScheduleInfoById(scheduleId).firstOrNull(),
+                    appList = schedulesRepository.getAppNames(scheduleId).first(),
+                    coroutineScope = this
+                )
+            } finally {
+                if (activeCoroutines.decrementAndGet() == 0) {
+                    stopSelf()
+                }
+            }
         }
-        jobList.add(job)
 
         return START_STICKY
     }
-
 
     private fun startForeground(): Int {
 
@@ -102,10 +108,8 @@ class AppBlockerService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        jobList.forEach { job ->
-            job.cancel()
-        }
-        Log.e(TAG, ServiceOnDestroy)
+        coroutineScope.cancel()
+        Log.w(TAG, ServiceOnDestroy)
     }
 }
 

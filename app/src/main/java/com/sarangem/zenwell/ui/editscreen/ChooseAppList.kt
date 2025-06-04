@@ -7,6 +7,7 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,11 +43,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseAppList(
     modifier: Modifier = Modifier,
@@ -86,57 +90,60 @@ fun ChooseAppList(
     }
 
     if (expanded) {
-        ShowBottomSheet(
-            onDismiss = { expanded = false },
-            installedAppList = installedAppList,
-            checkedAppList = checkedAppList,
-            addAppToList = {
-                updateAppList(checkedAppList.plus(it))
-            },
-            removeAppFromList = {
-                updateAppList(checkedAppList.minus(it))
-            }
-        )
+        ModalBottomSheet(
+            onDismissRequest = { expanded = false },
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            BottomSheetContents(
+                installedAppList = installedAppList,
+                checkedAppList = checkedAppList,
+                addAppToList = {
+                    updateAppList(checkedAppList.plus(it))
+                },
+                removeAppFromList = {
+                    updateAppList(checkedAppList.minus(it))
+                }
+            )
+        }
     }
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ShowBottomSheet(
+fun BottomSheetContents(
     modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = {},
     installedAppList: List<AppInfo>?,
     checkedAppList: List<String>,
     addAppToList: (String) -> Unit = {},
     removeAppFromList: (String) -> Unit = {}
 ) {
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        modifier = modifier,
-        sheetState = rememberModalBottomSheetState()
-    ) {
-        if (installedAppList == null) {
-            LoadingIndicator()
-        } else {
 
-            LazyColumn(modifier = Modifier.clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))) {
-                items(installedAppList) { app ->
-                    AppCard(
-                        app = app,
-                        checkedValue = app.packageName in checkedAppList,
-                        onCheckedChange = { value ->
-                            if (value) {
-                                addAppToList(app.packageName)
-                            } else {
-                                removeAppFromList(app.packageName)
-                            }
+    if (installedAppList == null) {
+        LoadingIndicator()
+    } else {
+
+        LazyColumn(
+            modifier = modifier
+                .padding(dimensionResource(R.dimen.padding_small))
+                .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_large))),
+        ) {
+            items(installedAppList) { app ->
+                AppCard(
+                    app = app,
+                    checkedValue = app.packageName in checkedAppList,
+                    onCheckedChange = { value ->
+                        if (value) {
+                            addAppToList(app.packageName)
+                        } else {
+                            removeAppFromList(app.packageName)
                         }
-                    )
-                }
+                    },
+                    modifier = Modifier.padding(dimensionResource(R.dimen.card_elevation))
+                )
             }
-
         }
+
     }
 }
 
@@ -147,27 +154,32 @@ fun AppCard(
     checkedValue: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    Card(modifier = modifier) {
-        Row(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = rememberDrawablePainter(app.icon),
-                contentDescription = null,
-                modifier = Modifier.size(dimensionResource(R.dimen.image_size))
-            )
-            Spacer(Modifier.padding(dimensionResource(R.dimen.padding_small)))
-            Text(
-                text = app.appName,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Spacer(Modifier.weight(1f))
-            Checkbox(
-                checked = checkedValue,
-                onCheckedChange = onCheckedChange
-            )
-        }
+    Row(
+        modifier = modifier.background(MaterialTheme.colorScheme.surfaceDim),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(Modifier.padding(1.dp))
+        Image(
+            painter = rememberDrawablePainter(app.icon),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(dimensionResource(R.dimen.padding_small))
+                .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
+                .size(dimensionResource(R.dimen.image_size))
+        )
+        Spacer(Modifier.padding(dimensionResource(R.dimen.padding_small)))
+        Text(
+            text = app.appName,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+
+        )
+        Spacer(Modifier.weight(1f))
+        Checkbox(
+            checked = checkedValue,
+            onCheckedChange = onCheckedChange,
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+        )
     }
 }
 
@@ -207,8 +219,8 @@ fun getInstalledApps(context: Context): MutableList<AppInfo> {
 }
 
 data class AppInfo(
-    val packageName: String,
-    val appName: String,
+    val packageName: String = "",
+    val appName: String = "",
     val icon: Drawable? = null
 )
 
@@ -218,6 +230,22 @@ data class AppInfo(
 fun ChooseAppListPreview() {
     ZenwellTheme {
         ChooseAppList(
+            checkedAppList = listOf()
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShowBottomSheetPreview() {
+    val icon = ContextCompat.getDrawable(LocalContext.current, R.drawable.ic_launcher_background)
+    ZenwellTheme {
+        BottomSheetContents(
+            installedAppList = listOf(
+                AppInfo(appName = "Calendar", icon = icon),
+                AppInfo(appName = "Messages", icon = icon),
+                AppInfo(appName = "Youtube", icon = icon)
+            ),
             checkedAppList = listOf()
         )
     }

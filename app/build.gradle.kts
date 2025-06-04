@@ -53,8 +53,6 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.material.icons.extended)
-    implementation(libs.androidx.navigation.runtime.android)
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.androidx.animation.graphics.android)

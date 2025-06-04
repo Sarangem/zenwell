@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.sarangem.zenwell.service.alarmer.ManageExactAlarms
-import com.sarangem.zenwell.ui.ZenwellApp
+import com.sarangem.zenwell.ui.ZenwellAppScreen
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ZenwellTheme {
-                ZenwellApp(
+                ZenwellAppScreen(
                     startPermissionActivity = { intent ->
                         startActivity(intent)
                     }

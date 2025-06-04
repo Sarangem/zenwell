@@ -48,7 +48,7 @@ fun ChooseBlockType(
                 Spacer(Modifier.weight(1f))
                 ExposedDropdownMenuBox(
                     expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
+                    onExpandedChange = { expanded = !expanded },
                 ) {
                     OutlinedTextField(
                         modifier = Modifier
