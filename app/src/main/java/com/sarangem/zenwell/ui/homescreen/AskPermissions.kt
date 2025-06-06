@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.checkPackageUsageStatsPermission
 import com.sarangem.zenwell.checkSystemAlertWindowPermission
+import com.sarangem.zenwell.ui.theme.Purple80
 
 @SuppressLint("InlinedApi")
 @Composable
@@ -140,8 +141,9 @@ fun PermissionRequestCard(
             ) {
                 Text(
                     text = stringResource(R.string.grant_permission),
-                    style = MaterialTheme.typography.titleMediumEmphasized,
-                    color = MaterialTheme.colorScheme.onErrorContainer
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyLargeEmphasized,
+                    color = Color(0xff140d07)
                 )
             }
         }

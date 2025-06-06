@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -45,8 +46,7 @@ import com.sarangem.zenwell.convertToTimePickerState
 import com.sarangem.zenwell.getAmPm
 import com.sarangem.zenwell.minutesToString
 import com.sarangem.zenwell.toMinutes
-import com.sarangem.zenwell.ui.theme.OrbitronClockNumber
-import com.sarangem.zenwell.ui.theme.OrbitronClockType
+import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @Composable
@@ -110,8 +110,10 @@ fun ClockButton(
                 Spacer(Modifier.weight(0.5f))
                 Text(
                     text = minutesToString(time),
-                    style = OrbitronClockNumber,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = Orbitron,
                     color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.graphicsLayer(scaleY = 1.5f)
                 )
                 Spacer(Modifier.weight(0.5f))
@@ -121,7 +123,9 @@ fun ClockButton(
                 Text(
                     text = getAmPm(time),
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = OrbitronClockType,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontFamily = Orbitron,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.graphicsLayer(scaleX = 1.5f)
                 )
                 Spacer(Modifier.weight(0.5f))

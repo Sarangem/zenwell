@@ -11,7 +11,7 @@ import com.sarangem.zenwell.data.tables.*
 @Dao
 interface ScheduleDao {
 
-    @Query("SELECT * FROM schedules ORDER BY start_time")
+    @Query("SELECT * FROM schedules ORDER BY is_enabled DESC, start_time ASC")
     fun getAllSchedules() : Flow<List<Schedules>>
 
     @Query("SELECT * FROM schedules WHERE id=:id")

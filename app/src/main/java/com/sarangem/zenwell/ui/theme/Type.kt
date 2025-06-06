@@ -22,14 +22,3 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     ),
 )
-
-val OrbitronClockNumber = TextStyle(
-    fontFamily = Orbitron,
-    fontWeight = FontWeight.ExtraBold,
-    fontSize = 25.sp,
-)
-val OrbitronClockType = TextStyle(
-    fontFamily = Orbitron,
-    fontWeight = FontWeight.Bold,
-    fontSize = 10.sp,
-)

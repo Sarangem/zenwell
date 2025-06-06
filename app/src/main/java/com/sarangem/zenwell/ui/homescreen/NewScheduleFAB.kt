@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun HomeScreenFAB(
+fun NewScheduleFAB(
     uiState: AppUiState,
     addNewSchedule: suspend () -> Int = suspend { 0 },
     openEditScreen: (Int) -> Unit = {},

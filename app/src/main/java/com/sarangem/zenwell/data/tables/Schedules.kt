@@ -13,6 +13,9 @@ data class Schedules (
 
     val title : String = "",
 
+    @ColumnInfo(name = "is_enabled")
+    val isEnabled: Boolean = true,
+
     @ColumnInfo(name = "block_type")
     val blockType: BlockType = BlockType.FullBlock,
 

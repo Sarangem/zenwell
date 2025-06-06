@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialShapes.Companion.Flower
 import androidx.compose.material3.MaterialShapes.Companion.Square
 import androidx.compose.material3.MaterialShapes.Companion.Sunny
 import androidx.compose.material3.MaterialShapes.Companion.VerySunny
@@ -64,7 +65,7 @@ fun FullBlockScreen(
 fun LockIconCard(modifier: Modifier = Modifier) {
 
     val morph = remember {
-        Morph(Sunny, VerySunny)
+        Morph(Sunny, Flower)
     }
     val interactionSource = remember {
         MutableInteractionSource()
@@ -73,7 +74,7 @@ fun LockIconCard(modifier: Modifier = Modifier) {
     val animatedProgress = animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioHighBouncy, stiffness = Spring.StiffnessMedium
+            dampingRatio = Spring.DampingRatioHighBouncy, stiffness = (Spring.StiffnessHigh / 10)
         )
     )
 

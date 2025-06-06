@@ -9,7 +9,6 @@ import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -19,7 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -67,27 +65,22 @@ fun ChooseAppList(
         }
     }
 
-    Card(modifier = modifier) {
-        Column(
-            modifier = Modifier
-                .clickable(onClick = { expanded = true })
-                .padding(dimensionResource(R.dimen.padding_small))
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(R.string.choose_apps),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = { expanded = true }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowRight,
-                        contentDescription = stringResource(R.string.show_apps_to_block)
-                    )
-                }
-            }
+    EditScreenCard(
+        modifier = modifier.clickable(onClick = { expanded = true })
+    ) {
+        Text(
+            text = stringResource(R.string.choose_apps),
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(Modifier.weight(1f))
+        IconButton(onClick = { expanded = true }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                contentDescription = stringResource(R.string.show_apps_to_block)
+            )
         }
     }
+
 
     if (expanded) {
         ModalBottomSheet(

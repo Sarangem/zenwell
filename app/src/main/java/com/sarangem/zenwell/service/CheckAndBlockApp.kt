@@ -25,13 +25,9 @@ suspend fun checkAndBlockApp(
 ) {
     val TAG = "Check&BlockApp"
 
-    Log.d(TAG, "$schedule and $appList")
-    if (schedule == null) {
-        return
-    }
-    if (appList.isEmpty()) {
-        return
-    }
+    if (schedule == null) return
+    if (appList.isEmpty()) return
+    if (!schedule.isEnabled) return
 
     val blockingWindow = BlockingWindow(
         context = context,

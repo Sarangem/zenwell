@@ -1,11 +1,7 @@
 package com.sarangem.zenwell.ui.editscreen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -19,9 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,45 +31,40 @@ fun ChooseBlockType(
     updateUiState: (BlockType) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Card(modifier = modifier) {
-
-        Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(R.string.choose_block_type),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Spacer(Modifier.weight(1f))
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded },
-                ) {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                            .fillMaxWidth(0.7f),
-                        readOnly = false,
-                        value = TextFieldValue(stringResource(blockType.title)),
-                        onValueChange = {},
-                        shape = MaterialTheme.shapes.large,
-                        trailingIcon = @Composable {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                        },
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = !expanded },
-                    ) {
-                        BlockType.entries.forEach {
-                            DropdownMenuItem(
-                                text = { Text(it.name) },
-                                onClick = {
-                                    updateUiState(it)
-                                    expanded = !expanded
-                                }
-                            )
+    EditScreenCard(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.choose_block_type),
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(Modifier.weight(1f))
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth(0.7f),
+                readOnly = false,
+                value = TextFieldValue(stringResource(blockType.title)),
+                onValueChange = {},
+                shape = MaterialTheme.shapes.large,
+                trailingIcon = @Composable {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = !expanded },
+            ) {
+                BlockType.entries.forEach {
+                    DropdownMenuItem(
+                        text = { Text(it.name) },
+                        onClick = {
+                            updateUiState(it)
+                            expanded = !expanded
                         }
-                    }
+                    )
                 }
             }
         }

@@ -26,7 +26,7 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.tables.Schedules
 import com.sarangem.zenwell.ui.editscreen.EditScreen
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
-import com.sarangem.zenwell.ui.homescreen.HomeScreenFAB
+import com.sarangem.zenwell.ui.homescreen.NewScheduleFAB
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -54,7 +54,7 @@ fun ZenwellAppScreen(
         },
         floatingActionButton = {
             if (uiState.isShowingHomePage) {
-                HomeScreenFAB(
+                NewScheduleFAB(
                     uiState = uiState,
                     addNewSchedule = {
                         viewModel.addNewSchedule()

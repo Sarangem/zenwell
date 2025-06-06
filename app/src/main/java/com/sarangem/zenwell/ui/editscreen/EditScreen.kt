@@ -1,10 +1,10 @@
 package com.sarangem.zenwell.ui.editscreen
 
 import android.content.Context
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,12 +34,24 @@ fun EditScreen(
     deleteSchedule: suspend (Context) -> Unit = {},
     goBack: () -> Unit = {}
 ) {
-    BackHandler { Log.d("Zenwell","OnBackCalled");goBack() }
+    BackHandler { goBack() }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.fillMaxSize()) {
+
+        ChooseEnable(
+            checked = uiState.scheduleInfo.isEnabled,
+            updateUiState = {
+                updateUiState(
+                    uiState.copy(
+                        scheduleInfo = uiState.scheduleInfo.copy(
+                            isEnabled = it
+                        )
+                    )
+                )
+            }
+        )
 
         ChooseScheduleTitle(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
             title = uiState.scheduleInfo.title,
             updateUiState = {
                 updateUiState(
@@ -53,7 +65,6 @@ fun EditScreen(
         )
 
         ChooseBlockType(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
             blockType = uiState.scheduleInfo.blockType,
             updateUiState = {
                 updateUiState(
@@ -67,7 +78,6 @@ fun EditScreen(
         )
 
         ChooseAppList(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
             checkedAppList = uiState.appNames,
             updateAppList = {
                 updateUiState(
