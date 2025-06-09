@@ -19,6 +19,8 @@ class BlockingWindow(
     context: Context,
     content: @Composable (Float, Float) -> Unit
 ) {
+    private val TAG = "BlockingWindow"
+
     // define window manager
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -61,8 +63,11 @@ class BlockingWindow(
             composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
             composeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
             windowManager.addView(composeView, layoutParams)
+            lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
+            lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            Log.d(TAG,"Successfully added compose view")
         } catch (e: Exception) {
-            Log.e("BlockingWindow", "Error adding ComposeView", e)
+            Log.e(TAG, "Error adding ComposeView", e)
         }
     }
 
@@ -71,7 +76,7 @@ class BlockingWindow(
             try {
                 windowManager.removeView(composeView)
             } catch (e: Exception) {
-                Log.e("BlockingWindow", "Error removing ComposeView", e)
+                Log.e(TAG, "Error removing ComposeView", e)
             } finally {
                 composeView.disposeComposition()
             }

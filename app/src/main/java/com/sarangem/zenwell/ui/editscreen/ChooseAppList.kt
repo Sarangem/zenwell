@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -52,13 +53,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChooseAppList(
     modifier: Modifier = Modifier,
-    checkedAppList: List<String>,
+    checkedAppList: List<String>?,
     updateAppList: (List<String>) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    var installedAppList by remember { mutableStateOf<List<AppInfo>?>(null) }
+    var installedAppList by remember { mutableStateOf<List<AppInfo>>(mutableListOf()) }
     LaunchedEffect(Unit) {
         launch {
             installedAppList = getInstalledApps(context).sortedBy { it.appName }
@@ -91,10 +92,10 @@ fun ChooseAppList(
                 installedAppList = installedAppList,
                 checkedAppList = checkedAppList,
                 addAppToList = {
-                    updateAppList(checkedAppList.plus(it))
+                    if (checkedAppList != null) updateAppList(checkedAppList.plus(it))
                 },
                 removeAppFromList = {
-                    updateAppList(checkedAppList.minus(it))
+                    if (checkedAppList != null) updateAppList(checkedAppList.minus(it))
                 }
             )
         }
@@ -106,14 +107,21 @@ fun ChooseAppList(
 @Composable
 fun BottomSheetContents(
     modifier: Modifier = Modifier,
-    installedAppList: List<AppInfo>?,
-    checkedAppList: List<String>,
+    installedAppList: List<AppInfo>,
+    checkedAppList: List<String>?,
     addAppToList: (String) -> Unit = {},
     removeAppFromList: (String) -> Unit = {}
 ) {
 
-    if (installedAppList == null) {
-        LoadingIndicator()
+    if (installedAppList.isEmpty() || checkedAppList == null) {
+        LoadingIndicator(
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = dimensionResource(R.dimen.image_size),
+                    bottom = dimensionResource(R.dimen.image_size)
+                )
+        )
     } else {
 
         LazyColumn(
@@ -132,7 +140,9 @@ fun BottomSheetContents(
                             removeAppFromList(app.packageName)
                         }
                     },
-                    modifier = Modifier.padding(dimensionResource(R.dimen.card_elevation))
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(R.dimen.card_elevation))
                 )
             }
         }
@@ -239,6 +249,17 @@ fun ShowBottomSheetPreview() {
                 AppInfo(appName = "Messages", icon = icon),
                 AppInfo(appName = "Youtube", icon = icon)
             ),
+            checkedAppList = null
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShowBottomSheetLoadingIndicatorPreview() {
+    ZenwellTheme {
+        BottomSheetContents(
+            installedAppList = listOf(),
             checkedAppList = listOf()
         )
     }

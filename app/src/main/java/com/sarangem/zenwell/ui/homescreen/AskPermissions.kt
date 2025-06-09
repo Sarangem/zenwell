@@ -3,6 +3,7 @@ package com.sarangem.zenwell.ui.homescreen
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +13,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,12 +33,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.checkPackageUsageStatsPermission
 import com.sarangem.zenwell.checkSystemAlertWindowPermission
-import com.sarangem.zenwell.ui.theme.Purple80
+import com.sarangem.zenwell.isIgnoringBatteryOptimisations
+import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @SuppressLint("InlinedApi")
 @Composable
 fun AskPermissions(
-    startPermissionActivity: (Intent) -> Unit = {}
+    startPermissionActivity: (Intent) -> Unit = {},
 ) {
     val context = LocalContext.current
     var hasSystemAlertWindowPermission by remember {
@@ -51,14 +52,21 @@ fun AskPermissions(
             checkPackageUsageStatsPermission(context)
         )
     }
+    var isIgnoringBatteryOptimisations by remember {
+        mutableStateOf(
+            isIgnoringBatteryOptimisations(context)
+        )
+    }
 
     AskPermissionsBody(
         hasSystemAlertWindowPermission = hasSystemAlertWindowPermission,
         hasPackageUsageStatsPermission = hasPackageUsageStatsPermission,
+        isIgnoringBatteryOptimisations = isIgnoringBatteryOptimisations,
         startPermissionActivity = { intent ->
             startPermissionActivity(intent)
             hasSystemAlertWindowPermission = checkSystemAlertWindowPermission(context)
             hasPackageUsageStatsPermission = checkPackageUsageStatsPermission(context)
+            isIgnoringBatteryOptimisations = isIgnoringBatteryOptimisations(context)
         }
     )
 }
@@ -68,24 +76,16 @@ fun AskPermissions(
 fun AskPermissionsBody(
     hasSystemAlertWindowPermission: Boolean,
     hasPackageUsageStatsPermission: Boolean,
-    startPermissionActivity: (Intent) -> Unit = {}
-){
+    isIgnoringBatteryOptimisations: Boolean,
+    startPermissionActivity: (Intent) -> Unit = {},
+    isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
+) {
     Column {
 
         if (!hasSystemAlertWindowPermission) {
             PermissionRequestCard(
-                message = {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append(stringResource(R.string.display_over_other_apps))
-                            }
-                            append(stringResource(R.string.display_over_other_apps_explanation))
-                        },
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-                    )
-                },
+                permissionName = stringResource(R.string.display_over_other_apps),
+                permissionExplanation = stringResource(R.string.display_over_other_apps_explanation),
                 onGrantClick = {
                     startPermissionActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
                 }
@@ -94,20 +94,20 @@ fun AskPermissionsBody(
 
         if (!hasPackageUsageStatsPermission) {
             PermissionRequestCard(
-                message = {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append(stringResource(R.string.app_usage_access))
-                            }
-                            append(stringResource(R.string.app_usage_access_explanation))
-                        },
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-                    )
-                },
+                permissionName = stringResource(R.string.app_usage_access),
+                permissionExplanation = stringResource(R.string.app_usage_access_explanation),
                 onGrantClick = {
                     startPermissionActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                }
+            )
+        }
+
+        if (!isIgnoringBatteryOptimisations) {
+            PermissionRequestCard(
+                permissionExplanation = stringResource(R.string.battery_optimization_explanation),
+                cardColor = if (isSystemInDarkTheme) Color(0xFF7C5900) else Color(0xFFF9DEBB),
+                onGrantClick = {
+                    startPermissionActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                 }
             )
         }
@@ -115,24 +115,34 @@ fun AskPermissionsBody(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PermissionRequestCard(
-    message: @Composable () -> Unit = {},
-    onGrantClick: () -> Unit = {}
+    onGrantClick: () -> Unit = {},
+    permissionName: String = "",
+    permissionExplanation: String = "",
+    cardColor: Color = MaterialTheme.colorScheme.errorContainer,
+    textColor: Color = MaterialTheme.colorScheme.onErrorContainer
 ) {
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = dimensionResource(R.dimen.card_elevation)
         ),
-        colors = CardDefaults.cardColors(
-            MaterialTheme.colorScheme.errorContainer
-        ),
+        colors = CardDefaults.cardColors(cardColor),
         modifier = Modifier
             .fillMaxWidth()
             .padding(dimensionResource(R.dimen.padding_small))
     ) {
-        message()
+        Text(
+            text = buildAnnotatedString {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(permissionName)
+                }
+                append(permissionExplanation)
+            },
+            style = MaterialTheme.typography.titleMedium,
+            color = textColor,
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+        )
         Row {
             Spacer(Modifier.weight(1f))
             Button(
@@ -142,8 +152,8 @@ fun PermissionRequestCard(
                 Text(
                     text = stringResource(R.string.grant_permission),
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLargeEmphasized,
-                    color = Color(0xff140d07)
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = textColor
                 )
             }
         }
@@ -152,6 +162,16 @@ fun PermissionRequestCard(
 
 @Preview(showBackground = true)
 @Composable
-fun AskPermissionsPreview(){
-    AskPermissionsBody(false,false)
+fun AskPermissionsLightModePreview() {
+    ZenwellTheme(darkTheme = false) {
+        AskPermissionsBody(false, false, false)
+    }
+}
+
+@Preview
+@Composable
+fun AskPermissionsDarkModePreview() {
+    ZenwellTheme(darkTheme = true) {
+        AskPermissionsBody(false, false, false, {}, true)
+    }
 }

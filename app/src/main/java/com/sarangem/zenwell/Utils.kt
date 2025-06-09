@@ -6,7 +6,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Context.APP_OPS_SERVICE
+import android.content.Context.POWER_SERVICE
 import android.os.Build
+import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,35 +17,29 @@ import androidx.core.app.NotificationCompat
 import java.util.Calendar
 
 // -- NOTIFICATIONS -- //
-fun makeVerboseServiceNotification(message: String = "", context: Context): Notification {
-
-    val channelName: CharSequence = "Verbose Background Service Notifications"
-    val channelDescription = "Shows notifications whenever Zenwell runs in background"
-    val notificationTitle = "Zenwell running..."
-    val channelId = "VERBOSE_NOTIFICATION"
+fun makeVerboseServiceNotification(message: String, context: Context): Notification {
 
     // Make a channel if necessary
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        val name = channelName
-        val description = channelDescription
-        val importance = NotificationManager.IMPORTANCE_HIGH
-        val channel = NotificationChannel(channelId, name, importance)
-        channel.description = description
+
+        val channel = NotificationChannel(
+            /* id = */ VERBOSE_NOTIFICATION_CHANNEL_ID,
+            /* name = */ context.getString(R.string.verbose_notification_channel_name),
+            /* importance = */ NotificationManager.IMPORTANCE_LOW
+        )
+        channel.description = context.getString(R.string.verbose_notification_channel_description)
 
         // Add the channel
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-
         notificationManager?.createNotificationChannel(channel)
+
     }
 
     // Create the notification
-    val builder = NotificationCompat.Builder(context, channelId)
+    val builder = NotificationCompat.Builder(context, VERBOSE_NOTIFICATION_CHANNEL_ID)
         .setSmallIcon(R.drawable.ic_launcher_foreground)
-        .setContentTitle(notificationTitle)
-        .setContentText(message)
+        .setContentTitle(message)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setVibrate(LongArray(0))
         .build()
@@ -121,4 +117,13 @@ fun checkPackageUsageStatsPermission(context: Context): Boolean {
         )
     }
     return (mode == AppOpsManager.MODE_ALLOWED)
+}
+
+fun isIgnoringBatteryOptimisations(context: Context): Boolean {
+    val powerManager = context.getSystemService(POWER_SERVICE) as PowerManager
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        powerManager.isIgnoringBatteryOptimizations(context.packageName)
+    } else {
+        true
+    }
 }

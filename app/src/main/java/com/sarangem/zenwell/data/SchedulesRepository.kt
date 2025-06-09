@@ -10,28 +10,32 @@ import kotlinx.coroutines.flow.firstOrNull
 interface SchedulesRepository {
     fun getAllSchedules(): Flow<List<Schedules>>
     fun getScheduleInfoById(id: Int): Flow<Schedules>
+    fun getSchedulesCount(): Flow<Int>
     fun getAppNames(id: Int): Flow<List<String>>
     suspend fun deleteSchedule(schedule: Schedules)
     suspend fun addNewSchedule(schedule: Schedules): Int
+    suspend fun updateSchedule(schedule: Schedules)
     suspend fun saveToDatabase(
         schedule: Schedules,
         appNames: List<String>,
         pastAppSet: MutableSet<String>
-    ): Boolean
+    )
 }
 
 class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : SchedulesRepository {
 
     override fun getAllSchedules(): Flow<List<Schedules>> = scheduleDao.getAllSchedules()
     override fun getScheduleInfoById(id: Int): Flow<Schedules> = scheduleDao.getScheduleInfoById(id)
+    override fun getSchedulesCount(): Flow<Int> = scheduleDao.getSchedulesCount()
     override fun getAppNames(id: Int): Flow<List<String>> = scheduleDao.getAppNames(id)
     override suspend fun addNewSchedule(schedule: Schedules): Int = scheduleDao.addNewSchedule(schedule).toInt()
+    override suspend fun updateSchedule(schedule: Schedules) = scheduleDao.updateSchedule(schedule)
 
     override suspend fun saveToDatabase(
         schedule: Schedules,
         appNames: List<String>,
         pastAppSet: MutableSet<String>
-    ): Boolean {
+    ) {
         // first update the schedule table
         scheduleDao.updateSchedule(schedules = schedule)
 
@@ -70,8 +74,6 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
         }
 
         this.removeAppNameIfUnused()
-
-        return true
     }
 
     override suspend fun deleteSchedule(schedule: Schedules) {

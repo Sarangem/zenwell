@@ -17,6 +17,9 @@ interface ScheduleDao {
     @Query("SELECT * FROM schedules WHERE id=:id")
     fun getScheduleInfoById(id: Int): Flow<Schedules>
 
+    @Query("SELECT COUNT(*) FROM schedules")
+    fun getSchedulesCount(): Flow<Int>
+
     @Query("SELECT * FROM app_names")
     fun getAllApps(): Flow<List<AppNames>>
 

@@ -1,7 +1,6 @@
 package com.sarangem.zenwell.ui.editscreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -15,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -36,6 +36,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -50,11 +51,11 @@ fun SaveAndDeleteButton(
     var checkedSave by remember { mutableStateOf(false) }
     var checkedDelete by remember { mutableStateOf(false) }
 
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+    BottomAppBar(
+        modifier = modifier.fillMaxWidth(),
     ) {
 
+        // SAVE BUTTON
         ToggleButton(
             checked = checkedSave,
             onCheckedChange = {
@@ -75,7 +76,10 @@ fun SaveAndDeleteButton(
             ),
             modifier = Modifier.weight(1.5f),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(4.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Save,
                     contentDescription = null,
@@ -84,10 +88,15 @@ fun SaveAndDeleteButton(
                 Text(
                     text = stringResource(R.string.save),
                     style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 18.sp
                 )
             }
         }
 
+        // SPACE
+        Spacer(Modifier.width(ButtonGroupDefaults.ConnectedSpaceBetween))
+
+        // DELETE BUTTON
         ToggleButton(
             checked = checkedDelete,
             onCheckedChange = { checkedDelete = true },
@@ -107,7 +116,8 @@ fun SaveAndDeleteButton(
             Icon(
                 imageVector = Icons.Filled.Delete,
                 contentDescription = stringResource(R.string.delete),
-                tint = MaterialTheme.colorScheme.onErrorContainer
+                tint = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier.padding(4.dp)
             )
         }
         if (checkedDelete) {
@@ -121,6 +131,7 @@ fun SaveAndDeleteButton(
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,10 +195,6 @@ fun ShowDeleteDialog(
 @Composable
 fun SaveButtonPreview() {
     ZenwellTheme {
-        SaveAndDeleteButton(
-            modifier = Modifier
-                .padding(dimensionResource(R.dimen.padding_medium))
-                .fillMaxWidth()
-        )
+        SaveAndDeleteButton()
     }
 }

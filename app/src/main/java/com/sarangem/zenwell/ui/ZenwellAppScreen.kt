@@ -17,22 +17,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.tables.Schedules
 import com.sarangem.zenwell.ui.editscreen.EditScreen
+import com.sarangem.zenwell.ui.editscreen.SaveAndDeleteButton
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
 import com.sarangem.zenwell.ui.homescreen.NewScheduleFAB
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +47,10 @@ fun ZenwellAppScreen(
 ) {
     val viewModel: ZenwellAppViewModel = viewModel(factory = ZenwellAppViewModel.factory)
     val uiState by viewModel.uiState.collectAsState()
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var isSaving by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier
@@ -52,14 +62,40 @@ fun ZenwellAppScreen(
                 goBack = { goToHome(viewModel) }
             )
         },
+        bottomBar = {
+            if (!uiState.isShowingHomePage) {
+                SaveAndDeleteButton(
+                    onSave = {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            isSaving = true
+                            viewModel.saveToDatabase(context)
+                            isSaving = false
+                            withContext(Dispatchers.Main) {
+                                goToHome(viewModel)
+                            }
+                        }
+                    },
+                    onDelete = {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            isSaving = true
+                            viewModel.deleteSchedule(context)
+                            isSaving = false
+                            withContext(Dispatchers.Main) {
+                                goToHome(viewModel)
+                            }
+                        }
+                    },
+                )
+            }
+        },
         floatingActionButton = {
             if (uiState.isShowingHomePage) {
                 NewScheduleFAB(
-                    uiState = uiState,
                     addNewSchedule = {
-                        viewModel.addNewSchedule()
+                        viewModel.addNewSchedule(context)
                     },
                     openEditScreen = { goToEdit(viewModel, uiState, it) },
+                    coroutineScope = coroutineScope
                 )
             }
         }
@@ -81,15 +117,14 @@ fun ZenwellAppScreen(
                 modifier = Modifier.padding(innerPadding),
                 uiState = uiState,
                 updateUiState = { viewModel.updateUiState(it) },
-                saveToDatabase = { viewModel.saveToDatabase(context = it) },
-                deleteSchedule = { viewModel.deleteSchedule(context = it) },
-                goBack = { goToHome(viewModel) }
+                goBack = { goToHome(viewModel) },
+                isSaving = isSaving
             )
 
             LaunchedEffect(Unit) {
                 launch(Dispatchers.IO) {
                     initUiState(
-                        scheduleId = uiState.scheduleId,
+                        scheduleId = uiState.schedule.id,
                         coroutineScope = this,
                         viewModel = viewModel,
                         uiState = uiState
@@ -127,7 +162,7 @@ fun ZenwellTopBar(
                 text = if (uiState.isShowingHomePage) {
                     stringResource(id = R.string.app_name)
                 } else {
-                    stringResource(R.string.edit) + " " + uiState.scheduleInfo.title
+                    stringResource(R.string.edit) + " " + uiState.schedule.title
                 },
                 style = MaterialTheme.typography.headlineSmall
             )
@@ -144,20 +179,15 @@ suspend fun initUiState(
     viewModel: ZenwellAppViewModel,
     uiState: AppUiState
 ) {
-    val scheduleInfo = coroutineScope.async {
-        viewModel.getScheduleInfo(scheduleId).firstOrNull()
-    }
     val appNames = coroutineScope.async {
         viewModel.getAppNames(scheduleId).first()
     }
 
     viewModel.updateUiState(
         uiState.copy(
-            scheduleInfo = scheduleInfo.await() ?: Schedules(),
-            appNames = appNames.await()
+            appNames = appNames.await(),
         )
     )
-    viewModel.isEditScreenInitialized = true
     viewModel.pastAppList = appNames.await().toMutableList()
 }
 
@@ -175,12 +205,12 @@ fun goToHome(
 fun goToEdit(
     viewModel: ZenwellAppViewModel,
     uiState: AppUiState,
-    scheduleId: Int
+    schedule: Schedules
 ) {
     viewModel.updateUiState(
         uiState.copy(
             isShowingHomePage = false,
-            scheduleId = scheduleId
+            schedule = schedule,
         )
     )
 }

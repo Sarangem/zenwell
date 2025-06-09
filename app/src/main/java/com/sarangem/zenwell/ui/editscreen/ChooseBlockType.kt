@@ -45,7 +45,7 @@ fun ChooseBlockType(
                 modifier = Modifier
                     .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                     .fillMaxWidth(0.7f),
-                readOnly = false,
+                readOnly = true,
                 value = TextFieldValue(stringResource(blockType.title)),
                 onValueChange = {},
                 shape = MaterialTheme.shapes.large,
@@ -59,7 +59,7 @@ fun ChooseBlockType(
             ) {
                 BlockType.entries.forEach {
                     DropdownMenuItem(
-                        text = { Text(it.name) },
+                        text = { Text(stringResource(it.title)) },
                         onClick = {
                             updateUiState(it)
                             expanded = !expanded

@@ -1,11 +1,9 @@
 package com.sarangem.zenwell.ui.homescreen
 
 import android.content.Intent
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +33,6 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.tables.Schedules
 import com.sarangem.zenwell.getAmPm
 import com.sarangem.zenwell.minutesToString
-import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -44,7 +40,7 @@ import com.sarangem.zenwell.ui.theme.ZenwellTheme
 fun HomeScreen(
     modifier: Modifier = Modifier,
     schedulesList: List<Schedules>,
-    openEditScreen: (Int) -> Unit = {},
+    openEditScreen: (Schedules) -> Unit = {},
     startPermissionActivity: (Intent) -> Unit = {}
 ) {
 
@@ -60,7 +56,7 @@ fun HomeScreen(
         Spacer(Modifier.padding(dimensionResource(R.dimen.padding_small)))
 
         if (schedulesList.isEmpty()) {
-        		Spacer(Modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
             Text(
                 text = stringResource(R.string.no_schedules),
                 style = MaterialTheme.typography.bodyLarge,
@@ -84,13 +80,14 @@ fun HomeScreen(
 fun ShowSchedulesList(
     schedulesList: List<Schedules>,
     modifier: Modifier = Modifier,
-    openEditScreen: (Int) -> Unit
+    openEditScreen: (Schedules) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
         items(schedulesList) { schedule ->
 
-            val tint = if(schedule.isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
-            val weight = if(schedule.isEnabled) FontWeight.SemiBold else FontWeight.Normal
+            val tint =
+                if (schedule.isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
+            val weight = if (schedule.isEnabled) FontWeight.SemiBold else FontWeight.Normal
 
             Card(
                 elevation = CardDefaults.cardElevation(
@@ -110,7 +107,9 @@ fun ShowSchedulesList(
                             modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
                         )
                         Text(
-                            text = minutesToString(schedule.startTimeInMinutes) + " " + getAmPm(schedule.startTimeInMinutes)
+                            text = minutesToString(schedule.startTimeInMinutes) + " " + getAmPm(
+                                schedule.startTimeInMinutes
+                            )
                                     + stringResource(R.string.to)
                                     + minutesToString(schedule.endTimeInMinutes) + " " + getAmPm(
                                 schedule.endTimeInMinutes
@@ -122,7 +121,7 @@ fun ShowSchedulesList(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { openEditScreen(schedule.id) }) {
+                    IconButton(onClick = { openEditScreen(schedule) }) {
                         Icon(
                             imageVector = Icons.Filled.Edit,
                             contentDescription = stringResource(R.string.edit_this_schedule),

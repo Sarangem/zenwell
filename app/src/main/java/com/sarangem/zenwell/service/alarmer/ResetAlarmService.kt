@@ -7,11 +7,12 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ServiceCompat
-import com.sarangem.zenwell.ServiceForeground
-import com.sarangem.zenwell.ServiceForegroundFail
-import com.sarangem.zenwell.ServiceOnCreate
-import com.sarangem.zenwell.ServiceOnDestroy
-import com.sarangem.zenwell.ServiceOnStart
+import com.sarangem.zenwell.R
+import com.sarangem.zenwell.SERVICE_FOREGROUND
+import com.sarangem.zenwell.SERVICE_FOREGROUND_FAIL
+import com.sarangem.zenwell.SERVICE_ON_CREATE
+import com.sarangem.zenwell.SERVICE_ON_DESTROY
+import com.sarangem.zenwell.SERVICE_ON_START
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.makeVerboseServiceNotification
 import kotlinx.coroutines.CoroutineScope
@@ -26,15 +27,15 @@ class ResetAlarmService: Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, ServiceOnCreate)
+        Log.d(TAG, SERVICE_ON_CREATE)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Log.d(TAG, ServiceOnStart)
+        Log.d(TAG, SERVICE_ON_START)
 
         this.startForeground()
-        Log.d(TAG, ServiceForeground)
+        Log.d(TAG, SERVICE_FOREGROUND)
 
         val schedulesRepository = (application as ZenwellApplication).container
         CoroutineScope(Dispatchers.IO).launch {
@@ -55,7 +56,7 @@ class ResetAlarmService: Service() {
 
         try {
             val notification = makeVerboseServiceNotification(
-                message = "Zenwell restarting...",
+                message = getString(R.string.notification_on_boot),
                 context = this
             )
             ServiceCompat.startForeground(
@@ -70,7 +71,7 @@ class ResetAlarmService: Service() {
                 },
             )
         } catch (e: Exception) {
-            Log.e(TAG, ServiceForegroundFail)
+            Log.e(TAG, SERVICE_FOREGROUND_FAIL)
         }
     }
 
@@ -80,6 +81,6 @@ class ResetAlarmService: Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e(TAG, ServiceOnDestroy)
+        Log.e(TAG, SERVICE_ON_DESTROY)
     }
 }

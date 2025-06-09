@@ -1,8 +1,10 @@
 package com.sarangem.zenwell.service.blockingscreen
 
-import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,10 +20,8 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialShapes.Companion.Flower
 import androidx.compose.material3.MaterialShapes.Companion.Square
 import androidx.compose.material3.MaterialShapes.Companion.Sunny
-import androidx.compose.material3.MaterialShapes.Companion.VerySunny
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.toShape
@@ -31,11 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
@@ -63,24 +63,23 @@ fun FullBlockScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LockIconCard(modifier: Modifier = Modifier) {
-
-    val morph = remember {
-        Morph(Sunny, Flower)
-    }
     val interactionSource = remember {
         MutableInteractionSource()
     }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val animatedProgress = animateFloatAsState(
-        targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioHighBouncy, stiffness = (Spring.StiffnessHigh / 10)
+    val animatedRotation = animateFloatAsState(
+        targetValue = if (isPressed) 10f else 0f,
+        animationSpec = repeatable(
+            iterations = 2,
+            animation = tween(100, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
         )
     )
 
     Box(
         modifier = modifier
-            .clip(MorphPolygonShape(morph, animatedProgress.value))
+            .clip(Sunny.toShape())
+            .graphicsLayer(rotationZ = animatedRotation.value)
             .background(MaterialTheme.colorScheme.tertiaryContainer)
             .clickable(interactionSource = interactionSource, indication = null, onClick = {})
     ) {

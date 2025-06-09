@@ -6,9 +6,6 @@
     <string name="math_equation">"Math Equation"</string>
     <string name="show_image">"Show Image"</string>
     <string name="grayscale">"Grayscale"</string>
-    <string name="home">"Home"</string>
-    <string name="edit_the_schedule">"Edit the schedule"</string>
-    <string name="settings">"Settings"</string>
     <string name="new_schedule">"New schedule"</string>
     <string name="edit_this_schedule">"Edit this schedule"</string>
     <string name="schedule_title">"Title"</string>
@@ -32,4 +29,11 @@
     <string name="cancel">Cancel</string>
     <string name="enable">Enable</string>
     <string name="no_schedules">No schedules found.</string>
+    <string name="notification_service_running">"Checking for blocked apps…"</string>
+    <string name="notification_permission_not_granted">Proper permissions not granted. Stopping…</string>
+    <string name="notification_on_boot">Setting everything up…</string>
+    <string name="verbose_notification_channel_name">Verbose Background Service Notifications</string>
+    <string name="verbose_notification_channel_description">Shows notifications whenever Zenwell runs in background</string>
+    <string name="battery_optimization_explanation">This app needs to run in background to properly block apps. Please allow the app to ignore battery optimizations.</string>
+    <string name="schedule">"Schedule "</string>
 </resources>

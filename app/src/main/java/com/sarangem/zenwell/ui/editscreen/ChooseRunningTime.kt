@@ -153,7 +153,7 @@ fun AdvancedTimePickerDialog(
     onConfirm: (TimePickerState) -> Unit = {},
     timePickerState: TimePickerState
 ) {
-    var showDial by remember { mutableStateOf(false) }
+    var showDial by remember { mutableStateOf(true) }
 
     Dialog(
         onDismissRequest = onDismiss,

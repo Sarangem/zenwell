@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.sarangem.zenwell.ScheduleIdString
+import com.sarangem.zenwell.SCHEDULE_ID_STRING
 import com.sarangem.zenwell.data.tables.Schedules
 import com.sarangem.zenwell.getCurrentTimeInMinutes
 
@@ -20,7 +20,7 @@ class ManageExactAlarms(
         return PendingIntent.getBroadcast(
             context,
             100,
-            Intent(context, AlarmReceiver::class.java).putExtra(ScheduleIdString, scheduleId),
+            Intent(context, AlarmReceiver::class.java).putExtra(SCHEDULE_ID_STRING, scheduleId),
             PendingIntent.FLAG_IMMUTABLE
         )
     }
