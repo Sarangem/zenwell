@@ -68,7 +68,7 @@ fun ZenwellAppScreen(
                     onSave = {
                         coroutineScope.launch(Dispatchers.IO) {
                             isSaving = true
-                            viewModel.saveToDatabase(context)
+                            viewModel.saveToDatabase()
                             isSaving = false
                             withContext(Dispatchers.Main) {
                                 goToHome(viewModel)
@@ -78,7 +78,7 @@ fun ZenwellAppScreen(
                     onDelete = {
                         coroutineScope.launch(Dispatchers.IO) {
                             isSaving = true
-                            viewModel.deleteSchedule(context)
+                            viewModel.deleteSchedule()
                             isSaving = false
                             withContext(Dispatchers.Main) {
                                 goToHome(viewModel)

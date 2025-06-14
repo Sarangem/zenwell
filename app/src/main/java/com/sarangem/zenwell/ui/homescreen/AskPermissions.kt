@@ -31,9 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.checkPackageUsageStatsPermission
-import com.sarangem.zenwell.checkSystemAlertWindowPermission
-import com.sarangem.zenwell.isIgnoringBatteryOptimisations
+import com.sarangem.zenwell.checkAccessibilityServicePermission
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @SuppressLint("InlinedApi")
@@ -41,32 +39,17 @@ import com.sarangem.zenwell.ui.theme.ZenwellTheme
 fun AskPermissions(
     startPermissionActivity: (Intent) -> Unit = {},
 ) {
-    val context = LocalContext.current
-    var hasSystemAlertWindowPermission by remember {
+    var hasAccessibilityServicePermission by remember {
         mutableStateOf(
-            checkSystemAlertWindowPermission(context)
-        )
-    }
-    var hasPackageUsageStatsPermission by remember {
-        mutableStateOf(
-            checkPackageUsageStatsPermission(context)
-        )
-    }
-    var isIgnoringBatteryOptimisations by remember {
-        mutableStateOf(
-            isIgnoringBatteryOptimisations(context)
+            checkAccessibilityServicePermission()
         )
     }
 
     AskPermissionsBody(
-        hasSystemAlertWindowPermission = hasSystemAlertWindowPermission,
-        hasPackageUsageStatsPermission = hasPackageUsageStatsPermission,
-        isIgnoringBatteryOptimisations = isIgnoringBatteryOptimisations,
+        hasAccessibilityServicePermission = hasAccessibilityServicePermission,
         startPermissionActivity = { intent ->
             startPermissionActivity(intent)
-            hasSystemAlertWindowPermission = checkSystemAlertWindowPermission(context)
-            hasPackageUsageStatsPermission = checkPackageUsageStatsPermission(context)
-            isIgnoringBatteryOptimisations = isIgnoringBatteryOptimisations(context)
+            hasAccessibilityServicePermission = checkAccessibilityServicePermission()
         }
     )
 }
@@ -74,40 +57,18 @@ fun AskPermissions(
 @SuppressLint("InlinedApi")
 @Composable
 fun AskPermissionsBody(
-    hasSystemAlertWindowPermission: Boolean,
-    hasPackageUsageStatsPermission: Boolean,
-    isIgnoringBatteryOptimisations: Boolean,
+    hasAccessibilityServicePermission: Boolean,
     startPermissionActivity: (Intent) -> Unit = {},
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
 ) {
     Column {
 
-        if (!hasSystemAlertWindowPermission) {
+        if (!hasAccessibilityServicePermission) {
             PermissionRequestCard(
-                permissionName = stringResource(R.string.display_over_other_apps),
-                permissionExplanation = stringResource(R.string.display_over_other_apps_explanation),
+                permissionName = stringResource(R.string.accessibility_service_permission),
+                permissionExplanation = stringResource(R.string.accessibility_service_permission_explanation),
                 onGrantClick = {
-                    startPermissionActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
-                }
-            )
-        }
-
-        if (!hasPackageUsageStatsPermission) {
-            PermissionRequestCard(
-                permissionName = stringResource(R.string.app_usage_access),
-                permissionExplanation = stringResource(R.string.app_usage_access_explanation),
-                onGrantClick = {
-                    startPermissionActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-                }
-            )
-        }
-
-        if (!isIgnoringBatteryOptimisations) {
-            PermissionRequestCard(
-                permissionExplanation = stringResource(R.string.battery_optimization_explanation),
-                cardColor = if (isSystemInDarkTheme) Color(0xFF7C5900) else Color(0xFFF9DEBB),
-                onGrantClick = {
-                    startPermissionActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                    startPermissionActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                 }
             )
         }
@@ -164,7 +125,7 @@ fun PermissionRequestCard(
 @Composable
 fun AskPermissionsLightModePreview() {
     ZenwellTheme(darkTheme = false) {
-        AskPermissionsBody(false, false, false)
+        AskPermissionsBody(false)
     }
 }
 
@@ -172,6 +133,6 @@ fun AskPermissionsLightModePreview() {
 @Composable
 fun AskPermissionsDarkModePreview() {
     ZenwellTheme(darkTheme = true) {
-        AskPermissionsBody(false, false, false, {}, true)
+        AskPermissionsBody(false, {}, true)
     }
 }

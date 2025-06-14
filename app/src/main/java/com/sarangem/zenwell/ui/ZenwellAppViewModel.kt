@@ -10,7 +10,7 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.data.SchedulesRepository
 import com.sarangem.zenwell.data.tables.Schedules
-import com.sarangem.zenwell.service.alarmer.ManageExactAlarms
+import com.sarangem.zenwell.service.AppBlockerService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
@@ -53,34 +53,23 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
         return newSchedule
     }
 
-    suspend fun saveToDatabase(context: Context) {
+    suspend fun saveToDatabase() {
         uiState.filter { it.appNames != null }.first()
 
-        val alarmClass = ManageExactAlarms(
-            context = context,
-            schedulesList = schedulesRepository.getAllSchedules().first()
-        )
-
-        alarmClass.cancelAllExactAlarms()
         schedulesRepository.saveToDatabase(
             schedule = _uiState.value.schedule,
             appNames = _uiState.value.appNames ?: listOf(),
             pastAppSet = pastAppList.toMutableSet(),
         )
-        alarmClass.setExactAlarms()
+
+        AppBlockerService.instance?.initializeRepository()
     }
 
-    suspend fun deleteSchedule(context: Context) {
+    suspend fun deleteSchedule() {
+
         uiState.filter { it.appNames != null }.first()
-
-        val alarmClass = ManageExactAlarms(
-            context = context,
-            schedulesList = schedulesRepository.getAllSchedules().first()
-        )
-
-        alarmClass.cancelAllExactAlarms()
         schedulesRepository.deleteSchedule(_uiState.value.schedule)
-        alarmClass.setExactAlarms()
+        AppBlockerService.instance?.initializeRepository()
 
     }
 

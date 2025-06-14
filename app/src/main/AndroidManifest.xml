@@ -2,22 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
-    <!-- Necessary for blocking apps -->
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
-    <!-- Foreground service permissions -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-    <!-- Alarm permissions -->
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />  <!-- for UI only -->
 
     <application
         android:name =".ZenwellApplication"
@@ -41,29 +27,20 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".service.alarmer.AlarmReceiver"
+        <receiver android:name=".service.alarmer.EndTimeAlarmReceiver"
             android:exported="false"
             android:enabled="true">
         </receiver>
-        
-        <service
-            android:name=".service.AppBlockerService"
-            android:foregroundServiceType="systemExempted"
-            android:exported="false">
-        </service>
 
-        <receiver android:name=".service.alarmer.ResetAlarmOnBootReceiver"
+        <service android:name=".service.AppBlockerService"
             android:exported="false"
-            android:enabled="true">
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
-        </receiver>
-
-        <service
-            android:name=".service.alarmer.ResetAlarmService"
-            android:foregroundServiceType="shortService"
-            android:exported="false">
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/app_blocker_service_config" />
         </service>
 
     </application>

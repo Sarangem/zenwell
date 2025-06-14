@@ -32,8 +32,8 @@ class BlockingWindow(
     private val layoutParams =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams().apply {
-                type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-                flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+                flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 format = PixelFormat.TRANSLUCENT
                 gravity = Gravity.CENTER
                 width = WindowManager.LayoutParams.MATCH_PARENT
@@ -50,8 +50,12 @@ class BlockingWindow(
     }
 
 
+    var isWindowOpened = false
+
     fun open() {
+
         try {
+
             val viewModelStore = ViewModelStore()
             val viewModelStoreOwner = object : ViewModelStoreOwner {
                 override val viewModelStore = viewModelStore
@@ -65,16 +69,24 @@ class BlockingWindow(
             windowManager.addView(composeView, layoutParams)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-            Log.d(TAG,"Successfully added compose view")
+            isWindowOpened = true
+            Log.d(TAG, "Successfully added compose view")
+
         } catch (e: Exception) {
+
             Log.e(TAG, "Error adding ComposeView", e)
+
         }
+
     }
 
     fun close() {
         if (composeView.isAttachedToWindow == true) {
             try {
-                windowManager.removeView(composeView)
+                if (isWindowOpened) {
+                    windowManager.removeView(composeView)
+                    isWindowOpened = false
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error removing ComposeView", e)
             } finally {

@@ -1,135 +1,153 @@
 package com.sarangem.zenwell.service
 
-import android.app.Service
+import android.accessibilityservice.AccessibilityService
+import android.content.Context
 import android.content.Intent
-import android.content.pm.ServiceInfo
-import android.os.Build
-import android.os.IBinder
 import android.util.Log
-import androidx.core.app.ServiceCompat
-import com.sarangem.zenwell.R
-import com.sarangem.zenwell.SCHEDULE_ID_STRING
-import com.sarangem.zenwell.SERVICE_FOREGROUND
-import com.sarangem.zenwell.SERVICE_FOREGROUND_FAIL
-import com.sarangem.zenwell.SERVICE_NO_PERMISSION
-import com.sarangem.zenwell.SERVICE_ON_CREATE
-import com.sarangem.zenwell.SERVICE_ON_DESTROY
-import com.sarangem.zenwell.SERVICE_ON_START
+import android.view.accessibility.AccessibilityEvent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.ZenwellApplication
-import com.sarangem.zenwell.checkPackageUsageStatsPermission
-import com.sarangem.zenwell.checkSystemAlertWindowPermission
-import com.sarangem.zenwell.makeVerboseServiceNotification
+import com.sarangem.zenwell.data.BlockType
+import com.sarangem.zenwell.data.tables.Schedules
+import com.sarangem.zenwell.getCurrentTimeInMinutes
+import com.sarangem.zenwell.service.alarmer.ManageExactAlarms
+import com.sarangem.zenwell.service.blockingscreen.BlockingWindow
+import com.sarangem.zenwell.service.blockingscreen.FullBlockScreen
+import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.launch
 
-class AppBlockerService : Service() {
 
-    private val TAG = "AppBlocker Service"
+class AppBlockerService : AccessibilityService() {
+
     private val context = this
-    private val isDeviceOld = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val activeCoroutines = AtomicInteger(0)
+    private val TAG = "AppBlockerService"
+    private val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
 
-    override fun onCreate() {
-        super.onCreate()
-        Log.d(TAG, SERVICE_ON_CREATE)
+    companion object {
+        var instance: AppBlockerService? = null
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        Log.d(TAG, SERVICE_ON_START)
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        instance = context
 
-        val status = this.startForeground()
-        if (!status) {
-            Log.d(TAG, SERVICE_NO_PERMISSION)
-            stopSelf()
-            return START_NOT_STICKY
+        CoroutineScope(Dispatchers.IO).launch {
+            initializeRepository()
+            Log.d(TAG, "Service fully initiated with ${context.serviceInfo}")
         }
-        Log.d(TAG, SERVICE_FOREGROUND)
+
+    }
+
+    suspend fun initializeRepository() {
+
+        // cancel all old alarms
+        ManageExactAlarms(
+            context = context,
+            schedulesList = scheduleInfoList.map { it.schedule }
+        ).cancel()
+
+
+        // update our variable with latest repository
 
         val schedulesRepository = (application as ZenwellApplication).container
-        val scheduleId = intent.getIntExtra(SCHEDULE_ID_STRING, 0)
+        val schedulesList = schedulesRepository.getAllSchedules().first()
 
-        Log.d(TAG, "Creating thread for schedule id $scheduleId")
-        coroutineScope.async {
-            activeCoroutines.incrementAndGet()
-            checkAndBlockApp(
-                context = context,
-                schedule = schedulesRepository.getScheduleInfoById(scheduleId).firstOrNull(),
-                appList = schedulesRepository.getAppNames(scheduleId).first(),
-                coroutineScope = this
+        schedulesList.forEach { schedule ->
+
+            scheduleInfoList.add(
+                ScheduleInfo(
+                    context = context,
+                    schedule = schedule,
+                    appSet = schedulesRepository.getAppNames(schedule.id).first().toSet()
+                )
             )
-            if (activeCoroutines.decrementAndGet() == 0) {
-                stopSelf()
+
+        }
+
+
+        // create new alarms
+        ManageExactAlarms(
+            context = context,
+            schedulesList = scheduleInfoList.map { it.schedule }
+        ).set()
+
+    }
+
+    private var isWindowOpened = false
+    private var previousApp: CharSequence? = null
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+
+        // get current package name and terminate if null
+        val currentApp: CharSequence? = rootInActiveWindow.packageName
+        if(currentApp == null) return
+        Log.d(TAG, "previous app is $previousApp and current app is $currentApp")
+
+        // check for duplicate entries
+        if (previousApp == currentApp) return
+
+        // open or close the window
+        for (scheduleInfo in scheduleInfoList) {
+
+            if (!scheduleInfo.schedule.isEnabled) break
+            if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) break
+
+            if (currentApp in scheduleInfo.appSet) {
+                Log.d(TAG, "Opening window")
+                isWindowOpened = true
+                scheduleInfo.blockingWindow.open()
+            } else {
+                Log.d(TAG, "Closing window")
+                isWindowOpened = false
+                scheduleInfo.blockingWindow.close()
             }
         }
 
-        return START_STICKY
+        previousApp = currentApp
     }
 
-    private fun startForeground(): Boolean {
-
-        // Set foreground service type
-        val serviceType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
-        } else {
-            0
-        }
-
-        // Check for permissions
-        val overlayPermission = checkSystemAlertWindowPermission(this)
-        val usageStatsPermission = checkPackageUsageStatsPermission(this)
-
-        // Stop if permissions not granted
-        if (!overlayPermission || !usageStatsPermission) {
-            // Create a false foreground service
-            val notification = makeVerboseServiceNotification(
-                context = this,
-                message = getString(R.string.notification_permission_not_granted)
-            )
-            ServiceCompat.startForeground(this, 100, notification, serviceType)
-            return false
-        }
-
-        // Promote itself to foreground
-        try {
-            val notification = makeVerboseServiceNotification(
-                context = this,
-                message = getString(R.string.notification_service_running)
-            )
-            ServiceCompat.startForeground(
-                /* service = */ this,
-                /* id = */ 100, // Cannot be 0
-                /* notification = */ notification,
-                /* foregroundServiceType = */ serviceType
-            )
-            return true
-        } catch (e: Exception) {
-            Log.e(TAG, SERVICE_FOREGROUND_FAIL, e)
-            return false
-        }
-
+    fun closeWindow(scheduleId: Int) {
+        val scheduleInfo = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId }
+        scheduleInfo?.blockingWindow?.close()
+        isWindowOpened = false
     }
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
+    override fun onInterrupt() {
+        scheduleInfoList.forEach {
+            it.blockingWindow.close()
+        }
+        isWindowOpened = false
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        coroutineScope.cancel()
-        if (isDeviceOld) {
-            stopForeground(STOP_FOREGROUND_REMOVE)
-        } else {
-            @Suppress("DEPRECATION")
-            stopForeground(true)
-        }
-        Log.w(TAG, SERVICE_ON_DESTROY)
+    override fun onUnbind(intent: Intent?): Boolean {
+        instance = null
+        return super.onUnbind(intent)
     }
+
 }
 
+data class ScheduleInfo(
+    private val context: Context,
+    val schedule: Schedules,
+    val appSet: Set<String>,
+) {
+    val blockingWindow = BlockingWindow(
+        context = context,
+        content = { height, width ->
+            ZenwellTheme {
+                when (schedule.blockType) {
+                    BlockType.FullBlock -> FullBlockScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        height = height,
+                        width = width
+                    )
+
+                    else -> {}
+                }
+            }
+        }
+    )
+}

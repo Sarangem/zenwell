@@ -17,10 +17,6 @@
     <string name="to">" to "</string>
     <string name="edit">"Edit"</string>
     <string name="grant_permission">"Grant permission"</string>
-    <string name="display_over_other_apps">"Display over other apps"</string>
-    <string name="display_over_other_apps_explanation">" permission not granted. The app would not be able to show blocking message in top of other apps."</string>
-    <string name="app_usage_access">"Usage access"</string>
-    <string name="app_usage_access_explanation">" permission not granted. The app would not be able to see which app are you using currently to block."</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="ok">OK</string>
@@ -29,11 +25,8 @@
     <string name="cancel">Cancel</string>
     <string name="enable">Enable</string>
     <string name="no_schedules">No schedules found.</string>
-    <string name="notification_service_running">"Checking for blocked apps…"</string>
-    <string name="notification_permission_not_granted">Proper permissions not granted. Stopping…</string>
-    <string name="notification_on_boot">Setting everything up…</string>
-    <string name="verbose_notification_channel_name">Verbose Background Service Notifications</string>
-    <string name="verbose_notification_channel_description">Shows notifications whenever Zenwell runs in background</string>
-    <string name="battery_optimization_explanation">This app needs to run in background to properly block apps. Please allow the app to ignore battery optimizations.</string>
     <string name="schedule">"Schedule "</string>
+    <string name="app_blocker_service_description">Zenwell uses this service to know which app you are using and show a screen to cure your phone addiction.</string>
+    <string name="accessibility_service_permission">Accessibility service for Zenwell</string>
+    <string name="accessibility_service_permission_explanation">" not enabled. The app would not be able to know which apps are you currently running."</string>
 </resources>
