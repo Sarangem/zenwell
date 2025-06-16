@@ -1,7 +1,5 @@
 package com.sarangem.zenwell.ui.editscreen
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -22,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import java.nio.file.WatchEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

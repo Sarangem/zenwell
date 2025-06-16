@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.tables.Schedules
@@ -32,10 +31,7 @@ import com.sarangem.zenwell.ui.editscreen.EditScreen
 import com.sarangem.zenwell.ui.editscreen.SaveAndDeleteButton
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
 import com.sarangem.zenwell.ui.homescreen.NewScheduleFAB
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -112,7 +108,9 @@ fun ZenwellAppScreen(
 
         } else {
 
-            viewModel.initUiState()
+            LaunchedEffect(Unit) {
+                viewModel.initUiState()
+            }
             
             EditScreen(
                 modifier = Modifier

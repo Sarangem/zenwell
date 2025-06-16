@@ -36,7 +36,7 @@ data class Schedules(
 
     // should the app use a button to enter or enter automatically
     @ColumnInfo(name = "wait_enter_button")
-    val waitEnterButton: Boolean = false,
+    val waitEnterButton: Boolean = true,
 
     // how long would the app be opened before again showing block message
     // for specific block types only

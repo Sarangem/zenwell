@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -27,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.APP_BLOCKED
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -38,18 +38,26 @@ fun WaitScreen(
     modifier: Modifier = Modifier,
     onTimerEnd: () -> Unit = {},
     waitTimeInSeconds: Int,
+    showOpenDialog: Boolean,
     message: String,
     height: Float,
     width: Float
 ) {
+    var showOpen by remember { mutableStateOf(false) }
+    val timerEnd = {
+        if (showOpenDialog) {
+            showOpen = true
+        } else {
+            onTimerEnd()
+        }
+    }
+
     Card(modifier = modifier) {
 
-        if (height < 480 && width < 600) {
-            WaitScreenCompact(onTimerEnd, waitTimeInSeconds, message)
-        } else if ((height < 480 && width > 600) || (height < 900 && width > 800)) {
-            WaitScreenRow(onTimerEnd, waitTimeInSeconds, message)
+        if ((height < 480 && width > 600) || (height < 900 && width > 800)) {
+            WaitScreenRow(timerEnd, waitTimeInSeconds, message, showOpen)
         } else {
-            WaitScreenColumn(onTimerEnd, waitTimeInSeconds, message)
+            WaitScreenColumn(timerEnd, waitTimeInSeconds, message, showOpen)
         }
     }
 }
@@ -95,67 +103,61 @@ fun TimerCard(
 // -- IMPLEMENTATIONS -- //
 
 @Composable
-fun WaitScreenCompact(onTimerEnd: () -> Unit = {}, initialValue: Int, message: String = APP_BLOCKED) {
+fun WaitScreenColumn(
+    onTimerEnd: () -> Unit = {},
+    initialValue: Int,
+    message: String,
+    showOpen: Boolean
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(Modifier.weight(0.1F))
+
         TimerCard(
             modifier = Modifier
-                .weight(0.8F)
-                .padding(dimensionResource(R.dimen.padding_large)),
+                .weight(0.9F)
+                .padding(dimensionResource(R.dimen.padding_small)),
             onTimerEnd = onTimerEnd,
             initialValue = initialValue
         )
         MessageCard(
             message = message,
             modifier = Modifier
-                .weight(0.4F)
-                .padding(dimensionResource(R.dimen.padding_large))
+                .weight(0.9F)
+                .padding(dimensionResource(R.dimen.padding_small)),
+            showOpenDialog = showOpen,
+            onClick = onTimerEnd
         )
+
+        Spacer(Modifier.weight(0.1F))
     }
 }
 
 @Composable
-fun WaitScreenColumn(onTimerEnd: () -> Unit = {}, initialValue: Int, message: String = APP_BLOCKED) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(Modifier.weight(0.2F))
+fun WaitScreenRow(
+    onTimerEnd: () -> Unit = {},
+    initialValue: Int,
+    message: String,
+    showOpen: Boolean
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Spacer(Modifier.weight(0.1F))
+
         TimerCard(
             modifier = Modifier
-                .weight(0.8F)
-                .padding(dimensionResource(R.dimen.padding_large)),
-            onTimerEnd = onTimerEnd,
-            initialValue = initialValue
-        )
-        Spacer(Modifier.weight(0.1F))
-        MessageCard(
-            message = message,
-            modifier = Modifier
-                .weight(0.7F)
-                .padding(dimensionResource(R.dimen.padding_large))
-        )
-        Spacer(Modifier.weight(0.2F))
-    }
-}
-
-
-@Composable
-fun WaitScreenRow(onTimerEnd: () -> Unit = {}, initialValue: Int, message: String = APP_BLOCKED) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 150.dp)
-    ) {
-        Spacer(Modifier.weight(0.1F))
-        TimerCard(
-            modifier = Modifier
-                .weight(0.6F)
-                .padding(dimensionResource(R.dimen.padding_large)),
+                .weight(0.9F)
+                .padding(dimensionResource(R.dimen.padding_small)),
             onTimerEnd = onTimerEnd,
             initialValue = initialValue
         )
         MessageCard(
             message = message,
             modifier = Modifier
-                .weight(0.6F)
-                .padding(dimensionResource(R.dimen.padding_large))
+                .weight(0.9F)
+                .padding(dimensionResource(R.dimen.padding_small)),
+            showOpenDialog = showOpen,
+            onClick = onTimerEnd
         )
+
         Spacer(Modifier.weight(0.1F))
     }
 }
@@ -163,50 +165,50 @@ fun WaitScreenRow(onTimerEnd: () -> Unit = {}, initialValue: Int, message: Strin
 
 // -- PREVIEW -- //
 
-@Preview(showBackground = true, heightDp = 400, widthDp = 500)
+@Preview(showBackground = true, heightDp = 400, widthDp = 400)
 @Composable
 fun WaitScreenCompactPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreenCompact({}, Int.MAX_VALUE)
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, 400f, 400f)
     }
 }
 
-@Preview(heightDp = 400, widthDp = 500)
+@Preview(heightDp = 400, widthDp = 400)
 @Composable
 fun WaitScreenCompactPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        WaitScreenCompact({}, 10)
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, 400f, 400f)
     }
 }
 
-@Preview(showBackground = true, heightDp = 800, widthDp = 600)
+@Preview(showBackground = true, heightDp = 700, widthDp = 500)
 @Composable
 fun WaitScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreenColumn({}, Int.MAX_VALUE)
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, 700f, 500f)
     }
 }
 
-@Preview(heightDp = 800, widthDp = 600)
+@Preview(heightDp = 700, widthDp = 500)
 @Composable
 fun WaitScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        WaitScreenColumn({}, 10)
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, 700f, 500f)
     }
 }
 
-@Preview(showBackground = true, heightDp = 800, widthDp = 900)
+@Preview(showBackground = true, heightDp = 400, widthDp = 700)
 @Composable
 fun WaitScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreenRow({}, Int.MAX_VALUE)
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, 400f, 700f)
     }
 }
 
-@Preview(heightDp = 800, widthDp = 900)
+@Preview(heightDp = 400, widthDp = 700)
 @Composable
 fun WaitScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        WaitScreenRow({}, 10)
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, 400f, 700f)
     }
 }

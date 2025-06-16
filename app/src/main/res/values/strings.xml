@@ -34,4 +34,6 @@
     <string name="minutes">minutes</string>
     <string name="open_time">Open time</string>
     <string name="message">Message</string>
+    <string name="open">Open</string>
+    <string name="choose_wait_enter_button">Ask before opening</string>
 </resources>

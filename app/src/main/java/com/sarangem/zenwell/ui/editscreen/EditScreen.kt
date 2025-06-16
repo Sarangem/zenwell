@@ -100,6 +100,19 @@ fun EditScreen(
                 blockType == BlockType.ShowImage
             ) {
 
+                ChooseWaitEnterButton(
+                    checked = uiState.schedule.waitEnterButton,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    waitEnterButton = it
+                                )
+                            )
+                        )
+                    }
+                )
+
                 ChooseWaitTime(
                     waitTimeInSeconds = uiState.schedule.waitTimeInSeconds,
                     updateUiState = {
@@ -125,6 +138,7 @@ fun EditScreen(
                         )
                     }
                 )
+
             }
 
             ChooseAppList(

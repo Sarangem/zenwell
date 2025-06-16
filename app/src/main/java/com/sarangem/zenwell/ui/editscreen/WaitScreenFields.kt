@@ -1,7 +1,17 @@
 package com.sarangem.zenwell.ui.editscreen
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,6 +69,27 @@ fun ChooseOpenTime(
     )
 }
 
+@Composable
+fun ChooseWaitEnterButton(
+    modifier: Modifier = Modifier,
+    checked: Boolean,
+    updateUiState: (Boolean) -> Unit = {}
+) {
+    EditScreenCard(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.choose_wait_enter_button),
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(Modifier.weight(1f))
+        Checkbox(
+            checked = checked,
+            onCheckedChange = { updateUiState(it) },
+            modifier = Modifier.padding(end = dimensionResource(R.dimen.padding_small))
+        )
+    }
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun ChooseWaitTimePreview() {
@@ -75,6 +106,18 @@ fun ChooseOpenTimePreview() {
     ZenwellTheme {
         ChooseOpenTime(
             openTimeInMinutes = 999999999,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChooseWaitEnterPreview() {
+    ZenwellTheme {
+        var isChecked by remember { mutableStateOf(false) }
+        ChooseWaitEnterButton(
+            checked = isChecked,
+            updateUiState = { isChecked = it }
         )
     }
 }

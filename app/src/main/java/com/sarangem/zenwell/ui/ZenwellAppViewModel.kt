@@ -12,9 +12,7 @@ import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.data.SchedulesRepository
 import com.sarangem.zenwell.data.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
@@ -88,7 +86,6 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
 
     suspend fun deleteSchedule() {
 
-        uiState.filter { it.appNames != null }.first()
         schedulesRepository.deleteSchedule(_uiState.value.schedule)
         AppBlockerService.instance?.initializeRepository()
 

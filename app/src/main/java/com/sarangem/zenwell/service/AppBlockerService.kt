@@ -1,27 +1,16 @@
 package com.sarangem.zenwell.service
 
 import android.accessibilityservice.AccessibilityService
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.ZenwellApplication
-import com.sarangem.zenwell.data.BlockType
-import com.sarangem.zenwell.data.tables.Schedules
 import com.sarangem.zenwell.getCurrentTimeInMinutes
 import com.sarangem.zenwell.service.alarmer.ManageExactAlarms
-import com.sarangem.zenwell.service.blockingscreen.BlockingWindow
-import com.sarangem.zenwell.service.blockingscreen.FullBlockScreen
-import com.sarangem.zenwell.service.blockingscreen.WaitScreen
-import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class AppBlockerService : AccessibilityService() {

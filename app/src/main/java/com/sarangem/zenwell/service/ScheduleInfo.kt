@@ -66,8 +66,9 @@ data class ScheduleInfo(
                         },
                         waitTimeInSeconds = schedule.waitTimeInSeconds,
                         message = schedule.message,
+                        showOpenDialog = schedule.waitEnterButton,
                         height = height,
-                        width = width
+                        width = width,
                     )
 
                     else -> {}
