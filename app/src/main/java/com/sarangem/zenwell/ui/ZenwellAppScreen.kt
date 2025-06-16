@@ -112,6 +112,8 @@ fun ZenwellAppScreen(
 
         } else {
 
+            viewModel.initUiState()
+            
             EditScreen(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -121,17 +123,6 @@ fun ZenwellAppScreen(
                 goBack = { goToHome(viewModel) },
                 isSaving = isSaving
             )
-
-            LaunchedEffect(Unit) {
-                viewModel.viewModelScope.launch(Dispatchers.IO) {
-                    initUiState(
-                        scheduleId = uiState.schedule.id,
-                        coroutineScope = this,
-                        viewModel = viewModel,
-                        uiState = uiState
-                    )
-                }
-            }
 
         }
     }
@@ -169,27 +160,6 @@ fun ZenwellTopBar(
             )
         },
     )
-}
-
-
-// UI STATE INITIALIZATION //
-
-suspend fun initUiState(
-    scheduleId: Int,
-    coroutineScope: CoroutineScope,
-    viewModel: ZenwellAppViewModel,
-    uiState: AppUiState
-) {
-    val appNames = coroutineScope.async {
-        viewModel.getAppNames(scheduleId).first()
-    }
-
-    viewModel.updateUiState(
-        uiState.copy(
-            appNames = appNames.await(),
-        )
-    )
-    viewModel.pastAppList = appNames.await().toMutableList()
 }
 
 

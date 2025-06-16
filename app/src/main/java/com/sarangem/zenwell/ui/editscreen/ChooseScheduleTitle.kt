@@ -21,11 +21,33 @@ fun ChooseScheduleTitle(
     )
 }
 
+@Composable
+fun ChooseMessage(
+    modifier: Modifier = Modifier,
+    message: String,
+    updateUiState: (String) -> Unit = {}
+) {
+    EditScreenOutlinedField(
+        mainText = stringResource(R.string.message),
+        textFieldValue = message,
+        onValueChange = { updateUiState(it) },
+        modifier = modifier
+    )
+}
+
 
 @Preview(showBackground = true)
 @Composable
 fun ChooseScheduleTitlePreview() {
     ZenwellTheme {
         ChooseScheduleTitle(title = "Schedule 1")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChooseMessagePreview() {
+    ZenwellTheme {
+        ChooseMessage(message = "This app is blocked.")
     }
 }

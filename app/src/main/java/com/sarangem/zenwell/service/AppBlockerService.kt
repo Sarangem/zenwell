@@ -83,6 +83,8 @@ class AppBlockerService : AccessibilityService() {
 
     private var isWindowOpened = false
     var previousApp: CharSequence? = null
+    val openedApps: MutableList<CharSequence> = mutableListOf()
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
         // get current package name and terminate if null
@@ -92,6 +94,9 @@ class AppBlockerService : AccessibilityService() {
 
         // check for duplicate entries
         if (previousApp == currentApp) return
+
+        // check if already opened with wait screen
+        if (previousApp in openedApps) return
 
         // open or close the window
         for (scheduleInfo in scheduleInfoList) {
@@ -131,45 +136,4 @@ class AppBlockerService : AccessibilityService() {
         return super.onUnbind(intent)
     }
 
-}
-
-data class ScheduleInfo(
-    private val context: Context,
-    var schedule: Schedules,
-    val appSet: Set<String>,
-) {
-    val blockingWindow = BlockingWindow(
-        context = context,
-        content = { height, width ->
-            ZenwellTheme {
-                when (schedule.blockType) {
-
-                    BlockType.FullBlock -> FullBlockScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        height = height,
-                        width = width
-                    )
-
-                    BlockType.Wait -> WaitScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        onTimerEnd = {
-                            AppBlockerService.instance?.closeWindow(schedule.id)
-                            CoroutineScope(Dispatchers.IO).launch{
-                                delay(schedule.openTimeInMinutes * 60 * 1000L)
-                                AppBlockerService.instance?.previousApp = null
-                                withContext(Dispatchers.Main){
-                                    AppBlockerService.instance?.onAccessibilityEvent(null)
-                                }
-                            }
-                        },
-                        waitTimeInSeconds = schedule.waitTimeInSeconds,
-                        height = height,
-                        width = width
-                    )
-
-                    else -> {}
-                }
-            }
-        }
-    )
 }

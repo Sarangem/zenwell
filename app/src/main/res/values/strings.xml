@@ -33,4 +33,5 @@
     <string name="seconds">seconds</string>
     <string name="minutes">minutes</string>
     <string name="open_time">Open time</string>
+    <string name="message">Message</string>
 </resources>

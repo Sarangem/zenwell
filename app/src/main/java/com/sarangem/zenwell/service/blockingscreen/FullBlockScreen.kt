@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
@@ -36,23 +37,25 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sarangem.zenwell.APP_BLOCKED
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @Composable
 fun FullBlockScreen(
     modifier: Modifier = Modifier,
+    message: String,
     height: Float,
     width: Float
 ) {
     Card(modifier = modifier) {
 
         if (height < 480 && width < 600) {
-            FullBlockScreenCompact()
+            FullBlockScreenCompact(message)
         } else if ((height < 480 && width > 600) || (height < 900 && width > 800)) {
-            FullBlockScreenRow()
+            FullBlockScreenRow(message)
         } else {
-            FullBlockScreenColumn()
+            FullBlockScreenColumn(message)
         }
     }
 }
@@ -97,6 +100,7 @@ fun LockIconCard(modifier: Modifier = Modifier) {
 @Composable
 fun MessageCard(
     modifier: Modifier = Modifier,
+    message: String,
 ) {
     Box(
         modifier = modifier
@@ -104,13 +108,16 @@ fun MessageCard(
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .fillMaxSize()
             .padding(dimensionResource(R.dimen.padding_medium)),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "This app is blocked",
+            text = message,
+            autoSize = TextAutoSize.StepBased(
+                maxFontSize = MaterialTheme.typography.displayMedium.fontSize
+            ),
             color = MaterialTheme.colorScheme.onSecondaryContainer,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.displayMediumEmphasized
+            lineHeight = MaterialTheme.typography.displayMedium.lineHeight
         )
     }
 }
@@ -119,7 +126,7 @@ fun MessageCard(
 // -- IMPLEMENTATIONS -- //
 
 @Composable
-fun FullBlockScreenCompact() {
+fun FullBlockScreenCompact(message: String = APP_BLOCKED) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         LockIconCard(
             modifier = Modifier
@@ -127,6 +134,7 @@ fun FullBlockScreenCompact() {
                 .padding(dimensionResource(R.dimen.padding_large))
         )
         MessageCard(
+            message = message,
             modifier = Modifier
                 .weight(0.4F)
                 .padding(dimensionResource(R.dimen.padding_large))
@@ -135,7 +143,7 @@ fun FullBlockScreenCompact() {
 }
 
 @Composable
-fun FullBlockScreenColumn() {
+fun FullBlockScreenColumn(message: String = APP_BLOCKED) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.weight(0.2F))
         LockIconCard(
@@ -145,6 +153,7 @@ fun FullBlockScreenColumn() {
         )
         Spacer(Modifier.weight(0.1F))
         MessageCard(
+            message = message,
             modifier = Modifier
                 .weight(0.7F)
                 .padding(dimensionResource(R.dimen.padding_large))
@@ -155,7 +164,7 @@ fun FullBlockScreenColumn() {
 
 
 @Composable
-fun FullBlockScreenRow() {
+fun FullBlockScreenRow(message: String = APP_BLOCKED) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(vertical = 150.dp)
@@ -167,6 +176,7 @@ fun FullBlockScreenRow() {
                 .padding(dimensionResource(R.dimen.padding_large))
         )
         MessageCard(
+            message = message,
             modifier = Modifier
                 .weight(0.6F)
                 .padding(dimensionResource(R.dimen.padding_large))

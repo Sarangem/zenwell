@@ -28,6 +28,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sarangem.zenwell.APP_BLOCKED
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.delay
@@ -37,17 +38,18 @@ fun WaitScreen(
     modifier: Modifier = Modifier,
     onTimerEnd: () -> Unit = {},
     waitTimeInSeconds: Int,
+    message: String,
     height: Float,
     width: Float
 ) {
     Card(modifier = modifier) {
 
         if (height < 480 && width < 600) {
-            WaitScreenCompact(onTimerEnd, waitTimeInSeconds)
+            WaitScreenCompact(onTimerEnd, waitTimeInSeconds, message)
         } else if ((height < 480 && width > 600) || (height < 900 && width > 800)) {
-            WaitScreenRow(onTimerEnd, waitTimeInSeconds)
+            WaitScreenRow(onTimerEnd, waitTimeInSeconds, message)
         } else {
-            WaitScreenColumn(onTimerEnd, waitTimeInSeconds)
+            WaitScreenColumn(onTimerEnd, waitTimeInSeconds, message)
         }
     }
 }
@@ -93,7 +95,7 @@ fun TimerCard(
 // -- IMPLEMENTATIONS -- //
 
 @Composable
-fun WaitScreenCompact(onTimerEnd: () -> Unit = {}, initialValue: Int) {
+fun WaitScreenCompact(onTimerEnd: () -> Unit = {}, initialValue: Int, message: String = APP_BLOCKED) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerCard(
             modifier = Modifier
@@ -103,6 +105,7 @@ fun WaitScreenCompact(onTimerEnd: () -> Unit = {}, initialValue: Int) {
             initialValue = initialValue
         )
         MessageCard(
+            message = message,
             modifier = Modifier
                 .weight(0.4F)
                 .padding(dimensionResource(R.dimen.padding_large))
@@ -111,7 +114,7 @@ fun WaitScreenCompact(onTimerEnd: () -> Unit = {}, initialValue: Int) {
 }
 
 @Composable
-fun WaitScreenColumn(onTimerEnd: () -> Unit = {}, initialValue: Int) {
+fun WaitScreenColumn(onTimerEnd: () -> Unit = {}, initialValue: Int, message: String = APP_BLOCKED) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.weight(0.2F))
         TimerCard(
@@ -123,6 +126,7 @@ fun WaitScreenColumn(onTimerEnd: () -> Unit = {}, initialValue: Int) {
         )
         Spacer(Modifier.weight(0.1F))
         MessageCard(
+            message = message,
             modifier = Modifier
                 .weight(0.7F)
                 .padding(dimensionResource(R.dimen.padding_large))
@@ -133,7 +137,7 @@ fun WaitScreenColumn(onTimerEnd: () -> Unit = {}, initialValue: Int) {
 
 
 @Composable
-fun WaitScreenRow(onTimerEnd: () -> Unit = {}, initialValue: Int) {
+fun WaitScreenRow(onTimerEnd: () -> Unit = {}, initialValue: Int, message: String = APP_BLOCKED) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(vertical = 150.dp)
@@ -147,6 +151,7 @@ fun WaitScreenRow(onTimerEnd: () -> Unit = {}, initialValue: Int) {
             initialValue = initialValue
         )
         MessageCard(
+            message = message,
             modifier = Modifier
                 .weight(0.6F)
                 .padding(dimensionResource(R.dimen.padding_large))
@@ -162,7 +167,7 @@ fun WaitScreenRow(onTimerEnd: () -> Unit = {}, initialValue: Int) {
 @Composable
 fun WaitScreenCompactPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreenCompact({}, 1000000000)
+        WaitScreenCompact({}, Int.MAX_VALUE)
     }
 }
 
@@ -178,7 +183,7 @@ fun WaitScreenCompactPreviewDark() {
 @Composable
 fun WaitScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreenColumn({}, 10)
+        WaitScreenColumn({}, Int.MAX_VALUE)
     }
 }
 
@@ -194,7 +199,7 @@ fun WaitScreenColumnPreviewDark() {
 @Composable
 fun WaitScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreenRow({}, 10)
+        WaitScreenRow({}, Int.MAX_VALUE)
     }
 }
 

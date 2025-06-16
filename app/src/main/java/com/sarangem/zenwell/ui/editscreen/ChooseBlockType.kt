@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import java.nio.file.WatchEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,17 +35,16 @@ fun ChooseBlockType(
     EditScreenCard(modifier = modifier) {
         Text(
             text = stringResource(R.string.choose_block_type),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(0.5f)
         )
-        Spacer(Modifier.weight(1f))
         ExposedDropdownMenuBox(
+            modifier = Modifier.weight(0.8f),
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
         ) {
             OutlinedTextField(
-                modifier = Modifier
-                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                    .fillMaxWidth(0.7f),
+                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                 readOnly = true,
                 value = TextFieldValue(stringResource(blockType.title)),
                 onValueChange = {},

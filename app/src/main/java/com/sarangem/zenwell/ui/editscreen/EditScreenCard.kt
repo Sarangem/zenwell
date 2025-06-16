@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import com.sarangem.zenwell.R
 
 @Composable
@@ -49,12 +50,11 @@ fun EditScreenOutlinedField(
         Text(
             text = mainText,
             style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(0.5f)
         )
-        Spacer(Modifier.weight(0.5f))
         OutlinedTextField(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(0.8f),
             value = textFieldValue,
-            singleLine = true,
             shape = MaterialTheme.shapes.large,
             onValueChange = onValueChange,
             keyboardOptions = KeyboardOptions.Default.copy(

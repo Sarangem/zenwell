@@ -67,6 +67,18 @@ fun EditScreen(
                     )
                 }
             )
+            ChooseMessage(
+                message = uiState.schedule.message,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                message = it
+                            )
+                        )
+                    )
+                }
+            )
 
             ChooseBlockType(
                 blockType = uiState.schedule.blockType,
@@ -81,8 +93,11 @@ fun EditScreen(
                 }
             )
 
-            if (uiState.schedule.blockType == BlockType.Wait ||
-                uiState.schedule.blockType == BlockType.Breathing
+            val blockType = uiState.schedule.blockType
+            if (blockType == BlockType.Wait ||
+                blockType == BlockType.Breathing ||
+                blockType == BlockType.MathEquation ||
+                blockType == BlockType.ShowImage
             ) {
 
                 ChooseWaitTime(
@@ -170,6 +185,7 @@ fun EditScreenPreview() {
         uiState = AppUiState(
             schedule = Schedules(
                 title = "Schedule 1",
+                message = "This app is completely blocked.",
                 blockType = BlockType.Breathing,
                 startTimeInMinutes = 179,
                 endTimeInMinutes = 1079,
