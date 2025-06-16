@@ -30,7 +30,11 @@ data class Schedules (
     // time to wait before opening the app
     // for specific block types only
     @ColumnInfo(name = "wait_time")
-    val waitTimeInMinutes : Int = 0,
+    val waitTimeInSeconds : Int = 0,
+
+    // should the app use a button to enter or enter automatically
+    @ColumnInfo(name = "wait_enter_button")
+    val waitEnterButton: Boolean = false,
 
     // how long would the app be opened before again showing block message
     // for specific block types only

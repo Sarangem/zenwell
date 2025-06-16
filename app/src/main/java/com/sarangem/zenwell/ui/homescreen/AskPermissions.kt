@@ -7,7 +7,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -16,13 +15,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -31,32 +25,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.checkAccessibilityServicePermission
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @SuppressLint("InlinedApi")
 @Composable
 fun AskPermissions(
-    startPermissionActivity: (Intent) -> Unit = {},
-) {
-    var hasAccessibilityServicePermission by remember {
-        mutableStateOf(
-            checkAccessibilityServicePermission()
-        )
-    }
-
-    AskPermissionsBody(
-        hasAccessibilityServicePermission = hasAccessibilityServicePermission,
-        startPermissionActivity = { intent ->
-            startPermissionActivity(intent)
-            hasAccessibilityServicePermission = checkAccessibilityServicePermission()
-        }
-    )
-}
-
-@SuppressLint("InlinedApi")
-@Composable
-fun AskPermissionsBody(
+    modifier: Modifier = Modifier,
     hasAccessibilityServicePermission: Boolean,
     startPermissionActivity: (Intent) -> Unit = {},
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
@@ -65,6 +39,7 @@ fun AskPermissionsBody(
 
         if (!hasAccessibilityServicePermission) {
             PermissionRequestCard(
+                modifier = modifier,
                 permissionName = stringResource(R.string.accessibility_service_permission),
                 permissionExplanation = stringResource(R.string.accessibility_service_permission_explanation),
                 onGrantClick = {
@@ -78,20 +53,21 @@ fun AskPermissionsBody(
 
 @Composable
 fun PermissionRequestCard(
+    modifier: Modifier = Modifier,
     onGrantClick: () -> Unit = {},
     permissionName: String = "",
     permissionExplanation: String = "",
     cardColor: Color = MaterialTheme.colorScheme.errorContainer,
     textColor: Color = MaterialTheme.colorScheme.onErrorContainer
 ) {
+    val buttonColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
+
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = dimensionResource(R.dimen.card_elevation)
         ),
         colors = CardDefaults.cardColors(cardColor),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.padding_small))
+        modifier = modifier
     ) {
         Text(
             text = buildAnnotatedString {
@@ -108,7 +84,8 @@ fun PermissionRequestCard(
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = onGrantClick,
-                colors = ButtonDefaults.buttonColors(Color.Transparent),
+                colors = ButtonDefaults.buttonColors(buttonColor),
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
             ) {
                 Text(
                     text = stringResource(R.string.grant_permission),
@@ -125,7 +102,7 @@ fun PermissionRequestCard(
 @Composable
 fun AskPermissionsLightModePreview() {
     ZenwellTheme(darkTheme = false) {
-        AskPermissionsBody(false)
+        AskPermissions(hasAccessibilityServicePermission = false)
     }
 }
 
@@ -133,6 +110,9 @@ fun AskPermissionsLightModePreview() {
 @Composable
 fun AskPermissionsDarkModePreview() {
     ZenwellTheme(darkTheme = true) {
-        AskPermissionsBody(false, {}, true)
+        AskPermissions(
+            hasAccessibilityServicePermission = false,
+            isSystemInDarkTheme = true
+        )
     }
 }

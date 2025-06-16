@@ -12,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,10 +21,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.tables.Schedules
@@ -53,9 +52,7 @@ fun ZenwellAppScreen(
     var isSaving by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        modifier = Modifier
-            .nestedScroll(TopAppBarDefaults.enterAlwaysScrollBehavior().nestedScrollConnection)
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             ZenwellTopBar(
                 uiState = uiState,
@@ -105,7 +102,9 @@ fun ZenwellAppScreen(
 
             val schedulesList by viewModel.getAllSchedules().collectAsState(emptyList())
             HomeScreen(
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 schedulesList = schedulesList,
                 openEditScreen = { goToEdit(viewModel, uiState, it) },
                 startPermissionActivity = startPermissionActivity,
@@ -114,7 +113,9 @@ fun ZenwellAppScreen(
         } else {
 
             EditScreen(
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 uiState = uiState,
                 updateUiState = { viewModel.updateUiState(it) },
                 goBack = { goToHome(viewModel) },
@@ -122,7 +123,7 @@ fun ZenwellAppScreen(
             )
 
             LaunchedEffect(Unit) {
-                launch(Dispatchers.IO) {
+                viewModel.viewModelScope.launch(Dispatchers.IO) {
                     initUiState(
                         scheduleId = uiState.schedule.id,
                         coroutineScope = this,

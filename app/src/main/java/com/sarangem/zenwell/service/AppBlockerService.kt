@@ -14,11 +14,14 @@ import com.sarangem.zenwell.getCurrentTimeInMinutes
 import com.sarangem.zenwell.service.alarmer.ManageExactAlarms
 import com.sarangem.zenwell.service.blockingscreen.BlockingWindow
 import com.sarangem.zenwell.service.blockingscreen.FullBlockScreen
+import com.sarangem.zenwell.service.blockingscreen.WaitScreen
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class AppBlockerService : AccessibilityService() {
@@ -56,6 +59,7 @@ class AppBlockerService : AccessibilityService() {
         val schedulesRepository = (application as ZenwellApplication).container
         val schedulesList = schedulesRepository.getAllSchedules().first()
 
+        scheduleInfoList.clear()
         schedulesList.forEach { schedule ->
 
             scheduleInfoList.add(
@@ -78,11 +82,11 @@ class AppBlockerService : AccessibilityService() {
     }
 
     private var isWindowOpened = false
-    private var previousApp: CharSequence? = null
+    var previousApp: CharSequence? = null
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
         // get current package name and terminate if null
-        val currentApp: CharSequence? = rootInActiveWindow.packageName
+        val currentApp: CharSequence? = rootInActiveWindow?.packageName
         if(currentApp == null) return
         Log.d(TAG, "previous app is $previousApp and current app is $currentApp")
 
@@ -131,7 +135,7 @@ class AppBlockerService : AccessibilityService() {
 
 data class ScheduleInfo(
     private val context: Context,
-    val schedule: Schedules,
+    var schedule: Schedules,
     val appSet: Set<String>,
 ) {
     val blockingWindow = BlockingWindow(
@@ -139,8 +143,26 @@ data class ScheduleInfo(
         content = { height, width ->
             ZenwellTheme {
                 when (schedule.blockType) {
+
                     BlockType.FullBlock -> FullBlockScreen(
                         modifier = Modifier.fillMaxSize(),
+                        height = height,
+                        width = width
+                    )
+
+                    BlockType.Wait -> WaitScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        onTimerEnd = {
+                            AppBlockerService.instance?.closeWindow(schedule.id)
+                            CoroutineScope(Dispatchers.IO).launch{
+                                delay(schedule.openTimeInMinutes * 60 * 1000L)
+                                AppBlockerService.instance?.previousApp = null
+                                withContext(Dispatchers.Main){
+                                    AppBlockerService.instance?.onAccessibilityEvent(null)
+                                }
+                            }
+                        },
+                        waitTimeInSeconds = schedule.waitTimeInSeconds,
                         height = height,
                         width = width
                     )
