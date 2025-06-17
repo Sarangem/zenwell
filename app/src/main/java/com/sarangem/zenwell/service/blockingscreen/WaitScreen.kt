@@ -55,9 +55,9 @@ fun WaitScreen(
     Card(modifier = modifier) {
 
         if ((height < 480 && width > 600) || (height < 900 && width > 800)) {
-            WaitScreenRow(timerEnd, waitTimeInSeconds, message, showOpen)
+            WaitScreenRow(timerEnd, waitTimeInSeconds, message, showOpen, onTimerEnd)
         } else {
-            WaitScreenColumn(timerEnd, waitTimeInSeconds, message, showOpen)
+            WaitScreenColumn(timerEnd, waitTimeInSeconds, message, showOpen, onTimerEnd)
         }
     }
 }
@@ -107,7 +107,8 @@ fun WaitScreenColumn(
     onTimerEnd: () -> Unit = {},
     initialValue: Int,
     message: String,
-    showOpen: Boolean
+    showOpen: Boolean,
+    timerEnd: () -> Unit = {}
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.weight(0.1F))
@@ -119,13 +120,14 @@ fun WaitScreenColumn(
             onTimerEnd = onTimerEnd,
             initialValue = initialValue
         )
+        Spacer(Modifier.weight(0.2f))
         MessageCard(
             message = message,
             modifier = Modifier
                 .weight(0.9F)
                 .padding(dimensionResource(R.dimen.padding_small)),
             showOpenDialog = showOpen,
-            onClick = onTimerEnd
+            onClick = timerEnd
         )
 
         Spacer(Modifier.weight(0.1F))
@@ -137,7 +139,8 @@ fun WaitScreenRow(
     onTimerEnd: () -> Unit = {},
     initialValue: Int,
     message: String,
-    showOpen: Boolean
+    showOpen: Boolean,
+    timerEnd: () -> Unit = {}
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Spacer(Modifier.weight(0.1F))
@@ -149,13 +152,14 @@ fun WaitScreenRow(
             onTimerEnd = onTimerEnd,
             initialValue = initialValue
         )
+        Spacer(Modifier.weight(0.2f))
         MessageCard(
             message = message,
             modifier = Modifier
                 .weight(0.9F)
                 .padding(dimensionResource(R.dimen.padding_small)),
             showOpenDialog = showOpen,
-            onClick = onTimerEnd
+            onClick = timerEnd
         )
 
         Spacer(Modifier.weight(0.1F))

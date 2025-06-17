@@ -40,6 +40,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.APP_BLOCKED
 import com.sarangem.zenwell.R
@@ -131,7 +132,7 @@ fun MessageCard(
             color = MaterialTheme.colorScheme.onSecondaryContainer,
             textAlign = TextAlign.Center,
             lineHeight = MaterialTheme.typography.displayLarge.lineHeight,
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_large))
+            modifier = Modifier.padding(32.dp)
         )
     }
 }
@@ -149,6 +150,7 @@ fun FullBlockScreenColumn(message: String) {
                 .weight(0.9F)
                 .padding(dimensionResource(R.dimen.padding_small))
         )
+        Spacer(Modifier.weight(0.2f))
         MessageCard(
             message = message,
             modifier = Modifier
@@ -165,19 +167,20 @@ fun FullBlockScreenColumn(message: String) {
 fun FullBlockScreenRow(message: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Spacer(Modifier.weight(0.1F))
-        
+
         LockIconCard(
             modifier = Modifier
                 .weight(0.8F)
                 .padding(dimensionResource(R.dimen.padding_small))
         )
+        Spacer(Modifier.weight(0.2f))
         MessageCard(
             message = message,
             modifier = Modifier
                 .weight(1F)
                 .padding(dimensionResource(R.dimen.padding_small))
         )
-        
+
         Spacer(Modifier.weight(0.1F))
     }
 }
