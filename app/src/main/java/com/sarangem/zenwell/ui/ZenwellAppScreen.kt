@@ -13,7 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -107,10 +106,6 @@ fun ZenwellAppScreen(
             )
 
         } else {
-
-            LaunchedEffect(Unit) {
-                viewModel.initUiState()
-            }
             
             EditScreen(
                 modifier = Modifier
@@ -118,6 +113,7 @@ fun ZenwellAppScreen(
                     .fillMaxSize(),
                 uiState = uiState,
                 updateUiState = { viewModel.updateUiState(it) },
+                setAppNamesInUiState = { viewModel.setAppNamesInUiState() },
                 goBack = { goToHome(viewModel) },
                 isSaving = isSaving
             )

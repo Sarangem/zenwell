@@ -15,10 +15,10 @@ class ManageExactAlarms(
 
     private fun createPendingIntent(scheduleId: Int): PendingIntent {
         return PendingIntent.getBroadcast(
-            context,
-            100,
-            Intent(context, EndTimeAlarmReceiver::class.java).putExtra(SCHEDULE_ID_STRING, scheduleId),
-            PendingIntent.FLAG_IMMUTABLE
+            /* context = */ context,
+            /* requestCode = */ 100 + scheduleId,
+            /* intent = */ Intent(context, EndTimeAlarmReceiver::class.java).putExtra(SCHEDULE_ID_STRING, scheduleId),
+            /* flags = */ PendingIntent.FLAG_IMMUTABLE
         )
     }
 

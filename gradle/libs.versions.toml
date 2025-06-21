@@ -12,7 +12,6 @@ composeBom = "2025.05.01"
 materialIconsExtended = "1.7.8"
 roomVersion = "2.7.1"
 ksp = "2.1.21-2.0.1"
-navVersion = "2.9.0"
 animationGraphicsAndroid = "1.8.2"
 
 [libraries]

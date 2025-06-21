@@ -56,9 +56,8 @@ data class ScheduleInfo(
                                 // re trigger opening window
                                 if (sr.instance?.previousApp == previousApp){
                                     // the user is still on blocked app
-                                    sr.instance?.previousApp = null
                                     withContext(Dispatchers.Main){
-                                        sr.instance?.onAccessibilityEvent(null)
+                                        sr.instance?.recheckApp()
                                     }
                                 }
 

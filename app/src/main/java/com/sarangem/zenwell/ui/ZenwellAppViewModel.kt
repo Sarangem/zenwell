@@ -15,7 +15,6 @@ import com.sarangem.zenwell.service.AppBlockerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,7 +39,7 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
         _uiState.update { currentState }
     }
 
-    fun initUiState() {
+    fun setAppNamesInUiState() {
 
         val context = this
         viewModelScope.launch(Dispatchers.IO) {
@@ -73,7 +72,10 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
     }
 
     suspend fun saveToDatabase() {
-        uiState.filter { it.appNames != null }.first()
+
+        if (_uiState.value.appNames == null) {
+            setAppNamesInUiState()
+        }
 
         schedulesRepository.saveToDatabase(
             schedule = _uiState.value.schedule,

@@ -12,8 +12,6 @@ import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.toPath
 import kotlin.math.max
 
-fun Morph.getBounds() = calculateMaxBounds().let { Rect(it[0], it[1], it[2], it[3]) }
-
 class MorphPolygonShape(
     private val morph: Morph,
     private val percentage: Float
@@ -25,8 +23,7 @@ class MorphPolygonShape(
         layoutDirection: LayoutDirection,
         density: Density
     ): Outline {
-        // Below assumes that you haven't changed the default radius of 1f, nor the centerX and centerY of 0f
-        // By default this stretches the path to the size of the container, if you don't want stretching, use the same size.width for both x and y.
+
         val bounds = morph.getBounds()
         val maxDimension = max(bounds.width, bounds.height)
         matrix.scale(size.width / maxDimension, size.height / maxDimension)
@@ -35,5 +32,8 @@ class MorphPolygonShape(
         val path = morph.toPath(progress = percentage).asComposePath()
         path.transform(matrix)
         return Outline.Generic(path)
+
     }
 }
+
+fun Morph.getBounds() = calculateMaxBounds().let { Rect(it[0], it[1], it[2], it[3]) }

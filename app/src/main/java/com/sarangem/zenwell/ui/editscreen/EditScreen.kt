@@ -29,6 +29,7 @@ fun EditScreen(
     modifier: Modifier = Modifier,
     uiState: AppUiState,
     updateUiState: (AppUiState) -> Unit = {},
+    setAppNamesInUiState: () -> Unit = {},
     isSaving: Boolean = false,
     goBack: () -> Unit = {}
 ) {
@@ -52,7 +53,7 @@ fun EditScreen(
                             )
                         )
                     )
-                }
+                },
             )
 
             ChooseScheduleTitle(
@@ -149,7 +150,8 @@ fun EditScreen(
                             appNames = it
                         )
                     )
-                }
+                },
+                setAppNamesInUiState = setAppNamesInUiState
             )
 
             ChooseRunningTime(

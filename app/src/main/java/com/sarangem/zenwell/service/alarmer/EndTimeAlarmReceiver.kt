@@ -11,6 +11,7 @@ class EndTimeAlarmReceiver: BroadcastReceiver() {
 
         val id = intent?.getIntExtra(SCHEDULE_ID_STRING, 0) ?: 0
         AppBlockerService.instance?.closeWindow(id)
+        AppBlockerService.instance?.recheckApp()
 
     }
 }

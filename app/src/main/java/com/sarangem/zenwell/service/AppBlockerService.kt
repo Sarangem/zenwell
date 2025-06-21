@@ -68,6 +68,8 @@ class AppBlockerService : AccessibilityService() {
             schedulesList = scheduleInfoList.map { it.schedule }
         ).set()
 
+        recheckApp()
+
     }
 
     private var isWindowOpened = false
@@ -113,6 +115,11 @@ class AppBlockerService : AccessibilityService() {
         isWindowOpened = false
     }
 
+    fun recheckApp(){
+        previousApp = null
+        onAccessibilityEvent(null)
+    }
+
     override fun onInterrupt() {
         scheduleInfoList.forEach {
             it.blockingWindow.close()
@@ -124,5 +131,4 @@ class AppBlockerService : AccessibilityService() {
         instance = null
         return super.onUnbind(intent)
     }
-
 }

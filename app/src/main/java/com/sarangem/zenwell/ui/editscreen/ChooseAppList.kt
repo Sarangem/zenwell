@@ -46,23 +46,22 @@ import androidx.core.content.ContextCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseAppList(
     modifier: Modifier = Modifier,
+    setAppNamesInUiState: () -> Unit = {},
     checkedAppList: List<String>?,
     updateAppList: (List<String>) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    var installedAppList by remember { mutableStateOf<List<AppInfo>>(mutableListOf()) }
+    var installedAppList by remember { mutableStateOf<List<AppInfo>>(listOf()) }
     LaunchedEffect(Unit) {
-        launch {
-            installedAppList = getInstalledApps(context).sortedBy { it.appName }
-        }
+        installedAppList = getInstalledApps(context).sortedBy { it.appName }
+        setAppNamesInUiState()
     }
 
     EditScreenCard(
