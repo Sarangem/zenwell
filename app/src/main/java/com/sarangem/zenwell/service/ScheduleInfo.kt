@@ -1,10 +1,12 @@
 package com.sarangem.zenwell.service
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.data.tables.Schedules
+import com.sarangem.zenwell.getCurrentTimeInMinutes
 import com.sarangem.zenwell.service.blockingscreen.BlockingWindow
 import com.sarangem.zenwell.service.blockingscreen.BreathingScreen
 import com.sarangem.zenwell.service.blockingscreen.FullBlockScreen
@@ -22,29 +24,43 @@ data class ScheduleInfo(
     val appSet: Set<String>,
 ) {
 
-    private val onTimerEnd: () -> Unit = {
+    private val TAG = AppBlockerService.instance?.TAG
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val onTimerEnd: () -> Unit = fn@{
 
         // close the window
-        val sr = AppBlockerService
-        sr.instance?.closeWindow(schedule.id)
+        var instance: AppBlockerService = AppBlockerService.instance ?: return@fn
+        instance.closeWindow(schedule.id)
 
         // add to opened apps
-        var previousApp = sr.instance?.previousApp
+        var previousApp = instance.previousApp
         if (previousApp != null) {
-            sr.instance?.openedApps?.add(previousApp)
+            instance.openedApps.add(previousApp)
         }
+        Log.d(TAG, "Adding to openedApps: ${instance.openedApps}")
 
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch {
 
             // wait till open time
-            delay(schedule.openTimeInMinutes * 60 * 1000L)
-            sr.instance?.openedApps?.remove(previousApp)
+            val delayTime = if(getCurrentTimeInMinutes() + schedule.openTimeInMinutes > schedule.endTimeInMinutes){
+                schedule.endTimeInMinutes - getCurrentTimeInMinutes()
+            } else {
+                schedule.openTimeInMinutes
+            }
+            if (delayTime < 0) return@launch
+            delay(delayTime * 60 * 1000L)
+            Log.d(TAG, "Rechecking the app.")
+
+            // reinitialize instance
+            instance = AppBlockerService.instance ?: return@launch
+
+            instance.openedApps.remove(previousApp)
 
             // re trigger opening window
-            if (sr.instance?.previousApp == previousApp) {
+            if (instance.previousApp == previousApp) {
                 // the user is still on blocked app
                 withContext(Dispatchers.Main) {
-                    sr.instance?.recheckApp()
+                    instance.recheckApp()
                 }
             }
 

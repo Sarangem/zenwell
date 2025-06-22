@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 
 class AppBlockerService : AccessibilityService() {
 
+    val TAG = "AppBlockerService"
     private val context = this
-    private val TAG = "AppBlockerService"
     private val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
 
     companion object {
@@ -87,7 +87,7 @@ class AppBlockerService : AccessibilityService() {
         if (previousApp == currentApp) return
 
         // check if already opened with wait screen
-        if (previousApp in openedApps) return
+        if (currentApp in openedApps) return
 
         // open or close the window
         for (scheduleInfo in scheduleInfoList) {
@@ -111,6 +111,7 @@ class AppBlockerService : AccessibilityService() {
 
     fun closeWindow(scheduleId: Int) {
         val scheduleInfo = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId }
+        Log.d(TAG, "Closing window")
         scheduleInfo?.blockingWindow?.close()
         isWindowOpened = false
     }
