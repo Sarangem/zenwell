@@ -4,6 +4,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
 import com.sarangem.zenwell.service.AppBlockerService
 import java.util.Calendar
+import java.util.Calendar.DAY_OF_WEEK
+import java.util.Locale
+import kotlin.math.pow
 
 // -- TIME -- //
 
@@ -44,6 +47,32 @@ fun convertToTimePickerState(timeInMinutes: Int): TimePickerState {
 @OptIn(ExperimentalMaterial3Api::class)
 fun TimePickerState.toMinutes(): Int {
     return (this.hour * 60) + (this.minute)
+}
+
+fun getWeekDays(): List<Pair<Int, Int>> {
+    val calendar = Calendar.getInstance(Locale.getDefault())
+    val firstDay = calendar.firstDayOfWeek
+
+    val daysList = listOf(
+        Calendar.SUNDAY to R.string.sunday_abbr,
+        Calendar.MONDAY to R.string.monday_abbr,
+        Calendar.TUESDAY to R.string.tuesday_abbr,
+        Calendar.WEDNESDAY to R.string.wednesday_abbr,
+        Calendar.THURSDAY to R.string.tuesday_abbr,
+        Calendar.FRIDAY to R.string.friday_abbr,
+        Calendar.SATURDAY to R.string.sunday_abbr,
+    )
+
+
+    val startIndex = daysList.indexOfFirst { it.first == firstDay }
+    return if (startIndex == -1) daysList
+    else daysList.drop(startIndex) + daysList.take(startIndex)
+}
+
+fun checkIfScheduleEnabled(weekDays: Int): Boolean{
+    val calendar = Calendar.getInstance(Locale.getDefault())
+    val today = calendar.get(DAY_OF_WEEK)
+    return ((weekDays / 10.0.pow(today).toInt()) % 10) == 1
 }
 
 

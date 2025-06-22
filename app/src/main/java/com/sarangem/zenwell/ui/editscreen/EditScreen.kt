@@ -209,6 +209,16 @@ fun EditScreen(
                             )
                         )
                     )
+                },
+                weekDays = uiState.schedule.weekDays,
+                updateWeekDays = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                weekDays = it
+                            )
+                        )
+                    )
                 }
             )
 
@@ -248,7 +258,7 @@ fun EditScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, heightDp = 1000)
+@Preview(showBackground = true, heightDp = 1200)
 @Composable
 fun EditScreenPreviewLightMode() {
     ZenwellTheme(darkTheme = false) {
@@ -256,7 +266,7 @@ fun EditScreenPreviewLightMode() {
     }
 }
 
-@Preview(heightDp = 1000)
+@Preview(heightDp = 1200)
 @Composable
 fun EditScreenPreviewDarkMode() {
     ZenwellTheme(darkTheme = true) {

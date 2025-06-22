@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.sarangem.zenwell.ZenwellApplication
+import com.sarangem.zenwell.checkIfScheduleEnabled
 import com.sarangem.zenwell.getCurrentTimeInMinutes
 import com.sarangem.zenwell.service.alarmer.ManageExactAlarms
 import kotlinx.coroutines.CoroutineScope
@@ -80,7 +81,7 @@ class AppBlockerService : AccessibilityService() {
 
         // get current package name and terminate if null
         val currentApp: CharSequence? = rootInActiveWindow?.packageName
-        if(currentApp == null) return
+        if (currentApp == null) return
         Log.d(TAG, "previous app is $previousApp and current app is $currentApp")
 
         // check for duplicate entries
@@ -92,8 +93,9 @@ class AppBlockerService : AccessibilityService() {
         // open or close the window
         for (scheduleInfo in scheduleInfoList) {
 
-            if (!scheduleInfo.schedule.isEnabled) break
-            if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) break
+            if (!scheduleInfo.schedule.isEnabled) continue
+            if (!checkIfScheduleEnabled(scheduleInfo.schedule.weekDays)) continue
+            if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
 
             if (currentApp in scheduleInfo.appSet) {
                 Log.d(TAG, "Opening window")
@@ -116,7 +118,7 @@ class AppBlockerService : AccessibilityService() {
         isWindowOpened = false
     }
 
-    fun recheckApp(){
+    fun recheckApp() {
         previousApp = null
         onAccessibilityEvent(null)
     }

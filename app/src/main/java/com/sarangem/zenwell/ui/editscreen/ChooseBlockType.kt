@@ -1,5 +1,8 @@
 package com.sarangem.zenwell.ui.editscreen
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -17,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -73,8 +77,14 @@ fun ChooseBlockType(
 @Composable
 fun ChooseBlockTypePreview() {
     ZenwellTheme {
-        ChooseBlockType(
-            blockType = BlockType.FullBlock
-        )
+        var blockType by remember { mutableStateOf(BlockType.FullBlock) }
+        Column {
+            Spacer(Modifier.height(10.dp))
+            ChooseBlockType(
+                blockType = blockType,
+                updateUiState = { blockType = it }
+            )
+            Spacer(Modifier.height(250.dp))
+        }
     }
 }

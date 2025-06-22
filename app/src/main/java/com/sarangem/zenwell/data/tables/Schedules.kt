@@ -76,13 +76,6 @@ data class Schedules(
     val isPomodoroRestAdjustable: Boolean = true,
 
 
-    // Week days
     // Check if it will work on following week days
-    val sunday: Boolean = true,
-    val monday: Boolean = true,
-    val tuesday: Boolean = true,
-    val wednesday: Boolean = true,
-    val thursday: Boolean = true,
-    val friday: Boolean = true,
-    val saturday: Boolean = true
+    val weekDays: Int = 11111110
 )

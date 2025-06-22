@@ -13,21 +13,26 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,10 +49,12 @@ import androidx.compose.ui.window.DialogProperties
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.convertToTimePickerState
 import com.sarangem.zenwell.getAmPm
+import com.sarangem.zenwell.getWeekDays
 import com.sarangem.zenwell.minutesToString
 import com.sarangem.zenwell.toMinutes
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import kotlin.math.pow
 
 @Composable
 fun ChooseRunningTime(
@@ -55,7 +62,9 @@ fun ChooseRunningTime(
     startTimeInMinutes: Int,
     updateStartTime: (Int) -> Unit = {},
     endTimeInMinutes: Int,
-    updateEndTime: (Int) -> Unit = {}
+    updateEndTime: (Int) -> Unit = {},
+    weekDays: Int,
+    updateWeekDays: (Int) -> Unit = {}
 ) {
     Card(modifier = modifier) {
 
@@ -86,6 +95,26 @@ fun ChooseRunningTime(
                     modifier = Modifier.weight(1f)
                 )
             }
+
+            Text(
+                text = stringResource(R.string.choose_week_days),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(
+                    start = dimensionResource(R.dimen.padding_small),
+                    end = dimensionResource(R.dimen.padding_small)
+                )
+            )
+            SelectWeekDays(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = dimensionResource(R.dimen.padding_small),
+                        end = dimensionResource(R.dimen.padding_small),
+                        bottom = dimensionResource(R.dimen.padding_small)
+                    ),
+                weekDays = weekDays,
+                updateWeekDays = updateWeekDays
+            )
         }
     }
 }
@@ -99,7 +128,7 @@ fun ClockButton(
     updateUiState: (Int) -> Unit
 ) {
     var showPopup by remember { mutableStateOf(false) }
-    Button(
+    OutlinedButton(
         modifier = modifier,
         onClick = { showPopup = true },
         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.surfaceDim),
@@ -214,14 +243,73 @@ fun AdvancedTimePickerDialog(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun SelectWeekDays(
+    modifier: Modifier = Modifier,
+    weekDays: Int,
+    updateWeekDays: (Int) -> Unit = {}
+) {
+    val daysList = getWeekDays()
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        daysList.forEachIndexed { index, (day, abbr) ->
+
+            val shape = when (index) {
+                0 -> ButtonGroupDefaults.connectedLeadingButtonShape
+                daysList.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShape
+                else -> ButtonGroupDefaults.connectedMiddleButtonPressShape
+            }
+
+            val isChecked = ((weekDays / 10.0.pow(day).toInt()) % 10) == 1
+            ToggleButton(
+                checked = isChecked,
+                onCheckedChange = { checked ->
+                    if (checked) {
+                        updateWeekDays(weekDays + 10.0.pow(day).toInt())
+                    } else {
+                        updateWeekDays(weekDays - 10.0.pow(day).toInt())
+                    }
+                },
+                shapes = ToggleButtonDefaults.shapes(
+                    shape = shape,
+                    checkedShape = shape,
+                    pressedShape = shape
+                ),
+                colors = ToggleButtonDefaults.toggleButtonColors(
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceDim,
+                    disabledContentColor = MaterialTheme.colorScheme.onSurface,
+                    checkedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    checkedContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                ),
+                border = ButtonDefaults.outlinedButtonBorder(),
+                modifier = Modifier
+                    .padding(dimensionResource(R.dimen.card_elevation))
+                    .weight(1f)
+            ) {
+                Text(
+                    text = stringResource(abbr)
+                )
+            }
+
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
 fun ChooseRunningTimeLightPreview() {
     ZenwellTheme {
+        var weekDays by remember { mutableIntStateOf(11111110) }
         ChooseRunningTime(
             startTimeInMinutes = 0,
-            endTimeInMinutes = 1439
+            endTimeInMinutes = 1439,
+            weekDays = weekDays,
+            updateWeekDays = { weekDays = it }
         )
     }
 }

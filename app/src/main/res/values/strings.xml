@@ -40,4 +40,10 @@
     <string name="exhale">Exhale</string>
     <string name="number_of_breathing_cycles">Number of breathing cycles</string>
     <string name="breathing_cycle_duration">Breathing cycle duration</string>
+    <string name="sunday_abbr">S</string>
+    <string name="friday_abbr">F</string>
+    <string name="monday_abbr">M</string>
+    <string name="tuesday_abbr">T</string>
+    <string name="wednesday_abbr">W</string>
+    <string name="choose_week_days">Week days</string>
 </resources>

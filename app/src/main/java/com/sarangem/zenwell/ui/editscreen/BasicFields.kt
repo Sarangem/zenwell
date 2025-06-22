@@ -37,6 +37,35 @@ fun ChooseEnable(
     }
 }
 
+@Composable
+fun ChooseScheduleTitle(
+    modifier: Modifier = Modifier,
+    title: String,
+    updateUiState: (String) -> Unit = {}
+) {
+    EditScreenOutlinedField(
+        mainText = stringResource(R.string.schedule_title),
+        textFieldValue = title,
+        onValueChange = { updateUiState(it) },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ChooseMessage(
+    modifier: Modifier = Modifier,
+    message: String,
+    updateUiState: (String) -> Unit = {}
+) {
+    EditScreenOutlinedField(
+        mainText = stringResource(R.string.message),
+        textFieldValue = message,
+        onValueChange = { updateUiState(it) },
+        modifier = modifier
+    )
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun ChooseEnablePreview() {
@@ -46,5 +75,21 @@ fun ChooseEnablePreview() {
             checked = isChecked,
             updateUiState = { isChecked = it }
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChooseScheduleTitlePreview() {
+    ZenwellTheme {
+        ChooseScheduleTitle(title = "Schedule 1")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChooseMessagePreview() {
+    ZenwellTheme {
+        ChooseMessage(message = "This app is blocked.")
     }
 }
