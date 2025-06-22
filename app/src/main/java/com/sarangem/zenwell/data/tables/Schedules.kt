@@ -30,7 +30,6 @@ data class Schedules(
     val endTimeInMinutes: Int = 0,
 
     // time to wait before opening the app
-    // for specific block types only
     @ColumnInfo(name = "wait_time")
     val waitTimeInSeconds: Int = 0,
 
@@ -39,9 +38,16 @@ data class Schedules(
     val waitEnterButton: Boolean = true,
 
     // how long would the app be opened before again showing block message
-    // for specific block types only
     @ColumnInfo(name = "open_time")
     val openTimeInMinutes: Int = 0,
+
+    // how long should a breathing cycle (one inhalation + one exhalation) take
+    @ColumnInfo(name = "breathing_cycle_duration")
+    val breathingCycleDuration: Int = 0,
+
+    // how many breathing cycles there should be
+    @ColumnInfo(name = "breathing_cycle_number")
+    val breathingCycleNumber: Int = 0,
 
     // parachute means skipping the block message. check if enabled.
     @ColumnInfo(name = "is_parachute")

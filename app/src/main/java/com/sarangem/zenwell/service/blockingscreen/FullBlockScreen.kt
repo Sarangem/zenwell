@@ -2,10 +2,8 @@ package com.sarangem.zenwell.service.blockingscreen
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.repeatable
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,17 +15,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialShapes.Companion.Circle
-import androidx.compose.material3.MaterialShapes.Companion.Square
 import androidx.compose.material3.MaterialShapes.Companion.Sunny
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,11 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.APP_BLOCKED
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -84,6 +74,7 @@ fun LockIconCard(modifier: Modifier = Modifier) {
 
     Box(
         modifier = modifier
+            .padding(dimensionResource(R.dimen.padding_small))
             .clip(Sunny.toShape())
             .graphicsLayer(rotationZ = animatedRotation.value)
             .background(MaterialTheme.colorScheme.tertiaryContainer)
@@ -99,44 +90,6 @@ fun LockIconCard(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-fun MessageCard(
-    modifier: Modifier = Modifier,
-    message: String,
-    showOpenDialog: Boolean = false,
-    onClick: () -> Unit = {}
-) {
-    val morph = Morph(Square, Circle)
-    val animatedProgress = animateFloatAsState(
-        targetValue = if (showOpenDialog) 1f else 0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioHighBouncy,
-            stiffness = (Spring.StiffnessHigh / 10)
-        )
-    )
-
-    Box(
-        modifier = modifier
-            .clip(MorphPolygonShape(morph, animatedProgress.value))
-            .background(MaterialTheme.colorScheme.secondaryContainer)
-            .fillMaxSize()
-            .clickable(onClick = { if (showOpenDialog) onClick() }),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = if (showOpenDialog) stringResource(R.string.open) else message,
-            autoSize = TextAutoSize.StepBased(
-                maxFontSize = MaterialTheme.typography.displayLarge.fontSize
-            ),
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-            textAlign = TextAlign.Center,
-            lineHeight = MaterialTheme.typography.displayLarge.lineHeight,
-            modifier = Modifier.padding(32.dp)
-        )
-    }
-}
-
 
 // -- IMPLEMENTATIONS -- //
 
@@ -146,16 +99,12 @@ fun FullBlockScreenColumn(message: String) {
         Spacer(Modifier.weight(0.1F))
 
         LockIconCard(
-            modifier = Modifier
-                .weight(0.9F)
-                .padding(dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.weight(0.9F)
         )
         Spacer(Modifier.weight(0.2f))
         MessageCard(
             message = message,
-            modifier = Modifier
-                .weight(0.9F)
-                .padding(dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.weight(0.9F)
         )
 
         Spacer(Modifier.weight(0.1F))
@@ -169,16 +118,12 @@ fun FullBlockScreenRow(message: String) {
         Spacer(Modifier.weight(0.1F))
 
         LockIconCard(
-            modifier = Modifier
-                .weight(0.8F)
-                .padding(dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.weight(0.8F)
         )
         Spacer(Modifier.weight(0.2f))
         MessageCard(
             message = message,
-            modifier = Modifier
-                .weight(1F)
-                .padding(dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.weight(1F)
         )
 
         Spacer(Modifier.weight(0.1F))

@@ -36,4 +36,8 @@
     <string name="message">Message</string>
     <string name="open">Open</string>
     <string name="choose_wait_enter_button">Ask before opening</string>
+    <string name="inhale">Inhale</string>
+    <string name="exhale">Exhale</string>
+    <string name="number_of_breathing_cycles">Number of breathing cycles</string>
+    <string name="breathing_cycle_duration">Breathing cycle duration</string>
 </resources>

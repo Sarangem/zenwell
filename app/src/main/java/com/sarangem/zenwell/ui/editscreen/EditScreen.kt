@@ -95,24 +95,8 @@ fun EditScreen(
             )
 
             val blockType = uiState.schedule.blockType
-            if (blockType == BlockType.Wait ||
-                blockType == BlockType.Breathing ||
-                blockType == BlockType.MathEquation ||
-                blockType == BlockType.ShowImage
-            ) {
 
-                ChooseWaitEnterButton(
-                    checked = uiState.schedule.waitEnterButton,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    waitEnterButton = it
-                                )
-                            )
-                        )
-                    }
-                )
+            if (blockType == BlockType.Wait){
 
                 ChooseWaitTime(
                     waitTimeInSeconds = uiState.schedule.waitTimeInSeconds,
@@ -127,6 +111,42 @@ fun EditScreen(
                     }
                 )
 
+            }
+
+            if (blockType == BlockType.Breathing) {
+
+                ChooseBreathingCycleDuration(
+                    breathingCycleDuration = uiState.schedule.breathingCycleDuration,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    breathingCycleDuration = it
+                                )
+                            )
+                        )
+                    }
+                )
+
+                ChooseBreathingCycleNumber(
+                    breathingCycleNumber = uiState.schedule.breathingCycleNumber,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    breathingCycleNumber = it
+                                )
+                            )
+                        )
+                    }
+                )
+
+            }
+
+            if (blockType == BlockType.Wait ||
+                blockType == BlockType.Breathing
+            ) {
+
                 ChooseOpenTime(
                     openTimeInMinutes = uiState.schedule.openTimeInMinutes,
                     updateUiState = {
@@ -139,6 +159,20 @@ fun EditScreen(
                         )
                     }
                 )
+
+                ChooseWaitEnterButton(
+                    checked = uiState.schedule.waitEnterButton,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    waitEnterButton = it
+                                )
+                            )
+                        )
+                    }
+                )
+
 
             }
 
@@ -205,14 +239,16 @@ fun EditScreenPreview() {
                 blockType = BlockType.Breathing,
                 startTimeInMinutes = 179,
                 endTimeInMinutes = 1079,
-                openTimeInMinutes = 10000
+                openTimeInMinutes = 10000,
+                breathingCycleDuration = 3,
+                breathingCycleNumber = 2
             ),
             appNames = listOf()
         )
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 1000)
 @Composable
 fun EditScreenPreviewLightMode() {
     ZenwellTheme(darkTheme = false) {
@@ -220,7 +256,7 @@ fun EditScreenPreviewLightMode() {
     }
 }
 
-@Preview
+@Preview(heightDp = 1000)
 @Composable
 fun EditScreenPreviewDarkMode() {
     ZenwellTheme(darkTheme = true) {
