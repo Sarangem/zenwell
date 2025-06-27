@@ -7,6 +7,10 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -81,29 +85,33 @@ fun BreathingCard(
     breathingCycleDuration: Int,
     breathingCycleNumber: Int
 ) {
-    var time by remember { mutableIntStateOf(breathingCycleDuration) }
     var completedBreathingCycle by remember { mutableIntStateOf(breathingCycleNumber) }
-    val halfDuration = breathingCycleDuration / 2
-    LaunchedEffect(time) {
-        if (time >= 0) {
-            delay(1000L)
-            time--
-        } else {
-            completedBreathingCycle--
-            time = breathingCycleDuration
-        }
-        if (completedBreathingCycle <= 0){
+    val halfDuration = (breathingCycleDuration / 2) * 1000L
+    var breathingText by remember { mutableIntStateOf(R.string.inhale) }
+
+    LaunchedEffect(completedBreathingCycle) {
+
+        if (completedBreathingCycle <= 0) {
             onTimerEnd()
+            return@LaunchedEffect
+        }
+
+        delay(halfDuration)
+        breathingText = if (breathingText == R.string.inhale) R.string.exhale else R.string.inhale
+        delay(halfDuration)
+        breathingText = if (breathingText == R.string.inhale) R.string.exhale else R.string.inhale // back to inhale
+        if (completedBreathingCycle > 0) {
+            completedBreathingCycle--
         }
     }
 
     val morph = Morph(Square, Circle)
     val infiniteTransition = rememberInfiniteTransition()
-    val animatedProgress = infiniteTransition.animateFloat(
+    val animatedProgress by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            tween( halfDuration * 1500, easing = LinearEasing),
+            animation = tween(durationMillis = halfDuration.toInt(), easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         ),
     )
@@ -111,17 +119,16 @@ fun BreathingCard(
     Box(
         modifier = modifier
             .padding(dimensionResource(R.dimen.padding_small))
-            .clip(MorphPolygonShape(morph, animatedProgress.value))
+            .clip(MorphPolygonShape(morph, animatedProgress))
             .background(MaterialTheme.colorScheme.tertiaryContainer)
     ) {
-        var text by remember { mutableIntStateOf( R.string.inhale ) }
-        text = if (time > halfDuration) {
-            R.string.inhale
-        } else {
-            R.string.exhale
-        }
         AnimatedContent(
-            targetState = text
+            targetState = breathingText,
+            transitionSpec = {
+            (fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                scaleIn(initialScale = 0.92f, animationSpec = tween(220, delayMillis = 90)))
+            .togetherWith(fadeOut(animationSpec = tween(90)))
+    },
         ) { textState ->
             Text(
                 text = stringResource(textState),
