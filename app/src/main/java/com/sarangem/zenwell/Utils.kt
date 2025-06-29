@@ -38,8 +38,8 @@ fun getAmPm(num: Int): String {
 @OptIn(ExperimentalMaterial3Api::class)
 fun convertToTimePickerState(timeInMinutes: Int): TimePickerState {
     return TimePickerState(
-        initialHour = (timeInMinutes / 60).toInt(),
-        initialMinute = (timeInMinutes % 60).toInt(),
+        initialHour = (timeInMinutes / 60),
+        initialMinute = (timeInMinutes % 60),
         is24Hour = false
     )
 }

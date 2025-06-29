@@ -81,7 +81,7 @@ class BlockingWindow(
     }
 
     fun close() {
-        if (composeView.isAttachedToWindow == true) {
+        if (composeView.isAttachedToWindow) {
             try {
                 if (isWindowOpened) {
                     windowManager.removeView(composeView)

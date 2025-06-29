@@ -11,12 +11,12 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.tables.Schedules
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,8 +25,9 @@ import kotlinx.coroutines.withContext
 fun NewScheduleFAB(
     addNewSchedule: suspend () -> Schedules = suspend { Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
-    coroutineScope: CoroutineScope
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     ExtendedFloatingActionButton(
         onClick = {
             coroutineScope.launch(Dispatchers.IO) {

@@ -46,6 +46,7 @@ import androidx.core.content.ContextCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import kotlin.collections.sortedBy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,13 +57,6 @@ fun ChooseAppList(
     updateAppList: (List<String>) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-
-    val context = LocalContext.current
-    var installedAppList by remember { mutableStateOf<List<AppInfo>>(listOf()) }
-    LaunchedEffect(Unit) {
-        installedAppList = getInstalledApps(context).sortedBy { it.appName }
-        setAppNamesInUiState()
-    }
 
     EditScreenCard(
         modifier = modifier.clickable(onClick = { expanded = true })
@@ -87,7 +81,8 @@ fun ChooseAppList(
             sheetState = rememberModalBottomSheetState()
         ) {
             BottomSheetContents(
-                installedAppList = installedAppList,
+                getInstalledApps = { getInstalledApps(it) },
+                setAppNamesInUiState = setAppNamesInUiState,
                 checkedAppList = checkedAppList,
                 addAppToList = {
                     if (checkedAppList != null) updateAppList(checkedAppList.plus(it))
@@ -105,11 +100,20 @@ fun ChooseAppList(
 @Composable
 fun BottomSheetContents(
     modifier: Modifier = Modifier,
-    installedAppList: List<AppInfo>,
+    getInstalledApps: (Context) ->  List<AppInfo>,
+    setAppNamesInUiState: () -> Unit = {},
     checkedAppList: List<String>?,
     addAppToList: (String) -> Unit = {},
     removeAppFromList: (String) -> Unit = {}
 ) {
+
+    val context = LocalContext.current
+    var installedAppList by remember { mutableStateOf<List<AppInfo>>(listOf()) }
+    LaunchedEffect(Unit) {
+        installedAppList = getInstalledApps(context).sortedBy { it.appName }
+        setAppNamesInUiState()
+    }
+
 
     if (installedAppList.isEmpty() || checkedAppList == null) {
         LoadingIndicator(
@@ -186,7 +190,7 @@ fun AppCard(
 
 // -- helper functions -- //
 
-fun getInstalledApps(context: Context): MutableList<AppInfo> {
+fun getInstalledApps(context: Context): List<AppInfo> {
     val pm = context.packageManager
     val mainIntent = Intent(Intent.ACTION_MAIN, null)
         .addCategory(Intent.CATEGORY_LAUNCHER)
@@ -197,7 +201,7 @@ fun getInstalledApps(context: Context): MutableList<AppInfo> {
         pm.queryIntentActivities(mainIntent, 0)
     }
 
-    var appInfoList: MutableList<AppInfo> = mutableListOf()
+    val appInfoList: MutableList<AppInfo> = mutableListOf()
     var resources: Resources
     resolvedInfos.forEach { info ->
         resources = pm.getResourcesForApplication(info.activityInfo.applicationInfo)
@@ -242,11 +246,13 @@ fun ShowBottomSheetPreview() {
     val icon = ContextCompat.getDrawable(LocalContext.current, R.drawable.ic_launcher_background)
     ZenwellTheme {
         BottomSheetContents(
-            installedAppList = listOf(
-                AppInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
-                AppInfo(appName = "Messages", icon = icon, packageName = "messages"),
-                AppInfo(appName = "Youtube", icon = icon, packageName = "youtube")
-            ),
+            getInstalledApps = {
+                _ -> listOf(
+                    AppInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
+                    AppInfo(appName = "Messages", icon = icon, packageName = "messages"),
+                    AppInfo(appName = "Youtube", icon = icon, packageName = "youtube")
+                )
+            },
             checkedAppList = list,
             addAppToList = {
                 list = list.plus(it)
@@ -254,17 +260,6 @@ fun ShowBottomSheetPreview() {
             removeAppFromList = {
                 list = list.minus(it)
             }
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ShowBottomSheetLoadingIndicatorPreview() {
-    ZenwellTheme {
-        BottomSheetContents(
-            installedAppList = listOf(),
-            checkedAppList = listOf()
         )
     }
 }

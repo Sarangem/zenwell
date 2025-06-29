@@ -2,6 +2,7 @@ package com.sarangem.zenwell.ui.editscreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,7 +46,9 @@ fun ChooseBlockType(
             onExpandedChange = { expanded = !expanded },
         ) {
             OutlinedTextField(
-                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                modifier = Modifier
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth(),
                 readOnly = true,
                 value = TextFieldValue(stringResource(blockType.title)),
                 onValueChange = {},

@@ -7,10 +7,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -87,22 +83,21 @@ fun BreathingCard(
 ) {
     var completedBreathingCycle by remember { mutableIntStateOf(breathingCycleNumber) }
     val halfDuration = (breathingCycleDuration / 2) * 1000L
-    var breathingText by remember { mutableIntStateOf(R.string.inhale) }
+    var inhale by remember { mutableStateOf(true) }
 
     LaunchedEffect(completedBreathingCycle) {
 
         if (completedBreathingCycle <= 0) {
             onTimerEnd()
-            return@LaunchedEffect
         }
 
-        delay(halfDuration)
-        breathingText = if (breathingText == R.string.inhale) R.string.exhale else R.string.inhale
-        delay(halfDuration)
-        breathingText = if (breathingText == R.string.inhale) R.string.exhale else R.string.inhale // back to inhale
-        if (completedBreathingCycle > 0) {
-            completedBreathingCycle--
+        repeat(2){
+            delay(halfDuration)
+            inhale = !inhale
         }
+
+        completedBreathingCycle--
+
     }
 
     val morph = Morph(Square, Circle)
@@ -123,15 +118,10 @@ fun BreathingCard(
             .background(MaterialTheme.colorScheme.tertiaryContainer)
     ) {
         AnimatedContent(
-            targetState = breathingText,
-            transitionSpec = {
-            (fadeIn(animationSpec = tween(220, delayMillis = 90)) +
-                scaleIn(initialScale = 0.92f, animationSpec = tween(220, delayMillis = 90)))
-            .togetherWith(fadeOut(animationSpec = tween(90)))
-    },
+            targetState = inhale
         ) { textState ->
             Text(
-                text = stringResource(textState),
+                text = stringResource( if(textState) R.string.inhale else R.string.exhale ),
                 style = MaterialTheme.typography.displayLarge,
                 modifier = Modifier
                     .padding(dimensionResource(R.dimen.image_size))
