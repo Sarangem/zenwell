@@ -2,8 +2,9 @@ package com.sarangem.zenwell.service
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
-import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityWindowInfo
+import android.graphics.Rect
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.checkIfScheduleEnabled
 import com.sarangem.zenwell.getCurrentTimeInMinutes
@@ -12,11 +13,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import com.sarangem.zenwell.ServiceLogger
 
 
 class AppBlockerService : AccessibilityService() {
 
-    val TAG = "AppBlockerService"
     private val context = this
     private val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
 
@@ -30,7 +31,7 @@ class AppBlockerService : AccessibilityService() {
 
         CoroutineScope(Dispatchers.IO).launch {
             initializeRepository()
-            Log.d(TAG, "Service fully initiated with ${context.serviceInfo}")
+            ServiceLogger.v { "Service fully initiated with ${context.serviceInfo}" }
         }
 
     }
@@ -73,61 +74,90 @@ class AppBlockerService : AccessibilityService() {
 
     }
 
-    private var isWindowOpened = false
-    var previousApp: CharSequence? = null
-    val openedApps: MutableList<CharSequence> = mutableListOf()
-
+    var previousApp = listOf<CharSequence>()
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
-        // get current package name and terminate if null
-        val currentApp: CharSequence? = rootInActiveWindow?.packageName
-        if (currentApp == null) return
-        Log.d(TAG, "previous app is $previousApp and current app is $currentApp")
+        // get list of application windows
+        val applicationWindows = windows.filter { it.type == AccessibilityWindowInfo.TYPE_APPLICATION }
+        ServiceLogger.d { "There are ${applicationWindows.size} and they are $applicationWindows" }
 
-        // check for duplicate entries
-        if (previousApp == currentApp) return
+        ServiceLogger.d { "Previous app(s) were $previousApp" }
 
-        // check if already opened with wait screen
-        if (currentApp in openedApps) return
+        val currentVisibleApps = mutableListOf<CharSequence>()
+        var index = 1
 
-        // open or close the window
-        for (scheduleInfo in scheduleInfoList) {
+        for (windowInfo in applicationWindows) {
 
-            if (!scheduleInfo.schedule.isEnabled) continue
-            if (!checkIfScheduleEnabled(scheduleInfo.schedule.weekDays)) continue
-            if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
+            // get current root and package name && terminate if null
+            val root = windowInfo.root ?: continue
+            val currentApp = root.packageName ?: continue
+            currentVisibleApps.add(currentApp)
+            ServiceLogger.d { "Processing app $currentApp and is in $index position." }
 
-            if (currentApp in scheduleInfo.appSet) {
-                Log.d(TAG, "Opening window")
-                isWindowOpened = true
-                scheduleInfo.blockingWindow.open()
-            } else {
-                Log.d(TAG, "Closing window")
-                isWindowOpened = false
-                scheduleInfo.blockingWindow.close()
+            // check for duplicate entries
+            if (currentApp in previousApp) continue
+
+            // get window bounds
+            val windowBounds = Rect()
+            root.getBoundsInScreen(windowBounds)
+            if (windowBounds.width() <= 0 || windowBounds.height() <= 0) {
+                ServiceLogger.e({ "Invalid window bounds received: $windowBounds for app $currentApp. Skipping overlay." })
+                windowInfo.recycle()
+                continue
             }
+
+            // open the window
+            for (scheduleInfo in scheduleInfoList) {
+
+                if (!scheduleInfo.schedule.isEnabled) continue
+                if (!checkIfScheduleEnabled(scheduleInfo.schedule.weekDays)) continue
+                if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
+
+                if (currentApp in scheduleInfo.appSet) {
+
+                    val blockingWindow = scheduleInfo.blockingWindowList.firstOrNull { it.appName == currentApp } ?: continue
+                    ServiceLogger.i { "Opening window for schedule ${scheduleInfo.schedule.id} and ${blockingWindow.appName}" }
+                    blockingWindow.open(windowBounds)
+
+                }
+            }
+            windowInfo.recycle()
+            index++
+
         }
 
-        previousApp = currentApp
+        // close the window
+        scheduleInfoList.flatMap { it.blockingWindowList }
+            .filter { it.isWindowOpen() && it.appName !in currentVisibleApps }
+            .forEach { blockingWindow ->
+                ServiceLogger.i { "Closing window for ${blockingWindow.appName} for schedule ${blockingWindow.schedule.id}." }
+                blockingWindow.close()
+            }
+
+        previousApp = currentVisibleApps
+        ServiceLogger.d { "Accessibility Event completed." }
     }
 
     fun closeWindow(scheduleId: Int) {
-        val scheduleInfo = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId }
-        Log.d(TAG, "Closing window")
-        scheduleInfo?.blockingWindow?.close()
-        isWindowOpened = false
+        val scheduleInfo = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId } ?: return
+        ServiceLogger.i { "Closing window" }
+        scheduleInfo.blockingWindowList.forEach {
+            it.close()
+        }
     }
 
     fun recheckApp() {
-        previousApp = null
+        previousApp = listOf()
+        ServiceLogger.d { "Rechecking to open blocking window" }
         onAccessibilityEvent(null)
     }
 
     override fun onInterrupt() {
-        scheduleInfoList.forEach {
-            it.blockingWindow.close()
+        scheduleInfoList.forEach { scheduleInfo ->
+            scheduleInfo.blockingWindowList.forEach { blockingWindow ->
+                blockingWindow.close()
+            }
         }
-        isWindowOpened = false
     }
 
     override fun onUnbind(intent: Intent?): Boolean {

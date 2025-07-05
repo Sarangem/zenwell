@@ -1,5 +1,6 @@
 package com.sarangem.zenwell
 
+import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
 import com.sarangem.zenwell.service.AppBlockerService
@@ -69,7 +70,7 @@ fun getWeekDays(): List<Pair<Int, Int>> {
     else daysList.drop(startIndex) + daysList.take(startIndex)
 }
 
-fun checkIfScheduleEnabled(weekDays: Int): Boolean{
+fun checkIfScheduleEnabled(weekDays: Int): Boolean {
     val calendar = Calendar.getInstance(Locale.getDefault())
     val today = calendar.get(DAY_OF_WEEK)
     return ((weekDays / 10.0.pow(today).toInt()) % 10) == 1
@@ -80,4 +81,31 @@ fun checkIfScheduleEnabled(weekDays: Int): Boolean{
 
 fun checkAccessibilityServicePermission(): Boolean {
     return (AppBlockerService.instance != null)
+}
+
+// -- LOGGING -- //
+
+object ServiceLogger {
+    val isDebug = BuildConfig.DEBUG
+    const val TAG = "AccessibilityService"
+
+    // for non-important logging
+    inline fun v(message: () -> String) {
+        if (isDebug) Log.v(TAG, message())
+    }
+
+    // for things related to opening or closing window
+    inline fun d(message: () -> String) {
+        if (isDebug) Log.d(TAG, message())
+    }
+
+    // for opening or closing a window
+    inline fun i(message: () -> String) {
+        if (isDebug) Log.i(TAG, message())
+    }
+
+    // for errors
+    inline fun e(message: () -> String, e: Exception? = null) {
+        if (isDebug) Log.e(TAG, message(), e)
+    }
 }
