@@ -8,7 +8,6 @@ import android.graphics.Rect
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.checkIfScheduleEnabled
 import com.sarangem.zenwell.getCurrentTimeInMinutes
-import com.sarangem.zenwell.service.alarmer.ManageExactAlarms
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -38,13 +37,6 @@ class AppBlockerService : AccessibilityService() {
 
     suspend fun initializeRepository() {
 
-        // cancel all old alarms
-        ManageExactAlarms(
-            context = context,
-            schedulesList = scheduleInfoList.map { it.schedule }
-        ).cancel()
-
-
         // update our variable with latest repository
 
         val schedulesRepository = (application as ZenwellApplication).container
@@ -62,13 +54,6 @@ class AppBlockerService : AccessibilityService() {
             )
 
         }
-
-
-        // create new alarms
-        ManageExactAlarms(
-            context = context,
-            schedulesList = scheduleInfoList.map { it.schedule }
-        ).set()
 
         recheckApp()
 
@@ -127,7 +112,8 @@ class AppBlockerService : AccessibilityService() {
         }
 
         // close the window
-        scheduleInfoList.flatMap { it.blockingWindowList }
+        scheduleInfoList
+        		.flatMap { it.blockingWindowList }
             .filter { it.isWindowOpen() && it.appName !in currentVisibleApps }
             .forEach { blockingWindow ->
                 ServiceLogger.i { "Closing window for ${blockingWindow.appName} for schedule ${blockingWindow.schedule.id}." }

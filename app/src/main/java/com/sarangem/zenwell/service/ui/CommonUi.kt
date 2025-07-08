@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.blockingscreen
+package com.sarangem.zenwell.service.ui
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState

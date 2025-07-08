@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.blockingscreen
+package com.sarangem.zenwell.service.ui
 
 import android.content.Context
 import android.graphics.PixelFormat
@@ -95,24 +95,25 @@ class BlockingWindow(
             composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
             composeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
 
+            // get screen size
+            val density = context.resources.displayMetrics.density
+            val appBarHeight = 56 * density
+            val screenHeight = (bounds.height() - appBarHeight) / density
+            val screenWidth = bounds.width() / density
+
             // set the layoutParams according to bound
             layoutParams?.apply {
                 type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
                 flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 format = PixelFormat.TRANSLUCENT
                 gravity = Gravity.TOP or Gravity.START
-                height = bounds.height()
+                height = bounds.height() - appBarHeight.toInt()
                 width = bounds.width()
                 x = bounds.left
                 y = bounds.top
 
                 ServiceLogger.v { "Applying specific bounds to overlay: $bounds" }
             }
-
-            // get screen size
-            val density = context.resources.displayMetrics.density
-            val screenHeight = bounds.height() / density
-            val screenWidth = bounds.width() / density
 
             // set the view
             composeView.apply {

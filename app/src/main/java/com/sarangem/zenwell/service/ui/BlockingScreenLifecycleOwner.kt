@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.blockingscreen
+package com.sarangem.zenwell.service.ui
 
 import android.os.Bundle
 import androidx.lifecycle.Lifecycle
@@ -7,7 +7,6 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 
-@Suppress("unused")
 class BlockingScreenLifecycleOwner : SavedStateRegistryOwner {
 
     private var mLifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)

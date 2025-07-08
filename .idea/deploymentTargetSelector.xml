@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="Zenwell.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-07-05T12:58:52.068470767Z">
+        <DropdownSelection timestamp="2025-07-07T15:23:23.579749364Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/var/home/sarangem/.android/avd/Pixel_Tablet.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RZ8M929XHRJ" />
             </handle>
           </Target>
         </DropdownSelection>

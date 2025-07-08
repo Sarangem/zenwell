@@ -1,12 +1,5 @@
-package com.sarangem.zenwell.service.blockingscreen
+package com.sarangem.zenwell.service.ui
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,12 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialShapes.Companion.Circle
-import androidx.compose.material3.MaterialShapes.Companion.Square
+import androidx.compose.material3.MaterialShapes.Companion.Sunny
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,20 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.APP_BLOCKED
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.delay
 
 @Composable
-fun BreathingScreen(
+fun WaitScreen(
     modifier: Modifier = Modifier,
     onTimerEnd: () -> Unit = {},
-    breathingCycleDuration: Int,
-    breathingCycleNumber: Int,
+    waitTimeInSeconds: Int,
     showOpenDialog: Boolean,
     message: String,
     height: Float,
@@ -63,9 +55,9 @@ fun BreathingScreen(
     Card(modifier = modifier) {
 
         if ((height < 480 && width > 600) || (height < 900 && width > 800)) {
-            BreathingScreenRow(timerEnd, breathingCycleDuration, breathingCycleNumber, message, showOpen, onTimerEnd)
+            WaitScreenRow(timerEnd, waitTimeInSeconds, message, showOpen, onTimerEnd)
         } else {
-            BreathingScreenColumn(timerEnd, breathingCycleDuration, breathingCycleNumber, message, showOpen, onTimerEnd)
+            WaitScreenColumn(timerEnd, waitTimeInSeconds, message, showOpen, onTimerEnd)
         }
     }
 }
@@ -75,59 +67,35 @@ fun BreathingScreen(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun BreathingCard(
+fun TimerCard(
     modifier: Modifier = Modifier,
     onTimerEnd: () -> Unit,
-    breathingCycleDuration: Int,
-    breathingCycleNumber: Int
+    initialValue: Int
 ) {
-    var completedBreathingCycle by remember { mutableIntStateOf(breathingCycleNumber) }
-    val halfDuration = (breathingCycleDuration / 2) * 1000L
-    var inhale by remember { mutableStateOf(true) }
-
-    LaunchedEffect(completedBreathingCycle) {
-
-        if (completedBreathingCycle <= 0) {
-            onTimerEnd()
-        }
-
-        repeat(2){
-            delay(halfDuration)
-            inhale = !inhale
-        }
-
-        completedBreathingCycle--
-
-    }
-
-    val morph = Morph(Square, Circle)
-    val infiniteTransition = rememberInfiniteTransition()
-    val animatedProgress by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = halfDuration.toInt(), easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-    )
-
+    var time by remember { mutableIntStateOf(initialValue) }
     Box(
         modifier = modifier
             .padding(dimensionResource(R.dimen.padding_small))
-            .clip(MorphPolygonShape(morph, animatedProgress))
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .clip(Sunny.toShape())
+            .background(MaterialTheme.colorScheme.tertiaryContainer),
     ) {
-        AnimatedContent(
-            targetState = inhale
-        ) { textState ->
-            Text(
-                text = stringResource( if(textState) R.string.inhale else R.string.exhale ),
-                style = MaterialTheme.typography.displayLarge,
-                modifier = Modifier
-                    .padding(dimensionResource(R.dimen.image_size))
-                    .fillMaxSize()
-                    .wrapContentSize(align = Alignment.Center)
-            )
+        Text(
+            text = time.toString(),
+            autoSize = TextAutoSize.StepBased(),
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(dimensionResource(R.dimen.image_size))
+                .fillMaxSize()
+                .wrapContentSize(align = Alignment.Center)
+        )
+    }
+    LaunchedEffect(time) {
+        if (time > 0) {
+            delay(1000L)
+            time--
+        } else {
+            onTimerEnd()
         }
     }
 }
@@ -136,10 +104,9 @@ fun BreathingCard(
 // -- IMPLEMENTATIONS -- //
 
 @Composable
-fun BreathingScreenColumn(
+fun WaitScreenColumn(
     onTimerEnd: () -> Unit = {},
-    breathingCycleDuration: Int,
-    breathingCycleNumber: Int,
+    initialValue: Int,
     message: String,
     showOpen: Boolean,
     timerEnd: () -> Unit = {}
@@ -147,11 +114,10 @@ fun BreathingScreenColumn(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.weight(0.1F))
 
-        BreathingCard(
+        TimerCard(
             modifier = Modifier.weight(0.9F),
             onTimerEnd = onTimerEnd,
-            breathingCycleNumber = breathingCycleNumber,
-            breathingCycleDuration = breathingCycleDuration
+            initialValue = initialValue
         )
         Spacer(Modifier.weight(0.2f))
         MessageCard(
@@ -166,10 +132,9 @@ fun BreathingScreenColumn(
 }
 
 @Composable
-fun BreathingScreenRow(
+fun WaitScreenRow(
     onTimerEnd: () -> Unit = {},
-    breathingCycleDuration: Int,
-    breathingCycleNumber: Int,
+    initialValue: Int,
     message: String,
     showOpen: Boolean,
     timerEnd: () -> Unit = {}
@@ -177,11 +142,10 @@ fun BreathingScreenRow(
     Row(verticalAlignment = Alignment.CenterVertically) {
         Spacer(Modifier.weight(0.1F))
 
-        BreathingCard(
+        TimerCard(
             modifier = Modifier.weight(0.9F),
             onTimerEnd = onTimerEnd,
-            breathingCycleNumber = breathingCycleNumber,
-            breathingCycleDuration = breathingCycleDuration
+            initialValue = initialValue
         )
         Spacer(Modifier.weight(0.2f))
         MessageCard(
@@ -200,48 +164,48 @@ fun BreathingScreenRow(
 
 @Preview(showBackground = true, heightDp = 400, widthDp = 400)
 @Composable
-fun BreathingScreenCompactPreviewLight() {
+fun WaitScreenCompactPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 400f, 400f)
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, 400f, 400f)
     }
 }
 
 @Preview(heightDp = 400, widthDp = 400)
 @Composable
-fun BreathingScreenCompactPreviewDark() {
+fun WaitScreenCompactPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 400f, 400f)
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, 400f, 400f)
     }
 }
 
 @Preview(showBackground = true, heightDp = 700, widthDp = 500)
 @Composable
-fun BreathingScreenColumnPreviewLight() {
+fun WaitScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 700f, 500f)
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, 700f, 500f)
     }
 }
 
 @Preview(heightDp = 700, widthDp = 500)
 @Composable
-fun BreathingScreenColumnPreviewDark() {
+fun WaitScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 700f, 500f)
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, 700f, 500f)
     }
 }
 
 @Preview(showBackground = true, heightDp = 400, widthDp = 700)
 @Composable
-fun BreathingScreenRowPreviewLight() {
+fun WaitScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 400f, 700f)
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, 400f, 700f)
     }
 }
 
 @Preview(heightDp = 400, widthDp = 700)
 @Composable
-fun BreathingScreenRowPreviewDark() {
+fun WaitScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 400f, 700f)
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, 400f, 700f)
     }
 }

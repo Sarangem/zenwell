@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.data.tables.Schedules
-import com.sarangem.zenwell.service.blockingscreen.BlockingWindow
-import com.sarangem.zenwell.service.blockingscreen.BreathingScreen
-import com.sarangem.zenwell.service.blockingscreen.FullBlockScreen
-import com.sarangem.zenwell.service.blockingscreen.WaitScreen
+import com.sarangem.zenwell.service.ui.BlockingWindow
+import com.sarangem.zenwell.service.ui.BreathingScreen
+import com.sarangem.zenwell.service.ui.FullBlockScreen
+import com.sarangem.zenwell.service.ui.WaitScreen
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 data class ScheduleInfo(
