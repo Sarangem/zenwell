@@ -13,7 +13,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.text.isDigitsOnly
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
@@ -65,6 +67,31 @@ fun ChooseMessage(
     )
 }
 
+@Composable
+fun ChooseNotificationTime(
+    modifier: Modifier = Modifier,
+    notificationTime: Int,
+    updateUiState: (Int) -> Unit = {}
+) {
+    EditScreenOutlinedField(
+        mainText = stringResource(R.string.send_notification_before_closing),
+        textFieldValue = notificationTime.toString(),
+        onValueChange = {
+            if (it.isDigitsOnly()) {
+                val num = it.toIntOrNull()
+                if (num == null) {
+                    updateUiState(0)
+                } else {
+                    updateUiState(num)
+                }
+            }
+        },
+        keyboardType = KeyboardType.Number,
+        suffixText = stringResource(R.string.minutes),
+        modifier = modifier
+    )
+}
+
 
 @Preview(showBackground = true)
 @Composable
@@ -91,5 +118,13 @@ fun ChooseScheduleTitlePreview() {
 fun ChooseMessagePreview() {
     ZenwellTheme {
         ChooseMessage(message = "This app is blocked.")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChooseNotificationTimePreview() {
+    ZenwellTheme {
+        ChooseNotificationTime(notificationTime = 2)
     }
 }

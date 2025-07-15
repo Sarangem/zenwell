@@ -33,7 +33,6 @@ data class ScheduleInfo(
                                 BlockType.FullBlock -> FullBlockScreen(
                                     message = schedule.message,
                                     modifier = Modifier.fillMaxSize(),
-                                    height = height,
                                     width = width
                                 )
 
@@ -43,7 +42,6 @@ data class ScheduleInfo(
                                     waitTimeInSeconds = schedule.waitTimeInSeconds,
                                     message = schedule.message,
                                     showOpenDialog = schedule.waitEnterButton,
-                                    height = height,
                                     width = width,
                                 )
 
@@ -54,7 +52,6 @@ data class ScheduleInfo(
                                     breathingCycleNumber = schedule.breathingCycleNumber,
                                     showOpenDialog = schedule.waitEnterButton,
                                     message = schedule.message,
-                                    height = height,
                                     width = width
                                 )
 

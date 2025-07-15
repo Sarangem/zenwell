@@ -1,11 +1,6 @@
 package com.sarangem.zenwell.ui.editscreen
 
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.res.Resources
-import android.graphics.drawable.Drawable
-import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,7 +41,8 @@ import androidx.core.content.ContextCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import kotlin.collections.sortedBy
+import com.sarangem.zenwell.utils.AppInfo
+import com.sarangem.zenwell.utils.getInstalledApps
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,7 +96,7 @@ fun ChooseAppList(
 @Composable
 fun BottomSheetContents(
     modifier: Modifier = Modifier,
-    getInstalledApps: (Context) ->  List<AppInfo>,
+    getInstalledApps: (Context) -> List<AppInfo>,
     setAppNamesInUiState: () -> Unit = {},
     checkedAppList: List<String>?,
     addAppToList: (String) -> Unit = {},
@@ -188,47 +184,6 @@ fun AppCard(
 }
 
 
-// -- helper functions -- //
-
-fun getInstalledApps(context: Context): List<AppInfo> {
-    val pm = context.packageManager
-    val mainIntent = Intent(Intent.ACTION_MAIN, null)
-        .addCategory(Intent.CATEGORY_LAUNCHER)
-
-    val resolvedInfos = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        pm.queryIntentActivities(mainIntent, PackageManager.ResolveInfoFlags.of(0))
-    } else {
-        pm.queryIntentActivities(mainIntent, 0)
-    }
-
-    val appInfoList: MutableList<AppInfo> = mutableListOf()
-    var resources: Resources
-    resolvedInfos.forEach { info ->
-        resources = pm.getResourcesForApplication(info.activityInfo.applicationInfo)
-
-        appInfoList.add(
-            AppInfo(
-                packageName = info.activityInfo.packageName,
-                appName = if (info.activityInfo.labelRes != 0) {
-                    resources.getString(info.activityInfo.labelRes)
-                } else {
-                    info.activityInfo.applicationInfo.loadLabel(pm).toString()
-                },
-                icon = info.activityInfo.loadIcon(pm)
-            )
-        )
-    }
-
-    return appInfoList
-}
-
-data class AppInfo(
-    val packageName: String = "",
-    val appName: String = "",
-    val icon: Drawable? = null
-)
-
-
 @Preview(showBackground = true)
 @Composable
 fun ChooseAppListPreview() {
@@ -246,8 +201,8 @@ fun ShowBottomSheetPreview() {
     val icon = ContextCompat.getDrawable(LocalContext.current, R.drawable.ic_launcher_background)
     ZenwellTheme {
         BottomSheetContents(
-            getInstalledApps = {
-                _ -> listOf(
+            getInstalledApps = { _ ->
+                listOf(
                     AppInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
                     AppInfo(appName = "Messages", icon = icon, packageName = "messages"),
                     AppInfo(appName = "Youtube", icon = icon, packageName = "youtube")

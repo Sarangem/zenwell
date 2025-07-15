@@ -28,9 +28,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.sarangem.zenwell.APP_BLOCKED
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.utils.isExpandedWidth
 import kotlinx.coroutines.delay
 
 @Composable
@@ -40,7 +40,6 @@ fun WaitScreen(
     waitTimeInSeconds: Int,
     showOpenDialog: Boolean,
     message: String,
-    height: Float,
     width: Float
 ) {
     var showOpen by remember { mutableStateOf(false) }
@@ -54,7 +53,7 @@ fun WaitScreen(
 
     Card(modifier = modifier) {
 
-        if ((height < 480 && width > 600) || (height < 900 && width > 800)) {
+        if (isExpandedWidth(width)) {
             WaitScreenRow(timerEnd, waitTimeInSeconds, message, showOpen, onTimerEnd)
         } else {
             WaitScreenColumn(timerEnd, waitTimeInSeconds, message, showOpen, onTimerEnd)
@@ -162,50 +161,34 @@ fun WaitScreenRow(
 
 // -- PREVIEW -- //
 
-@Preview(showBackground = true, heightDp = 400, widthDp = 400)
-@Composable
-fun WaitScreenCompactPreviewLight() {
-    ZenwellTheme(darkTheme = false) {
-        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, 400f, 400f)
-    }
-}
-
-@Preview(heightDp = 400, widthDp = 400)
-@Composable
-fun WaitScreenCompactPreviewDark() {
-    ZenwellTheme(darkTheme = true) {
-        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, 400f, 400f)
-    }
-}
-
-@Preview(showBackground = true, heightDp = 700, widthDp = 500)
+@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun WaitScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, 700f, 500f)
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, MEDIUM_WIDTH.toFloat())
     }
 }
 
-@Preview(heightDp = 700, widthDp = 500)
+@Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun WaitScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, 700f, 500f)
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, MEDIUM_WIDTH.toFloat())
     }
 }
 
-@Preview(showBackground = true, heightDp = 400, widthDp = 700)
+@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun WaitScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, 400f, 700f)
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, EXPANDED_WIDTH.toFloat())
     }
 }
 
-@Preview(heightDp = 400, widthDp = 700)
+@Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun WaitScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, 400f, 700f)
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, EXPANDED_WIDTH.toFloat())
     }
 }

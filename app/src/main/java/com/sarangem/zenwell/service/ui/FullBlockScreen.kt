@@ -32,20 +32,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.sarangem.zenwell.APP_BLOCKED
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.utils.isExpandedWidth
 
 @Composable
 fun FullBlockScreen(
     modifier: Modifier = Modifier,
     message: String = APP_BLOCKED,
-    height: Float,
     width: Float
 ) {
     Card(modifier = modifier) {
 
-        if ((height < 480 && width > 600) || (height < 900 && width > 800)) {
+        if (isExpandedWidth(width)) {
             FullBlockScreenRow(message)
         } else {
             FullBlockScreenColumn(message)
@@ -133,50 +132,34 @@ fun FullBlockScreenRow(message: String) {
 
 // -- PREVIEW -- //
 
-@Preview(showBackground = true, heightDp = 400, widthDp = 400)
-@Composable
-fun FullBlockScreenCompactPreviewLight() {
-    ZenwellTheme(darkTheme = false) {
-        FullBlockScreen(height = 400f, width = 400f)
-    }
-}
-
-@Preview(heightDp = 400, widthDp = 400)
-@Composable
-fun FullBlockScreenCompactPreviewDark() {
-    ZenwellTheme(darkTheme = true) {
-        FullBlockScreen(height = 400f, width = 400f)
-    }
-}
-
-@Preview(showBackground = true, heightDp = 700, widthDp = 500)
+@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun FullBlockScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        FullBlockScreen(height = 700f, width = 500f)
+        FullBlockScreen(width = MEDIUM_WIDTH.toFloat())
     }
 }
 
-@Preview(heightDp = 700, widthDp = 500)
+@Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun FullBlockScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        FullBlockScreen(height =  700f, width = 500f)
+        FullBlockScreen(width = MEDIUM_WIDTH.toFloat())
     }
 }
 
-@Preview(showBackground = true, heightDp = 400, widthDp = 700)
+@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun FullBlockScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        FullBlockScreen(height = 400f, width = 700f)
+        FullBlockScreen(width = EXPANDED_WIDTH.toFloat())
     }
 }
 
-@Preview(heightDp = 400, widthDp = 700)
+@Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun FullBlockScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        FullBlockScreen(height = 400f, width = 700f)
+        FullBlockScreen(width = EXPANDED_WIDTH.toFloat())
     }
 }

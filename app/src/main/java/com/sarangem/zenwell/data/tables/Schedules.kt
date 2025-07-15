@@ -49,6 +49,9 @@ data class Schedules(
     @ColumnInfo(name = "breathing_cycle_number")
     val breathingCycleNumber: Int = 0,
 
+    @ColumnInfo(name = "notification_time")
+    val notificationTimeInMinutes: Int = 0,
+
     // parachute means skipping the block message. check if enabled.
     @ColumnInfo(name = "is_parachute")
     val isParachute: Boolean = false,
@@ -74,7 +77,6 @@ data class Schedules(
     // if you forget to check phone during rest time, it would be auto-adjusted
     @ColumnInfo(name = "is_pomodoro_rest_adjustable")
     val isPomodoroRestAdjustable: Boolean = true,
-
 
     // Check if it will work on following week days
     val weekDays: Int = 11111110

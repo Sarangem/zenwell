@@ -1,5 +1,6 @@
 package com.sarangem.zenwell.ui.homescreen
 
+import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,17 +29,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.checkAccessibilityServicePermission
 import com.sarangem.zenwell.data.tables.Schedules
-import com.sarangem.zenwell.getAmPm
-import com.sarangem.zenwell.minutesToString
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.utils.areNotificationsEnabled
+import com.sarangem.zenwell.utils.checkAccessibilityServicePermission
+import com.sarangem.zenwell.utils.getAmPm
+import com.sarangem.zenwell.utils.is24Hour
+import com.sarangem.zenwell.utils.minutesToString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,10 +51,12 @@ fun HomeScreen(
     schedulesList: List<Schedules>,
     scheduleClicked: Int = 0,
     startPermissionActivity: (Intent) -> Unit = {},
+    shouldShowRequestPermissionRationale: (String) -> Unit = {},
     accessibilityPermission: () -> Boolean = { checkAccessibilityServicePermission() },
+    notificationPermission: (Context) -> Boolean = { areNotificationsEnabled(it) },
     addNewSchedule: suspend () -> Schedules = suspend { Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
-){
+) {
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -77,7 +83,9 @@ fun HomeScreen(
             scheduleClicked = scheduleClicked,
             openEditScreen = openEditScreen,
             startPermissionActivity = startPermissionActivity,
-            accessibilityPermission = accessibilityPermission
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            accessibilityPermission = accessibilityPermission,
+            notificationPermission = notificationPermission
         )
 
     }
@@ -90,9 +98,13 @@ fun HomeScreenBody(
     scheduleClicked: Int = 0,
     openEditScreen: (Schedules) -> Unit = {},
     startPermissionActivity: (Intent) -> Unit = {},
-    accessibilityPermission: () -> Boolean = { checkAccessibilityServicePermission() }
+    shouldShowRequestPermissionRationale: (String) -> Unit = {},
+    accessibilityPermission: () -> Boolean,
+    notificationPermission: (Context) -> Boolean,
 ) {
+    val context = LocalContext.current
     var hasAccessibilityPermission by remember { mutableStateOf(accessibilityPermission()) }
+    var hasNotificationPermission by remember { mutableStateOf(notificationPermission(context)) }
 
     LazyColumn(
         modifier = modifier,
@@ -104,11 +116,11 @@ fun HomeScreenBody(
                 startPermissionActivity = { intent ->
                     startPermissionActivity(intent)
                     hasAccessibilityPermission = accessibilityPermission()
+                    hasNotificationPermission = notificationPermission(context)
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_small)),
+                modifier = Modifier.fillMaxWidth(),
                 hasAccessibilityServicePermission = hasAccessibilityPermission,
+                hasNotificationsPermission = hasNotificationPermission
             )
         }
 
@@ -149,8 +161,10 @@ fun SchedulesCard(
     schedule: Schedules,
     isClicked: Boolean = false,
     openEditScreen: (Schedules) -> Unit = {}
-){
-    val tint = if (schedule.isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
+) {
+    val context = LocalContext.current
+    val tint =
+        if (schedule.isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
     val cardColor = if (isClicked) {
         CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -174,13 +188,22 @@ fun SchedulesCard(
                     modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
                 )
                 Text(
-                    text = minutesToString(schedule.startTimeInMinutes) + " " + getAmPm(
-                        schedule.startTimeInMinutes
-                    )
-                            + stringResource(R.string.to)
-                            + minutesToString(schedule.endTimeInMinutes) + " " + getAmPm(
-                        schedule.endTimeInMinutes
-                    ),
+                    text = if (is24Hour(context)) {
+                        minutesToString(
+                            schedule.startTimeInMinutes,
+                            context
+                        ) + stringResource(R.string.to) + minutesToString(
+                            schedule.endTimeInMinutes,
+                            context
+                        )
+                    } else {
+                        minutesToString(schedule.startTimeInMinutes, context) + " " + getAmPm(
+                            schedule.startTimeInMinutes
+                        ) + stringResource(R.string.to) + minutesToString(
+                            schedule.endTimeInMinutes,
+                            context
+                        ) + " " + getAmPm(schedule.endTimeInMinutes)
+                    },
                     style = MaterialTheme.typography.labelLarge,
                     color = tint,
                     fontWeight = FontWeight.Bold,
@@ -209,8 +232,8 @@ fun HomeScreenPreview() {
             Schedules(
                 id = 1,
                 title = "Schedule 1",
-                startTimeInMinutes = 13 * 60 + 14,
-                endTimeInMinutes = 19 * 60 + 17
+                startTimeInMinutes = 9 * 60 + 14,
+                endTimeInMinutes = 10 * 60 + 17
             ),
             Schedules(
                 id = 2,
@@ -221,13 +244,14 @@ fun HomeScreenPreview() {
             Schedules(
                 id = 3,
                 title = "A very long schedules title with spaces in between",
-                startTimeInMinutes = 17 * 60 + 34,
-                endTimeInMinutes = 12 * 60 + 12,
+                startTimeInMinutes = 7 * 60 + 34,
+                endTimeInMinutes = 11 * 60 + 12,
                 isEnabled = false
             )
         ),
         scheduleClicked = 1,
-        accessibilityPermission = { return@HomeScreen false}
+        accessibilityPermission = { false },
+        notificationPermission = { false }
     )
 }
 
@@ -249,11 +273,12 @@ fun HomeScreenPreviewDarkMode() {
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenEmptyPreview(){
+fun HomeScreenEmptyPreview() {
     ZenwellTheme {
         HomeScreen(
             schedulesList = listOf(),
-            accessibilityPermission = {return@HomeScreen false}
+            accessibilityPermission = { false },
+            notificationPermission = { false }
         )
     }
 }

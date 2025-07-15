@@ -279,6 +279,19 @@ fun EditScreenBody(
 
             }
 
+            ChooseNotificationTime(
+                notificationTime = uiState.schedule.notificationTimeInMinutes,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                notificationTimeInMinutes = it
+                            )
+                        )
+                    )
+                }
+            )
+
             ChooseAppList(
                 checkedAppList = uiState.appNames,
                 updateAppList = {
@@ -355,6 +368,7 @@ fun EditScreenPreview() {
                 startTimeInMinutes = 179,
                 endTimeInMinutes = 1079,
                 openTimeInMinutes = 10000,
+                notificationTimeInMinutes = 10,
                 breathingCycleDuration = 3,
                 breathingCycleNumber = 2
             ),

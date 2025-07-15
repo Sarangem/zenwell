@@ -2,11 +2,11 @@ package com.sarangem.zenwell.service.ui
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.graphics.Rect
 import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.runtime.Composable
-import android.graphics.Rect
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelStore
@@ -14,10 +14,10 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.sarangem.zenwell.ServiceLogger
 import com.sarangem.zenwell.data.tables.Schedules
-import com.sarangem.zenwell.getCurrentTimeInMinutes
 import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.utils.ServiceLogger
+import com.sarangem.zenwell.utils.createNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -33,7 +33,8 @@ class BlockingWindow(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    private val layoutParams = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams() else null
+    private val layoutParams =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams() else null
     private val composeView = ComposeView(context)
 
     var isAppOpened = false
@@ -46,14 +47,21 @@ class BlockingWindow(
 
         coroutineScope.launch {
 
-            // wait till open time
-            val delayTime = if(getCurrentTimeInMinutes() + schedule.openTimeInMinutes > schedule.endTimeInMinutes){
-                schedule.endTimeInMinutes - getCurrentTimeInMinutes()
-            } else {
-                schedule.openTimeInMinutes
-            }
+            // send notification
+            val delayTime = schedule.openTimeInMinutes - schedule.notificationTimeInMinutes
             if (delayTime < 0) return@launch
             delay(delayTime * 60 * 1000L)
+            if (schedule.notificationTimeInMinutes > 0) {
+                createNotification(
+                    scheduleId = schedule.id,
+                    scheduleName = schedule.title,
+                    appName = appName,
+                    context = context
+                )
+            }
+
+            delay(schedule.notificationTimeInMinutes * 60 * 1000L)
+
             ServiceLogger.d { "Rechecking the app." }
 
             // get the instance
@@ -77,7 +85,7 @@ class BlockingWindow(
     fun open(bounds: Rect = Rect()) {
 
         if (composeView.isAttachedToWindow) return
-        if(isAppOpened) return
+        if (isAppOpened) return
 
         try {
 
@@ -98,8 +106,12 @@ class BlockingWindow(
             // get screen size
             val density = context.resources.displayMetrics.density
             val appBarHeight = 56 * density
-            val screenHeight = (bounds.height() - appBarHeight) / density
-            val screenWidth = bounds.width() / density
+            val screenWidth = bounds.width()
+            val screenHeight = if (screenWidth / density >= 840) {
+                bounds.height()
+            } else {
+                bounds.height() - appBarHeight.toInt()
+            }
 
             // set the layoutParams according to bound
             layoutParams?.apply {
@@ -107,8 +119,8 @@ class BlockingWindow(
                 flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 format = PixelFormat.TRANSLUCENT
                 gravity = Gravity.TOP or Gravity.START
-                height = bounds.height() - appBarHeight.toInt()
-                width = bounds.width()
+                height = screenHeight
+                width = screenWidth
                 x = bounds.left
                 y = bounds.top
 
@@ -118,7 +130,7 @@ class BlockingWindow(
             // set the view
             composeView.apply {
                 setContent {
-                    content(screenHeight, screenWidth) { onTimerEnd() }
+                    content(screenHeight / density, screenWidth / density) { onTimerEnd() }
                 }
             }
             windowManager.addView(composeView, layoutParams)

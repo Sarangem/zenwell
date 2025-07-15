@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,13 +48,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.convertToTimePickerState
-import com.sarangem.zenwell.getAmPm
-import com.sarangem.zenwell.getWeekDays
-import com.sarangem.zenwell.minutesToString
-import com.sarangem.zenwell.toMinutes
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.utils.checkIfScheduleEnabled
+import com.sarangem.zenwell.utils.convertToTimePickerState
+import com.sarangem.zenwell.utils.getAmPm
+import com.sarangem.zenwell.utils.getWeekDays
+import com.sarangem.zenwell.utils.is24Hour
+import com.sarangem.zenwell.utils.minutesToString
+import com.sarangem.zenwell.utils.toMinutes
 import kotlin.math.pow
 
 @Composable
@@ -127,6 +130,7 @@ fun ClockButton(
     timePickerTitle: String,
     updateUiState: (Int) -> Unit
 ) {
+    val context = LocalContext.current
     var showPopup by remember { mutableStateOf(false) }
     OutlinedButton(
         modifier = modifier,
@@ -138,7 +142,7 @@ fun ClockButton(
             Row {
                 Spacer(Modifier.weight(0.5f))
                 Text(
-                    text = minutesToString(time),
+                    text = minutesToString(time, context),
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = Orbitron,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -147,17 +151,19 @@ fun ClockButton(
                 )
                 Spacer(Modifier.weight(0.5f))
             }
-            Row {
-                Spacer(Modifier.weight(0.5f))
-                Text(
-                    text = getAmPm(time),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontFamily = Orbitron,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.graphicsLayer(scaleX = 1.5f)
-                )
-                Spacer(Modifier.weight(0.5f))
+            if (!is24Hour(context)) {
+                Row {
+                    Spacer(Modifier.weight(0.5f))
+                    Text(
+                        text = getAmPm(time),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontFamily = Orbitron,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.graphicsLayer(scaleX = 1.5f)
+                    )
+                    Spacer(Modifier.weight(0.5f))
+                }
             }
         }
     }
@@ -169,7 +175,7 @@ fun ClockButton(
                 updateUiState(it.toMinutes())
                 showPopup = false
             },
-            timePickerState = convertToTimePickerState(time)
+            timePickerState = convertToTimePickerState(time, context)
         )
     }
 }
@@ -264,7 +270,7 @@ fun SelectWeekDays(
                 else -> ButtonGroupDefaults.connectedMiddleButtonPressShape
             }
 
-            val isChecked = ((weekDays / 10.0.pow(day).toInt()) % 10) == 1
+            val isChecked = checkIfScheduleEnabled(weekDays, day)
             ToggleButton(
                 checked = isChecked,
                 onCheckedChange = { checked ->
@@ -307,7 +313,7 @@ fun ChooseRunningTimeLightPreview() {
         var weekDays by remember { mutableIntStateOf(11111110) }
         ChooseRunningTime(
             startTimeInMinutes = 0,
-            endTimeInMinutes = 1439,
+            endTimeInMinutes = 719,
             weekDays = weekDays,
             updateWeekDays = { weekDays = it }
         )

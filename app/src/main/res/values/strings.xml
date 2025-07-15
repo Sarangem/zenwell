@@ -46,4 +46,9 @@
     <string name="tuesday_abbr">T</string>
     <string name="wednesday_abbr">W</string>
     <string name="choose_week_days">Week days</string>
+    <string name="send_notification_before_closing">"Send notification before blocking"</string>
+    <string name="block_notification_description">"Send a notification before blocking the app again."</string>
+    <string name="block_notification_message">" would soon block "</string>
+    <string name="notification_permission">Notifications for Zenwell</string>
+    <string name="notification_permission_explanation">" not enabled. Some features may not work."</string>
 </resources>

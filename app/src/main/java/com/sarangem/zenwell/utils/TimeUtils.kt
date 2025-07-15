@@ -1,15 +1,13 @@
-package com.sarangem.zenwell
+package com.sarangem.zenwell.utils
 
-import android.util.Log
+import android.content.Context
+import android.text.format.DateFormat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
-import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.R
 import java.util.Calendar
-import java.util.Calendar.DAY_OF_WEEK
 import java.util.Locale
 import kotlin.math.pow
-
-// -- TIME -- //
 
 fun getCurrentTimeInMinutes(): Int {
     val calendar = Calendar.getInstance()
@@ -18,11 +16,18 @@ fun getCurrentTimeInMinutes(): Int {
     return (hour * 60) + minute
 }
 
-fun minutesToString(num: Int): String {
+fun is24Hour(context: Context): Boolean {
+    return DateFormat.is24HourFormat(context)
+}
+
+fun minutesToString(num: Int, context: Context): String {
+    val is24Hour = is24Hour(context)
 
     var hours: Int = num / 60
-    hours = if (hours <= 12) hours else (hours - 12)
-    hours = if (hours == 0) 12 else hours
+    if(is24Hour) {
+        hours = if (hours <= 12) hours else (hours - 12)
+        hours = if (hours == 0) 12 else hours
+    }
     val hourString = if (hours < 10) "0$hours" else hours.toString()
 
     val minutes: Int = num % 60
@@ -37,11 +42,11 @@ fun getAmPm(num: Int): String {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun convertToTimePickerState(timeInMinutes: Int): TimePickerState {
+fun convertToTimePickerState(timeInMinutes: Int, context: Context): TimePickerState {
     return TimePickerState(
         initialHour = (timeInMinutes / 60),
         initialMinute = (timeInMinutes % 60),
-        is24Hour = false
+        is24Hour = DateFormat.is24HourFormat(context)
     )
 }
 
@@ -72,40 +77,10 @@ fun getWeekDays(): List<Pair<Int, Int>> {
 
 fun checkIfScheduleEnabled(weekDays: Int): Boolean {
     val calendar = Calendar.getInstance(Locale.getDefault())
-    val today = calendar.get(DAY_OF_WEEK)
-    return ((weekDays / 10.0.pow(today).toInt()) % 10) == 1
+    val today = calendar.get(Calendar.DAY_OF_WEEK)
+    return checkIfScheduleEnabled(weekDays, today)
 }
 
-
-// -- PERMISSIONS -- //
-
-fun checkAccessibilityServicePermission(): Boolean {
-    return (AppBlockerService.instance != null)
-}
-
-// -- LOGGING -- //
-
-object ServiceLogger {
-    val isDebug = BuildConfig.DEBUG
-    const val TAG = "AccessibilityService"
-
-    // for non-important logging
-    inline fun v(message: () -> String) {
-        if (isDebug) Log.v(TAG, message())
-    }
-
-    // for things related to opening or closing window
-    inline fun d(message: () -> String) {
-        if (isDebug) Log.d(TAG, message())
-    }
-
-    // for opening or closing a window
-    inline fun i(message: () -> String) {
-        if (isDebug) Log.i(TAG, message())
-    }
-
-    // for errors
-    inline fun e(message: () -> String, e: Exception? = null) {
-        if (isDebug) Log.e(TAG, message(), e)
-    }
+fun checkIfScheduleEnabled(weekDays: Int, day: Int): Boolean {
+    return ((weekDays / 10.0.pow(day).toInt()) % 10) == 1
 }

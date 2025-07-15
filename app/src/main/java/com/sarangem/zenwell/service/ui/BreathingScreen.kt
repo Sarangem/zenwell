@@ -35,9 +35,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.graphics.shapes.Morph
-import com.sarangem.zenwell.APP_BLOCKED
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.utils.isExpandedWidth
 import kotlinx.coroutines.delay
 
 @Composable
@@ -48,7 +48,6 @@ fun BreathingScreen(
     breathingCycleNumber: Int,
     showOpenDialog: Boolean,
     message: String,
-    height: Float,
     width: Float
 ) {
     var showOpen by remember { mutableStateOf(false) }
@@ -62,10 +61,24 @@ fun BreathingScreen(
 
     Card(modifier = modifier) {
 
-        if ((height < 480 && width > 600) || (height < 900 && width > 800)) {
-            BreathingScreenRow(timerEnd, breathingCycleDuration, breathingCycleNumber, message, showOpen, onTimerEnd)
+        if (isExpandedWidth(width)) {
+            BreathingScreenRow(
+                timerEnd,
+                breathingCycleDuration,
+                breathingCycleNumber,
+                message,
+                showOpen,
+                onTimerEnd
+            )
         } else {
-            BreathingScreenColumn(timerEnd, breathingCycleDuration, breathingCycleNumber, message, showOpen, onTimerEnd)
+            BreathingScreenColumn(
+                timerEnd,
+                breathingCycleDuration,
+                breathingCycleNumber,
+                message,
+                showOpen,
+                onTimerEnd
+            )
         }
     }
 }
@@ -91,7 +104,7 @@ fun BreathingCard(
             onTimerEnd()
         }
 
-        repeat(2){
+        repeat(2) {
             delay(halfDuration)
             inhale = !inhale
         }
@@ -121,7 +134,7 @@ fun BreathingCard(
             targetState = inhale
         ) { textState ->
             Text(
-                text = stringResource( if(textState) R.string.inhale else R.string.exhale ),
+                text = stringResource(if (textState) R.string.inhale else R.string.exhale),
                 style = MaterialTheme.typography.displayLarge,
                 modifier = Modifier
                     .padding(dimensionResource(R.dimen.image_size))
@@ -198,50 +211,34 @@ fun BreathingScreenRow(
 
 // -- PREVIEW -- //
 
-@Preview(showBackground = true, heightDp = 400, widthDp = 400)
-@Composable
-fun BreathingScreenCompactPreviewLight() {
-    ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 400f, 400f)
-    }
-}
-
-@Preview(heightDp = 400, widthDp = 400)
-@Composable
-fun BreathingScreenCompactPreviewDark() {
-    ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 400f, 400f)
-    }
-}
-
-@Preview(showBackground = true, heightDp = 700, widthDp = 500)
+@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun BreathingScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 700f, 500f)
+        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, MEDIUM_WIDTH.toFloat())
     }
 }
 
-@Preview(heightDp = 700, widthDp = 500)
+@Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun BreathingScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 700f, 500f)
+        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, MEDIUM_WIDTH.toFloat())
     }
 }
 
-@Preview(showBackground = true, heightDp = 400, widthDp = 700)
+@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun BreathingScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 400f, 700f)
+        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, EXPANDED_WIDTH.toFloat())
     }
 }
 
-@Preview(heightDp = 400, widthDp = 700)
+@Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun BreathingScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, 400f, 700f)
+        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, EXPANDED_WIDTH.toFloat())
     }
 }

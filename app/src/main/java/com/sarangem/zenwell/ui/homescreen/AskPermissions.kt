@@ -1,7 +1,8 @@
 package com.sarangem.zenwell.ui.homescreen
 
-import android.annotation.SuppressLint
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
@@ -27,23 +28,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
-@SuppressLint("InlinedApi")
 @Composable
 fun AskPermissions(
     modifier: Modifier = Modifier,
-    hasAccessibilityServicePermission: Boolean,
+    hasAccessibilityServicePermission: Boolean = false,
+    hasNotificationsPermission: Boolean = false,
     startPermissionActivity: (Intent) -> Unit = {},
+    shouldShowRequestPermissionRationale: (String) -> Unit = {},
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
 ) {
     Column {
 
         if (!hasAccessibilityServicePermission) {
             PermissionRequestCard(
-                modifier = modifier,
+                modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
                 permissionName = stringResource(R.string.accessibility_service_permission),
                 permissionExplanation = stringResource(R.string.accessibility_service_permission_explanation),
                 onGrantClick = {
                     startPermissionActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                }
+            )
+        }
+
+        if (!hasNotificationsPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            PermissionRequestCard(
+                modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
+                permissionName = stringResource(R.string.notification_permission),
+                permissionExplanation = stringResource(R.string.notification_permission_explanation),
+                cardColor = if (isSystemInDarkTheme) Color(0xFF7C5900) else Color(0xFFF9DEBB),
+                onGrantClick = {
+                    shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
                 }
             )
         }
@@ -102,7 +116,7 @@ fun PermissionRequestCard(
 @Composable
 fun AskPermissionsLightModePreview() {
     ZenwellTheme(darkTheme = false) {
-        AskPermissions(hasAccessibilityServicePermission = false)
+        AskPermissions()
     }
 }
 
@@ -110,9 +124,6 @@ fun AskPermissionsLightModePreview() {
 @Composable
 fun AskPermissionsDarkModePreview() {
     ZenwellTheme(darkTheme = true) {
-        AskPermissions(
-            hasAccessibilityServicePermission = false,
-            isSystemInDarkTheme = true
-        )
+        AskPermissions(isSystemInDarkTheme = true)
     }
 }

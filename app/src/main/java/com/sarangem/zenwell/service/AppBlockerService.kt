@@ -6,13 +6,13 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import android.graphics.Rect
 import com.sarangem.zenwell.ZenwellApplication
-import com.sarangem.zenwell.checkIfScheduleEnabled
-import com.sarangem.zenwell.getCurrentTimeInMinutes
+import com.sarangem.zenwell.utils.checkIfScheduleEnabled
+import com.sarangem.zenwell.utils.getCurrentTimeInMinutes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import com.sarangem.zenwell.ServiceLogger
+import com.sarangem.zenwell.utils.ServiceLogger
 
 
 class AppBlockerService : AccessibilityService() {
@@ -37,11 +37,9 @@ class AppBlockerService : AccessibilityService() {
 
     suspend fun initializeRepository() {
 
-        // update our variable with latest repository
-
         val schedulesRepository = (application as ZenwellApplication).container
-        val schedulesList = schedulesRepository.getAllSchedules().first()
 
+        val schedulesList = schedulesRepository.getAllSchedules().first()
         scheduleInfoList.clear()
         schedulesList.forEach { schedule ->
 
@@ -86,7 +84,7 @@ class AppBlockerService : AccessibilityService() {
             val windowBounds = Rect()
             root.getBoundsInScreen(windowBounds)
             if (windowBounds.width() <= 0 || windowBounds.height() <= 0) {
-                ServiceLogger.e({ "Invalid window bounds received: $windowBounds for app $currentApp. Skipping overlay." })
+                ServiceLogger.w { "Invalid window bounds received: $windowBounds for app $currentApp. Skipping overlay." }
                 windowInfo.recycle()
                 continue
             }
@@ -113,7 +111,7 @@ class AppBlockerService : AccessibilityService() {
 
         // close the window
         scheduleInfoList
-        		.flatMap { it.blockingWindowList }
+            .flatMap { it.blockingWindowList }
             .filter { it.isWindowOpen() && it.appName !in currentVisibleApps }
             .forEach { blockingWindow ->
                 ServiceLogger.i { "Closing window for ${blockingWindow.appName} for schedule ${blockingWindow.schedule.id}." }
@@ -122,14 +120,6 @@ class AppBlockerService : AccessibilityService() {
 
         previousApp = currentVisibleApps
         ServiceLogger.d { "Accessibility Event completed." }
-    }
-
-    fun closeWindow(scheduleId: Int) {
-        val scheduleInfo = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId } ?: return
-        ServiceLogger.i { "Closing window" }
-        scheduleInfo.blockingWindowList.forEach {
-            it.close()
-        }
     }
 
     fun recheckApp() {

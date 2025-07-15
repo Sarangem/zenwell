@@ -12,15 +12,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.ui.editscreen.EditScreen
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
+import com.sarangem.zenwell.utils.isExpandedWidth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ZenwellAppScreen(
-    startPermissionActivity: (Intent) -> Unit = {}
+    startPermissionActivity: (Intent) -> Unit = {},
+    shouldShowRequestPermissionRationale: (String) -> Unit = {}
 ) {
     val viewModel: ZenwellAppViewModel = viewModel(factory = ZenwellAppViewModel.factory)
     val uiState by viewModel.uiState.collectAsState()
@@ -33,6 +34,7 @@ fun ZenwellAppScreen(
             schedulesList = schedulesList,
             scheduleClicked = uiState.schedule.id,
             startPermissionActivity = startPermissionActivity,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             addNewSchedule = { viewModel.addNewSchedule(context) },
             openEditScreen = {
 
@@ -68,12 +70,11 @@ fun ZenwellAppScreen(
         )
     }
 
-    val width = with(LocalDensity.current){
-        LocalWindowInfo.current.containerSize.width.toDp()
+    val width = with(LocalDensity.current) {
+        LocalWindowInfo.current.containerSize.width.toDp().value
     }
-    val isExpandedWidth = width >= 840.dp
 
-    if (isExpandedWidth) {
+    if (isExpandedWidth(width)) {
         Row(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceEvenly
