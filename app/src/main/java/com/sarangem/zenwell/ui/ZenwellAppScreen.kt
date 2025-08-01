@@ -21,7 +21,7 @@ import com.sarangem.zenwell.utils.isExpandedWidth
 @Composable
 fun ZenwellAppScreen(
     startPermissionActivity: (Intent) -> Unit = {},
-    shouldShowRequestPermissionRationale: (String) -> Unit = {}
+    requestNotification: () -> Unit = {}
 ) {
     val viewModel: ZenwellAppViewModel = viewModel(factory = ZenwellAppViewModel.factory)
     val uiState by viewModel.uiState.collectAsState()
@@ -34,7 +34,7 @@ fun ZenwellAppScreen(
             schedulesList = schedulesList,
             scheduleClicked = uiState.schedule.id,
             startPermissionActivity = startPermissionActivity,
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            requestNotification = requestNotification,
             addNewSchedule = { viewModel.addNewSchedule(context) },
             openEditScreen = {
 

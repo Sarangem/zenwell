@@ -51,7 +51,7 @@ fun HomeScreen(
     schedulesList: List<Schedules>,
     scheduleClicked: Int = 0,
     startPermissionActivity: (Intent) -> Unit = {},
-    shouldShowRequestPermissionRationale: (String) -> Unit = {},
+    requestNotification: () -> Unit = {},
     accessibilityPermission: () -> Boolean = { checkAccessibilityServicePermission() },
     notificationPermission: (Context) -> Boolean = { areNotificationsEnabled(it) },
     addNewSchedule: suspend () -> Schedules = suspend { Schedules() },
@@ -83,7 +83,7 @@ fun HomeScreen(
             scheduleClicked = scheduleClicked,
             openEditScreen = openEditScreen,
             startPermissionActivity = startPermissionActivity,
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            requestNotification = requestNotification,
             accessibilityPermission = accessibilityPermission,
             notificationPermission = notificationPermission
         )
@@ -98,7 +98,7 @@ fun HomeScreenBody(
     scheduleClicked: Int = 0,
     openEditScreen: (Schedules) -> Unit = {},
     startPermissionActivity: (Intent) -> Unit = {},
-    shouldShowRequestPermissionRationale: (String) -> Unit = {},
+    requestNotification: () -> Unit = {},
     accessibilityPermission: () -> Boolean,
     notificationPermission: (Context) -> Boolean,
 ) {
@@ -116,6 +116,9 @@ fun HomeScreenBody(
                 startPermissionActivity = { intent ->
                     startPermissionActivity(intent)
                     hasAccessibilityPermission = accessibilityPermission()
+                },
+                requestNotification = {
+                    requestNotification()
                     hasNotificationPermission = notificationPermission(context)
                 },
                 modifier = Modifier.fillMaxWidth(),

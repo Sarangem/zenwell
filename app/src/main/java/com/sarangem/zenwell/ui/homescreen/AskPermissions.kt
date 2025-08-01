@@ -34,7 +34,7 @@ fun AskPermissions(
     hasAccessibilityServicePermission: Boolean = false,
     hasNotificationsPermission: Boolean = false,
     startPermissionActivity: (Intent) -> Unit = {},
-    shouldShowRequestPermissionRationale: (String) -> Unit = {},
+    requestNotification: () -> Unit = {},
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
 ) {
     Column {
@@ -57,7 +57,7 @@ fun AskPermissions(
                 permissionExplanation = stringResource(R.string.notification_permission_explanation),
                 cardColor = if (isSystemInDarkTheme) Color(0xFF7C5900) else Color(0xFFF9DEBB),
                 onGrantClick = {
-                    shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+                    requestNotification()
                 }
             )
         }
