@@ -7,11 +7,12 @@ import com.sarangem.zenwell.data.BlockType
 
 @Entity(tableName = "schedules")
 data class Schedules(
+    // by default, all recommended values are set
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Int = 0, // would be auto-generated
 
-    val title: String = "",
+    val title: String = "", // would be set be viewmodel
 
     val message: String = "",
 
@@ -27,11 +28,11 @@ data class Schedules(
 
     // time of the day when blocking will end
     @ColumnInfo(name = "end_time")
-    val endTimeInMinutes: Int = 0,
+    val endTimeInMinutes: Int = 1439,
 
     // time to wait before opening the app
     @ColumnInfo(name = "wait_time")
-    val waitTimeInSeconds: Int = 0,
+    val waitTimeInSeconds: Int = 10,
 
     // should the app use a button to enter or enter automatically
     @ColumnInfo(name = "wait_enter_button")
@@ -39,18 +40,18 @@ data class Schedules(
 
     // how long would the app be opened before again showing block message
     @ColumnInfo(name = "open_time")
-    val openTimeInMinutes: Int = 0,
+    val openTimeInMinutes: Int = 10,
 
     // how long should a breathing cycle (one inhalation + one exhalation) take
     @ColumnInfo(name = "breathing_cycle_duration")
-    val breathingCycleDuration: Int = 0,
+    val breathingCycleDuration: Int = 3,
 
     // how many breathing cycles there should be
     @ColumnInfo(name = "breathing_cycle_number")
-    val breathingCycleNumber: Int = 0,
+    val breathingCycleNumber: Int = 2,
 
     @ColumnInfo(name = "notification_time")
-    val notificationTimeInMinutes: Int = 0,
+    val notificationTimeInMinutes: Int = 2,
 
     // parachute means skipping the block message. check if enabled.
     @ColumnInfo(name = "is_parachute")

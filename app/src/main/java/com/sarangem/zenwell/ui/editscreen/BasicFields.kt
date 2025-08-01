@@ -71,6 +71,7 @@ fun ChooseMessage(
 fun ChooseNotificationTime(
     modifier: Modifier = Modifier,
     notificationTime: Int,
+    isNotificationTimeInvalid: Boolean,
     updateUiState: (Int) -> Unit = {}
 ) {
     EditScreenOutlinedField(
@@ -88,7 +89,9 @@ fun ChooseNotificationTime(
         },
         keyboardType = KeyboardType.Number,
         suffixText = stringResource(R.string.minutes),
-        modifier = modifier
+        modifier = modifier,
+        isError = isNotificationTimeInvalid,
+        errorMessage = stringResource(R.string.notification_time_invalid)
     )
 }
 
@@ -125,6 +128,14 @@ fun ChooseMessagePreview() {
 @Composable
 fun ChooseNotificationTimePreview() {
     ZenwellTheme {
-        ChooseNotificationTime(notificationTime = 2)
+        ChooseNotificationTime(notificationTime = 2, isNotificationTimeInvalid = false)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChooseNotificationTimePreview2() {
+    ZenwellTheme {
+        ChooseNotificationTime(notificationTime = 2, isNotificationTimeInvalid = true)
     }
 }

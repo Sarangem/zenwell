@@ -36,7 +36,20 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
     // UPDATE UI STATE
 
     fun updateUiState(currentState: AppUiState) {
-        _uiState.update { currentState }
+        var uiState = currentState
+
+        // check if the schedule time is valid
+        if (currentState.schedule.startTimeInMinutes >= currentState.schedule.endTimeInMinutes) {
+            uiState = uiState.copy(isRunningTimeInvalid = true)
+        }
+
+        // check if the notification time is valid
+        if (currentState.schedule.openTimeInMinutes <= currentState.schedule.notificationTimeInMinutes) {
+            uiState = uiState.copy(isNotificationTimeInvalid = true)
+        }
+
+        // update the state
+        _uiState.update { uiState }
     }
 
     fun setAppNamesInUiState() {
@@ -73,9 +86,7 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
 
     suspend fun saveToDatabase() {
 
-        if (_uiState.value.appNames == null) {
-            setAppNamesInUiState()
-        }
+        if (_uiState.value.appNames == null) setAppNamesInUiState()
 
         schedulesRepository.saveToDatabase(
             schedule = _uiState.value.schedule,

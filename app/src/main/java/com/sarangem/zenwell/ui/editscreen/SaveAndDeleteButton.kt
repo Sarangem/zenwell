@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonColors
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,6 +45,7 @@ import com.sarangem.zenwell.ui.theme.ZenwellTheme
 @Composable
 fun SaveAndDeleteButton(
     modifier: Modifier = Modifier,
+    isError: Boolean = false,
     onSave: () -> Unit = {},
     onDelete: () -> Unit = {},
 ) {
@@ -68,12 +70,16 @@ fun SaveAndDeleteButton(
                 pressedShape = ButtonGroupDefaults.connectedLeadingButtonPressShape,
                 checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape
             ),
-            colors = ToggleButtonDefaults.toggleButtonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                checkedContainerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                checkedContentColor = MaterialTheme.colorScheme.onPrimary
-            ),
+            colors = if(isError){
+                ToggleButtonDefaults.toggleButtonColors(MaterialTheme.colorScheme.surfaceDim)
+            } else {
+                ToggleButtonDefaults.toggleButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    checkedContainerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            },
             modifier = Modifier.weight(1.5f),
         ) {
             Row(
@@ -106,12 +112,16 @@ fun SaveAndDeleteButton(
                 checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape
             ),
             modifier = Modifier.weight(0.5f),
-            colors = ToggleButtonDefaults.toggleButtonColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                checkedContainerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                checkedContentColor = MaterialTheme.colorScheme.onError
-            )
+            colors = if(isError){
+                ToggleButtonDefaults.toggleButtonColors(MaterialTheme.colorScheme.surfaceDim)
+            } else {
+                ToggleButtonDefaults.toggleButtonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    checkedContainerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    checkedContentColor = MaterialTheme.colorScheme.onError
+                )
+            }
         ) {
             Icon(
                 imageVector = Icons.Filled.Delete,

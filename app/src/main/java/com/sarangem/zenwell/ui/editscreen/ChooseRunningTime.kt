@@ -67,7 +67,8 @@ fun ChooseRunningTime(
     endTimeInMinutes: Int,
     updateEndTime: (Int) -> Unit = {},
     weekDays: Int,
-    updateWeekDays: (Int) -> Unit = {}
+    updateWeekDays: (Int) -> Unit = {},
+    isRunningTimeInvalid: Boolean
 ) {
     Card(modifier = modifier) {
 
@@ -77,8 +78,25 @@ fun ChooseRunningTime(
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
             )
+            if(isRunningTimeInvalid){
+                Text(
+                    text = stringResource(R.string.running_time_is_invalid),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(
+                        top = dimensionResource(R.dimen.padding_small),
+                        start = dimensionResource(R.dimen.padding_medium),
+                        end = dimensionResource(R.dimen.padding_small),
+                    )
+                )
+            }
             Row(
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.card_elevation),
+                    bottom = dimensionResource(R.dimen.padding_medium),
+                    start = dimensionResource(R.dimen.padding_medium),
+                    end = dimensionResource(R.dimen.padding_medium),
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ClockButton(
@@ -312,10 +330,11 @@ fun ChooseRunningTimeLightPreview() {
     ZenwellTheme {
         var weekDays by remember { mutableIntStateOf(11111110) }
         ChooseRunningTime(
-            startTimeInMinutes = 0,
-            endTimeInMinutes = 719,
+            startTimeInMinutes = 719,
+            endTimeInMinutes = 0,
             weekDays = weekDays,
-            updateWeekDays = { weekDays = it }
+            updateWeekDays = { weekDays = it },
+            isRunningTimeInvalid = true
         )
     }
 }

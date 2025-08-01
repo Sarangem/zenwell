@@ -40,7 +40,9 @@ fun EditScreenOutlinedField(
     textFieldValue: String = "",
     onValueChange: (String) -> Unit = {},
     keyboardType: KeyboardType = KeyboardType.Text,
-    suffixText: String = ""
+    suffixText: String = "",
+    isError: Boolean = false,
+    errorMessage: String = ""
 ){
     EditScreenCard(modifier = modifier) {
         Text(
@@ -59,6 +61,12 @@ fun EditScreenOutlinedField(
             ),
             suffix = {
                 Text(suffixText)
+            },
+            isError = isError,
+            label = {
+                if(isError){
+                    Text(errorMessage)
+                }
             }
         )
     }

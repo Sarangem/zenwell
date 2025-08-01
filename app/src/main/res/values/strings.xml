@@ -51,4 +51,6 @@
     <string name="block_notification_message">" would soon block "</string>
     <string name="notification_permission">Notifications for Zenwell</string>
     <string name="notification_permission_explanation">" not enabled. Some features may not work."</string>
+    <string name="notification_time_invalid">Must be less than open time.</string>
+    <string name="running_time_is_invalid">Running time is invalid.</string>
 </resources>

@@ -87,31 +87,37 @@ fun EditScreen(
             }
         },
         floatingActionButton = {
+            val isError = uiState.isRunningTimeInvalid || uiState.isNotificationTimeInvalid
             SaveAndDeleteButton(
                 modifier = Modifier.padding(
                     start = dimensionResource(R.dimen.padding_small),
                     end = dimensionResource(R.dimen.padding_small)
                 ),
                 onSave = {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        isSaving = true
-                        onSave()
-                        isSaving = false
-                        withContext(Dispatchers.Main) {
-                            goBack()
+                    if(!isError){
+                        coroutineScope.launch(Dispatchers.IO) {
+                            isSaving = true
+                            onSave()
+                            isSaving = false
+                            withContext(Dispatchers.Main) {
+                                goBack()
+                            }
                         }
                     }
                 },
                 onDelete = {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        isSaving = true
-                        onDelete()
-                        isSaving = false
-                        withContext(Dispatchers.Main) {
-                            goBack()
+                    if(!isError){
+                        coroutineScope.launch(Dispatchers.IO) {
+                            isSaving = true
+                            onDelete()
+                            isSaving = false
+                            withContext(Dispatchers.Main) {
+                                goBack()
+                            }
                         }
                     }
                 },
+                isError = isError
             )
         },
         floatingActionButtonPosition = FabPosition.Center
@@ -289,7 +295,8 @@ fun EditScreenBody(
                             )
                         )
                     )
-                }
+                },
+                isNotificationTimeInvalid = uiState.isNotificationTimeInvalid
             )
 
             ChooseAppList(
@@ -335,7 +342,8 @@ fun EditScreenBody(
                             )
                         )
                     )
-                }
+                },
+                isRunningTimeInvalid = uiState.isRunningTimeInvalid
             )
 
             Spacer(Modifier.height(84.dp))
