@@ -60,9 +60,11 @@ fun SaveAndDeleteButton(
         ToggleButton(
             checked = checkedSave,
             onCheckedChange = {
-                checkedSave = false
-                onSave()
-                checkedSave = true
+                if(!isError){
+                    checkedSave = false
+                    onSave()
+                    checkedSave = true
+                }
             },
             shapes = ToggleButtonDefaults.shapes(
                 shape = ButtonGroupDefaults.connectedLeadingButtonShape,
@@ -70,7 +72,10 @@ fun SaveAndDeleteButton(
                 checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape
             ),
             colors = if(isError){
-                ToggleButtonDefaults.toggleButtonColors(MaterialTheme.colorScheme.surfaceDim)
+                ToggleButtonDefaults.toggleButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceDim,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
             } else {
                 ToggleButtonDefaults.toggleButtonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -111,16 +116,12 @@ fun SaveAndDeleteButton(
                 checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape
             ),
             modifier = Modifier.weight(0.5f),
-            colors = if(isError){
-                ToggleButtonDefaults.toggleButtonColors(MaterialTheme.colorScheme.surfaceDim)
-            } else {
-                ToggleButtonDefaults.toggleButtonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    checkedContainerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    checkedContentColor = MaterialTheme.colorScheme.onError
-                )
-            }
+            colors = ToggleButtonDefaults.toggleButtonColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                checkedContainerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                checkedContentColor = MaterialTheme.colorScheme.onError
+            )
         ) {
             Icon(
                 imageVector = Icons.Filled.Delete,

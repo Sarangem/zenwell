@@ -36,20 +36,13 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
     // UPDATE UI STATE
 
     fun updateUiState(currentState: AppUiState) {
-        var uiState = currentState
-
-        // check if the schedule time is valid
-        if (currentState.schedule.startTimeInMinutes >= currentState.schedule.endTimeInMinutes) {
-            uiState = uiState.copy(isRunningTimeInvalid = true)
+        _uiState.update {
+            currentState.copy(
+                isRunningTimeInvalid = currentState.schedule.startTimeInMinutes >= currentState.schedule.endTimeInMinutes,
+                isNotificationTimeInvalid = currentState.schedule.openTimeInMinutes > currentState.schedule.notificationTimeInMinutes,
+                isPomodoroSessionNumberInvalid = currentState.schedule.pomodoroSessionNumber > 0
+            )
         }
-
-        // check if the notification time is valid
-        if (currentState.schedule.openTimeInMinutes <= currentState.schedule.notificationTimeInMinutes) {
-            uiState = uiState.copy(isNotificationTimeInvalid = true)
-        }
-
-        // update the state
-        _uiState.update { uiState }
     }
 
     fun setAppNamesInUiState() {

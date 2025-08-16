@@ -265,6 +265,32 @@ fun ChoosePomodoroRestTime(
     )
 }
 
+@Composable
+fun ChoosePomodoroSessionNumber(
+    modifier: Modifier = Modifier,
+    pomodoroSessionNumber: Int,
+    updateUiState: (Int) -> Unit = {},
+    isPomodoroSessionNumberInvalid: Boolean = false
+) {
+    EditScreenOutlinedField(
+        mainText = stringResource(R.string.number_of_pomodoro_sessions),
+        textFieldValue = pomodoroSessionNumber.toString(),
+        onValueChange = {
+            if (it.isDigitsOnly()) {
+                val num = it.toIntOrNull()
+                if (num == null) {
+                    updateUiState(0)
+                } else {
+                    updateUiState(num)
+                }
+            }
+        },
+        keyboardType = KeyboardType.Number,
+        isError = isPomodoroSessionNumberInvalid,
+        errorMessage = stringResource(R.string.pomodoro_session_number_invalid),
+        modifier = modifier
+    )
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -378,6 +404,16 @@ fun ChoosePomodoroRestTimePreview() {
     ZenwellTheme {
         ChoosePomodoroRestTime(
             restTimeInMinutes = 5
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChoosePomodoroSessionNumberPreview() {
+    ZenwellTheme {
+        ChoosePomodoroSessionNumber(
+            pomodoroSessionNumber = 5
         )
     }
 }

@@ -221,12 +221,13 @@ fun PomodoroTimerControls(
 ) {
     var elapsedTime by rememberSaveable { mutableIntStateOf(pomodoroManager.getElapsedTimeInSeconds()) }
     var isWorkTime by rememberSaveable { mutableStateOf(pomodoroManager.isWorkTime()) }
-    LaunchedEffect(elapsedTime) {
-        while(true){
+    LaunchedEffect(Unit) {
+        while (pomodoroManager.isActive()) {
             delay(1000L)
             isWorkTime = pomodoroManager.isWorkTime()
             elapsedTime = pomodoroManager.getElapsedTimeInSeconds()
         }
+        updatePomodoroActivity(false)
     }
 
     Row(
@@ -252,9 +253,7 @@ fun PomodoroTimerControls(
             ) {
                 Icon(
                     imageVector = if (isWorkTime) Icons.Filled.Work else Icons.Filled.LocalCafe,
-                    contentDescription = if (isWorkTime) stringResource(R.string.work_time) else stringResource(
-                        R.string.rest_time
-                    ),
+                    contentDescription = stringResource(if (isWorkTime) R.string.work_time else R.string.rest_time),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .size(dimensionResource(R.dimen.padding_large))
@@ -340,16 +339,18 @@ fun RegularSchedulesCardPreview() {
 @Composable
 fun PomodoroScheduleCardPreview() {
     ZenwellTheme {
-        class FakePomodoroManager(): AppBlockerService.PomodoroManagerBase {
+        class FakePomodoroManager() : AppBlockerService.PomodoroManagerBase {
             var active = false
-            var time =  60
+            var time = 60
             override fun isActive() = active
             override fun start() {
                 active = true
             }
+
             override fun end() {
                 active = false
             }
+
             override fun isWorkTime() = time > 1
             override fun getElapsedTimeInSeconds(): Int {
                 time--

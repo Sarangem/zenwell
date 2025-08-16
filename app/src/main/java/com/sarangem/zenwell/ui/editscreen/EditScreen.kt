@@ -86,33 +86,29 @@ fun EditScreen(
             }
         },
         floatingActionButton = {
-            val isError = uiState.isRunningTimeInvalid || uiState.isNotificationTimeInvalid
+            val isError = uiState.isRunningTimeInvalid || uiState.isNotificationTimeInvalid || uiState.isPomodoroSessionNumberInvalid
             SaveAndDeleteButton(
                 modifier = Modifier.padding(
                     start = dimensionResource(R.dimen.padding_small),
                     end = dimensionResource(R.dimen.padding_small)
                 ),
                 onSave = {
-                    if(!isError){
-                        coroutineScope.launch(Dispatchers.IO) {
-                            isSaving = true
-                            onSave()
-                            isSaving = false
-                            withContext(Dispatchers.Main) {
-                                goBack()
-                            }
+                    coroutineScope.launch(Dispatchers.IO) {
+                        isSaving = true
+                        onSave()
+                        isSaving = false
+                        withContext(Dispatchers.Main) {
+                            goBack()
                         }
                     }
                 },
                 onDelete = {
-                    if(!isError){
-                        coroutineScope.launch(Dispatchers.IO) {
-                            isSaving = true
-                            onDelete()
-                            isSaving = false
-                            withContext(Dispatchers.Main) {
-                                goBack()
-                            }
+                    coroutineScope.launch(Dispatchers.IO) {
+                        isSaving = true
+                        onDelete()
+                        isSaving = false
+                        withContext(Dispatchers.Main) {
+                            goBack()
                         }
                     }
                 },
@@ -142,255 +138,269 @@ fun EditScreenBody(
     setAppNamesInUiState: () -> Unit = {},
     isSaving: Boolean = false,
 ) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
 
+        ChooseEnable(
+            checked = uiState.schedule.isEnabled,
+            updateUiState = {
+                updateUiState(
+                    uiState.copy(
+                        schedule = uiState.schedule.copy(
+                            isEnabled = it
+                        )
+                    )
+                )
+            },
+        )
 
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+        ChooseScheduleTitle(
+            title = uiState.schedule.title,
+            updateUiState = {
+                updateUiState(
+                    uiState.copy(
+                        schedule = uiState.schedule.copy(
+                            title = it
+                        )
+                    )
+                )
+            }
+        )
+        ChooseMessage(
+            message = uiState.schedule.message,
+            updateUiState = {
+                updateUiState(
+                    uiState.copy(
+                        schedule = uiState.schedule.copy(
+                            message = it
+                        )
+                    )
+                )
+            }
+        )
+
+        if (!uiState.schedule.isPomodoro) {
+            ChooseBlockType(
+                blockType = uiState.schedule.blockType,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                blockType = it
+                            )
+                        )
+                    )
+                }
+            )
+        }
+
+        val blockType = uiState.schedule.blockType
+
+        if (blockType == BlockType.Wait) {
+
+            ChooseWaitTime(
+                waitTimeInSeconds = uiState.schedule.waitTimeInSeconds,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                waitTimeInSeconds = it
+                            )
+                        )
+                    )
+                }
+            )
+
+        }
+
+        if (blockType == BlockType.Breathing) {
+
+            ChooseBreathingCycleDuration(
+                breathingCycleDuration = uiState.schedule.breathingCycleDuration,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                breathingCycleDuration = it
+                            )
+                        )
+                    )
+                }
+            )
+
+            ChooseBreathingCycleNumber(
+                breathingCycleNumber = uiState.schedule.breathingCycleNumber,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                breathingCycleNumber = it
+                            )
+                        )
+                    )
+                }
+            )
+
+        }
+
+        if (blockType == BlockType.Wait ||
+            blockType == BlockType.Breathing
         ) {
 
-            ChooseEnable(
-                checked = uiState.schedule.isEnabled,
+            ChooseOpenTime(
+                openTimeInMinutes = uiState.schedule.openTimeInMinutes,
                 updateUiState = {
                     updateUiState(
                         uiState.copy(
                             schedule = uiState.schedule.copy(
-                                isEnabled = it
-                            )
-                        )
-                    )
-                },
-            )
-
-            ChooseScheduleTitle(
-                title = uiState.schedule.title,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                title = it
-                            )
-                        )
-                    )
-                }
-            )
-            ChooseMessage(
-                message = uiState.schedule.message,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                message = it
+                                openTimeInMinutes = it
                             )
                         )
                     )
                 }
             )
 
-            if(!uiState.schedule.isPomodoro){
-                ChooseBlockType(
-                    blockType = uiState.schedule.blockType,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    blockType = it
-                                )
-                            )
-                        )
-                    }
-                )
-            }
-
-            val blockType = uiState.schedule.blockType
-
-            if (blockType == BlockType.Wait) {
-
-                ChooseWaitTime(
-                    waitTimeInSeconds = uiState.schedule.waitTimeInSeconds,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    waitTimeInSeconds = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-            }
-
-            if (blockType == BlockType.Breathing) {
-
-                ChooseBreathingCycleDuration(
-                    breathingCycleDuration = uiState.schedule.breathingCycleDuration,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    breathingCycleDuration = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-                ChooseBreathingCycleNumber(
-                    breathingCycleNumber = uiState.schedule.breathingCycleNumber,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    breathingCycleNumber = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-            }
-
-            if (blockType == BlockType.Wait ||
-                blockType == BlockType.Breathing
-            ) {
-
-                ChooseOpenTime(
-                    openTimeInMinutes = uiState.schedule.openTimeInMinutes,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    openTimeInMinutes = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-                ChooseWaitEnterButton(
-                    checked = uiState.schedule.waitEnterButton,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    waitEnterButton = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-
-            }
-
-            if(!uiState.schedule.isPomodoro){
-                ChooseNotificationTime(
-                    notificationTime = uiState.schedule.notificationTimeInMinutes,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    notificationTimeInMinutes = it
-                                )
-                            )
-                        )
-                    },
-                    isNotificationTimeInvalid = uiState.isNotificationTimeInvalid
-                )
-            }
-
-            ChooseAppList(
-                checkedAppList = uiState.appNames,
-                updateAppList = {
+            ChooseWaitEnterButton(
+                checked = uiState.schedule.waitEnterButton,
+                updateUiState = {
                     updateUiState(
                         uiState.copy(
-                            appNames = it
+                            schedule = uiState.schedule.copy(
+                                waitEnterButton = it
+                            )
+                        )
+                    )
+                }
+            )
+
+
+        }
+
+        if (!uiState.schedule.isPomodoro) {
+            ChooseNotificationTime(
+                notificationTime = uiState.schedule.notificationTimeInMinutes,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                notificationTimeInMinutes = it
+                            ),
                         )
                     )
                 },
-                setAppNamesInUiState = setAppNamesInUiState
+                isNotificationTimeInvalid = uiState.isNotificationTimeInvalid
+            )
+        }
+
+        ChooseAppList(
+            checkedAppList = uiState.appNames,
+            updateAppList = {
+                updateUiState(
+                    uiState.copy(
+                        appNames = it
+                    )
+                )
+            },
+            setAppNamesInUiState = setAppNamesInUiState
+        )
+
+        if (uiState.schedule.isPomodoro) {
+
+            ChoosePomodoroWorkTime(
+                workTimeInMinutes = uiState.schedule.pomodoroWorkTimeInMinutes,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                pomodoroWorkTimeInMinutes = it
+                            )
+                        )
+                    )
+                }
             )
 
-            if(uiState.schedule.isPomodoro){
+            ChoosePomodoroRestTime(
+                restTimeInMinutes = uiState.schedule.pomodoroRestTimeInMinutes,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                pomodoroRestTimeInMinutes = it
+                            )
+                        )
+                    )
+                }
+            )
 
-                ChoosePomodoroWorkTime(
-                    workTimeInMinutes = uiState.schedule.pomodoroWorkTimeInMinutes,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    pomodoroWorkTimeInMinutes = it
-                                )
-                            )
+            ChoosePomodoroSessionNumber(
+                pomodoroSessionNumber = uiState.schedule.pomodoroSessionNumber,
+                updateUiState = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                pomodoroSessionNumber = it
+                            ),
                         )
-                    }
-                )
-
-                ChoosePomodoroRestTime(
-                    restTimeInMinutes = uiState.schedule.pomodoroRestTimeInMinutes,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    pomodoroRestTimeInMinutes = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-            } else {
-                ChooseRunningTime(
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
-                    startTimeInMinutes = uiState.schedule.startTimeInMinutes,
-                    updateStartTime = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    startTimeInMinutes = it
-                                )
-                            )
-                        )
-                    },
-                    endTimeInMinutes = uiState.schedule.endTimeInMinutes,
-                    updateEndTime = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    endTimeInMinutes = it
-                                )
-                            )
-                        )
-                    },
-                    weekDays = uiState.schedule.weekDays,
-                    updateWeekDays = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    weekDays = it
-                                )
-                            )
-                        )
-                    },
-                    isRunningTimeInvalid = uiState.isRunningTimeInvalid
-                )
-            }
-
-            Spacer(Modifier.height(84.dp))
+                    )
+                },
+                isPomodoroSessionNumberInvalid = uiState.isPomodoroSessionNumberInvalid
+            )
 
         }
 
-        if (isSaving) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                LoadingIndicator(Modifier.fillMaxWidth())
-            }
+        if (!uiState.schedule.isPomodoro) {
+            ChooseRunningTime(
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                startTimeInMinutes = uiState.schedule.startTimeInMinutes,
+                updateStartTime = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                startTimeInMinutes = it
+                            )
+                        )
+                    )
+                },
+                endTimeInMinutes = uiState.schedule.endTimeInMinutes,
+                updateEndTime = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                endTimeInMinutes = it
+                            )
+                        )
+                    )
+                },
+                weekDays = uiState.schedule.weekDays,
+                updateWeekDays = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                weekDays = it
+                            )
+                        )
+                    )
+                },
+                isRunningTimeInvalid = uiState.isRunningTimeInvalid
+            )
         }
+
+        Spacer(Modifier.height(84.dp))
+
+    }
+
+    if (isSaving) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            LoadingIndicator(Modifier.fillMaxWidth())
+        }
+    }
 
 
 }

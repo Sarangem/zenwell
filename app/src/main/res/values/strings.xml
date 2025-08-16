@@ -65,4 +65,6 @@
     <string name="collapsed">Collapsed</string>
     <string name="regular_schedule">Regular schedule</string>
     <string name="pomodoro_schedule">Pomodoro Schedule</string>
+    <string name="number_of_pomodoro_sessions">Number of pomodoro sessions</string>
+    <string name="pomodoro_session_number_invalid">Cannot be zero or less.</string>
 </resources>

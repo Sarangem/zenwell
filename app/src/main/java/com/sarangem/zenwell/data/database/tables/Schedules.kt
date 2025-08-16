@@ -75,6 +75,11 @@ data class Schedules(
     @ColumnInfo(name = "pomodoro_rest_time")
     val pomodoroRestTimeInMinutes: Int = 5,
 
+    // number of pomodoro sessions
+    // only if pomodoro enabled
+    @ColumnInfo(name = "pomodoro_session_number")
+    val pomodoroSessionNumber: Int = 5,
+
     // Check if it will work on following week days
     val weekDays: Int = 11111110
 )

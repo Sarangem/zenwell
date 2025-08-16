@@ -16,19 +16,21 @@ class PomodoroWindow(
     private val schedule: Schedules,
     private val blockingWindowList: List<BlockingWindow> = listOf()
 ) {
-    val coroutineScope = CoroutineScope(Dispatchers.IO)
+    var coroutineScope = CoroutineScope(Dispatchers.IO)
     val context = this
+
+    var sessions = schedule.pomodoroSessionNumber
     var isActive = false
-    var elapsedTimeInSeconds: Int = 0
-    var isWorkTime: Boolean = true
+    var elapsedTimeInSeconds = 0
+    var isWorkTime = true
 
 
     fun onPomodoroStart() {
-        ServiceLogger.i { "Pomodoro session with schedule id ${schedule.id} has started." }
+        ServiceLogger.d { "Pomodoro session with schedule id ${schedule.id} has started." }
         isActive = true
 
         coroutineScope.launch {
-            while (true) {
+            while (sessions > 0) {
 
                 // start work time
                 elapsedTimeInSeconds = schedule.pomodoroWorkTimeInMinutes * 60
@@ -64,6 +66,7 @@ class PomodoroWindow(
                     delay(1000L)
                     elapsedTimeInSeconds--
                 }
+                sessions--
 
                 // re-trigger opening window
                 ServiceLogger.d { "Rechecking the app." }
@@ -76,18 +79,26 @@ class PomodoroWindow(
                 }
 
             }
+            onPomodoroEnd()
         }
     }
 
     fun onPomodoroEnd() {
-        ServiceLogger.i { "Stopping pomodoro session with schedule id ${schedule.id}." }
-        isActive = false
+        ServiceLogger.d { "Stopping pomodoro session with schedule id ${schedule.id}." }
+
         coroutineScope.cancel()
+        coroutineScope = CoroutineScope(Dispatchers.IO)
+
         blockingWindowList.forEach { window ->
             window.close()
         }
         blockingWindowList.forEach { window -> // prevent executing open() if pomodoro has not started
             window.isAppOpened = true
         }
+
+        isActive = false
+        sessions = schedule.pomodoroSessionNumber
+        elapsedTimeInSeconds = 0
+        isWorkTime = true
     }
 }
