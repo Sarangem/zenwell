@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.BlockType
-import com.sarangem.zenwell.data.tables.Schedules
+import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.ui.BreathingScreen
 import com.sarangem.zenwell.service.ui.FullBlockScreen
 import com.sarangem.zenwell.service.ui.WaitScreen

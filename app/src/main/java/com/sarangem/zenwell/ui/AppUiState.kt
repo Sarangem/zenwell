@@ -1,6 +1,6 @@
 package com.sarangem.zenwell.ui
 
-import com.sarangem.zenwell.data.tables.Schedules
+import com.sarangem.zenwell.data.database.tables.Schedules
 
 data class AppUiState(
 

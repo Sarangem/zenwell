@@ -31,7 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.traversalIndex
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.tables.Schedules
+import com.sarangem.zenwell.data.database.tables.Schedules
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

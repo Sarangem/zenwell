@@ -1,12 +1,14 @@
-package com.sarangem.zenwell.data
+package com.sarangem.zenwell.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.sarangem.zenwell.data.database.tables.AppNames
+import com.sarangem.zenwell.data.database.tables.BlockedApps
+import com.sarangem.zenwell.data.database.tables.Schedules
 import kotlinx.coroutines.flow.Flow
-import com.sarangem.zenwell.data.tables.*
 
 @Dao
 interface ScheduleDao {

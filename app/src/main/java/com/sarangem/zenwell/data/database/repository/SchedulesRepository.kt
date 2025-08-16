@@ -1,6 +1,6 @@
-package com.sarangem.zenwell.data
+package com.sarangem.zenwell.data.database.repository
 
-import com.sarangem.zenwell.data.tables.Schedules
+import com.sarangem.zenwell.data.database.tables.Schedules
 import kotlinx.coroutines.flow.Flow
 
 interface SchedulesRepository {

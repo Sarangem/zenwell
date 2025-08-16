@@ -9,8 +9,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ZenwellApplication
-import com.sarangem.zenwell.data.SchedulesRepository
-import com.sarangem.zenwell.data.tables.Schedules
+import com.sarangem.zenwell.data.database.repository.SchedulesRepository
+import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
