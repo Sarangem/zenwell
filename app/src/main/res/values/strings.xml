@@ -53,4 +53,16 @@
     <string name="notification_permission_explanation">" not enabled. Some features may not work."</string>
     <string name="notification_time_invalid">Must be less than open time.</string>
     <string name="running_time_is_invalid">Running time is invalid.</string>
+    <string name="all">All</string>
+    <string name="regular">Regular</string>
+    <string name="pomodoro">Pomodoro</string>
+    <string name="end">End</string>
+    <string name="start">Start</string>
+    <string name="focus_mode">Focus mode</string>
+    <string name="work_time">Work Time</string>
+    <string name="rest_time">Rest Time</string>
+    <string name="expanded">Expanded</string>
+    <string name="collapsed">Collapsed</string>
+    <string name="regular_schedule">Regular schedule</string>
+    <string name="pomodoro_schedule">Pomodoro Schedule</string>
 </resources>

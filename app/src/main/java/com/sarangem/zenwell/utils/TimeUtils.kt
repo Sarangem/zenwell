@@ -36,6 +36,14 @@ fun minutesToString(num: Int, context: Context): String {
     return "$hourString:$minuteString"
 }
 
+fun secondsToString(num: Int): String{
+    val minutes = num / 60
+    val minuteString = if (minutes < 10) "0$minutes" else minutes.toString()
+    val seconds = num % 60
+    val secondString = if (seconds < 10) "0$seconds" else seconds.toString()
+    return "$minuteString:$secondString"
+}
+
 fun getAmPm(num: Int): String {
     val hours: Int = num / 60
     return if (hours < 12) "AM" else "PM"

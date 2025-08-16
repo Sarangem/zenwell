@@ -68,16 +68,12 @@ data class Schedules(
     // pomodoro working time
     // only if pomodoro enabled
     @ColumnInfo(name = "pomodoro_work_time")
-    val pomodoroWorkTimeInMinutes: Int = 0,
+    val pomodoroWorkTimeInMinutes: Int = 25,
 
     // pomodoro resting time
     // only if pomodoro enabled
     @ColumnInfo(name = "pomodoro_rest_time")
-    val pomodoroRestTimeInMinutes: Int = 0,
-
-    // if you forget to check phone during rest time, it would be auto-adjusted
-    @ColumnInfo(name = "is_pomodoro_rest_adjustable")
-    val isPomodoroRestAdjustable: Boolean = true,
+    val pomodoroRestTimeInMinutes: Int = 5,
 
     // Check if it will work on following week days
     val weekDays: Int = 11111110

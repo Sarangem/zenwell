@@ -3,21 +3,11 @@ package com.sarangem.zenwell.ui.homescreen
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,23 +16,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.tables.Schedules
+import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.areNotificationsEnabled
 import com.sarangem.zenwell.utils.checkAccessibilityServicePermission
-import com.sarangem.zenwell.utils.getAmPm
-import com.sarangem.zenwell.utils.is24Hour
-import com.sarangem.zenwell.utils.minutesToString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,6 +90,7 @@ fun HomeScreenBody(
     notificationPermission: (Context) -> Boolean,
 ) {
     val context = LocalContext.current
+    var filter by rememberSaveable { mutableStateOf(SchedulesFilter.All) }
     var hasAccessibilityPermission by remember { mutableStateOf(accessibilityPermission()) }
     var hasNotificationPermission by remember { mutableStateOf(notificationPermission(context)) }
 
@@ -144,82 +132,34 @@ fun HomeScreenBody(
             }
         }
 
-        items(schedulesList) { schedule ->
-            SchedulesCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_small)),
-                schedule = schedule,
-                isClicked = schedule.id == scheduleClicked,
-                openEditScreen = openEditScreen
-            )
-        }
-    }
-}
-
-
-@Composable
-fun SchedulesCard(
-    modifier: Modifier = Modifier,
-    schedule: Schedules,
-    isClicked: Boolean = false,
-    openEditScreen: (Schedules) -> Unit = {}
-) {
-    val context = LocalContext.current
-    val tint =
-        if (schedule.isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
-    val cardColor = if (isClicked) {
-        CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-    } else {
-        CardDefaults.cardColors()
-    }
-
-    Card(
-        colors = cardColor,
-        modifier = modifier
-    ) {
-        Row {
-            Column(modifier = Modifier.weight(5f)) {
-                Text(
-                    text = schedule.title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = tint,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-                )
-                Text(
-                    text = if (is24Hour(context)) {
-                        minutesToString(
-                            schedule.startTimeInMinutes,
-                            context
-                        ) + stringResource(R.string.to) + minutesToString(
-                            schedule.endTimeInMinutes,
-                            context
-                        )
-                    } else {
-                        minutesToString(schedule.startTimeInMinutes, context) + " " + getAmPm(
-                            schedule.startTimeInMinutes
-                        ) + stringResource(R.string.to) + minutesToString(
-                            schedule.endTimeInMinutes,
-                            context
-                        ) + " " + getAmPm(schedule.endTimeInMinutes)
-                    },
-                    style = MaterialTheme.typography.labelLarge,
-                    color = tint,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+        item {
+            if (!schedulesList.isEmpty()) {
+                SchedulesFilterChips(
+                    modifier = Modifier.fillMaxWidth(),
+                    filter = filter,
+                    updateFilter = {
+                        filter = it
+                    }
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { openEditScreen(schedule) }) {
-                Icon(
-                    imageVector = Icons.Filled.Edit,
-                    contentDescription = stringResource(R.string.edit_this_schedule),
-                    tint = tint,
-                    modifier = Modifier.size(28.dp)
+        }
+
+        items(schedulesList) { schedule ->
+            val showSchedule = when (filter) {
+                SchedulesFilter.All -> true
+                SchedulesFilter.Regular -> !schedule.isPomodoro
+                SchedulesFilter.Pomodoro -> schedule.isPomodoro
+            }
+
+            if (showSchedule) {
+                SchedulesCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(R.dimen.padding_small)),
+                    schedule = schedule,
+                    isClicked = schedule.id == scheduleClicked,
+                    openEditScreen = openEditScreen,
+                    pomodoroManager = AppBlockerService.instance?.PomodoroManager(schedule.id),
                 )
             }
         }

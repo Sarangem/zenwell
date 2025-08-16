@@ -2,7 +2,6 @@ package com.sarangem.zenwell.ui.editscreen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -144,10 +143,9 @@ fun EditScreenBody(
     isSaving: Boolean = false,
 ) {
 
-    Box(modifier = modifier) {
 
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
@@ -190,18 +188,20 @@ fun EditScreenBody(
                 }
             )
 
-            ChooseBlockType(
-                blockType = uiState.schedule.blockType,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                blockType = it
+            if(!uiState.schedule.isPomodoro){
+                ChooseBlockType(
+                    blockType = uiState.schedule.blockType,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    blockType = it
+                                )
                             )
                         )
-                    )
-                }
-            )
+                    }
+                )
+            }
 
             val blockType = uiState.schedule.blockType
 
@@ -285,19 +285,21 @@ fun EditScreenBody(
 
             }
 
-            ChooseNotificationTime(
-                notificationTime = uiState.schedule.notificationTimeInMinutes,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                notificationTimeInMinutes = it
+            if(!uiState.schedule.isPomodoro){
+                ChooseNotificationTime(
+                    notificationTime = uiState.schedule.notificationTimeInMinutes,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    notificationTimeInMinutes = it
+                                )
                             )
                         )
-                    )
-                },
-                isNotificationTimeInvalid = uiState.isNotificationTimeInvalid
-            )
+                    },
+                    isNotificationTimeInvalid = uiState.isNotificationTimeInvalid
+                )
+            }
 
             ChooseAppList(
                 checkedAppList = uiState.appNames,
@@ -311,40 +313,70 @@ fun EditScreenBody(
                 setAppNamesInUiState = setAppNamesInUiState
             )
 
-            ChooseRunningTime(
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
-                startTimeInMinutes = uiState.schedule.startTimeInMinutes,
-                updateStartTime = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                startTimeInMinutes = it
+            if(uiState.schedule.isPomodoro){
+
+                ChoosePomodoroWorkTime(
+                    workTimeInMinutes = uiState.schedule.pomodoroWorkTimeInMinutes,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    pomodoroWorkTimeInMinutes = it
+                                )
                             )
                         )
-                    )
-                },
-                endTimeInMinutes = uiState.schedule.endTimeInMinutes,
-                updateEndTime = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                endTimeInMinutes = it
+                    }
+                )
+
+                ChoosePomodoroRestTime(
+                    restTimeInMinutes = uiState.schedule.pomodoroRestTimeInMinutes,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    pomodoroRestTimeInMinutes = it
+                                )
                             )
                         )
-                    )
-                },
-                weekDays = uiState.schedule.weekDays,
-                updateWeekDays = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                weekDays = it
+                    }
+                )
+
+            } else {
+                ChooseRunningTime(
+                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                    startTimeInMinutes = uiState.schedule.startTimeInMinutes,
+                    updateStartTime = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    startTimeInMinutes = it
+                                )
                             )
                         )
-                    )
-                },
-                isRunningTimeInvalid = uiState.isRunningTimeInvalid
-            )
+                    },
+                    endTimeInMinutes = uiState.schedule.endTimeInMinutes,
+                    updateEndTime = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    endTimeInMinutes = it
+                                )
+                            )
+                        )
+                    },
+                    weekDays = uiState.schedule.weekDays,
+                    updateWeekDays = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    weekDays = it
+                                )
+                            )
+                        )
+                    },
+                    isRunningTimeInvalid = uiState.isRunningTimeInvalid
+                )
+            }
 
             Spacer(Modifier.height(84.dp))
 
@@ -360,7 +392,7 @@ fun EditScreenBody(
             }
         }
 
-    }
+
 }
 
 

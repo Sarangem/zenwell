@@ -5,17 +5,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.data.tables.Schedules
-import com.sarangem.zenwell.service.ui.BlockingWindow
 import com.sarangem.zenwell.service.ui.BreathingScreen
 import com.sarangem.zenwell.service.ui.FullBlockScreen
 import com.sarangem.zenwell.service.ui.WaitScreen
-import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 data class ScheduleInfo(
     private val context: Context,
     var schedule: Schedules,
     val appSet: Set<String>,
 ) {
+    var pomodoroWindow: PomodoroWindow? = null
     val blockingWindowList: MutableList<BlockingWindow> = mutableListOf()
 
     init {
@@ -26,42 +25,51 @@ data class ScheduleInfo(
                     context = context,
                     schedule = schedule,
                     appName = appName,
-                    content = { height, width, onTimerEnd ->
-                        ZenwellTheme {
-                            when (schedule.blockType) {
+                    content = { width, onTimerEnd ->
 
-                                BlockType.FullBlock -> FullBlockScreen(
-                                    message = schedule.message,
-                                    modifier = Modifier.fillMaxSize(),
-                                    width = width
-                                )
+                        when (schedule.blockType) {
 
-                                BlockType.Wait -> WaitScreen(
-                                    modifier = Modifier.fillMaxSize(),
-                                    onTimerEnd = onTimerEnd,
-                                    waitTimeInSeconds = schedule.waitTimeInSeconds,
-                                    message = schedule.message,
-                                    showOpenDialog = schedule.waitEnterButton,
-                                    width = width,
-                                )
+                            BlockType.FullBlock -> FullBlockScreen(
+                                message = schedule.message,
+                                modifier = Modifier.fillMaxSize(),
+                                width = width
+                            )
 
-                                BlockType.Breathing -> BreathingScreen(
-                                    modifier = Modifier.fillMaxSize(),
-                                    onTimerEnd = onTimerEnd,
-                                    breathingCycleDuration = schedule.breathingCycleDuration,
-                                    breathingCycleNumber = schedule.breathingCycleNumber,
-                                    showOpenDialog = schedule.waitEnterButton,
-                                    message = schedule.message,
-                                    width = width
-                                )
+                            BlockType.Wait -> WaitScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                onTimerEnd = onTimerEnd,
+                                waitTimeInSeconds = schedule.waitTimeInSeconds,
+                                message = schedule.message,
+                                showOpenDialog = schedule.waitEnterButton,
+                                width = width,
+                            )
 
-                                else -> {}
-                            }
+                            BlockType.Breathing -> BreathingScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                onTimerEnd = onTimerEnd,
+                                breathingCycleDuration = schedule.breathingCycleDuration,
+                                breathingCycleNumber = schedule.breathingCycleNumber,
+                                showOpenDialog = schedule.waitEnterButton,
+                                message = schedule.message,
+                                width = width
+                            )
+
+                            else -> {}
+
                         }
                     }
                 )
 
             )
+        }
+
+        pomodoroWindow = if (schedule.isPomodoro){
+            PomodoroWindow(
+                schedule = schedule,
+                blockingWindowList = blockingWindowList
+            )
+        } else {
+            null
         }
     }
 

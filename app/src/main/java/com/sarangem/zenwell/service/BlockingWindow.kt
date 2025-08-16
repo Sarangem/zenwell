@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui
+package com.sarangem.zenwell.service
 
 import android.content.Context
 import android.graphics.PixelFormat
@@ -15,7 +15,8 @@ import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sarangem.zenwell.data.tables.Schedules
-import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.service.ui.BlockingScreenLifecycleOwner
+import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createNotification
 import kotlinx.coroutines.CoroutineScope
@@ -27,8 +28,8 @@ import kotlinx.coroutines.withContext
 class BlockingWindow(
     val appName: String,
     val schedule: Schedules,
+    var content: @Composable (Float, () -> Unit) -> Unit,
     private val context: Context,
-    private val content: @Composable (Float, Float, () -> Unit) -> Unit,
 ) {
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -37,55 +38,20 @@ class BlockingWindow(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams() else null
     private val composeView = ComposeView(context)
 
-    var isAppOpened = false
-
-    private fun onTimerEnd() {
-
-        close() // close the window
-        ServiceLogger.i { "Closing the window" }
-        isAppOpened = true // add to opened apps
-
-        coroutineScope.launch {
-
-            // send notification
-            val delayTime = schedule.openTimeInMinutes - schedule.notificationTimeInMinutes
-            if (delayTime < 0) return@launch
-            delay(delayTime * 60 * 1000L)
-            if (schedule.notificationTimeInMinutes > 0) {
-                createNotification(
-                    scheduleId = schedule.id,
-                    scheduleName = schedule.title,
-                    appName = appName,
-                    context = context
-                )
-            }
-
-            delay(schedule.notificationTimeInMinutes * 60 * 1000L)
-
-            ServiceLogger.d { "Rechecking the app." }
-
-            // get the instance
-            val instance = AppBlockerService.instance ?: return@launch
-
-            // re trigger opening window
-            isAppOpened = false
-            instance.previousApp.forEach {
-                if (it in instance.previousApp) {
-                    // the user is still on blocked app
-                    withContext(Dispatchers.Main) {
-                        instance.recheckApp()
-                    }
-                }
-            }
-
-        }
-    }
+    var isAppOpened = schedule.isPomodoro // true if pomodoro to prevent open() else false
+    fun isWindowOpen(): Boolean = composeView.isAttachedToWindow
 
 
     fun open(bounds: Rect = Rect()) {
 
-        if (composeView.isAttachedToWindow) return
-        if (isAppOpened) return
+        if (composeView.isAttachedToWindow) {
+            ServiceLogger.v { "Compose view already attached to window" }
+            return
+        }
+        if (isAppOpened){
+            ServiceLogger.v { "App is set to opened." }
+            return
+        }
 
         try {
 
@@ -130,7 +96,9 @@ class BlockingWindow(
             // set the view
             composeView.apply {
                 setContent {
-                    content(screenHeight / density, screenWidth / density) { onTimerEnd() }
+                    ZenwellTheme {
+                        content(screenWidth / density) { onTimerEnd() }
+                    }
                 }
             }
             windowManager.addView(composeView, layoutParams)
@@ -162,5 +130,38 @@ class BlockingWindow(
         }
     }
 
-    fun isWindowOpen(): Boolean = composeView.isAttachedToWindow
+    private fun onTimerEnd() {
+
+        close() // close the window
+        ServiceLogger.i { "Closing the window" }
+        isAppOpened = true // add to opened apps
+
+        coroutineScope.launch {
+
+            // send notification
+            val delayTime = schedule.openTimeInMinutes - schedule.notificationTimeInMinutes
+            if (delayTime < 0) return@launch
+            delay(delayTime * 60 * 1000L)
+            if (schedule.notificationTimeInMinutes > 0) {
+                createNotification(
+                    scheduleId = schedule.id,
+                    scheduleName = schedule.title,
+                    appName = appName,
+                    context = context
+                )
+            }
+
+            delay(schedule.notificationTimeInMinutes * 60 * 1000L)
+
+            // re-trigger opening window
+            ServiceLogger.d { "Rechecking the app." }
+            val instance = AppBlockerService.instance ?: return@launch
+            isAppOpened = false
+            withContext(Dispatchers.Main) {
+                instance.recheckApp()
+            }
+
+        }
+    }
+
 }

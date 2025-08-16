@@ -2,17 +2,17 @@ package com.sarangem.zenwell.service
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
+import android.graphics.Rect
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
-import android.graphics.Rect
 import com.sarangem.zenwell.ZenwellApplication
+import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.checkIfScheduleEnabled
 import com.sarangem.zenwell.utils.getCurrentTimeInMinutes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import com.sarangem.zenwell.utils.ServiceLogger
 
 
 class AppBlockerService : AccessibilityService() {
@@ -61,7 +61,8 @@ class AppBlockerService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
         // get list of application windows
-        val applicationWindows = windows.filter { it.type == AccessibilityWindowInfo.TYPE_APPLICATION }
+        val applicationWindows =
+            windows.filter { it.type == AccessibilityWindowInfo.TYPE_APPLICATION }
         ServiceLogger.d { "There are ${applicationWindows.size} and they are $applicationWindows" }
 
         ServiceLogger.d { "Previous app(s) were $previousApp" }
@@ -98,7 +99,9 @@ class AppBlockerService : AccessibilityService() {
 
                 if (currentApp in scheduleInfo.appSet) {
 
-                    val blockingWindow = scheduleInfo.blockingWindowList.firstOrNull { it.appName == currentApp } ?: continue
+                    val blockingWindow =
+                        scheduleInfo.blockingWindowList.firstOrNull { it.appName == currentApp }
+                            ?: continue
                     ServiceLogger.i { "Opening window for schedule ${scheduleInfo.schedule.id} and ${blockingWindow.appName}" }
                     blockingWindow.open(windowBounds)
 
@@ -140,4 +143,32 @@ class AppBlockerService : AccessibilityService() {
         instance = null
         return super.onUnbind(intent)
     }
+
+
+    interface PomodoroManagerBase {
+        fun isActive(): Boolean
+        fun start()
+        fun end()
+        fun isWorkTime(): Boolean
+        fun getElapsedTimeInSeconds(): Int
+    }
+
+    inner class PomodoroManager(scheduleId: Int) : PomodoroManagerBase {
+
+        private val scheduleInfo = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId }
+        val pomodoroWindow = scheduleInfo?.pomodoroWindow
+
+        override fun isActive(): Boolean = pomodoroWindow?.isActive  ?: false
+        override fun isWorkTime(): Boolean = pomodoroWindow?.isWorkTime ?: false
+        override fun getElapsedTimeInSeconds(): Int = pomodoroWindow?.elapsedTimeInSeconds ?: 0
+
+        override fun start() {
+            pomodoroWindow?.onPomodoroStart()
+        }
+        override fun end() {
+            pomodoroWindow?.onPomodoroEnd()
+        }
+    }
+
+
 }

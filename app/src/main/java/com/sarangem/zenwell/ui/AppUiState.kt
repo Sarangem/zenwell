@@ -15,5 +15,4 @@ data class AppUiState(
     // error cases
     val isRunningTimeInvalid: Boolean = false,
     val isNotificationTimeInvalid: Boolean = false,
-
 )

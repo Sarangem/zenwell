@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.sarangem.zenwell.data.tables.*
 
-@Database(entities = [Schedules::class, AppNames::class, BlockedApps::class], version = 6, exportSchema = false)
+@Database(entities = [Schedules::class, AppNames::class, BlockedApps::class], version = 7, exportSchema = false)
 abstract class ZenwellDatabase : RoomDatabase() {
 
     abstract fun scheduleDao() : ScheduleDao

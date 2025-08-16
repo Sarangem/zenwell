@@ -2,6 +2,7 @@ package com.sarangem.zenwell.ui.editscreen
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -95,6 +96,126 @@ fun ChooseNotificationTime(
     )
 }
 
+@Composable
+fun ChooseWaitTime(
+    modifier: Modifier = Modifier,
+    waitTimeInSeconds: Int,
+    updateUiState: (Int) -> Unit = {}
+) {
+    EditScreenOutlinedField(
+        mainText = stringResource(R.string.wait_time),
+        textFieldValue = waitTimeInSeconds.toString(),
+        onValueChange = {
+            if (it.isDigitsOnly()) {
+                val num = it.toIntOrNull()
+                if (num == null) {
+                    updateUiState(0)
+                } else {
+                    updateUiState(num)
+                }
+            }
+        },
+        keyboardType = KeyboardType.Number,
+        suffixText = stringResource(R.string.seconds),
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ChooseOpenTime(
+    modifier: Modifier = Modifier,
+    openTimeInMinutes: Int,
+    updateUiState: (Int) -> Unit = {}
+) {
+    EditScreenOutlinedField(
+        mainText = stringResource(R.string.open_time),
+        textFieldValue = openTimeInMinutes.toString(),
+        onValueChange = {
+            if (it.isDigitsOnly()) {
+                val num = it.toIntOrNull()
+                if (num == null) {
+                    updateUiState(0)
+                } else {
+                    updateUiState(num)
+                }
+            }
+        },
+        keyboardType = KeyboardType.Number,
+        suffixText = stringResource(R.string.minutes),
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ChooseWaitEnterButton(
+    modifier: Modifier = Modifier,
+    checked: Boolean,
+    updateUiState: (Boolean) -> Unit = {}
+) {
+    EditScreenCard(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.choose_wait_enter_button),
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(Modifier.weight(1f))
+        Checkbox(
+            checked = checked,
+            onCheckedChange = { updateUiState(it) },
+            modifier = Modifier.padding(end = dimensionResource(R.dimen.padding_small))
+        )
+    }
+}
+
+@Composable
+fun ChoosePomodoroWorkTime(
+    modifier: Modifier = Modifier,
+    workTimeInMinutes: Int,
+    updateUiState: (Int) -> Unit = {}
+) {
+    EditScreenOutlinedField(
+        mainText = stringResource(R.string.work_time),
+        textFieldValue = workTimeInMinutes.toString(),
+        onValueChange = {
+            if (it.isDigitsOnly()) {
+                val num = it.toIntOrNull()
+                if (num == null) {
+                    updateUiState(0)
+                } else {
+                    updateUiState(num)
+                }
+            }
+        },
+        keyboardType = KeyboardType.Number,
+        suffixText = stringResource(R.string.minutes),
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ChoosePomodoroRestTime(
+    modifier: Modifier = Modifier,
+    restTimeInMinutes: Int,
+    updateUiState: (Int) -> Unit = {}
+) {
+    EditScreenOutlinedField(
+        mainText = stringResource(R.string.rest_time),
+        textFieldValue = restTimeInMinutes.toString(),
+        onValueChange = {
+            if (it.isDigitsOnly()) {
+                val num = it.toIntOrNull()
+                if (num == null) {
+                    updateUiState(0)
+                } else {
+                    updateUiState(num)
+                }
+            }
+        },
+        keyboardType = KeyboardType.Number,
+        suffixText = stringResource(R.string.minutes),
+        modifier = modifier
+    )
+}
+
 
 @Preview(showBackground = true)
 @Composable
@@ -137,5 +258,57 @@ fun ChooseNotificationTimePreview() {
 fun ChooseNotificationTimePreview2() {
     ZenwellTheme {
         ChooseNotificationTime(notificationTime = 2, isNotificationTimeInvalid = true)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChooseWaitTimePreview() {
+    ZenwellTheme {
+        ChooseWaitTime(
+            waitTimeInSeconds = 10,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChooseOpenTimePreview() {
+    ZenwellTheme {
+        ChooseOpenTime(
+            openTimeInMinutes = 999999999,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChooseWaitEnterPreview() {
+    ZenwellTheme {
+        var isChecked by remember { mutableStateOf(false) }
+        ChooseWaitEnterButton(
+            checked = isChecked,
+            updateUiState = { isChecked = it }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChoosePomodoroWorkTimePreview() {
+    ZenwellTheme {
+        ChoosePomodoroWorkTime(
+            workTimeInMinutes = 25,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChoosePomodoroRestTimePreview() {
+    ZenwellTheme {
+        ChoosePomodoroRestTime(
+            restTimeInMinutes = 5
+        )
     }
 }
