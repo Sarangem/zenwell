@@ -67,7 +67,8 @@ fun SchedulesCard(
     schedule: Schedules,
     isClicked: Boolean = false,
     pomodoroManager: AppBlockerService.PomodoroManagerBase? = null,
-    openEditScreen: (Schedules) -> Unit = {}
+    openEditScreen: (Schedules) -> Unit = {},
+    openFocusScreen: (Schedules) -> Unit = {},
 ) {
     val tint =
         if (schedule.isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
@@ -126,7 +127,8 @@ fun SchedulesCard(
                 Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_small)))
                 PomodoroTimerControls(
                     pomodoroManager = pomodoroManager,
-                    updatePomodoroActivity = { isPomodoroActive = it }
+                    updatePomodoroActivity = { isPomodoroActive = it },
+                    openFocusScreen = { openFocusScreen(schedule) }
                 )
             }
         }
@@ -218,6 +220,7 @@ fun PomodoroTimerControls(
     modifier: Modifier = Modifier,
     pomodoroManager: AppBlockerService.PomodoroManagerBase,
     updatePomodoroActivity: (Boolean) -> Unit = {},
+    openFocusScreen: () -> Unit = {},
 ) {
     var elapsedTime by rememberSaveable { mutableIntStateOf(pomodoroManager.getElapsedTimeInSeconds()) }
     var isWorkTime by rememberSaveable { mutableStateOf(pomodoroManager.isWorkTime()) }
@@ -302,7 +305,7 @@ fun PomodoroTimerControls(
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(dimensionResource(R.dimen.padding_tiny)),
-                onClick = { TODO("Implement Focus Mode") },
+                onClick = openFocusScreen,
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.inversePrimary),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium))
             ) {
@@ -346,11 +349,9 @@ fun PomodoroScheduleCardPreview() {
             override fun start() {
                 active = true
             }
-
             override fun end() {
                 active = false
             }
-
             override fun isWorkTime() = time > 1
             override fun getElapsedTimeInSeconds(): Int {
                 time--

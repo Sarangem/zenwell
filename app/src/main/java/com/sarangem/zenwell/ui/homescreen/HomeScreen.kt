@@ -43,6 +43,7 @@ fun HomeScreen(
     notificationPermission: (Context) -> Boolean = { areNotificationsEnabled(it) },
     addNewSchedule: suspend () -> Schedules = suspend { Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
+    openFocusScreen: (Schedules) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -69,6 +70,7 @@ fun HomeScreen(
             schedulesList = schedulesList,
             scheduleClicked = scheduleClicked,
             openEditScreen = openEditScreen,
+            openFocusScreen = openFocusScreen,
             startPermissionActivity = startPermissionActivity,
             requestNotification = requestNotification,
             accessibilityPermission = accessibilityPermission,
@@ -84,6 +86,7 @@ fun HomeScreenBody(
     schedulesList: List<Schedules>,
     scheduleClicked: Int = 0,
     openEditScreen: (Schedules) -> Unit = {},
+    openFocusScreen: (Schedules) -> Unit = {},
     startPermissionActivity: (Intent) -> Unit = {},
     requestNotification: () -> Unit = {},
     accessibilityPermission: () -> Boolean,
@@ -159,6 +162,7 @@ fun HomeScreenBody(
                     schedule = schedule,
                     isClicked = schedule.id == scheduleClicked,
                     openEditScreen = openEditScreen,
+                    openFocusScreen = openFocusScreen,
                     pomodoroManager = AppBlockerService.instance?.PomodoroManager(schedule.id),
                 )
             }

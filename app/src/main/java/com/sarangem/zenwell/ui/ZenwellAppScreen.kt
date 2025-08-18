@@ -13,7 +13,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sarangem.zenwell.data.ZenwellNavigationPage
 import com.sarangem.zenwell.ui.editscreen.EditScreen
+import com.sarangem.zenwell.ui.focusscreen.FocusScreen
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
 import com.sarangem.zenwell.utils.isExpandedWidth
 
@@ -37,15 +39,20 @@ fun ZenwellAppScreen(
             requestNotification = requestNotification,
             addNewSchedule = { viewModel.addNewSchedule(context) },
             openEditScreen = {
-
-                // go to Edit screen
                 viewModel.updateUiState(
                     uiState.copy(
-                        isShowingHomePage = false,
+                        navigationPage = ZenwellNavigationPage.Edit,
                         schedule = it,
                     )
                 )
-
+            },
+            openFocusScreen = {
+                viewModel.updateUiState(
+                    uiState.copy(
+                        navigationPage = ZenwellNavigationPage.Focus,
+                        schedule = it,
+                    )
+                )
             }
         )
     }
@@ -74,21 +81,22 @@ fun ZenwellAppScreen(
         LocalWindowInfo.current.containerSize.width.toDp().value
     }
 
-    if (isExpandedWidth(width)) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            homeScreen(Modifier.weight(1f))
-            if (!uiState.isShowingHomePage) {
-                editScreen(Modifier.weight(1f), false)
+    when (uiState.navigationPage){
+        ZenwellNavigationPage.Home -> homeScreen(Modifier.fillMaxSize())
+        ZenwellNavigationPage.Edit -> {
+            if(isExpandedWidth(width)) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    homeScreen(Modifier.weight(1f))
+                    editScreen(Modifier.weight(1f), false)
+                }
+            } else {
+                editScreen(Modifier.fillMaxSize(), true)
             }
         }
-    } else {
-        if (uiState.isShowingHomePage) {
-            homeScreen(Modifier.fillMaxSize())
-        } else {
-            editScreen(Modifier.fillMaxSize(), true)
-        }
+        ZenwellNavigationPage.Focus -> FocusScreen(schedule = uiState.schedule)
+        ZenwellNavigationPage.Settings -> {}
     }
 }

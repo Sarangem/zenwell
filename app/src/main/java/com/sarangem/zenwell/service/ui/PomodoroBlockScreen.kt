@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,8 +58,8 @@ fun PomodoroTimerCard(
     modifier: Modifier = Modifier,
     pomodoroWindow: PomodoroWindow
 ) {
-    var elapsedTime by remember { mutableIntStateOf(pomodoroWindow.elapsedTimeInSeconds) }
-    LaunchedEffect(elapsedTime) {
+    var elapsedTime by rememberSaveable { mutableIntStateOf(pomodoroWindow.elapsedTimeInSeconds) }
+    LaunchedEffect(Unit) {
         delay(1000L)
         elapsedTime = pomodoroWindow.elapsedTimeInSeconds
     }

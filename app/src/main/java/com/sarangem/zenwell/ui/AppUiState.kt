@@ -1,12 +1,12 @@
 package com.sarangem.zenwell.ui
 
+import com.sarangem.zenwell.data.ZenwellNavigationPage
 import com.sarangem.zenwell.data.database.tables.Schedules
 
 data class AppUiState(
 
     // navigation
-    val isShowingHomePage: Boolean = true,
-    val isShowingSettingsPage: Boolean = false,
+    val navigationPage: ZenwellNavigationPage = ZenwellNavigationPage.Home,
 
     // real information
     val schedule: Schedules = Schedules(),

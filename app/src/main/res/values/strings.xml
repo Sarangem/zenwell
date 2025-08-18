@@ -67,4 +67,11 @@
     <string name="pomodoro_schedule">Pomodoro Schedule</string>
     <string name="number_of_pomodoro_sessions">Number of pomodoro sessions</string>
     <string name="pomodoro_session_number_invalid">Cannot be zero or less.</string>
+    <string name="pause">Pause</string>
+    <string name="pomodoro_session_completed">Pomodoro session completed or not started.</string>
+    <string name="accessibility_service_not_started">Accessibility service not started.</string>
+    <string name="do_you_want_to_end_this_session">Do you want to end this session?</string>
+    <string name="skip_to_next_session">Skip to next session</string>
+    <string name="screen_would_remain_on">Screen would remain on</string>
+    <string name="screen_can_now_turn_off_automatically">Screen can now turn off automatically</string>
 </resources>
