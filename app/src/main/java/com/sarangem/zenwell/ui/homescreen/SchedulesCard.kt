@@ -35,7 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -52,10 +52,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.getAmPm
+import com.sarangem.zenwell.utils.getPomodoroWindow
 import com.sarangem.zenwell.utils.is24Hour
 import com.sarangem.zenwell.utils.minutesToString
 import com.sarangem.zenwell.utils.secondsToString
@@ -66,7 +67,7 @@ fun SchedulesCard(
     modifier: Modifier = Modifier,
     schedule: Schedules,
     isClicked: Boolean = false,
-    pomodoroManager: AppBlockerService.PomodoroManagerBase? = null,
+    pomodoroWindow: PomodoroWindow? = getPomodoroWindow(schedule.id),
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
 ) {
@@ -83,7 +84,7 @@ fun SchedulesCard(
 
     var isPomodoroActive by rememberSaveable {
         mutableStateOf(
-            pomodoroManager?.isActive() ?: false
+            pomodoroWindow?.isActive ?: false
         )
     }
 
@@ -106,7 +107,7 @@ fun SchedulesCard(
                     PomodoroStartButton(
                         schedule = schedule,
                         tint = tint,
-                        pomodoroManager = pomodoroManager,
+                        pomodoroWindow = pomodoroWindow,
                         isPomodoroActive = isPomodoroActive,
                         updatePomodoroActivity = { isPomodoroActive = it }
                     )
@@ -123,10 +124,10 @@ fun SchedulesCard(
                     )
                 }
             }
-            if (schedule.isEnabled && schedule.isPomodoro && isPomodoroActive && pomodoroManager != null) {
+            if (schedule.isEnabled && schedule.isPomodoro && isPomodoroActive && pomodoroWindow != null) {
                 Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_small)))
                 PomodoroTimerControls(
-                    pomodoroManager = pomodoroManager,
+                    pomodoroWindow = pomodoroWindow,
                     updatePomodoroActivity = { isPomodoroActive = it },
                     openFocusScreen = { openFocusScreen(schedule) }
                 )
@@ -142,17 +143,17 @@ fun PomodoroStartButton(
     schedule: Schedules,
     tint: Color,
     isPomodoroActive: Boolean,
-    pomodoroManager: AppBlockerService.PomodoroManagerBase?,
+    pomodoroWindow: PomodoroWindow? = null,
     updatePomodoroActivity: (Boolean) -> Unit = {},
 ) {
     val context = LocalContext.current
-    if (schedule.isEnabled && schedule.isPomodoro && pomodoroManager != null && !isPomodoroActive) {
+    if (schedule.isEnabled && schedule.isPomodoro && pomodoroWindow != null && !isPomodoroActive) {
         Box(
             modifier = modifier
                 .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
                 .background(MaterialTheme.colorScheme.primary)
                 .clickable(onClick = {
-                    pomodoroManager.start()
+                    pomodoroWindow.onPomodoroStart()
                     updatePomodoroActivity(true)
                 })
         ) {
@@ -218,17 +219,17 @@ fun PomodoroStartButton(
 @Composable
 fun PomodoroTimerControls(
     modifier: Modifier = Modifier,
-    pomodoroManager: AppBlockerService.PomodoroManagerBase,
+    pomodoroWindow: PomodoroWindow,
     updatePomodoroActivity: (Boolean) -> Unit = {},
     openFocusScreen: () -> Unit = {},
 ) {
-    var elapsedTime by rememberSaveable { mutableIntStateOf(pomodoroManager.getElapsedTimeInSeconds()) }
-    var isWorkTime by rememberSaveable { mutableStateOf(pomodoroManager.isWorkTime()) }
+    var elapsedTime by rememberSaveable { mutableLongStateOf(pomodoroWindow.getElapsedTimeInSeconds()) }
+    var isWorkTime by rememberSaveable { mutableStateOf(pomodoroWindow.isWorkTime) }
     LaunchedEffect(Unit) {
-        while (pomodoroManager.isActive()) {
+        while (pomodoroWindow.isActive) {
             delay(1000L)
-            isWorkTime = pomodoroManager.isWorkTime()
-            elapsedTime = pomodoroManager.getElapsedTimeInSeconds()
+            isWorkTime = pomodoroWindow.isWorkTime
+            elapsedTime = pomodoroWindow.getElapsedTimeInSeconds()
         }
         updatePomodoroActivity(false)
     }
@@ -287,7 +288,7 @@ fun PomodoroTimerControls(
                     .fillMaxWidth()
                     .padding(dimensionResource(R.dimen.padding_tiny)),
                 onClick = {
-                    pomodoroManager.end()
+                    pomodoroWindow.onPomodoroEnd()
                     updatePomodoroActivity(false)
                 },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error),
@@ -342,32 +343,16 @@ fun RegularSchedulesCardPreview() {
 @Composable
 fun PomodoroScheduleCardPreview() {
     ZenwellTheme {
-        class FakePomodoroManager() : AppBlockerService.PomodoroManagerBase {
-            var active = false
-            var time = 60
-            override fun isActive() = active
-            override fun start() {
-                active = true
-            }
-            override fun end() {
-                active = false
-            }
-            override fun isWorkTime() = time > 1
-            override fun getElapsedTimeInSeconds(): Int {
-                time--
-                return time
-            }
-        }
-
+        val schedule = Schedules(
+            id = 2,
+            title = "Study Session",
+            isPomodoro = true,
+            pomodoroWorkTimeInMinutes = 1,
+            pomodoroRestTimeInMinutes = 5
+        )
         SchedulesCard(
-            schedule = Schedules(
-                id = 2,
-                title = "Study Session",
-                isPomodoro = true,
-                pomodoroWorkTimeInMinutes = 1,
-                pomodoroRestTimeInMinutes = 5
-            ),
-            pomodoroManager = FakePomodoroManager(),
+            schedule = schedule,
+            pomodoroWindow = PomodoroWindow(schedule),
         )
     }
 }

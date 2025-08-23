@@ -39,8 +39,8 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
         _uiState.update {
             currentState.copy(
                 isRunningTimeInvalid = currentState.schedule.startTimeInMinutes >= currentState.schedule.endTimeInMinutes,
-                isNotificationTimeInvalid = currentState.schedule.openTimeInMinutes > currentState.schedule.notificationTimeInMinutes,
-                isPomodoroSessionNumberInvalid = currentState.schedule.pomodoroSessionNumber > 0
+                isNotificationTimeInvalid = currentState.schedule.openTimeInMinutes <= currentState.schedule.notificationTimeInMinutes,
+                isPomodoroSessionNumberInvalid = currentState.schedule.pomodoroSessionNumber <= 0
             )
         }
     }

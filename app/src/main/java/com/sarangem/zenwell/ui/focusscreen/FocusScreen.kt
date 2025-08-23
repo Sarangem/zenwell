@@ -40,9 +40,10 @@ import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -60,10 +61,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.AppBlockerService
-import com.sarangem.zenwell.service.AppBlockerService.PomodoroManagerBase
+import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.utils.getPomodoroWindow
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +72,7 @@ import kotlinx.coroutines.delay
 fun FocusScreen(
     modifier: Modifier = Modifier,
     schedule: Schedules,
-    pomodoroManager: PomodoroManagerBase? = AppBlockerService.instance?.PomodoroManager(schedule.id),
+    pomodoroWindow: PomodoroWindow? = getPomodoroWindow(schedule.id),
     goBack: () -> Unit = {}
 ) {
     BackHandler { goBack() }
@@ -79,20 +80,32 @@ fun FocusScreen(
     val window = LocalActivity.current?.window
     val context = LocalContext.current
     var isFullScreen by rememberSaveable { mutableStateOf(false) }
+    DisposableEffect(isFullScreen) {
+        if (isFullScreen) {
+            window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            Toast.makeText(context, R.string.screen_would_remain_on, Toast.LENGTH_SHORT).show()
+        }
+        onDispose {
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            if (!isFullScreen) {
+                 Toast.makeText(context, R.string.screen_can_now_turn_off_automatically, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     var elapsedTime by rememberSaveable {
-        mutableIntStateOf(
-            pomodoroManager?.getElapsedTimeInSeconds() ?: 0
+        mutableLongStateOf(
+            pomodoroWindow?.getElapsedTimeInSeconds() ?: 0
         )
     }
-    var isWorkTime by rememberSaveable { mutableStateOf(pomodoroManager?.isWorkTime() ?: true) }
+    var isWorkTime by rememberSaveable { mutableStateOf(pomodoroWindow?.isWorkTime ?: true) }
     var isCompleted by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        if (pomodoroManager != null) {
-            while (pomodoroManager.isActive()) {
+        if (pomodoroWindow != null) {
+            while (pomodoroWindow.isActive) {
                 delay(1000L)
-                elapsedTime = pomodoroManager.getElapsedTimeInSeconds()
+                elapsedTime = pomodoroWindow.getElapsedTimeInSeconds()
                 if (elapsedTime <= 0) {
                     isWorkTime = !isWorkTime
                 }
@@ -133,7 +146,7 @@ fun FocusScreen(
             }
         }
     ) { innerPadding ->
-        if (pomodoroManager == null) {
+        if (pomodoroWindow == null) {
             Text(
                 text = stringResource(R.string.accessibility_service_not_started),
                 style = MaterialTheme.typography.bodyLarge,
@@ -144,7 +157,6 @@ fun FocusScreen(
         } else {
             FocusScreenBody(
                 modifier = Modifier.padding(innerPadding),
-                schedule = schedule,
                 isFullScreen = isFullScreen,
                 toggleFullScreen = {
                     isFullScreen = it
@@ -165,11 +177,12 @@ fun FocusScreen(
                 isWorkTime = isWorkTime,
                 isCompleted = isCompleted,
                 onStop = {
-                    pomodoroManager.end()
+                    pomodoroWindow.onPomodoroEnd()
                     goBack()
                 },
+                totalTime = if(isWorkTime) schedule.pomodoroWorkTimeInMinutes else schedule.pomodoroRestTimeInMinutes,
                 onPause = { TODO("Do not implement it yet.") },
-                onSkip = { TODO("Do not implement it yet.") }
+                onSkip = { TODO("Do not implement it yet.") },
             )
         }
     }
@@ -178,10 +191,10 @@ fun FocusScreen(
 @Composable
 fun FocusScreenBody(
     modifier: Modifier = Modifier,
-    schedule: Schedules,
     isFullScreen: Boolean,
     toggleFullScreen: (Boolean) -> Unit,
-    elapsedTime: Int,
+    elapsedTime: Long,
+    totalTime: Int,
     isWorkTime: Boolean,
     isCompleted: Boolean,
     onStop: () -> Unit,
@@ -191,15 +204,8 @@ fun FocusScreenBody(
     if (isFullScreen) {
         BackHandler { toggleFullScreen(false) }
     }
-
-    val totalTime = if (isWorkTime) {
-        schedule.pomodoroWorkTimeInMinutes * 60
-    } else {
-        schedule.pomodoroRestTimeInMinutes * 60
-    }
-    val progress = (totalTime - elapsedTime).toFloat() / totalTime
     val animatedProgress by animateFloatAsState(
-        targetValue = progress,
+        targetValue = (totalTime - elapsedTime).toFloat() / totalTime,
         animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
     )
 
@@ -267,7 +273,10 @@ fun FocusScreenBody(
 }
 
 @Composable
-fun PomodoroTimerDisplay(elapsedTime: Int, isWorkTime: Boolean) {
+fun PomodoroTimerDisplay(
+    elapsedTime: Long,
+    isWorkTime: Boolean
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
@@ -352,7 +361,7 @@ fun PomodoroControls(
             Icon(
                 imageVector = Icons.Filled.Stop,
                 contentDescription = stringResource(R.string.end),
-                modifier = Modifier.fillMaxSize(0.4f)
+                modifier = Modifier.fillMaxSize(0.5f)
             )
         }
 
@@ -371,7 +380,7 @@ fun PomodoroControls(
             Icon(
                 imageVector = Icons.Filled.Pause,
                 contentDescription = stringResource(R.string.pause),
-                modifier = Modifier.fillMaxSize(0.4f)
+                modifier = Modifier.fillMaxSize(0.5f)
             )
         }
 
@@ -391,7 +400,7 @@ fun PomodoroControls(
                 imageVector = Icons.Filled.FastForward,
                 contentDescription = stringResource(R.string.skip_to_next_session),
                 tint = if (isWorkTime) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.fillMaxSize(0.4f)
+                modifier = Modifier.fillMaxSize(0.5f)
             )
         }
     }
@@ -401,32 +410,39 @@ fun PomodoroControls(
 @Preview(showBackground = true)
 @Composable
 fun FocusScreenPreview() {
-    class FakePomodoroManager : PomodoroManagerBase {
-        private var active = true
-        private var time = 60
-        override fun isActive() = active
-        override fun start() {}
-        override fun end() {
-            active = false
-        }
-
-        override fun isWorkTime() = true
-        override fun getElapsedTimeInSeconds(): Int {
-            time--
-            return time
-        }
-    }
-
     ZenwellTheme {
+        val schedule = Schedules(
+            id = 1,
+            title = "Study Time",
+            isPomodoro = false,
+            pomodoroWorkTimeInMinutes = 1,
+            pomodoroRestTimeInMinutes = 1
+        )
+        val pomodoroWindow = PomodoroWindow(schedule)
+        pomodoroWindow.onPomodoroStart()
         FocusScreen(
-            schedule = Schedules(
-                id = 1,
-                title = "Study Time",
-                isPomodoro = false,
-                pomodoroWorkTimeInMinutes = 1,
-                pomodoroRestTimeInMinutes = 1
-            ),
-            pomodoroManager = FakePomodoroManager(),
+            schedule = schedule,
+            pomodoroWindow = pomodoroWindow,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun FocusScreenDarkModePreview() {
+    ZenwellTheme(darkTheme = true) {
+        val schedule = Schedules(
+            id = 1,
+            title = "Study Time",
+            isPomodoro = false,
+            pomodoroWorkTimeInMinutes = 1,
+            pomodoroRestTimeInMinutes = 1
+        )
+        val pomodoroWindow = PomodoroWindow(schedule)
+        pomodoroWindow.onPomodoroStart()
+        FocusScreen(
+            schedule = schedule,
+            pomodoroWindow = pomodoroWindow,
         )
     }
 }

@@ -1,24 +1,17 @@
 package com.sarangem.zenwell.service.ui
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialShapes.Companion.Circle
-import androidx.compose.material3.MaterialShapes.Companion.Square
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,12 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.graphics.shapes.Morph
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.focusscreen.TimerBox
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.isExpandedWidth
 import kotlinx.coroutines.delay
@@ -51,40 +45,50 @@ fun BreathingScreen(
     width: Float
 ) {
     var showOpen by remember { mutableStateOf(false) }
-    val timerEnd = {
-        if (showOpenDialog) {
-            showOpen = true
-        } else {
-            onTimerEnd()
-        }
+
+    val breathingCard: @Composable (Modifier) -> Unit = { modifier ->
+        BreathingCard(
+            modifier = modifier,
+            onTimerEnd = { showOpen = true },
+            breathingCycleDuration = breathingCycleDuration,
+            breathingCycleNumber = breathingCycleNumber
+        )
+    }
+    val messageCard: @Composable (Modifier) -> Unit = { modifier ->
+        TimerMessageCard(
+            modifier = modifier,
+            showOpenDialog = showOpenDialog,
+            showOpen = showOpen,
+            message = message,
+            onTimerEnd = onTimerEnd,
+        )
     }
 
-    Card(modifier = modifier) {
-
-        if (isExpandedWidth(width)) {
-            BreathingScreenRow(
-                timerEnd,
-                breathingCycleDuration,
-                breathingCycleNumber,
-                message,
-                showOpen,
-                onTimerEnd
-            )
-        } else {
-            BreathingScreenColumn(
-                timerEnd,
-                breathingCycleDuration,
-                breathingCycleNumber,
-                message,
-                showOpen,
-                onTimerEnd
-            )
+    if (isExpandedWidth(width)) {
+        Row(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(dimensionResource(R.dimen.padding_small)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            breathingCard(Modifier.weight(0.6f))
+            messageCard(Modifier.weight(0.4f))
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(dimensionResource(R.dimen.padding_small)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            breathingCard(Modifier.weight(0.6f))
+            messageCard(Modifier.weight(0.4f))
         }
     }
 }
 
-
-// -- CARDS -- //
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -96,39 +100,37 @@ fun BreathingCard(
 ) {
     var completedBreathingCycle by remember { mutableIntStateOf(breathingCycleNumber) }
     val halfDuration = (breathingCycleDuration / 2) * 1000L
-    var inhale by remember { mutableStateOf(true) }
+    var inhale by remember { mutableStateOf(false) }
 
     LaunchedEffect(completedBreathingCycle) {
-
         if (completedBreathingCycle <= 0) {
             onTimerEnd()
         }
-
         repeat(2) {
             delay(halfDuration)
             inhale = !inhale
         }
-
         completedBreathingCycle--
-
     }
 
-    val morph = Morph(Square, Circle)
-    val infiniteTransition = rememberInfiniteTransition()
-    val animatedProgress by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = halfDuration.toInt(), easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
+    val animatedShapeProgress by animateDpAsState(
+        targetValue = if (inhale) 200.dp else 20.dp,
+        animationSpec = spring(
+            stiffness = Spring.StiffnessVeryLow
+        )
     )
 
-    Box(
+    TimerBox(
         modifier = modifier
-            .padding(dimensionResource(R.dimen.padding_small))
-            .clip(MorphPolygonShape(morph, animatedProgress))
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .fillMaxSize()
+            .padding(
+                top = dimensionResource(R.dimen.padding_small),
+                start = dimensionResource(R.dimen.padding_medium),
+                end = dimensionResource(R.dimen.padding_medium)
+            ),
+        progress = 1f,
+        strokeWidthInDp = dimensionResource(R.dimen.padding_small),
+        cornerRadiusInDp = animatedShapeProgress,
     ) {
         AnimatedContent(
             targetState = inhale
@@ -136,6 +138,8 @@ fun BreathingCard(
             Text(
                 text = stringResource(if (textState) R.string.inhale else R.string.exhale),
                 style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                fontSize = 100.sp,
                 modifier = Modifier
                     .padding(dimensionResource(R.dimen.image_size))
                     .fillMaxSize()
@@ -145,71 +149,6 @@ fun BreathingCard(
     }
 }
 
-
-// -- IMPLEMENTATIONS -- //
-
-@Composable
-fun BreathingScreenColumn(
-    onTimerEnd: () -> Unit = {},
-    breathingCycleDuration: Int,
-    breathingCycleNumber: Int,
-    message: String,
-    showOpen: Boolean,
-    timerEnd: () -> Unit = {}
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(Modifier.weight(0.1F))
-
-        BreathingCard(
-            modifier = Modifier.weight(0.9F),
-            onTimerEnd = onTimerEnd,
-            breathingCycleNumber = breathingCycleNumber,
-            breathingCycleDuration = breathingCycleDuration
-        )
-        Spacer(Modifier.weight(0.2f))
-        MessageCard(
-            message = message,
-            modifier = Modifier.weight(0.9F),
-            showOpenDialog = showOpen,
-            onClick = timerEnd
-        )
-
-        Spacer(Modifier.weight(0.1F))
-    }
-}
-
-@Composable
-fun BreathingScreenRow(
-    onTimerEnd: () -> Unit = {},
-    breathingCycleDuration: Int,
-    breathingCycleNumber: Int,
-    message: String,
-    showOpen: Boolean,
-    timerEnd: () -> Unit = {}
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Spacer(Modifier.weight(0.1F))
-
-        BreathingCard(
-            modifier = Modifier.weight(0.9F),
-            onTimerEnd = onTimerEnd,
-            breathingCycleNumber = breathingCycleNumber,
-            breathingCycleDuration = breathingCycleDuration
-        )
-        Spacer(Modifier.weight(0.2f))
-        MessageCard(
-            message = message,
-            modifier = Modifier.weight(0.9F),
-            showOpenDialog = showOpen,
-            onClick = timerEnd
-        )
-
-        Spacer(Modifier.weight(0.1F))
-    }
-}
-
-
-// -- PREVIEW -- //
 
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable

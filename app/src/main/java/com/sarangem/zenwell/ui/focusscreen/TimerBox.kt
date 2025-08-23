@@ -21,7 +21,7 @@ import com.sarangem.zenwell.R
 @Composable
 fun TimerBox(
     modifier: Modifier = Modifier,
-    progress: Float,
+    progress: Float = 1f,
     backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     strokeColor: Color =  MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
     trackColor: Color =  MaterialTheme.colorScheme.primary,

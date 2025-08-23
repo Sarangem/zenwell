@@ -21,8 +21,9 @@ class PomodoroWindow(
 
     var sessions = schedule.pomodoroSessionNumber
     var isActive = false
-    var elapsedTimeInSeconds = 0
+    var startTime = 0L
     var isWorkTime = true
+    var totalTime = 0L
 
 
     fun onPomodoroStart() {
@@ -33,7 +34,8 @@ class PomodoroWindow(
             while (sessions > 0) {
 
                 // start work time
-                elapsedTimeInSeconds = schedule.pomodoroWorkTimeInMinutes * 60
+                startTime = System.currentTimeMillis()
+                totalTime = schedule.pomodoroWorkTimeInMinutes * 60 * 1000L
                 isWorkTime = true
                 blockingWindowList.forEach { window ->
                     window.content = { width, onTimerEnd ->
@@ -46,14 +48,12 @@ class PomodoroWindow(
                     }
                     window.isAppOpened = false
                 }
-                while (elapsedTimeInSeconds >= 0){
-                    delay(1000L)
-                    elapsedTimeInSeconds--
-                }
+                delay(totalTime)
 
                 // start rest time
-                elapsedTimeInSeconds = schedule.pomodoroRestTimeInMinutes * 60
+                startTime = System.currentTimeMillis()
                 isWorkTime = false
+                totalTime = schedule.pomodoroWorkTimeInMinutes * 60 * 1000L
                 blockingWindowList.forEach { window ->
                     window.isAppOpened = true
                 }
@@ -62,10 +62,7 @@ class PomodoroWindow(
                         window.close()
                     }
                 }
-                while (elapsedTimeInSeconds >= 0){
-                    delay(1000L)
-                    elapsedTimeInSeconds--
-                }
+                delay(totalTime)
                 sessions--
 
                 // re-trigger opening window
@@ -98,7 +95,10 @@ class PomodoroWindow(
 
         isActive = false
         sessions = schedule.pomodoroSessionNumber
-        elapsedTimeInSeconds = 0
-        isWorkTime = true
+        startTime = 0L
+    }
+
+    fun getElapsedTimeInSeconds(): Long{
+        return (totalTime - (System.currentTimeMillis() - startTime)) / 1000
     }
 }

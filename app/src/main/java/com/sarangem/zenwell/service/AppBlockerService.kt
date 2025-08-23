@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class AppBlockerService : AccessibilityService() {
 
     private val context = this
-    private val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
+    val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
 
     companion object {
         var instance: AppBlockerService? = null
@@ -143,32 +143,4 @@ class AppBlockerService : AccessibilityService() {
         instance = null
         return super.onUnbind(intent)
     }
-
-
-    interface PomodoroManagerBase {
-        fun isActive(): Boolean
-        fun start()
-        fun end()
-        fun isWorkTime(): Boolean
-        fun getElapsedTimeInSeconds(): Int
-    }
-
-    inner class PomodoroManager(scheduleId: Int) : PomodoroManagerBase {
-
-        private val scheduleInfo = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId }
-        val pomodoroWindow = scheduleInfo?.pomodoroWindow
-
-        override fun isActive(): Boolean = pomodoroWindow?.isActive  ?: false
-        override fun isWorkTime(): Boolean = pomodoroWindow?.isWorkTime ?: false
-        override fun getElapsedTimeInSeconds(): Int = pomodoroWindow?.elapsedTimeInSeconds ?: 0
-
-        override fun start() {
-            pomodoroWindow?.onPomodoroStart()
-        }
-        override fun end() {
-            pomodoroWindow?.onPomodoroEnd()
-        }
-    }
-
-
 }

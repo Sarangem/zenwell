@@ -74,4 +74,5 @@
     <string name="skip_to_next_session">Skip to next session</string>
     <string name="screen_would_remain_on">Screen would remain on</string>
     <string name="screen_can_now_turn_off_automatically">Screen can now turn off automatically</string>
+    <string name="confirm">Confirm</string>
 </resources>

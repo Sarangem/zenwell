@@ -279,7 +279,7 @@ fun EditScreenBody(
 
         }
 
-        if (!uiState.schedule.isPomodoro) {
+        if (!uiState.schedule.isPomodoro && blockType != BlockType.FullBlock) {
             ChooseNotificationTime(
                 notificationTime = uiState.schedule.notificationTimeInMinutes,
                 updateUiState = {

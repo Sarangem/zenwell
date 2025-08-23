@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.areNotificationsEnabled
 import com.sarangem.zenwell.utils.checkAccessibilityServicePermission
@@ -163,7 +162,6 @@ fun HomeScreenBody(
                     isClicked = schedule.id == scheduleClicked,
                     openEditScreen = openEditScreen,
                     openFocusScreen = openFocusScreen,
-                    pomodoroManager = AppBlockerService.instance?.PomodoroManager(schedule.id),
                 )
             }
         }

@@ -36,7 +36,7 @@ fun minutesToString(num: Int, context: Context): String {
     return "$hourString:$minuteString"
 }
 
-fun secondsToString(num: Int): String{
+fun secondsToString(num: Long): String{
     val minutes = num / 60
     val minuteString = if (minutes < 10) "0$minutes" else minutes.toString()
     val seconds = num % 60

@@ -31,8 +31,7 @@ data class ScheduleInfo(
 
                             BlockType.FullBlock -> FullBlockScreen(
                                 message = schedule.message,
-                                modifier = Modifier.fillMaxSize(),
-                                width = width
+                                modifier = Modifier.fillMaxSize()
                             )
 
                             BlockType.Wait -> WaitScreen(

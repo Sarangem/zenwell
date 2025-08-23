@@ -1,20 +1,18 @@
 package com.sarangem.zenwell.service.ui
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialShapes.Companion.Sunny
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,15 +22,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.focusscreen.TimerBox
+import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.isExpandedWidth
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun WaitScreen(
     modifier: Modifier = Modifier,
@@ -43,123 +44,77 @@ fun WaitScreen(
     width: Float
 ) {
     var showOpen by remember { mutableStateOf(false) }
-    val timerEnd = {
-        if (showOpenDialog) {
-            showOpen = true
-        } else {
-            onTimerEnd()
-        }
-    }
-
-    Card(modifier = modifier) {
-
-        if (isExpandedWidth(width)) {
-            WaitScreenRow(timerEnd, waitTimeInSeconds, message, showOpen, onTimerEnd)
-        } else {
-            WaitScreenColumn(timerEnd, waitTimeInSeconds, message, showOpen, onTimerEnd)
-        }
-    }
-}
-
-
-// -- CARDS -- //
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-fun TimerCard(
-    modifier: Modifier = Modifier,
-    onTimerEnd: () -> Unit,
-    initialValue: Int
-) {
-    var time by remember { mutableIntStateOf(initialValue) }
-    Box(
-        modifier = modifier
-            .padding(dimensionResource(R.dimen.padding_small))
-            .clip(Sunny.toShape())
-            .background(MaterialTheme.colorScheme.tertiaryContainer),
-    ) {
-        Text(
-            text = time.toString(),
-            autoSize = TextAutoSize.StepBased(),
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(dimensionResource(R.dimen.image_size))
-                .fillMaxSize()
-                .wrapContentSize(align = Alignment.Center)
-        )
-    }
+    var time by remember { mutableIntStateOf(waitTimeInSeconds) }
     LaunchedEffect(time) {
         if (time > 0) {
             delay(1000L)
             time--
         } else {
-            onTimerEnd()
+            showOpen = true
+        }
+    }
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = time / waitTimeInSeconds.toFloat(),
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+    )
+    val timerCard: @Composable (Modifier) -> Unit = { modifier ->
+        TimerBox(
+            progress = animatedProgress,
+            trackColor = MaterialTheme.colorScheme.secondary,
+            content = {
+                Text(
+                    text = time.toString(),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = Orbitron,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(),
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .graphicsLayer(scaleY = 1.5f),
+                )
+            },
+            modifier = modifier
+                .fillMaxSize()
+                .padding(dimensionResource(R.dimen.padding_large))
+        )
+    }
+
+    val messageCard: @Composable (Modifier) -> Unit = { modifier ->
+        TimerMessageCard(
+            modifier = modifier,
+            showOpenDialog = showOpenDialog,
+            showOpen = showOpen,
+            message = message,
+            onTimerEnd = onTimerEnd
+        )
+    }
+
+    if (isExpandedWidth(width)) {
+        Row(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(dimensionResource(R.dimen.padding_small)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            timerCard(Modifier.weight(0.5f))
+            messageCard(Modifier.weight(0.5f))
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(dimensionResource(R.dimen.padding_small)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            timerCard(Modifier.weight(0.5f))
+            messageCard(Modifier.weight(0.5f))
         }
     }
 }
-
-
-// -- IMPLEMENTATIONS -- //
-
-@Composable
-fun WaitScreenColumn(
-    onTimerEnd: () -> Unit = {},
-    initialValue: Int,
-    message: String,
-    showOpen: Boolean,
-    timerEnd: () -> Unit = {}
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(Modifier.weight(0.1F))
-
-        TimerCard(
-            modifier = Modifier.weight(0.9F),
-            onTimerEnd = onTimerEnd,
-            initialValue = initialValue
-        )
-        Spacer(Modifier.weight(0.2f))
-        MessageCard(
-            message = message,
-            modifier = Modifier.weight(0.9F),
-            showOpenDialog = showOpen,
-            onClick = timerEnd
-        )
-
-        Spacer(Modifier.weight(0.1F))
-    }
-}
-
-@Composable
-fun WaitScreenRow(
-    onTimerEnd: () -> Unit = {},
-    initialValue: Int,
-    message: String,
-    showOpen: Boolean,
-    timerEnd: () -> Unit = {}
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Spacer(Modifier.weight(0.1F))
-
-        TimerCard(
-            modifier = Modifier.weight(0.9F),
-            onTimerEnd = onTimerEnd,
-            initialValue = initialValue
-        )
-        Spacer(Modifier.weight(0.2f))
-        MessageCard(
-            message = message,
-            modifier = Modifier.weight(0.9F),
-            showOpenDialog = showOpen,
-            onClick = timerEnd
-        )
-
-        Spacer(Modifier.weight(0.1F))
-    }
-}
-
-
-// -- PREVIEW -- //
 
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable

@@ -79,7 +79,7 @@ fun ShowConfirmDialog(
                 Row {
                     TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
                     Spacer(modifier = Modifier.weight(1f))
-                    TextButton(onClick = onConfirm) { Text(stringResource(R.string.delete)) }
+                    TextButton(onClick = onConfirm) { Text(stringResource(R.string.confirm)) }
                 }
             }
         }

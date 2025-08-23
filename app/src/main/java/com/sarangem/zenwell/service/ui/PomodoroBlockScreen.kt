@@ -1,53 +1,80 @@
 package com.sarangem.zenwell.service.ui
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialShapes.Companion.Sunny
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.PomodoroWindow
+import com.sarangem.zenwell.ui.focusscreen.TimerBox
+import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.isExpandedWidth
-import com.sarangem.zenwell.utils.secondsToString
 import kotlinx.coroutines.delay
 
 @Composable
 fun PomodoroBlockScreen(
     modifier: Modifier = Modifier,
-    onTimerEnd: () -> Unit = {},
     message: String,
     width: Float,
     pomodoroWindow: PomodoroWindow
 ) {
-    Card(modifier = modifier) {
-        if (isExpandedWidth(width)) {
-            PomodoroBlockScreenRow(onTimerEnd, pomodoroWindow, message)
-        } else {
-            PomodoroBlockScreenColumn(onTimerEnd, pomodoroWindow, message)
+    val timerCard: @Composable (Modifier) -> Unit = { modifier ->
+        PomodoroTimerCard(
+            modifier = modifier,
+            pomodoroWindow = pomodoroWindow
+        )
+    }
+    val messageCard: @Composable (Modifier) -> Unit = { modifier ->
+        TimerMessageCard(
+            modifier = modifier,
+            message = message,
+        )
+    }
+
+    if (isExpandedWidth(width)) {
+        Row(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(dimensionResource(R.dimen.padding_small)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            timerCard(Modifier.weight(0.5f))
+            messageCard(Modifier.weight(0.5f))
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(dimensionResource(R.dimen.padding_small)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            timerCard(Modifier.weight(0.5f))
+            messageCard(Modifier.weight(0.5f))
         }
     }
 }
@@ -56,86 +83,63 @@ fun PomodoroBlockScreen(
 @Composable
 fun PomodoroTimerCard(
     modifier: Modifier = Modifier,
-    pomodoroWindow: PomodoroWindow
+    pomodoroWindow: PomodoroWindow,
 ) {
-    var elapsedTime by rememberSaveable { mutableIntStateOf(pomodoroWindow.elapsedTimeInSeconds) }
+    var elapsedTime by rememberSaveable { mutableLongStateOf(pomodoroWindow.getElapsedTimeInSeconds()) }
     LaunchedEffect(Unit) {
-        delay(1000L)
-        elapsedTime = pomodoroWindow.elapsedTimeInSeconds
+        while(true){
+            delay(1000L)
+            elapsedTime = pomodoroWindow.getElapsedTimeInSeconds().coerceAtLeast(0)
+        }
     }
-    
-    Box(
+    val totalTime = pomodoroWindow.totalTime
+    val animatedProgress by animateFloatAsState(
+        targetValue = (totalTime - elapsedTime).toFloat() / totalTime,
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+    )
+
+    TimerBox(
         modifier = modifier
-            .padding(dimensionResource(R.dimen.padding_small))
-            .clip(Sunny.toShape())
-            .background(MaterialTheme.colorScheme.tertiaryContainer),
+            .fillMaxWidth()
+            .padding(dimensionResource(R.dimen.padding_large)),
+        progress = animatedProgress
     ) {
-        Text(
-            text = secondsToString(elapsedTime),
-            autoSize = TextAutoSize.StepBased(),
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(dimensionResource(R.dimen.image_size))
-                .fillMaxSize()
-                .wrapContentSize(align = Alignment.Center)
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        ) {
+            val minutes = elapsedTime / 60
+            val seconds = elapsedTime % 60
+            Text(
+                text = if (minutes < 10) "0$minutes" else minutes.toString(),
+                modifier = Modifier
+                    .padding(dimensionResource(R.dimen.padding_small))
+                    .graphicsLayer(scaleY = 1.5f),
+                fontWeight = FontWeight.Bold,
+                fontFamily = Orbitron,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased()
+            )
+            Text(
+                text = if (seconds < 10) "0$seconds" else seconds.toString(),
+                modifier = Modifier
+                    .padding(dimensionResource(R.dimen.padding_small))
+                    .graphicsLayer(scaleY = 1.5f),
+                fontWeight = FontWeight.Bold,
+                fontFamily = Orbitron,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased()
+            )
+        }
     }
 }
 
-@Composable
-fun PomodoroBlockScreenRow(
-    onTimerEnd: () -> Unit = {},
-    pomodoroWindow: PomodoroWindow,
-    message: String,
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Spacer(Modifier.weight(0.1F))
-
-        PomodoroTimerCard(
-            modifier = Modifier.weight(0.9F),
-            pomodoroWindow = pomodoroWindow
-        )
-        Spacer(Modifier.weight(0.2f))
-        MessageCard(
-            message = message,
-            modifier = Modifier.weight(0.9F),
-            onClick = onTimerEnd
-        )
-        Spacer(Modifier.weight(0.1F))
-    }
-}
-
-@Composable
-fun PomodoroBlockScreenColumn(
-    onTimerEnd: () -> Unit = {},
-    pomodoroWindow: PomodoroWindow,
-    message: String,
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(Modifier.weight(0.1F))
-        PomodoroTimerCard(
-            modifier = Modifier.weight(0.9F),
-            pomodoroWindow = pomodoroWindow
-        )
-        Spacer(Modifier.weight(0.2f))
-        MessageCard(
-            message = message,
-            modifier = Modifier.weight(0.9F),
-            onClick = onTimerEnd
-        )
-        Spacer(Modifier.weight(0.1F))
-    }
-}
-
-
-// -- PREVIEW -- //
 
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun PomodoroBlockScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        PomodoroBlockScreen(Modifier, { }, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)) )
+        PomodoroBlockScreen(Modifier, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)) )
     }
 }
 
@@ -143,7 +147,7 @@ fun PomodoroBlockScreenColumnPreviewLight() {
 @Composable
 fun PomodoroBlockScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        PomodoroBlockScreen(Modifier, { }, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)))
+        PomodoroBlockScreen(Modifier, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)))
     }
 }
 
@@ -151,7 +155,7 @@ fun PomodoroBlockScreenColumnPreviewDark() {
 @Composable
 fun PomodoroBlockScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        PomodoroBlockScreen(Modifier, { }, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)))
+        PomodoroBlockScreen(Modifier, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)))
     }
 }
 
@@ -159,6 +163,6 @@ fun PomodoroBlockScreenRowPreviewLight() {
 @Composable
 fun PomodoroBlockScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        PomodoroBlockScreen(Modifier, { }, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)))
+        PomodoroBlockScreen(Modifier, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)))
     }
 }

@@ -1,6 +1,11 @@
 package com.sarangem.zenwell.ui
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,13 +26,19 @@ import com.sarangem.zenwell.utils.isExpandedWidth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ZenwellAppScreen(
-    startPermissionActivity: (Intent) -> Unit = {},
-    requestNotification: () -> Unit = {}
-) {
+fun ZenwellAppScreen() {
+
     val viewModel: ZenwellAppViewModel = viewModel(factory = ZenwellAppViewModel.factory)
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+    val activity = LocalActivity.current
+    val startPermissionActivity: (Intent) -> Unit = { intent ->
+        activity?.startActivity(intent)
+    }
 
     val schedulesList by viewModel.getAllSchedules().collectAsState(emptyList())
     val homeScreen: @Composable (Modifier) -> Unit = { modifier ->
@@ -36,7 +47,11 @@ fun ZenwellAppScreen(
             schedulesList = schedulesList,
             scheduleClicked = uiState.schedule.id,
             startPermissionActivity = startPermissionActivity,
-            requestNotification = requestNotification,
+            requestNotification = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            },
             addNewSchedule = { viewModel.addNewSchedule(context) },
             openEditScreen = {
                 viewModel.updateUiState(
@@ -96,7 +111,12 @@ fun ZenwellAppScreen(
                 editScreen(Modifier.fillMaxSize(), true)
             }
         }
-        ZenwellNavigationPage.Focus -> FocusScreen(schedule = uiState.schedule)
+        ZenwellNavigationPage.Focus -> FocusScreen(
+            schedule = uiState.schedule,
+            goBack = {
+                viewModel.updateUiState(AppUiState())
+            }
+        )
         ZenwellNavigationPage.Settings -> {}
     }
 }
