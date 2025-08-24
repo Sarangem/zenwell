@@ -6,13 +6,13 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
 
-data class AppInfo(
+data class PackageInfo(
     val packageName: String = "",
     val appName: String = "",
     val icon: Drawable? = null
 )
 
-fun getInstalledApps(context: Context): List<AppInfo> {
+fun getInstalledApps(context: Context): List<PackageInfo> {
     val pm = context.packageManager
     val mainIntent = Intent(Intent.ACTION_MAIN, null)
         .addCategory(Intent.CATEGORY_LAUNCHER)
@@ -23,12 +23,12 @@ fun getInstalledApps(context: Context): List<AppInfo> {
         pm.queryIntentActivities(mainIntent, 0)
     }
 
-    val appInfoList: MutableList<AppInfo> = mutableListOf()
+    val packageInfoList: MutableList<PackageInfo> = mutableListOf()
     resolvedInfos.forEach { info ->
         val resources = pm.getResourcesForApplication(info.activityInfo.applicationInfo)
 
-        appInfoList.add(
-            AppInfo(
+        packageInfoList.add(
+            PackageInfo(
                 packageName = info.activityInfo.packageName,
                 appName = if (info.activityInfo.labelRes != 0) {
                     resources.getString(info.activityInfo.labelRes)
@@ -40,7 +40,7 @@ fun getInstalledApps(context: Context): List<AppInfo> {
         )
     }
 
-    return appInfoList
+    return packageInfoList
 }
 
 fun getAppNameFromPackageName(context: Context, packageName: String): String? {

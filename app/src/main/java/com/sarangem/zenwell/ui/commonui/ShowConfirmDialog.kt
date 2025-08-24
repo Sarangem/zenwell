@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.ui.focusscreen
+package com.sarangem.zenwell.ui.commonui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

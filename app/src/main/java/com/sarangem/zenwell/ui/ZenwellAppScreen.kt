@@ -22,7 +22,7 @@ import com.sarangem.zenwell.data.ZenwellNavigationPage
 import com.sarangem.zenwell.ui.editscreen.EditScreen
 import com.sarangem.zenwell.ui.focusscreen.FocusScreen
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
-import com.sarangem.zenwell.utils.isExpandedWidth
+import com.sarangem.zenwell.ui.commonui.isExpandedWidth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -41,7 +41,7 @@ import androidx.core.content.ContextCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.utils.AppInfo
+import com.sarangem.zenwell.utils.PackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,7 +96,7 @@ fun ChooseAppList(
 @Composable
 fun BottomSheetContents(
     modifier: Modifier = Modifier,
-    getInstalledApps: (Context) -> List<AppInfo>,
+    getInstalledApps: (Context) -> List<PackageInfo>,
     setAppNamesInUiState: () -> Unit = {},
     checkedAppList: List<String>?,
     addAppToList: (String) -> Unit = {},
@@ -104,7 +104,7 @@ fun BottomSheetContents(
 ) {
 
     val context = LocalContext.current
-    var installedAppList by remember { mutableStateOf<List<AppInfo>>(listOf()) }
+    var installedAppList by remember { mutableStateOf<List<PackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {
         installedAppList = getInstalledApps(context).sortedBy { it.appName }
         setAppNamesInUiState()
@@ -151,7 +151,7 @@ fun BottomSheetContents(
 @Composable
 fun AppCard(
     modifier: Modifier = Modifier,
-    app: AppInfo,
+    app: PackageInfo,
     checkedValue: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
@@ -203,9 +203,9 @@ fun ShowBottomSheetPreview() {
         BottomSheetContents(
             getInstalledApps = { _ ->
                 listOf(
-                    AppInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
-                    AppInfo(appName = "Messages", icon = icon, packageName = "messages"),
-                    AppInfo(appName = "Youtube", icon = icon, packageName = "youtube")
+                    PackageInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
+                    PackageInfo(appName = "Messages", icon = icon, packageName = "messages"),
+                    PackageInfo(appName = "Youtube", icon = icon, packageName = "youtube")
                 )
             },
             checkedAppList = list,

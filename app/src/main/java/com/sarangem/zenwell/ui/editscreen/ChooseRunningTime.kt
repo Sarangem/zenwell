@@ -1,5 +1,6 @@
 package com.sarangem.zenwell.ui.editscreen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
@@ -21,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -72,73 +74,66 @@ fun ChooseRunningTime(
 ) {
     Card(modifier = modifier) {
 
-        Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))) {
+        Text(
+            text = stringResource(R.string.choose_running_time),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
+        if (isRunningTimeInvalid) {
             Text(
-                text = stringResource(R.string.choose_running_time),
-                style = MaterialTheme.typography.bodyLarge,
+                text = stringResource(R.string.running_time_is_invalid),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
             )
-            if(isRunningTimeInvalid){
-                Text(
-                    text = stringResource(R.string.running_time_is_invalid),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(
-                        top = dimensionResource(R.dimen.padding_small),
-                        start = dimensionResource(R.dimen.padding_medium),
-                        end = dimensionResource(R.dimen.padding_small),
-                    )
-                )
-            }
-            Row(
-                modifier = Modifier.padding(
-                    top = dimensionResource(R.dimen.card_elevation),
-                    bottom = dimensionResource(R.dimen.padding_medium),
-                    start = dimensionResource(R.dimen.padding_medium),
-                    end = dimensionResource(R.dimen.padding_medium),
-                ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ClockButton(
-                    time = startTimeInMinutes,
-                    updateUiState = updateStartTime,
-                    timePickerTitle = "Choose Start Time",
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = stringResource(R.string.to),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                ClockButton(
-                    time = endTimeInMinutes,
-                    updateUiState = updateEndTime,
-                    timePickerTitle = "Choose End Time",
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Text(
-                text = stringResource(R.string.choose_week_days),
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(
-                    start = dimensionResource(R.dimen.padding_small),
-                    end = dimensionResource(R.dimen.padding_small)
-                )
+        }
+        Row(
+            modifier = Modifier.padding(
+                start = dimensionResource(R.dimen.padding_small),
+                end = dimensionResource(R.dimen.padding_small)
+            ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ClockButton(
+                time = startTimeInMinutes,
+                updateUiState = updateStartTime,
+                timePickerTitle = "Choose Start Time",
+                modifier = Modifier.weight(1f)
             )
-            SelectWeekDays(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = dimensionResource(R.dimen.padding_small),
-                        end = dimensionResource(R.dimen.padding_small),
-                        bottom = dimensionResource(R.dimen.padding_small)
-                    ),
-                weekDays = weekDays,
-                updateWeekDays = updateWeekDays
+            Text(
+                text = stringResource(R.string.to),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            ClockButton(
+                time = endTimeInMinutes,
+                updateUiState = updateEndTime,
+                timePickerTitle = "Choose End Time",
+                modifier = Modifier.weight(1f)
             )
         }
+
+        Text(
+            text = stringResource(R.string.choose_week_days),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(
+                start = dimensionResource(R.dimen.padding_small),
+                top = dimensionResource(R.dimen.padding_medium),
+                end = dimensionResource(R.dimen.padding_small)
+            )
+        )
+        SelectWeekDays(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(R.dimen.padding_small),
+                    end = dimensionResource(R.dimen.padding_small),
+                    bottom = dimensionResource(R.dimen.padding_small)
+                ),
+            weekDays = weekDays,
+            updateWeekDays = updateWeekDays
+        )
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -150,21 +145,26 @@ fun ClockButton(
 ) {
     val context = LocalContext.current
     var showPopup by remember { mutableStateOf(false) }
-    OutlinedButton(
+    Button(
         modifier = modifier,
         onClick = { showPopup = true },
-        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.surfaceDim),
-        shape = MaterialTheme.shapes.extraLarge
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ),
+        shape = MaterialTheme.shapes.extraLarge,
+        border = BorderStroke(width = 0.5.dp, color = MaterialTheme.colorScheme.secondary)
     ) {
         Column(verticalArrangement = Arrangement.Center) {
             Row {
                 Spacer(Modifier.weight(0.5f))
                 Text(
                     text = minutesToString(time, context),
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineMedium,
                     fontFamily = Orbitron,
-                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.ExtraBold,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(maxFontSize = MaterialTheme.typography.headlineMedium.fontSize),
                     modifier = Modifier.graphicsLayer(scaleY = 1.5f)
                 )
                 Spacer(Modifier.weight(0.5f))
@@ -174,10 +174,11 @@ fun ClockButton(
                     Spacer(Modifier.weight(0.5f))
                     Text(
                         text = getAmPm(time),
-                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.labelMedium,
                         fontFamily = Orbitron,
                         fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        autoSize = TextAutoSize.StepBased(maxFontSize = MaterialTheme.typography.labelMedium.fontSize),
                         modifier = Modifier.graphicsLayer(scaleX = 1.5f)
                     )
                     Spacer(Modifier.weight(0.5f))
@@ -306,16 +307,16 @@ fun SelectWeekDays(
                 colors = ToggleButtonDefaults.toggleButtonColors(
                     disabledContainerColor = MaterialTheme.colorScheme.surfaceDim,
                     disabledContentColor = MaterialTheme.colorScheme.onSurface,
-                    checkedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    checkedContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    checkedContainerColor = MaterialTheme.colorScheme.primary,
+                    checkedContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
-                border = ButtonDefaults.outlinedButtonBorder(),
                 modifier = Modifier
                     .padding(dimensionResource(R.dimen.card_elevation))
                     .weight(1f)
             ) {
                 Text(
-                    text = stringResource(abbr)
+                    text = stringResource(abbr),
+                    style = MaterialTheme.typography.labelLarge,
                 )
             }
 

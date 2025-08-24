@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.focusscreen.ShowConfirmDialog
+import com.sarangem.zenwell.ui.commonui.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)

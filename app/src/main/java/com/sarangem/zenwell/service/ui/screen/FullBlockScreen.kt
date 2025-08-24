@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui
+package com.sarangem.zenwell.service.ui.screen
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -25,6 +25,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.service.ui.APP_BLOCKED
+import com.sarangem.zenwell.service.ui.EXPANDED_WIDTH
+import com.sarangem.zenwell.service.ui.MEDIUM_WIDTH
+import com.sarangem.zenwell.service.ui.MessageCard
+import com.sarangem.zenwell.service.ui.MorphPolygonShape
+import com.sarangem.zenwell.service.ui.PREVIEW_HEIGHT
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)

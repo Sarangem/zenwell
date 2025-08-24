@@ -26,9 +26,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.areNotificationsEnabled
-import com.sarangem.zenwell.utils.checkAccessibilityServicePermission
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +38,7 @@ fun HomeScreen(
     scheduleClicked: Int = 0,
     startPermissionActivity: (Intent) -> Unit = {},
     requestNotification: () -> Unit = {},
-    accessibilityPermission: () -> Boolean = { checkAccessibilityServicePermission() },
+    accessibilityPermission: () -> Boolean = { AppBlockerService.instance != null },
     notificationPermission: (Context) -> Boolean = { areNotificationsEnabled(it) },
     addNewSchedule: suspend () -> Schedules = suspend { Schedules() },
     openEditScreen: (Schedules) -> Unit = {},

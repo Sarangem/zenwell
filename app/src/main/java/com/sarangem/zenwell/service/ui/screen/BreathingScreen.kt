@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui
+package com.sarangem.zenwell.service.ui.screen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,11 +28,16 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.em
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.focusscreen.TimerBox
+import com.sarangem.zenwell.service.ui.APP_BLOCKED
+import com.sarangem.zenwell.service.ui.EXPANDED_WIDTH
+import com.sarangem.zenwell.service.ui.MEDIUM_WIDTH
+import com.sarangem.zenwell.service.ui.PREVIEW_HEIGHT
+import com.sarangem.zenwell.service.ui.TimerMessageCard
+import com.sarangem.zenwell.ui.commonui.TimerBox
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.utils.isExpandedWidth
+import com.sarangem.zenwell.ui.commonui.isExpandedWidth
 import kotlinx.coroutines.delay
 
 @Composable
@@ -139,7 +145,9 @@ fun BreathingCard(
                 text = stringResource(if (textState) R.string.inhale else R.string.exhale),
                 style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontSize = 100.sp,
+                lineHeight = 1.1.em,
+                autoSize = TextAutoSize.StepBased(),
+                maxLines = 1,
                 modifier = Modifier
                     .padding(dimensionResource(R.dimen.image_size))
                     .fillMaxSize()

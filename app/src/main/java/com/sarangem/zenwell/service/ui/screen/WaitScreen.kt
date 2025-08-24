@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui
+package com.sarangem.zenwell.service.ui.screen
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -27,10 +27,15 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.focusscreen.TimerBox
+import com.sarangem.zenwell.service.ui.APP_BLOCKED
+import com.sarangem.zenwell.service.ui.EXPANDED_WIDTH
+import com.sarangem.zenwell.service.ui.MEDIUM_WIDTH
+import com.sarangem.zenwell.service.ui.PREVIEW_HEIGHT
+import com.sarangem.zenwell.service.ui.TimerMessageCard
+import com.sarangem.zenwell.ui.commonui.TimerBox
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.utils.isExpandedWidth
+import com.sarangem.zenwell.ui.commonui.isExpandedWidth
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)

@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.ui.BreathingScreen
-import com.sarangem.zenwell.service.ui.FullBlockScreen
-import com.sarangem.zenwell.service.ui.WaitScreen
+import com.sarangem.zenwell.service.ui.screen.BreathingScreen
+import com.sarangem.zenwell.service.ui.screen.FullBlockScreen
+import com.sarangem.zenwell.service.ui.screen.WaitScreen
 
 data class ScheduleInfo(
     private val context: Context,

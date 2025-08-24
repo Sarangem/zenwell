@@ -131,6 +131,10 @@ class AppBlockerService : AccessibilityService() {
         onAccessibilityEvent(null)
     }
 
+    fun getPomodoroWindow(scheduleId: Int): PomodoroWindow? {
+        return scheduleInfoList.firstOrNull { it.schedule.id == scheduleId}?.pomodoroWindow
+    }
+
     override fun onInterrupt() {
         scheduleInfoList.forEach { scheduleInfo ->
             scheduleInfo.blockingWindowList.forEach { blockingWindow ->

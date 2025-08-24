@@ -3,7 +3,7 @@ package com.sarangem.zenwell.service
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.ui.PomodoroBlockScreen
+import com.sarangem.zenwell.service.ui.screen.PomodoroBlockScreen
 import com.sarangem.zenwell.utils.ServiceLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
