@@ -37,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.PomodoroWindow
+import com.sarangem.zenwell.ui.focusscreen.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.getAmPm
@@ -282,14 +284,27 @@ fun PomodoroTimerControls(
                 .weight(0.25f)
                 .fillMaxHeight()
         ) {
+            var isStopClicked by remember { mutableStateOf(false) }
+            if(isStopClicked){
+                ShowConfirmDialog(
+                    icon = Icons.Filled.Stop,
+                    headingText = stringResource(R.string.end),
+                    bodyText = stringResource(R.string.do_you_want_to_end_this_session),
+                    onConfirm = {
+                        pomodoroWindow.onPomodoroEnd()
+                        updatePomodoroActivity(false)
+                    },
+                    onDismiss = { isStopClicked = false }
+                )
+            }
+
             Button(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(dimensionResource(R.dimen.padding_tiny)),
                 onClick = {
-                    pomodoroWindow.onPomodoroEnd()
-                    updatePomodoroActivity(false)
+                    isStopClicked = true
                 },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium))

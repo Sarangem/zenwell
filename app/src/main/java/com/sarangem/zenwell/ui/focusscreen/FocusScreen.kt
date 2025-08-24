@@ -26,6 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.ButtonGroupDefaults
@@ -100,10 +101,11 @@ fun FocusScreen(
     }
     var isWorkTime by rememberSaveable { mutableStateOf(pomodoroWindow?.isWorkTime ?: true) }
     var isCompleted by rememberSaveable { mutableStateOf(false) }
+    var isPaused by rememberSaveable { mutableStateOf(pomodoroWindow?.isPaused ?: false) }
 
-    LaunchedEffect(Unit) {
-        if (pomodoroWindow != null) {
-            while (pomodoroWindow.isActive) {
+    if (pomodoroWindow != null) {
+        LaunchedEffect(Unit) {
+            while (pomodoroWindow.isActive || pomodoroWindow.isPaused) {
                 delay(1000L)
                 elapsedTime = pomodoroWindow.getElapsedTimeInSeconds()
                 if (elapsedTime <= 0) {
@@ -158,21 +160,7 @@ fun FocusScreen(
             FocusScreenBody(
                 modifier = Modifier.padding(innerPadding),
                 isFullScreen = isFullScreen,
-                toggleFullScreen = {
-                    isFullScreen = it
-                    if (it) {
-                        window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                        Toast.makeText(context, R.string.screen_would_remain_on, Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                        Toast.makeText(
-                            context,
-                            R.string.screen_can_now_turn_off_automatically,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                },
+                toggleFullScreen = { isFullScreen = it },
                 elapsedTime = elapsedTime,
                 isWorkTime = isWorkTime,
                 isCompleted = isCompleted,
@@ -180,9 +168,21 @@ fun FocusScreen(
                     pomodoroWindow.onPomodoroEnd()
                     goBack()
                 },
-                totalTime = if(isWorkTime) schedule.pomodoroWorkTimeInMinutes else schedule.pomodoroRestTimeInMinutes,
-                onPause = { TODO("Do not implement it yet.") },
-                onSkip = { TODO("Do not implement it yet.") },
+                totalTime = if(isWorkTime) schedule.pomodoroWorkTimeInMinutes * 60 else schedule.pomodoroRestTimeInMinutes * 60,
+                isPaused = isPaused,
+                onPauseOrResume = {
+                    if(isPaused){
+                        pomodoroWindow.onPomodoroStart()
+                    } else {
+                        pomodoroWindow.onPomodoroPause()
+                    }
+                    isPaused = !isPaused
+                },
+                onSkip = {
+                    pomodoroWindow.onPomodoroSkip()
+                    isWorkTime = !isWorkTime
+                    isPaused = false
+                },
             )
         }
     }
@@ -198,7 +198,8 @@ fun FocusScreenBody(
     isWorkTime: Boolean,
     isCompleted: Boolean,
     onStop: () -> Unit,
-    onPause: () -> Unit,
+    isPaused: Boolean,
+    onPauseOrResume: () -> Unit,
     onSkip: () -> Unit
 ) {
     if (isFullScreen) {
@@ -262,9 +263,9 @@ fun FocusScreenBody(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_small)),
-                    isWorkTime = isWorkTime,
                     onStop = onStop,
-                    onPause = onPause,
+                    isPaused = isPaused,
+                    onPauseOrResume = onPauseOrResume,
                     onSkip = onSkip
                 )
             }
@@ -318,15 +319,12 @@ fun PomodoroTimerDisplay(
 @Composable
 fun PomodoroControls(
     modifier: Modifier = Modifier,
-    isWorkTime: Boolean,
     onStop: () -> Unit,
-    onPause: () -> Unit,
+    isPaused: Boolean,
+    onPauseOrResume: () -> Unit,
     onSkip: () -> Unit,
 ) {
     var isStopChecked by remember { mutableStateOf(false) }
-    var isPauseChecked by remember { mutableStateOf(false) }
-    var isSkipChecked by remember { mutableStateOf(false) }
-
     if (isStopChecked) {
         ShowConfirmDialog(
             icon = Icons.Filled.Stop,
@@ -337,11 +335,22 @@ fun PomodoroControls(
         )
     }
 
+    var isSkipChecked by remember { mutableStateOf(false) }
+    if (isSkipChecked) {
+        ShowConfirmDialog(
+            icon = Icons.Filled.FastForward,
+            headingText = stringResource(R.string.skip_to_next_session),
+            bodyText = stringResource(R.string.skip_to_next_session_description),
+            onConfirm = onSkip,
+            onDismiss = { isSkipChecked = false }
+        )
+    }
+
     val buttonColors = ToggleButtonDefaults.toggleButtonColors(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-        checkedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        checkedContainerColor = MaterialTheme.colorScheme.primary,
+        checkedContentColor = MaterialTheme.colorScheme.onPrimary,
     )
 
     Row(
@@ -366,11 +375,8 @@ fun PomodoroControls(
         }
 
         ToggleButton(
-            checked = isPauseChecked,
-            onCheckedChange = {
-                isPauseChecked = it
-                onPause()
-            },
+            checked = isPaused,
+            onCheckedChange = { onPauseOrResume() },
             shapes = ButtonGroupDefaults.connectedMiddleButtonShapes(),
             colors = buttonColors,
             modifier = Modifier
@@ -378,18 +384,15 @@ fun PomodoroControls(
                 .weight(1f),
         ) {
             Icon(
-                imageVector = Icons.Filled.Pause,
-                contentDescription = stringResource(R.string.pause),
+                imageVector = if (isPaused) Icons.Filled.PlayArrow else Icons.Filled.Pause,
+                contentDescription = if(isPaused) stringResource(R.string.resume) else stringResource(R.string.pause),
                 modifier = Modifier.fillMaxSize(0.5f)
             )
         }
 
         ToggleButton(
             checked = isSkipChecked,
-            onCheckedChange = {
-                isSkipChecked = it
-                onSkip()
-            },
+            onCheckedChange = { isSkipChecked = it },
             shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
             modifier = Modifier
                 .fillMaxHeight(0.6f)
@@ -399,7 +402,6 @@ fun PomodoroControls(
             Icon(
                 imageVector = Icons.Filled.FastForward,
                 contentDescription = stringResource(R.string.skip_to_next_session),
-                tint = if (isWorkTime) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.fillMaxSize(0.5f)
             )
         }

@@ -23,37 +23,43 @@ class PomodoroWindow(
     var isActive = false
     var startTime = 0L
     var isWorkTime = true
-    var totalTime = 0L
+    var currentSegmentTime = 0L
 
+    var isPaused = false
+    var timeBeforePaused = 0L
 
     fun onPomodoroStart() {
         ServiceLogger.d { "Pomodoro session with schedule id ${schedule.id} has started." }
         isActive = true
-
         coroutineScope.launch {
             while (sessions > 0) {
+                isPaused = false
 
-                // start work time
-                startTime = System.currentTimeMillis()
-                totalTime = schedule.pomodoroWorkTimeInMinutes * 60 * 1000L
-                isWorkTime = true
-                blockingWindowList.forEach { window ->
-                    window.content = { width, onTimerEnd ->
-                        PomodoroBlockScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            message = schedule.message,
-                            width = width,
-                            pomodoroWindow = context
-                        )
+                if(isWorkTime) {
+
+                    startTime = System.currentTimeMillis()
+                    currentSegmentTime = schedule.pomodoroWorkTimeInMinutes * 60 * 1000L
+                    blockingWindowList.forEach { window ->
+                        window.content = { width, onTimerEnd ->
+                            PomodoroBlockScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                message = schedule.message,
+                                width = width,
+                                pomodoroWindow = context
+                            )
+                        }
+                        window.isAppOpened = false
                     }
-                    window.isAppOpened = false
+                    delay(currentSegmentTime - timeBeforePaused)
+                    isPaused = false
+                    timeBeforePaused = 0L
                 }
-                delay(totalTime)
 
-                // start rest time
+                // rest time
+
                 startTime = System.currentTimeMillis()
                 isWorkTime = false
-                totalTime = schedule.pomodoroWorkTimeInMinutes * 60 * 1000L
+                currentSegmentTime = schedule.pomodoroRestTimeInMinutes * 60 * 1000L
                 blockingWindowList.forEach { window ->
                     window.isAppOpened = true
                 }
@@ -62,7 +68,10 @@ class PomodoroWindow(
                         window.close()
                     }
                 }
-                delay(totalTime)
+                delay(currentSegmentTime - timeBeforePaused)
+                isPaused = false
+                timeBeforePaused = 0L
+                isWorkTime = true
                 sessions--
 
                 // re-trigger opening window
@@ -74,31 +83,63 @@ class PomodoroWindow(
                 withContext(Dispatchers.Main) {
                     instance.recheckApp()
                 }
-
             }
             onPomodoroEnd()
+
         }
     }
 
     fun onPomodoroEnd() {
         ServiceLogger.d { "Stopping pomodoro session with schedule id ${schedule.id}." }
-
+        isActive = false
+        sessions = schedule.pomodoroSessionNumber
+        startTime = 0L
+        isPaused = false
+        timeBeforePaused = 0L
+        isWorkTime = true
         coroutineScope.cancel()
         coroutineScope = CoroutineScope(Dispatchers.IO)
-
         blockingWindowList.forEach { window ->
             window.close()
         }
         blockingWindowList.forEach { window -> // prevent executing open() if pomodoro has not started
             window.isAppOpened = true
         }
+    }
 
+    fun onPomodoroPause() {
+        ServiceLogger.d { "Pausing pomodoro session with schedule id ${schedule.id}." }
         isActive = false
-        sessions = schedule.pomodoroSessionNumber
+        timeBeforePaused += System.currentTimeMillis() - startTime
+        isPaused = true
         startTime = 0L
+        coroutineScope.cancel()
+        coroutineScope = CoroutineScope(Dispatchers.IO)
+        blockingWindowList.forEach { window ->
+            window.close()
+        }
+        blockingWindowList.forEach { window -> // prevent executing open() if pomodoro has not started
+            window.isAppOpened = true
+        }
     }
 
-    fun getElapsedTimeInSeconds(): Long{
-        return (totalTime - (System.currentTimeMillis() - startTime)) / 1000
+    fun onPomodoroSkip() {
+        ServiceLogger.d { "Skipping pomodoro session with schedule id ${schedule.id} to next work or rest session." }
+        coroutineScope.cancel()
+        coroutineScope = CoroutineScope(Dispatchers.IO)
+        if(!isWorkTime) sessions--
+        isWorkTime = !isWorkTime
+        isPaused = false
+        timeBeforePaused = 0L
+        onPomodoroStart()
     }
+
+    fun getElapsedTimeInSeconds(): Long {
+        return if (isPaused) {
+            currentSegmentTime - timeBeforePaused
+        } else {
+            (currentSegmentTime - timeBeforePaused) - (System.currentTimeMillis() - startTime)
+        } / 1000
+    }
+
 }

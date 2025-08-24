@@ -75,4 +75,6 @@
     <string name="screen_would_remain_on">Screen would remain on</string>
     <string name="screen_can_now_turn_off_automatically">Screen can now turn off automatically</string>
     <string name="confirm">Confirm</string>
+    <string name="resume">Resume</string>
+    <string name="skip_to_next_session_description">Are you sure you want to skip to next work or rest part of pomodoro session?</string>
 </resources>

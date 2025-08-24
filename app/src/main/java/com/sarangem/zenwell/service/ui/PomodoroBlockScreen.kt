@@ -92,7 +92,7 @@ fun PomodoroTimerCard(
             elapsedTime = pomodoroWindow.getElapsedTimeInSeconds().coerceAtLeast(0)
         }
     }
-    val totalTime = pomodoroWindow.totalTime
+    val totalTime = pomodoroWindow.currentSegmentTime / 1000
     val animatedProgress by animateFloatAsState(
         targetValue = (totalTime - elapsedTime).toFloat() / totalTime,
         animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
