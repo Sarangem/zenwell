@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.sarangem.zenwell"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.sarangem.zenwell"
-        minSdk = 22
-        targetSdk = 35
+        minSdk = 23
+        targetSdk = 36
         versionCode = 1
         versionName = "0.1"
 
@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.androidx.animation.graphics.android)
+    implementation(libs.androidx.navigation3.runtime)
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
