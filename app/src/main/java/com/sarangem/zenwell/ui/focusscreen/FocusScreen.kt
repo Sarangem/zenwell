@@ -63,13 +63,15 @@ fun FocusScreen(
     val context = LocalContext.current
     var isFullScreen by rememberSaveable { mutableStateOf(false) }
     DisposableEffect(isFullScreen) {
+        var screenWasKeptOn = false
         if (isFullScreen) {
             window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             Toast.makeText(context, R.string.screen_would_remain_on, Toast.LENGTH_SHORT).show()
+            screenWasKeptOn = true
         }
         onDispose {
             window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            if (!isFullScreen) {
+            if (screenWasKeptOn) {
                 Toast.makeText(
                     context,
                     R.string.screen_can_now_turn_off_automatically,

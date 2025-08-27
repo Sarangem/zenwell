@@ -6,10 +6,14 @@ import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,12 +23,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.data.ZenwellNavigationPage
+import com.sarangem.zenwell.ui.commonui.isExpandedWidth
 import com.sarangem.zenwell.ui.editscreen.EditScreen
 import com.sarangem.zenwell.ui.focusscreen.FocusScreen
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
-import com.sarangem.zenwell.ui.commonui.isExpandedWidth
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ZenwellAppScreen() {
 
@@ -35,6 +38,11 @@ fun ZenwellAppScreen() {
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) {}
+    val requestNotification: () -> Unit = {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
     val activity = LocalActivity.current
     val startPermissionActivity: (Intent) -> Unit = { intent ->
         activity?.startActivity(intent)
@@ -47,11 +55,7 @@ fun ZenwellAppScreen() {
             schedulesList = schedulesList,
             scheduleClicked = uiState.schedule.id,
             startPermissionActivity = startPermissionActivity,
-            requestNotification = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            },
+            requestNotification = requestNotification,
             addNewSchedule = { viewModel.addNewSchedule(context) },
             openEditScreen = {
                 viewModel.updateUiState(
@@ -82,12 +86,9 @@ fun ZenwellAppScreen() {
             onSave = { viewModel.saveToDatabase() },
             onDelete = { viewModel.deleteSchedule() },
             goBack = {
-
-                // go to HomeScreen
                 viewModel.updateUiState(
                     AppUiState()
                 )
-
             }
         )
     }
@@ -96,27 +97,42 @@ fun ZenwellAppScreen() {
         LocalWindowInfo.current.containerSize.width.toDp().value
     }
 
-    when (uiState.navigationPage){
-        ZenwellNavigationPage.Home -> homeScreen(Modifier.fillMaxSize())
-        ZenwellNavigationPage.Edit -> {
-            if(isExpandedWidth(width)) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    homeScreen(Modifier.weight(1f))
-                    editScreen(Modifier.weight(1f), false)
-                }
+    AnimatedContent(
+        targetState = uiState.navigationPage,
+        transitionSpec = {
+            if (targetState.ordinal > initialState.ordinal) {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween()) togetherWith
+                        slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween())
             } else {
-                editScreen(Modifier.fillMaxSize(), true)
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween()) togetherWith
+                        slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween())
             }
         }
-        ZenwellNavigationPage.Focus -> FocusScreen(
-            schedule = uiState.schedule,
-            goBack = {
-                viewModel.updateUiState(AppUiState())
+    ) { targetPage ->
+        when (targetPage) {
+            ZenwellNavigationPage.Home -> homeScreen(Modifier.fillMaxSize())
+            ZenwellNavigationPage.Edit -> {
+                if (isExpandedWidth(width)) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        homeScreen(Modifier.weight(1f))
+                        editScreen(Modifier.weight(1f), false)
+                    }
+                } else {
+                    editScreen(Modifier.fillMaxSize(), true)
+                }
             }
-        )
-        ZenwellNavigationPage.Settings -> {}
+
+            ZenwellNavigationPage.Focus -> FocusScreen(
+                schedule = uiState.schedule,
+                goBack = {
+                    viewModel.updateUiState(AppUiState())
+                }
+            )
+
+            ZenwellNavigationPage.Settings -> {}
+        }
     }
 }

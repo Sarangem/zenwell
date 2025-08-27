@@ -34,7 +34,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "11"
+        kotlin {
+            compilerOptions{
+                jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("11")
+            }
+        }
     }
     buildFeatures {
         compose = true
@@ -58,7 +62,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.androidx.animation.graphics.android)
-    implementation(libs.androidx.navigation3.runtime)
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
