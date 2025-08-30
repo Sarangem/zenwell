@@ -19,6 +19,7 @@ import com.sarangem.zenwell.service.ui.BlockingScreenLifecycleOwner
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createNotification
+import com.sarangem.zenwell.utils.deleteNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -152,6 +153,10 @@ class BlockingWindow(
             }
 
             delay(schedule.notificationTimeInMinutes * 60 * 1000L)
+            deleteNotification(
+                scheduleId = schedule.id,
+                context = context
+            )
 
             // re-trigger opening window
             ServiceLogger.d { "Rechecking the app." }

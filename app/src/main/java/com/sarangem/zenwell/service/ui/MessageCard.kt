@@ -95,7 +95,7 @@ fun TimerMessageCard(
 ) {
     val animatedRotation = animateFloatAsState(
         targetValue = if (showOpen) 1f else 0f,
-        animationSpec = tween(2000, easing = FastOutSlowInEasing)
+        animationSpec = tween(1500, easing = FastOutSlowInEasing)
     )
     MessageCard(
         modifier = modifier,
@@ -121,7 +121,9 @@ fun TimerMessageCard(
             }
         },
         onClick = {
-            onTimerEnd()
+            if(showOpen){
+                onTimerEnd()
+            }
         },
     )
 }

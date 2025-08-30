@@ -41,6 +41,15 @@ fun createNotification(
     ServiceLogger.v { "Notification sent with message: $message" }
 }
 
+fun deleteNotification(
+    scheduleId: Int,
+    context: Context
+) {
+    val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
+    manager.cancel(scheduleId)
+    ServiceLogger.v { "Notification with ID $scheduleId cancelled." }
+}
+
 fun createNotificationChannel(context: Context) {
     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) return
     val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
