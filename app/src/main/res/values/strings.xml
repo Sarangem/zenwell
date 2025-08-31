@@ -9,7 +9,6 @@
     <string name="new_schedule">"New schedule"</string>
     <string name="edit_this_schedule">"Edit this schedule"</string>
     <string name="schedule_title">"Title"</string>
-    <string name="choose_running_time">"Running time"</string>
     <string name="choose_block_type">"Block type"</string>
     <string name="choose_apps">"Apps to Block"</string>
     <string name="show_apps_to_block">"Show apps to block"</string>
@@ -80,4 +79,6 @@
     <string name="pomodoro_timer">Pomodoro timer</string>
     <string name="work_time_notification">" (Work) "</string>
     <string name="rest_time_notification">" (Rest) "</string>
+    <string name="run_all_day">Run all day</string>
+    <string name="all_day">All day</string>
 </resources>

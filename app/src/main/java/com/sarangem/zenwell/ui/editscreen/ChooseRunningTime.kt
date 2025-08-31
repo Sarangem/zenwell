@@ -1,5 +1,6 @@
 package com.sarangem.zenwell.ui.editscreen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,8 +24,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
@@ -64,8 +68,8 @@ import kotlin.math.pow
 @Composable
 fun ChooseRunningTime(
     modifier: Modifier = Modifier,
-    startTimeInMinutes: Int,
-    updateStartTime: (Int) -> Unit = {},
+    startTimeInMinutes: Int?,
+    updateStartTime: (Int?) -> Unit = {},
     endTimeInMinutes: Int,
     updateEndTime: (Int) -> Unit = {},
     weekDays: Int,
@@ -73,50 +77,49 @@ fun ChooseRunningTime(
     isRunningTimeInvalid: Boolean
 ) {
     Card(modifier = modifier) {
+        RunAllDay(
+            startTimeInMinutes = startTimeInMinutes,
+            updateStartTime = updateStartTime,
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+        )
 
-        Text(
-            text = stringResource(R.string.choose_running_time),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
-        if (isRunningTimeInvalid) {
-            Text(
-                text = stringResource(R.string.running_time_is_invalid),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-            )
-        }
-        Row(
-            modifier = Modifier.padding(
-                start = dimensionResource(R.dimen.padding_small),
-                end = dimensionResource(R.dimen.padding_small)
-            ),
-            verticalAlignment = Alignment.CenterVertically
+        AnimatedVisibility(
+            visible = startTimeInMinutes != null
         ) {
-            ClockButton(
-                time = startTimeInMinutes,
-                updateUiState = updateStartTime,
-                timePickerTitle = "Choose Start Time",
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = stringResource(R.string.to),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            ClockButton(
-                time = endTimeInMinutes,
-                updateUiState = updateEndTime,
-                timePickerTitle = "Choose End Time",
-                modifier = Modifier.weight(1f)
-            )
+            if(startTimeInMinutes != null){
+                Row(
+                    modifier = Modifier.padding(
+                        start = dimensionResource(R.dimen.padding_small),
+                        end = dimensionResource(R.dimen.padding_small),
+                        bottom = dimensionResource(R.dimen.padding_medium)
+                    ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ClockButton(
+                        time = startTimeInMinutes,
+                        updateUiState = updateStartTime,
+                        timePickerTitle = "Choose Start Time",
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = stringResource(R.string.to),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    ClockButton(
+                        time = endTimeInMinutes,
+                        updateUiState = updateEndTime,
+                        timePickerTitle = "Choose End Time",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
         }
 
         Text(
             text = stringResource(R.string.choose_week_days),
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(
                 start = dimensionResource(R.dimen.padding_small),
-                top = dimensionResource(R.dimen.padding_medium),
                 end = dimensionResource(R.dimen.padding_small)
             )
         )
@@ -131,9 +134,48 @@ fun ChooseRunningTime(
             weekDays = weekDays,
             updateWeekDays = updateWeekDays
         )
+
+        AnimatedVisibility(visible = isRunningTimeInvalid) {
+            Text(
+                text = stringResource(R.string.running_time_is_invalid),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+            )
+        }
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun RunAllDay(
+    modifier: Modifier = Modifier,
+    startTimeInMinutes: Int?,
+    updateStartTime: (Int?) -> Unit = {},
+){
+    MaterialExpressiveTheme(motionScheme = MotionScheme.standard()) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                text = stringResource(R.string.run_all_day),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(Modifier.weight(1f))
+            Switch(
+                checked = startTimeInMinutes == null,
+                onCheckedChange = {
+                    if (it) {
+                        updateStartTime(null)
+                    } else {
+                        updateStartTime(0)
+                    }
+                },
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -330,11 +372,13 @@ fun SelectWeekDays(
 fun ChooseRunningTimeLightPreview() {
     ZenwellTheme {
         var weekDays by remember { mutableIntStateOf(11111110) }
+        var startTime: Int? by remember { mutableStateOf(719) }
         ChooseRunningTime(
-            startTimeInMinutes = 719,
+            startTimeInMinutes = startTime,
             endTimeInMinutes = 0,
             weekDays = weekDays,
             updateWeekDays = { weekDays = it },
+            updateStartTime = { startTime = it} ,
             isRunningTimeInvalid = true
         )
     }

@@ -23,8 +23,9 @@ data class Schedules(
     val blockType: BlockType = BlockType.FullBlock,
 
     // time of the day when blocking will start
+    // if null, assume it would run always
     @ColumnInfo(name = "start_time")
-    val startTimeInMinutes: Int = 0,
+    val startTimeInMinutes: Int? = null,
 
     // time of the day when blocking will end
     @ColumnInfo(name = "end_time")

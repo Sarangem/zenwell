@@ -195,7 +195,9 @@ fun PomodoroStartButton(
     } else {
         Text(
             modifier = modifier,
-            text = if (is24Hour(context)) {
+            text = if (schedule.startTimeInMinutes == null) {
+                stringResource(R.string.all_day)
+            } else if (is24Hour(context)) {
                 minutesToString(
                     schedule.startTimeInMinutes,
                     context

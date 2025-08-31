@@ -1,6 +1,7 @@
 package com.sarangem.zenwell.ui.editscreen
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -86,7 +87,8 @@ fun EditScreen(
             }
         },
         floatingActionButton = {
-            val isError = uiState.isRunningTimeInvalid || uiState.isNotificationTimeInvalid || uiState.isPomodoroSessionNumberInvalid
+            val isError =
+                uiState.isRunningTimeInvalid || uiState.isNotificationTimeInvalid || uiState.isPomodoroSessionNumberInvalid
             SaveAndDeleteButton(
                 modifier = Modifier.padding(
                     start = dimensionResource(R.dimen.padding_small),
@@ -216,70 +218,75 @@ fun EditScreenBody(
 
         }
 
-        if (blockType == BlockType.Breathing) {
+        AnimatedVisibility(blockType == BlockType.Breathing) {
+            Column {
 
-            ChooseBreathingCycleDuration(
-                breathingCycleDuration = uiState.schedule.breathingCycleDuration,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                breathingCycleDuration = it
+                ChooseBreathingCycleDuration(
+                    breathingCycleDuration = uiState.schedule.breathingCycleDuration,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    breathingCycleDuration = it
+                                )
                             )
                         )
-                    )
-                }
-            )
+                    }
+                )
 
-            ChooseBreathingCycleNumber(
-                breathingCycleNumber = uiState.schedule.breathingCycleNumber,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                breathingCycleNumber = it
+                ChooseBreathingCycleNumber(
+                    breathingCycleNumber = uiState.schedule.breathingCycleNumber,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    breathingCycleNumber = it
+                                )
                             )
                         )
-                    )
-                }
-            )
+                    }
+                )
 
+            }
         }
 
-        if (blockType == BlockType.Wait ||
-            blockType == BlockType.Breathing
+        AnimatedVisibility(
+            blockType == BlockType.Wait ||
+                    blockType == BlockType.Breathing
         ) {
+            Column {
 
-            ChooseOpenTime(
-                openTimeInMinutes = uiState.schedule.openTimeInMinutes,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                openTimeInMinutes = it
+                ChooseOpenTime(
+                    openTimeInMinutes = uiState.schedule.openTimeInMinutes,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    openTimeInMinutes = it
+                                )
                             )
                         )
-                    )
-                }
-            )
+                    }
+                )
 
-            ChooseWaitEnterButton(
-                checked = uiState.schedule.waitEnterButton,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                waitEnterButton = it
+                ChooseWaitEnterButton(
+                    checked = uiState.schedule.waitEnterButton,
+                    updateUiState = {
+                        updateUiState(
+                            uiState.copy(
+                                schedule = uiState.schedule.copy(
+                                    waitEnterButton = it
+                                )
                             )
                         )
-                    )
-                }
-            )
+                    }
+                )
 
 
+            }
         }
 
-        if (!uiState.schedule.isPomodoro && blockType != BlockType.FullBlock) {
+        AnimatedVisibility(!uiState.schedule.isPomodoro && blockType != BlockType.FullBlock) {
             ChooseNotificationTime(
                 notificationTime = uiState.schedule.notificationTimeInMinutes,
                 updateUiState = {

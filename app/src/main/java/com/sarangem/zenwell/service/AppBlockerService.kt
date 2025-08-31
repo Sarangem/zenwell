@@ -97,7 +97,9 @@ class AppBlockerService : AccessibilityService() {
 
                 if (!scheduleInfo.schedule.isEnabled) continue
                 if (!checkIfScheduleEnabled(scheduleInfo.schedule.weekDays)) continue
-                if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
+                if(scheduleInfo.schedule.startTimeInMinutes != null){
+                    if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes!!..scheduleInfo.schedule.endTimeInMinutes) continue
+                }
 
                 if (currentApp in scheduleInfo.appSet) {
 
