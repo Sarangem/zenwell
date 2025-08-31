@@ -35,7 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -225,7 +225,7 @@ fun PomodoroTimerControls(
     updatePomodoroActivity: (Boolean) -> Unit = {},
     openFocusScreen: () -> Unit = {},
 ) {
-    var elapsedTime by rememberSaveable { mutableLongStateOf(pomodoroWindow.getElapsedTimeInSeconds()) }
+    var elapsedTime by rememberSaveable { mutableIntStateOf(pomodoroWindow.getElapsedTimeInSeconds()) }
     var isWorkTime by rememberSaveable { mutableStateOf(pomodoroWindow.isWorkTime) }
     LaunchedEffect(Unit) {
         while (pomodoroWindow.isActive) {
@@ -367,7 +367,7 @@ fun PomodoroScheduleCardPreview() {
         )
         SchedulesCard(
             schedule = schedule,
-            pomodoroWindow = PomodoroWindow(schedule),
+            pomodoroWindow = PomodoroWindow(schedule, context = LocalContext.current),
         )
     }
 }

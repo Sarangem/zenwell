@@ -6,8 +6,10 @@ import android.graphics.Rect
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import com.sarangem.zenwell.ZenwellApplication
+import com.sarangem.zenwell.data.NotificationChannels
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.checkIfScheduleEnabled
+import com.sarangem.zenwell.utils.deleteNotificationByChannel
 import com.sarangem.zenwell.utils.getCurrentTimeInMinutes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -141,6 +143,7 @@ class AppBlockerService : AccessibilityService() {
                 blockingWindow.close()
             }
         }
+        deleteNotificationByChannel(NotificationChannels.BlockNotification, context)
     }
 
     override fun onUnbind(intent: Intent?): Boolean {

@@ -14,12 +14,15 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.sarangem.zenwell.R
+import com.sarangem.zenwell.data.NotificationChannels
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.ui.BlockingScreenLifecycleOwner
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createNotification
-import com.sarangem.zenwell.utils.deleteNotification
+import com.sarangem.zenwell.utils.deleteNotificationById
+import com.sarangem.zenwell.utils.getAppNameFromPackageName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -145,16 +148,16 @@ class BlockingWindow(
             delay(delayTime * 60 * 1000L)
             if (schedule.notificationTimeInMinutes > 0) {
                 createNotification(
-                    scheduleId = schedule.id,
-                    scheduleName = schedule.title,
-                    appName = appName,
-                    context = context
+                    id = schedule.id + appName.hashCode(),
+                    message = schedule.title + context.getString(R.string.block_notification_message) + getAppNameFromPackageName(context, appName),
+                    context = context,
+                    notificationChannel = NotificationChannels.BlockNotification
                 )
             }
 
             delay(schedule.notificationTimeInMinutes * 60 * 1000L)
-            deleteNotification(
-                scheduleId = schedule.id,
+            deleteNotificationById(
+                id = schedule.id + appName.hashCode(),
                 context = context
             )
 

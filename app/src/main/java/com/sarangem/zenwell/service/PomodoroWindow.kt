@@ -1,23 +1,30 @@
 package com.sarangem.zenwell.service
 
+import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.ui.screen.PomodoroBlockScreen
 import com.sarangem.zenwell.utils.ServiceLogger
+import com.sarangem.zenwell.utils.createNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.sarangem.zenwell.R
+import com.sarangem.zenwell.data.NotificationChannels
+import com.sarangem.zenwell.utils.deleteNotificationById
+import com.sarangem.zenwell.utils.secondsToString
 
 class PomodoroWindow(
     private val schedule: Schedules,
-    private val blockingWindowList: List<BlockingWindow> = listOf()
+    private val blockingWindowList: List<BlockingWindow> = listOf(),
+    private val context: Context
 ) {
     var coroutineScope = CoroutineScope(Dispatchers.IO)
-    val context = this
+    val classContext = this
 
     var sessions = schedule.pomodoroSessionNumber
     var isActive = false
@@ -45,12 +52,23 @@ class PomodoroWindow(
                                 modifier = Modifier.fillMaxSize(),
                                 message = schedule.message,
                                 width = width,
-                                pomodoroWindow = context
+                                pomodoroWindow = classContext
                             )
                         }
                         window.isAppOpened = false
                     }
-                    delay(currentSegmentTime - timeBeforePaused)
+                    val currentDelayTime = (currentSegmentTime - timeBeforePaused) / 1000
+                    deleteNotificationById(schedule.id, context)
+                    repeat (currentDelayTime.toInt()){
+                        createNotification(
+                            message = secondsToString(getElapsedTimeInSeconds()) + context.getString(R.string.work_time_notification),
+                            id = schedule.id,
+                            context = context,
+                            notificationChannel = NotificationChannels.PomodoroNotification
+                        )
+                        delay(1000L)
+                    }
+
                     isPaused = false
                     timeBeforePaused = 0L
                 }
@@ -68,7 +86,18 @@ class PomodoroWindow(
                         window.close()
                     }
                 }
-                delay(currentSegmentTime - timeBeforePaused)
+                val currentDelayTime = (currentSegmentTime - timeBeforePaused) / 1000
+                deleteNotificationById(schedule.id, context)
+                repeat (currentDelayTime.toInt()){
+                    createNotification(
+                        message = secondsToString(getElapsedTimeInSeconds()
+                        ) + context.getString(R.string.rest_time_notification),
+                        id = schedule.id,
+                        context = context,
+                        notificationChannel = NotificationChannels.PomodoroNotification
+                    )
+                    delay(1000L)
+                }
                 isPaused = false
                 timeBeforePaused = 0L
                 isWorkTime = true
@@ -99,6 +128,7 @@ class PomodoroWindow(
         isWorkTime = true
         coroutineScope.cancel()
         coroutineScope = CoroutineScope(Dispatchers.IO)
+        deleteNotificationById(schedule.id, context)
         blockingWindowList.forEach { window ->
             window.close()
         }
@@ -115,6 +145,7 @@ class PomodoroWindow(
         startTime = 0L
         coroutineScope.cancel()
         coroutineScope = CoroutineScope(Dispatchers.IO)
+        deleteNotificationById(schedule.id, context)
         blockingWindowList.forEach { window ->
             window.close()
         }
@@ -134,12 +165,13 @@ class PomodoroWindow(
         onPomodoroStart()
     }
 
-    fun getElapsedTimeInSeconds(): Long {
-        return if (isPaused) {
+    fun getElapsedTimeInSeconds(): Int {
+        val time = if (isPaused) { 
             currentSegmentTime - timeBeforePaused
         } else {
             (currentSegmentTime - timeBeforePaused) - (System.currentTimeMillis() - startTime)
         } / 1000
+        return time.toInt()
     }
 
 }

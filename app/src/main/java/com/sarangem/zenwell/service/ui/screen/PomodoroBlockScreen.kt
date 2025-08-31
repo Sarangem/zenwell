@@ -16,12 +16,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -90,7 +91,7 @@ fun PomodoroTimerCard(
     modifier: Modifier = Modifier,
     pomodoroWindow: PomodoroWindow,
 ) {
-    var elapsedTime by rememberSaveable { mutableLongStateOf(pomodoroWindow.getElapsedTimeInSeconds()) }
+    var elapsedTime by rememberSaveable { mutableIntStateOf(pomodoroWindow.getElapsedTimeInSeconds()) }
     LaunchedEffect(Unit) {
         while(true){
             delay(1000L)
@@ -144,7 +145,7 @@ fun PomodoroTimerCard(
 @Composable
 fun PomodoroBlockScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        PomodoroBlockScreen(Modifier, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)) )
+        PomodoroBlockScreen(Modifier, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current) )
     }
 }
 
@@ -152,7 +153,7 @@ fun PomodoroBlockScreenColumnPreviewLight() {
 @Composable
 fun PomodoroBlockScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        PomodoroBlockScreen(Modifier, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)))
+        PomodoroBlockScreen(Modifier, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current))
     }
 }
 
@@ -160,7 +161,7 @@ fun PomodoroBlockScreenColumnPreviewDark() {
 @Composable
 fun PomodoroBlockScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        PomodoroBlockScreen(Modifier, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)))
+        PomodoroBlockScreen(Modifier, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current))
     }
 }
 
@@ -168,6 +169,6 @@ fun PomodoroBlockScreenRowPreviewLight() {
 @Composable
 fun PomodoroBlockScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        PomodoroBlockScreen(Modifier, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true)))
+        PomodoroBlockScreen(Modifier, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current))
     }
 }

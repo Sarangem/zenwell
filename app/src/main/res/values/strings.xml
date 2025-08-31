@@ -77,4 +77,7 @@
     <string name="confirm">Confirm</string>
     <string name="resume">Resume</string>
     <string name="skip_to_next_session_description">Are you sure you want to skip to next work or rest part of pomodoro session?</string>
+    <string name="pomodoro_timer">Pomodoro timer</string>
+    <string name="work_time_notification">" (Work) "</string>
+    <string name="rest_time_notification">" (Rest) "</string>
 </resources>

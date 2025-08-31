@@ -21,7 +21,7 @@ import com.sarangem.zenwell.ui.theme.Orbitron
 
 @Composable
 fun PomodoroTimerDisplay(
-    elapsedTime: Long,
+    elapsedTime: Int,
     isWorkTime: Boolean
 ) {
     Column(

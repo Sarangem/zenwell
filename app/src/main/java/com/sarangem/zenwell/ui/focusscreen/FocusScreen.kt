@@ -29,7 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -82,7 +82,7 @@ fun FocusScreen(
     }
 
     var elapsedTime by rememberSaveable {
-        mutableLongStateOf(
+        mutableIntStateOf(
             pomodoroWindow?.getElapsedTimeInSeconds() ?: 0
         )
     }
@@ -180,7 +180,7 @@ fun FocusScreenBody(
     modifier: Modifier = Modifier,
     isFullScreen: Boolean,
     toggleFullScreen: (Boolean) -> Unit,
-    elapsedTime: Long,
+    elapsedTime: Int,
     totalTime: Int,
     isWorkTime: Boolean,
     isCompleted: Boolean,
@@ -271,7 +271,7 @@ fun FocusScreenPreview() {
             pomodoroWorkTimeInMinutes = 1,
             pomodoroRestTimeInMinutes = 1
         )
-        val pomodoroWindow = PomodoroWindow(schedule)
+        val pomodoroWindow = PomodoroWindow(schedule = schedule, context = LocalContext.current)
         pomodoroWindow.onPomodoroStart()
         FocusScreen(
             schedule = schedule,
@@ -291,7 +291,7 @@ fun FocusScreenDarkModePreview() {
             pomodoroWorkTimeInMinutes = 1,
             pomodoroRestTimeInMinutes = 1
         )
-        val pomodoroWindow = PomodoroWindow(schedule)
+        val pomodoroWindow = PomodoroWindow(schedule = schedule, context = LocalContext.current)
         pomodoroWindow.onPomodoroStart()
         FocusScreen(
             schedule = schedule,

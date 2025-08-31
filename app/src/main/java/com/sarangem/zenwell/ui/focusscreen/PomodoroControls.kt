@@ -52,7 +52,10 @@ fun PomodoroControls(
             icon = Icons.Filled.FastForward,
             headingText = stringResource(R.string.skip_to_next_session),
             bodyText = stringResource(R.string.skip_to_next_session_description),
-            onConfirm = onSkip,
+            onConfirm = {
+                onSkip()
+                isSkipChecked = false
+            },
             onDismiss = { isSkipChecked = false }
         )
     }

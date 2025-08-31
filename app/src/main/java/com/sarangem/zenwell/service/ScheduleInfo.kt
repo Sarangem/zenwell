@@ -65,7 +65,8 @@ data class ScheduleInfo(
         pomodoroWindow = if (schedule.isPomodoro){
             PomodoroWindow(
                 schedule = schedule,
-                blockingWindowList = blockingWindowList
+                blockingWindowList = blockingWindowList,
+                context = context
             )
         } else {
             null
