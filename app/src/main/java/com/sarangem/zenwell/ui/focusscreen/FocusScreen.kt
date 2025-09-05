@@ -57,8 +57,7 @@ fun FocusScreen(
     pomodoroWindow: PomodoroWindow? = AppBlockerService.instance?.getPomodoroWindow(schedule.id),
     goBack: () -> Unit = {}
 ) {
-    BackHandler { goBack() }
-
+    // keep screen on
     val window = LocalActivity.current?.window
     val context = LocalContext.current
     var isFullScreen by rememberSaveable { mutableStateOf(false) }
@@ -81,6 +80,17 @@ fun FocusScreen(
         }
     }
 
+    // back handler
+    BackHandler {
+        if (isFullScreen) {
+            isFullScreen = false
+        } else {
+            goBack()
+        }
+    }
+
+
+    // manage pomodoro variables
     var elapsedTime by rememberSaveable {
         mutableIntStateOf(
             pomodoroWindow?.getElapsedTimeInSeconds() ?: 0
@@ -89,7 +99,6 @@ fun FocusScreen(
     var isWorkTime by rememberSaveable { mutableStateOf(pomodoroWindow?.isWorkTime ?: true) }
     var isCompleted by rememberSaveable { mutableStateOf(false) }
     var isPaused by rememberSaveable { mutableStateOf(pomodoroWindow?.isPaused ?: false) }
-
     if (pomodoroWindow != null) {
         LaunchedEffect(Unit) {
             while (pomodoroWindow.isActive || pomodoroWindow.isPaused) {
@@ -102,6 +111,29 @@ fun FocusScreen(
             isCompleted = true
         }
     }
+
+    // animation values
+    val totalTime =
+        if (isWorkTime) schedule.pomodoroWorkTimeInMinutes * 60 else schedule.pomodoroRestTimeInMinutes * 60
+    val animationSpec: AnimationSpec<Dp> = tween(durationMillis = 500, easing = LinearEasing)
+    val animatedProgress by animateFloatAsState(
+        targetValue = (totalTime - elapsedTime).toFloat() / totalTime,
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+    )
+    val animatedPadding by animateDpAsState(
+        targetValue = if (isFullScreen) 0.dp else dimensionResource(R.dimen.padding_large),
+        animationSpec = animationSpec,
+    )
+    val animatedCornerRadius by animateDpAsState(
+        targetValue = if (isFullScreen) 0.dp else dimensionResource(R.dimen.padding_large),
+        animationSpec = animationSpec,
+    )
+    val animatedStrokeWidth by animateDpAsState(
+        targetValue = if (isFullScreen) dimensionResource(R.dimen.image_size) else dimensionResource(
+            R.dimen.padding_large
+        ),
+        animationSpec = animationSpec,
+    )
 
     Scaffold(
         modifier = modifier,
@@ -144,117 +176,79 @@ fun FocusScreen(
                     .fillMaxSize()
             )
         } else {
-            FocusScreenBody(
-                modifier = Modifier.padding(innerPadding),
-                isFullScreen = isFullScreen,
-                toggleFullScreen = { isFullScreen = it },
-                elapsedTime = elapsedTime,
-                isWorkTime = isWorkTime,
-                isCompleted = isCompleted,
-                onStop = {
-                    pomodoroWindow.onPomodoroEnd()
-                    goBack()
-                },
-                totalTime = if (isWorkTime) schedule.pomodoroWorkTimeInMinutes * 60 else schedule.pomodoroRestTimeInMinutes * 60,
-                isPaused = isPaused,
-                onPauseOrResume = {
-                    if (isPaused) {
-                        pomodoroWindow.onPomodoroStart()
-                    } else {
-                        pomodoroWindow.onPomodoroPause()
-                    }
-                    isPaused = !isPaused
-                },
-                onSkip = {
-                    pomodoroWindow.onPomodoroSkip()
-                    isWorkTime = !isWorkTime
-                    isPaused = false
-                },
-            )
-        }
-    }
-}
-
-@Composable
-fun FocusScreenBody(
-    modifier: Modifier = Modifier,
-    isFullScreen: Boolean,
-    toggleFullScreen: (Boolean) -> Unit,
-    elapsedTime: Int,
-    totalTime: Int,
-    isWorkTime: Boolean,
-    isCompleted: Boolean,
-    onStop: () -> Unit,
-    isPaused: Boolean,
-    onPauseOrResume: () -> Unit,
-    onSkip: () -> Unit
-) {
-    if (isFullScreen) {
-        BackHandler { toggleFullScreen(false) }
-    }
-    val animatedProgress by animateFloatAsState(
-        targetValue = (totalTime - elapsedTime).toFloat() / totalTime,
-        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
-    )
-
-    val animationSpec: AnimationSpec<Dp> = tween(durationMillis = 500, easing = LinearEasing)
-    val animatedPadding by animateDpAsState(
-        targetValue = if (isFullScreen) 0.dp else dimensionResource(R.dimen.padding_large),
-        animationSpec = animationSpec,
-    )
-    val animatedCornerRadius by animateDpAsState(
-        targetValue = if (isFullScreen) 0.dp else dimensionResource(R.dimen.padding_large),
-        animationSpec = animationSpec,
-    )
-    val animatedStrokeWidth by animateDpAsState(
-        targetValue = if (isFullScreen) dimensionResource(R.dimen.image_size) else dimensionResource(
-            R.dimen.padding_large
-        ),
-        animationSpec = animationSpec,
-    )
-
-    Column(modifier = modifier.fillMaxSize()) {
-        if (isCompleted) {
-            Text(
-                text = stringResource(R.string.pomodoro_session_completed),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            TimerBox(
+            Column(
                 modifier = Modifier
-                    .weight(0.8f)
                     .fillMaxSize()
-                    .padding(animatedPadding)
-                    .clickable(onClick = { toggleFullScreen(!isFullScreen) }),
-                progress = animatedProgress,
-                backgroundColor = if (isWorkTime) {
-                    MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                    .padding(innerPadding)
+            ) {
+                if (isCompleted) {
+                    Text(
+                        text = stringResource(R.string.pomodoro_session_completed),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 } else {
-                    MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
-                },
-                trackColor = if (isWorkTime) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
-                cornerRadiusInDp = animatedCornerRadius,
-                strokeWidthInDp = animatedStrokeWidth
-            ) {
-                PomodoroTimerDisplay(elapsedTime = elapsedTime, isWorkTime = isWorkTime)
-            }
+                    TimerBox(
+                        modifier = Modifier
+                            .weight(0.7f)
+                            .fillMaxSize()
+                            .padding(animatedPadding)
+                            .clickable(onClick = { isFullScreen = !isFullScreen }),
+                        progress = animatedProgress,
+                        backgroundColor = if (isWorkTime) {
+                            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                        } else {
+                            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
+                        },
+                        trackColor = if (isWorkTime) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
+                        cornerRadiusInDp = animatedCornerRadius,
+                        strokeWidthInDp = animatedStrokeWidth
+                    ) {
+                        PomodoroTimerDisplay(elapsedTime = elapsedTime, isWorkTime = isWorkTime)
+                    }
 
-            AnimatedVisibility(
-                visible = !isFullScreen,
-                modifier = Modifier.weight(0.2f),
-                enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-            ) {
-                PomodoroControls(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(dimensionResource(R.dimen.padding_small)),
-                    onStop = onStop,
-                    isPaused = isPaused,
-                    onPauseOrResume = onPauseOrResume,
-                    onSkip = onSkip
-                )
+                    AnimatedVisibility(
+                        visible = !isFullScreen,
+                        modifier = Modifier.weight(0.2f),
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = LinearEasing
+                            )
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = LinearEasing
+                            )
+                        )
+                    ) {
+                        PomodoroControls(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(dimensionResource(R.dimen.padding_small)),
+                            isPaused = isPaused,
+                            isWorkTime = isWorkTime,
+                            showPauseInWorkTime = schedule.showPauseInWorkTime,
+                            showSkipInWorkTime = schedule.showSkipInWorkTime,
+                            showPauseInRestTime = schedule.showPauseInRestTime,
+                            showSkipInRestTime = schedule.showSkipInRestTime,
+                            onStop = {
+                                pomodoroWindow.onPomodoroEnd()
+                                goBack()
+                            },
+                            onPauseOrResume = {
+                                pomodoroWindow.onPomodoroEnd()
+                                goBack()
+                            },
+                            onSkip = {
+                                pomodoroWindow.onPomodoroSkip()
+                                isWorkTime = !isWorkTime
+                                isPaused = false
+                            }
+                        )
+                    }
+                }
             }
         }
     }
@@ -289,7 +283,9 @@ fun FocusScreenDarkModePreview() {
             title = "Study Time",
             isPomodoro = false,
             pomodoroWorkTimeInMinutes = 1,
-            pomodoroRestTimeInMinutes = 1
+            pomodoroRestTimeInMinutes = 1,
+            showPauseInWorkTime = false,
+            showSkipInRestTime = false
         )
         val pomodoroWindow = PomodoroWindow(schedule = schedule, context = LocalContext.current)
         pomodoroWindow.onPomodoroStart()

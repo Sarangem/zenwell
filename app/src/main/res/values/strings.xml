@@ -81,4 +81,8 @@
     <string name="rest_time_notification">" (Rest) "</string>
     <string name="run_all_day">Run all day</string>
     <string name="all_day">All day</string>
+    <string name="skip">Skip</string>
+    <string name="actions_to_show_in_work_time">Actions to show in Work Time</string>
+    <string name="pause_resume">Pause/ Resume</string>
+    <string name="actions_to_show_in_rest_time">Actions to show in Rest Time</string>
 </resources>

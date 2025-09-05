@@ -81,6 +81,18 @@ data class Schedules(
     @ColumnInfo(name = "pomodoro_session_number")
     val pomodoroSessionNumber: Int = 5,
 
+    @ColumnInfo(name = "show_pause_in_work_time")
+    val showPauseInWorkTime: Boolean = true,
+
+    @ColumnInfo(name = "show_skip_in_work_time")
+    val showSkipInWorkTime: Boolean = true,
+
+    @ColumnInfo(name = "show_pause_in_rest_time")
+    val showPauseInRestTime: Boolean = true,
+
+    @ColumnInfo(name = "show_skip_in_rest_time")
+    val showSkipInRestTime: Boolean = true,
+
     // Check if it will work on following week days
     val weekDays: Int = 11111110
 )

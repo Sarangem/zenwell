@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.service.ui.APP_BLOCKED
 import com.sarangem.zenwell.ui.AppUiState
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.Dispatchers
@@ -395,6 +396,51 @@ fun EditScreenBody(
             )
         }
 
+        if(uiState.schedule.isPomodoro){
+            ChoosePomodoroActionsToShow(
+                showPauseInWorkTime = uiState.schedule.showPauseInWorkTime,
+                updateShowPauseInWorkTime = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                showPauseInWorkTime = it
+                            )
+                        )
+                    )
+                },
+                showSkipInWorkTime = uiState.schedule.showSkipInWorkTime,
+                updateShowSkipInWorkTime = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                showSkipInWorkTime = it
+                            )
+                        )
+                    )
+                },
+                showPauseInRestTime = uiState.schedule.showPauseInRestTime,
+                updateShowPauseInRestTime = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                showPauseInRestTime = it
+                            )
+                        )
+                    )
+                },
+                showSkipInRestTime = uiState.schedule.showSkipInRestTime,
+                updateShowSkipInRestTime = {
+                    updateUiState(
+                        uiState.copy(
+                            schedule = uiState.schedule.copy(
+                                showSkipInWorkTime = it
+                            )
+                        )
+                    )
+                }
+            )
+        }
+
         Spacer(Modifier.height(84.dp))
 
     }
@@ -412,32 +458,21 @@ fun EditScreenBody(
 
 }
 
-
-// -- Preview -- //
-@Composable
-fun EditScreenPreview() {
-    EditScreen(
-        uiState = AppUiState(
-            schedule = Schedules(
-                title = "Schedule 1",
-                message = "This app is completely blocked.",
-                blockType = BlockType.Breathing,
-                startTimeInMinutes = 179,
-                endTimeInMinutes = 1079,
-                openTimeInMinutes = 10000,
-                notificationTimeInMinutes = 10,
-                breathingCycleDuration = 3,
-                breathingCycleNumber = 2
-            ),
-        )
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 fun EditScreenPreviewLightMode() {
     ZenwellTheme(darkTheme = false) {
-        EditScreenPreview()
+        EditScreen(
+            uiState = AppUiState(
+                schedule = Schedules(
+                    title = "Schedule 1",
+                    message = APP_BLOCKED,
+                    blockType = BlockType.Breathing,
+                    startTimeInMinutes = 179,
+                    endTimeInMinutes = 1079,
+                ),
+            )
+        )
     }
 }
 
@@ -445,6 +480,14 @@ fun EditScreenPreviewLightMode() {
 @Composable
 fun EditScreenPreviewDarkMode() {
     ZenwellTheme(darkTheme = true) {
-        EditScreenPreview()
+        EditScreen(
+            uiState = AppUiState(
+                schedule = Schedules(
+                    title = "Pomodoro Mode",
+                    message = APP_BLOCKED,
+                    isPomodoro = true
+                ),
+            )
+        )
     }
 }
