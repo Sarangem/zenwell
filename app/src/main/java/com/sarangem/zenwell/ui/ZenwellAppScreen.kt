@@ -14,16 +14,15 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.window.core.layout.WindowSizeClass
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.data.ZenwellNavigationPage
-import com.sarangem.zenwell.ui.commonui.isExpandedWidth
 import com.sarangem.zenwell.ui.editscreen.EditScreen
 import com.sarangem.zenwell.ui.focusscreen.FocusScreen
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
@@ -44,6 +43,7 @@ fun ZenwellAppScreen() {
         }
     }
     val activity = LocalActivity.current
+    val isExpandedWidth = currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
     val startPermissionActivity: (Intent) -> Unit = { intent ->
         activity?.startActivity(intent)
     }
@@ -93,10 +93,6 @@ fun ZenwellAppScreen() {
         )
     }
 
-    val width = with(LocalDensity.current) {
-        LocalWindowInfo.current.containerSize.width.toDp().value
-    }
-
     AnimatedContent(
         targetState = uiState.navigationPage,
         transitionSpec = {
@@ -112,7 +108,7 @@ fun ZenwellAppScreen() {
         when (targetPage) {
             ZenwellNavigationPage.Home -> homeScreen(Modifier.fillMaxSize())
             ZenwellNavigationPage.Edit -> {
-                if (isExpandedWidth(width)) {
+                if (isExpandedWidth) {
                     Row(
                         modifier = Modifier.fillMaxSize(),
                         horizontalArrangement = Arrangement.SpaceEvenly

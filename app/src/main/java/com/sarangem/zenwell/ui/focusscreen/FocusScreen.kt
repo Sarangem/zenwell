@@ -209,7 +209,7 @@ fun FocusScreen(
 
                     AnimatedVisibility(
                         visible = !isFullScreen,
-                        modifier = Modifier.weight(0.2f),
+                        modifier = Modifier.weight(0.3f),
                         enter = fadeIn(
                             animationSpec = tween(
                                 durationMillis = 500,
@@ -226,7 +226,7 @@ fun FocusScreen(
                         PomodoroControls(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(dimensionResource(R.dimen.padding_small)),
+                                .padding(dimensionResource(R.dimen.padding_medium)),
                             isPaused = isPaused,
                             isWorkTime = isWorkTime,
                             showPauseInWorkTime = schedule.showPauseInWorkTime,
@@ -238,8 +238,12 @@ fun FocusScreen(
                                 goBack()
                             },
                             onPauseOrResume = {
-                                pomodoroWindow.onPomodoroEnd()
-                                goBack()
+                                if(isPaused){
+                                    pomodoroWindow.onPomodoroStart()
+                                } else {
+                                    pomodoroWindow.onPomodoroPause()
+                                }
+                                isPaused = !isPaused
                             },
                             onSkip = {
                                 pomodoroWindow.onPomodoroSkip()

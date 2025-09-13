@@ -47,11 +47,10 @@ class PomodoroWindow(
                     startTime = System.currentTimeMillis()
                     currentSegmentTime = schedule.pomodoroWorkTimeInMinutes * 60 * 1000L
                     blockingWindowList.forEach { window ->
-                        window.content = { width, onTimerEnd ->
+                        window.content = { onTimerEnd ->
                             PomodoroBlockScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 message = schedule.message,
-                                width = width,
                                 pomodoroWindow = classContext
                             )
                         }

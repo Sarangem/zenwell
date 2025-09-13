@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.PomodoroWindow
@@ -37,14 +39,12 @@ import com.sarangem.zenwell.service.ui.TimerMessageCard
 import com.sarangem.zenwell.ui.commonui.TimerBox
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.ui.commonui.isExpandedWidth
 import kotlinx.coroutines.delay
 
 @Composable
 fun PomodoroBlockScreen(
     modifier: Modifier = Modifier,
     message: String,
-    width: Float,
     pomodoroWindow: PomodoroWindow
 ) {
     val timerCard: @Composable (Modifier) -> Unit = { modifier ->
@@ -60,7 +60,10 @@ fun PomodoroBlockScreen(
         )
     }
 
-    if (isExpandedWidth(width)) {
+    if (currentWindowAdaptiveInfo()
+            .windowSizeClass
+            .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+    ) {
         Row(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.surface)
@@ -93,7 +96,7 @@ fun PomodoroTimerCard(
 ) {
     var elapsedTime by rememberSaveable { mutableIntStateOf(pomodoroWindow.getElapsedTimeInSeconds()) }
     LaunchedEffect(Unit) {
-        while(true){
+        while (true) {
             delay(1000L)
             elapsedTime = pomodoroWindow.getElapsedTimeInSeconds().coerceAtLeast(0)
         }
@@ -145,7 +148,11 @@ fun PomodoroTimerCard(
 @Composable
 fun PomodoroBlockScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        PomodoroBlockScreen(Modifier, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current) )
+        PomodoroBlockScreen(
+            Modifier,
+            APP_BLOCKED,
+            PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current)
+        )
     }
 }
 
@@ -153,7 +160,11 @@ fun PomodoroBlockScreenColumnPreviewLight() {
 @Composable
 fun PomodoroBlockScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        PomodoroBlockScreen(Modifier, APP_BLOCKED, MEDIUM_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current))
+        PomodoroBlockScreen(
+            Modifier,
+            APP_BLOCKED,
+            PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current)
+        )
     }
 }
 
@@ -161,7 +172,11 @@ fun PomodoroBlockScreenColumnPreviewDark() {
 @Composable
 fun PomodoroBlockScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        PomodoroBlockScreen(Modifier, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current))
+        PomodoroBlockScreen(
+            Modifier,
+            APP_BLOCKED,
+            PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current)
+        )
     }
 }
 
@@ -169,6 +184,10 @@ fun PomodoroBlockScreenRowPreviewLight() {
 @Composable
 fun PomodoroBlockScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        PomodoroBlockScreen(Modifier, APP_BLOCKED, EXPANDED_WIDTH.toFloat(), PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current))
+        PomodoroBlockScreen(
+            Modifier,
+            APP_BLOCKED,
+            PomodoroWindow(Schedules(isPomodoro = true), context = LocalContext.current)
+        )
     }
 }

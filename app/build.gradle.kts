@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.androidx.animation.graphics.android)
+    implementation(libs.androidx.compose.adaptive)
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)

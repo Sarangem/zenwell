@@ -1,6 +1,7 @@
 package com.sarangem.zenwell.service
 
 import android.accessibilityservice.AccessibilityService
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Rect
 import android.view.accessibility.AccessibilityEvent
@@ -17,9 +18,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
+@SuppressLint("AccessibilityPolicy")
 class AppBlockerService : AccessibilityService() {
 
-    private val context = this
     val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
 
     companion object {
@@ -28,11 +29,11 @@ class AppBlockerService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        instance = context
+        instance = this
 
         CoroutineScope(Dispatchers.IO).launch {
             initializeRepository()
-            ServiceLogger.v { "Service fully initiated with ${context.serviceInfo}" }
+            ServiceLogger.v { "Service fully initiated with $serviceInfo" }
         }
 
     }
@@ -47,7 +48,7 @@ class AppBlockerService : AccessibilityService() {
 
             scheduleInfoList.add(
                 ScheduleInfo(
-                    context = context,
+                    context = this,
                     schedule = schedule,
                     appSet = schedulesRepository.getAppNames(schedule.id).first().toSet()
                 )
@@ -145,7 +146,7 @@ class AppBlockerService : AccessibilityService() {
                 blockingWindow.close()
             }
         }
-        deleteNotificationByChannel(NotificationChannels.BlockNotification, context)
+        deleteNotificationByChannel(NotificationChannels.BlockNotification, this)
     }
 
     override fun onUnbind(intent: Intent?): Boolean {

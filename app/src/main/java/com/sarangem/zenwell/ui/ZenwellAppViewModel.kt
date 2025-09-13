@@ -23,17 +23,17 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
 
 
     // UI STATE DECLARATION
-
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState = _uiState.asStateFlow()
 
     // DIRECT FUNCTIONS
-
     fun getAllSchedules() = schedulesRepository.getAllSchedules()
     fun getAppNames(id: Int) = schedulesRepository.getAppNames(id)
 
 
     // UPDATE UI STATE
+
+    var pastAppList: List<String>? = null
 
     fun updateUiState(currentState: AppUiState) {
         _uiState.update {
@@ -50,24 +50,18 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
     }
 
     fun setAppNamesInUiState() {
-
-        val context = this
         viewModelScope.launch(Dispatchers.IO) {
-
-            val appNames = context.getAppNames(_uiState.value.schedule.id).first()
-            context.updateUiState(
+            val appNames = getAppNames(_uiState.value.schedule.id).first()
+            updateUiState(
                 _uiState.value.copy(
                     appNames = appNames
                 )
             )
-            context.pastAppList = appNames.toMutableList()
-
+            pastAppList = appNames
         }
     }
 
     // DATABASE QUERIES
-
-    var pastAppList: MutableList<String> = mutableListOf()
 
     suspend fun addNewSchedule(context: Context): Schedules {
 
@@ -83,12 +77,12 @@ class ZenwellAppViewModel(private val schedulesRepository: SchedulesRepository) 
 
     suspend fun saveToDatabase() {
 
-        if (_uiState.value.appNames == null) setAppNamesInUiState()
+        val appNames = _uiState.value.appNames ?: getAppNames(_uiState.value.schedule.id).first()
 
         schedulesRepository.saveToDatabase(
             schedule = _uiState.value.schedule,
-            appNames = _uiState.value.appNames ?: listOf(),
-            pastAppSet = pastAppList.toMutableSet(),
+            appNames = appNames,
+            pastAppList = pastAppList ?: appNames,
         )
 
         AppBlockerService.instance?.initializeRepository()

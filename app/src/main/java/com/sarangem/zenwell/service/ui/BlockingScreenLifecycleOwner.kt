@@ -7,7 +7,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 
-@Suppress("unused", "unused")
+@Suppress("unused")
 class BlockingScreenLifecycleOwner : SavedStateRegistryOwner {
 
     private var mLifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)

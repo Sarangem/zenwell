@@ -14,6 +14,6 @@ interface SchedulesRepository {
     suspend fun saveToDatabase(
         schedule: Schedules,
         appNames: List<String>,
-        pastAppSet: MutableSet<String>
+        pastAppList: List<String>
     )
 }

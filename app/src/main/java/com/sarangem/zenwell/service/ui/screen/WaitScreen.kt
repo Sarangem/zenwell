@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.service.ui.APP_BLOCKED
 import com.sarangem.zenwell.service.ui.EXPANDED_WIDTH
@@ -35,7 +37,6 @@ import com.sarangem.zenwell.service.ui.TimerMessageCard
 import com.sarangem.zenwell.ui.commonui.TimerBox
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.ui.commonui.isExpandedWidth
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -45,8 +46,7 @@ fun WaitScreen(
     onTimerEnd: () -> Unit = {},
     waitTimeInSeconds: Int,
     showOpenDialog: Boolean,
-    message: String,
-    width: Float
+    message: String
 ) {
     var showOpen by remember { mutableStateOf(false) }
     var time by remember { mutableIntStateOf(waitTimeInSeconds) }
@@ -96,7 +96,10 @@ fun WaitScreen(
         )
     }
 
-    if (isExpandedWidth(width)) {
+    if (currentWindowAdaptiveInfo()
+            .windowSizeClass
+            .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+    ) {
         Row(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.surface)
@@ -125,7 +128,7 @@ fun WaitScreen(
 @Composable
 fun WaitScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, MEDIUM_WIDTH.toFloat())
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED)
     }
 }
 
@@ -133,7 +136,7 @@ fun WaitScreenColumnPreviewLight() {
 @Composable
 fun WaitScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, MEDIUM_WIDTH.toFloat())
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED)
     }
 }
 
@@ -141,7 +144,7 @@ fun WaitScreenColumnPreviewDark() {
 @Composable
 fun WaitScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED, EXPANDED_WIDTH.toFloat())
+        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED)
     }
 }
 
@@ -149,6 +152,6 @@ fun WaitScreenRowPreviewLight() {
 @Composable
 fun WaitScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED, EXPANDED_WIDTH.toFloat())
+        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED)
     }
 }

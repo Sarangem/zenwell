@@ -32,7 +32,7 @@ import kotlinx.coroutines.withContext
 class BlockingWindow(
     val appName: String,
     val schedule: Schedules,
-    var content: @Composable (Float, () -> Unit) -> Unit,
+    var content: @Composable (() -> Unit) -> Unit,
     private val context: Context,
 ) {
     val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -73,24 +73,14 @@ class BlockingWindow(
             composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
             composeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
 
-            // get screen size
-            val density = context.resources.displayMetrics.density
-            val appBarHeight = 56 * density
-            val screenWidth = bounds.width()
-            val screenHeight = if (screenWidth / density >= 840) {
-                bounds.height()
-            } else {
-                bounds.height() - appBarHeight.toInt()
-            }
-
             // set the layoutParams according to bound
             layoutParams?.apply {
                 type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
                 flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 format = PixelFormat.TRANSLUCENT
                 gravity = Gravity.TOP or Gravity.START
-                height = screenHeight
-                width = screenWidth
+                height = bounds.height() - (56 * context.resources.displayMetrics.density.toInt())
+                width = bounds.width()
                 x = bounds.left
                 y = bounds.top
 
@@ -101,7 +91,7 @@ class BlockingWindow(
             composeView.apply {
                 setContent {
                     ZenwellTheme {
-                        content(screenWidth / density) { onTimerEnd() }
+                        content { onTimerEnd() }
                     }
                 }
             }

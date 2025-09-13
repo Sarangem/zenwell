@@ -20,10 +20,11 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
     override suspend fun saveToDatabase(
         schedule: Schedules,
         appNames: List<String>,
-        pastAppSet: MutableSet<String>
+        pastAppList: List<String>
     ) {
         // first update the schedule table
         scheduleDao.updateSchedule(schedules = schedule)
+        val pastAppSet = pastAppList.toMutableSet()
 
         for (app in appNames) {
 

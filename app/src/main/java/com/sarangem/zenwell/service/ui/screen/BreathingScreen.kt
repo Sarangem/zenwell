@@ -1,20 +1,28 @@
 package com.sarangem.zenwell.service.ui.screen
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialShapes.Companion.Gem
+import androidx.compose.material3.MaterialShapes.Companion.Sunny
+import androidx.compose.material3.MaterialShapes.Companion.VerySunny
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,20 +32,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
+import androidx.graphics.shapes.Morph
+import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.service.ui.APP_BLOCKED
 import com.sarangem.zenwell.service.ui.EXPANDED_WIDTH
 import com.sarangem.zenwell.service.ui.MEDIUM_WIDTH
+import com.sarangem.zenwell.service.ui.MorphPolygonShape
 import com.sarangem.zenwell.service.ui.PREVIEW_HEIGHT
 import com.sarangem.zenwell.service.ui.TimerMessageCard
-import com.sarangem.zenwell.ui.commonui.TimerBox
+import com.sarangem.zenwell.ui.theme.Purple2
+import com.sarangem.zenwell.ui.theme.Purple3
+import com.sarangem.zenwell.ui.theme.Yellow3
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.ui.commonui.isExpandedWidth
 import kotlinx.coroutines.delay
 
 @Composable
@@ -47,8 +61,7 @@ fun BreathingScreen(
     breathingCycleDuration: Int,
     breathingCycleNumber: Int,
     showOpenDialog: Boolean,
-    message: String,
-    width: Float
+    message: String
 ) {
     var showOpen by remember { mutableStateOf(false) }
 
@@ -70,7 +83,10 @@ fun BreathingScreen(
         )
     }
 
-    if (isExpandedWidth(width)) {
+    if ( currentWindowAdaptiveInfo()
+        .windowSizeClass
+        .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+    ) {
         Row(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.surface)
@@ -79,7 +95,11 @@ fun BreathingScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             breathingCard(Modifier.weight(0.6f))
-            messageCard(Modifier.weight(0.4f))
+            messageCard(
+                Modifier
+                    .weight(0.4f)
+                    .padding(dimensionResource(R.dimen.padding_small))
+            )
         }
     } else {
         Column(
@@ -89,8 +109,8 @@ fun BreathingScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            breathingCard(Modifier.weight(0.6f))
-            messageCard(Modifier.weight(0.4f))
+            breathingCard(Modifier.weight(0.7f))
+            messageCard(Modifier.weight(0.3f))
         }
     }
 }
@@ -113,56 +133,85 @@ fun BreathingCard(
             onTimerEnd()
         }
         repeat(2) {
-            delay(halfDuration)
             inhale = !inhale
+            delay(halfDuration)
         }
         completedBreathingCycle--
     }
 
-    val animatedShapeProgress by animateDpAsState(
-        targetValue = if (inhale) 200.dp else 20.dp,
+    val animatedShapeProgress by animateFloatAsState(
+        targetValue = if (inhale) 0.6f else 1f,
+        animationSpec = tween(easing = LinearEasing, durationMillis = halfDuration.toInt())
+    )
+    val animatedMorphProgress by animateFloatAsState(
+        targetValue = if (inhale) 1f else 0f,
         animationSpec = spring(
             stiffness = Spring.StiffnessVeryLow
         )
     )
 
-    TimerBox(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(
-                top = dimensionResource(R.dimen.padding_small),
-                start = dimensionResource(R.dimen.padding_medium),
-                end = dimensionResource(R.dimen.padding_medium)
-            ),
-        progress = 1f,
-        strokeWidthInDp = dimensionResource(R.dimen.padding_small),
-        cornerRadiusInDp = animatedShapeProgress,
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
+            .padding(dimensionResource(R.dimen.padding_small)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
+        Box(
+            modifier = Modifier
+                .weight(6f)
+                .padding(dimensionResource(R.dimen.padding_small)),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(animatedShapeProgress)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(Yellow3, Purple2.copy(alpha = 0.7f)),
+                            center = Offset.Unspecified,
+                        ),
+                        shape = Sunny.toShape()
+                    ),
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(0.07f)
+                    .aspectRatio(1f)
+                    .clip(
+                        MorphPolygonShape(
+                            morph = Morph(VerySunny, Gem),
+                            percentage = animatedMorphProgress
+                        )
+                    )
+                    .background(Purple3),
+            )
+        }
         AnimatedContent(
-            targetState = inhale
+            targetState = inhale,
+            modifier = Modifier
+                .weight(1f)
+                .padding(dimensionResource(R.dimen.padding_small))
+                .wrapContentSize(align = Alignment.Center)
         ) { textState ->
             Text(
                 text = stringResource(if (textState) R.string.inhale else R.string.exhale),
-                style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                lineHeight = 1.1.em,
-                autoSize = TextAutoSize.StepBased(),
-                maxLines = 1,
-                modifier = Modifier
-                    .padding(dimensionResource(R.dimen.image_size))
-                    .fillMaxSize()
-                    .wrapContentSize(align = Alignment.Center)
+                style = MaterialTheme.typography.displayMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }
 }
 
 
-@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
+@Preview(showBackground = true)
 @Composable
 fun BreathingScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, MEDIUM_WIDTH.toFloat())
+        BreathingScreen(Modifier, { }, 10, 5, true, APP_BLOCKED)
     }
 }
 
@@ -170,7 +219,7 @@ fun BreathingScreenColumnPreviewLight() {
 @Composable
 fun BreathingScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, MEDIUM_WIDTH.toFloat())
+        BreathingScreen(Modifier, { }, 10, 5, true, APP_BLOCKED)
     }
 }
 
@@ -178,7 +227,7 @@ fun BreathingScreenColumnPreviewDark() {
 @Composable
 fun BreathingScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, EXPANDED_WIDTH.toFloat())
+        BreathingScreen(Modifier, { }, 10, 5, true, APP_BLOCKED)
     }
 }
 
@@ -186,6 +235,6 @@ fun BreathingScreenRowPreviewLight() {
 @Composable
 fun BreathingScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 3, 5, true, APP_BLOCKED, EXPANDED_WIDTH.toFloat())
+        BreathingScreen(Modifier, { }, 10, 5, true, APP_BLOCKED)
     }
 }

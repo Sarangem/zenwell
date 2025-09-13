@@ -25,7 +25,7 @@ data class ScheduleInfo(
                     context = context,
                     schedule = schedule,
                     appName = appName,
-                    content = { width, onTimerEnd ->
+                    content = { onTimerEnd ->
 
                         when (schedule.blockType) {
 
@@ -40,7 +40,6 @@ data class ScheduleInfo(
                                 waitTimeInSeconds = schedule.waitTimeInSeconds,
                                 message = schedule.message,
                                 showOpenDialog = schedule.waitEnterButton,
-                                width = width,
                             )
 
                             BlockType.Breathing -> BreathingScreen(
@@ -49,8 +48,7 @@ data class ScheduleInfo(
                                 breathingCycleDuration = schedule.breathingCycleDuration,
                                 breathingCycleNumber = schedule.breathingCycleNumber,
                                 showOpenDialog = schedule.waitEnterButton,
-                                message = schedule.message,
-                                width = width
+                                message = schedule.message
                             )
 
                             else -> {}
