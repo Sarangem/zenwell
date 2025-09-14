@@ -60,10 +60,16 @@ fun ChooseBlockType(
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = !expanded },
+                shape = MaterialTheme.shapes.large
             ) {
                 BlockType.entries.forEach {
                     DropdownMenuItem(
-                        text = { Text(stringResource(it.title)) },
+                        text = {
+                            Text(
+                                text = stringResource(it.title),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        },
                         onClick = {
                             updateUiState(it)
                             expanded = !expanded

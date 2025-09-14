@@ -85,4 +85,5 @@
     <string name="actions_to_show_in_work_time">Actions to show in Work Time</string>
     <string name="pause_resume">Pause/ Resume</string>
     <string name="actions_to_show_in_rest_time">Actions to show in Rest Time</string>
+    <string name="edit_screen_placeholder_text">Select a schedule to view details</string>
 </resources>

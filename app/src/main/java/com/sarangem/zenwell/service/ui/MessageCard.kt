@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.R
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MessageCard(
     modifier: Modifier = Modifier,
