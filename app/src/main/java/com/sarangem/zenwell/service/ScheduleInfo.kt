@@ -1,6 +1,5 @@
 package com.sarangem.zenwell.service
 
-import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.BlockType
@@ -10,7 +9,7 @@ import com.sarangem.zenwell.service.ui.screen.FullBlockScreen
 import com.sarangem.zenwell.service.ui.screen.WaitScreen
 
 data class ScheduleInfo(
-    private val context: Context,
+    private val service: AppBlockerService,
     var schedule: Schedules,
     val appSet: Set<String>,
 ) {
@@ -22,7 +21,7 @@ data class ScheduleInfo(
             blockingWindowList.add(
 
                 BlockingWindow(
-                    context = context,
+                    service = service,
                     schedule = schedule,
                     appName = appName,
                     content = { onTimerEnd ->
@@ -64,7 +63,8 @@ data class ScheduleInfo(
             PomodoroWindow(
                 schedule = schedule,
                 blockingWindowList = blockingWindowList,
-                context = context
+                context = service,
+                recheckApp = { service.recheckApp() }
             )
         } else {
             null

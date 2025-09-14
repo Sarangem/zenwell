@@ -238,7 +238,7 @@ fun FocusScreen(
                                 goBack()
                             },
                             onPauseOrResume = {
-                                if(isPaused){
+                                if (isPaused) {
                                     pomodoroWindow.onPomodoroStart()
                                 } else {
                                     pomodoroWindow.onPomodoroPause()

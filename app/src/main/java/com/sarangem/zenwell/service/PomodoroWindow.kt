@@ -21,7 +21,8 @@ import com.sarangem.zenwell.utils.secondsToString
 class PomodoroWindow(
     private val schedule: Schedules,
     private val blockingWindowList: List<BlockingWindow> = listOf(),
-    private val context: Context
+    private val context: Context,
+    private val recheckApp: () -> Unit = {}
 ) {
     var coroutineScope = CoroutineScope(Dispatchers.IO)
     val classContext = this
@@ -104,12 +105,11 @@ class PomodoroWindow(
 
                 // re-trigger opening window
                 ServiceLogger.d { "Rechecking the app." }
-                val instance = AppBlockerService.instance ?: return@launch
                 blockingWindowList.forEach { window ->
                     window.isAppOpened = false
                 }
                 withContext(Dispatchers.Main) {
-                    instance.recheckApp()
+                    recheckApp()
                 }
             }
             onPomodoroEnd()

@@ -48,7 +48,7 @@ class AppBlockerService : AccessibilityService() {
 
             scheduleInfoList.add(
                 ScheduleInfo(
-                    context = this,
+                    service = this,
                     schedule = schedule,
                     appSet = schedulesRepository.getAppNames(schedule.id).first().toSet()
                 )
@@ -61,6 +61,7 @@ class AppBlockerService : AccessibilityService() {
     }
 
     var previousApp = listOf<CharSequence>()
+    val openedWindows = mutableListOf<BlockingWindow>()
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
         // get list of application windows
@@ -118,13 +119,14 @@ class AppBlockerService : AccessibilityService() {
         }
 
         // close the window
-        scheduleInfoList
-            .flatMap { it.blockingWindowList }
-            .filter { it.isWindowOpen() && it.appName !in currentVisibleApps }
-            .forEach { blockingWindow ->
+        val iterator = openedWindows.iterator() // use iterator to avoid concurrent modification exception
+        while (iterator.hasNext()) {
+            val blockingWindow = iterator.next()
+            if (blockingWindow.appName !in currentVisibleApps) {
                 ServiceLogger.i { "Closing window for ${blockingWindow.appName} for schedule ${blockingWindow.schedule.id}." }
                 blockingWindow.close()
             }
+        }
 
         previousApp = currentVisibleApps
         ServiceLogger.d { "Accessibility Event completed." }

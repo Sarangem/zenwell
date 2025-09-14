@@ -33,18 +33,16 @@ class BlockingWindow(
     val appName: String,
     val schedule: Schedules,
     var content: @Composable (() -> Unit) -> Unit,
-    private val context: Context,
+    private val service: AppBlockerService,
 ) {
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val layoutParams =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams() else null
-    private val composeView = ComposeView(context)
+    private val composeView = ComposeView(service)
 
     var isAppOpened = schedule.isPomodoro // true if pomodoro to prevent open() else false
-    fun isWindowOpen(): Boolean = composeView.isAttachedToWindow
-
 
     fun open(bounds: Rect = Rect()) {
 
@@ -79,7 +77,7 @@ class BlockingWindow(
                 flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 format = PixelFormat.TRANSLUCENT
                 gravity = Gravity.TOP or Gravity.START
-                height = bounds.height() - (56 * context.resources.displayMetrics.density.toInt())
+                height = bounds.height() - (56 * service.resources.displayMetrics.density.toInt())
                 width = bounds.width()
                 x = bounds.left
                 y = bounds.top
@@ -101,7 +99,8 @@ class BlockingWindow(
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
 
-            // ServiceLogger window opened
+            // log window opened
+            service.openedWindows.add(this)
             ServiceLogger.d { "Successfully added composeView" }
 
         } catch (e: Exception) {
@@ -116,6 +115,7 @@ class BlockingWindow(
         if (!composeView.isAttachedToWindow) return
         try {
             windowManager.removeView(composeView)
+            service.openedWindows.remove(this)
             ServiceLogger.d { "Successfully removed compose view" }
         } catch (e: Exception) {
             ServiceLogger.e({ "Error removing ComposeView" }, e)
@@ -139,8 +139,8 @@ class BlockingWindow(
             if (schedule.notificationTimeInMinutes > 0) {
                 createNotification(
                     id = schedule.id + appName.hashCode(),
-                    message = schedule.title + context.getString(R.string.block_notification_message) + getAppNameFromPackageName(context, appName),
-                    context = context,
+                    message = schedule.title + service.getString(R.string.block_notification_message) + getAppNameFromPackageName(service, appName),
+                    context = service,
                     notificationChannel = NotificationChannels.BlockNotification
                 )
             }
@@ -148,15 +148,14 @@ class BlockingWindow(
             delay(schedule.notificationTimeInMinutes * 60 * 1000L)
             deleteNotificationById(
                 id = schedule.id + appName.hashCode(),
-                context = context
+                context = service
             )
 
             // re-trigger opening window
             ServiceLogger.d { "Rechecking the app." }
-            val instance = AppBlockerService.instance ?: return@launch
             isAppOpened = false
             withContext(Dispatchers.Main) {
-                instance.recheckApp()
+                service.recheckApp()
             }
 
         }
