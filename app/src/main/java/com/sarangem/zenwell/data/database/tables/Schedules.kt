@@ -1,10 +1,15 @@
 package com.sarangem.zenwell.data.database.tables
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.sarangem.zenwell.data.BlockType
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
+@Parcelize
+@Serializable
 @Entity(tableName = "schedules")
 data class Schedules(
     // by default, all recommended values are set
@@ -95,4 +100,4 @@ data class Schedules(
 
     // Check if it will work on following week days
     val weekDays: Int = 11111110
-)
+): Parcelable

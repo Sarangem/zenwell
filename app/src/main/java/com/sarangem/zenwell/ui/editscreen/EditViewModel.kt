@@ -1,0 +1,64 @@
+package com.sarangem.zenwell.ui.editscreen
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.sarangem.zenwell.data.database.repository.SchedulesRepository
+import com.sarangem.zenwell.service.AppBlockerService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class EditViewModel(private val schedulesRepository: SchedulesRepository) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(EditUiState())
+    val uiState = _uiState.asStateFlow()
+
+    fun getAppNames(id: Int) = schedulesRepository.getAppNames(id)
+
+    var pastAppList: List<String>? = null
+
+    fun updateUiState(state: EditUiState) {
+        _uiState.update {
+            state.copy(
+                isRunningTimeInvalid = if (state.schedule.startTimeInMinutes != null) {
+                    state.schedule.startTimeInMinutes >= state.schedule.endTimeInMinutes
+                } else {
+                    false
+                },
+                isNotificationTimeInvalid = state.schedule.openTimeInMinutes <= state.schedule.notificationTimeInMinutes,
+                isPomodoroSessionNumberInvalid = state.schedule.pomodoroSessionNumber <= 0
+            )
+        }
+    }
+
+    fun setAppNamesInUiState() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val appNames = getAppNames(_uiState.value.schedule.id).first()
+            updateUiState(
+                _uiState.value.copy(
+                    appNames = appNames
+                )
+            )
+            pastAppList = appNames
+        }
+    }
+
+    suspend fun saveToDatabase() {
+        val appNames = _uiState.value.appNames ?: getAppNames(_uiState.value.schedule.id).first()
+        schedulesRepository.saveToDatabase(
+            schedule = _uiState.value.schedule,
+            appNames = appNames,
+            pastAppList = pastAppList ?: appNames,
+        )
+        AppBlockerService.instance?.initializeRepository()
+    }
+
+    suspend fun deleteSchedule() {
+        schedulesRepository.deleteSchedule(_uiState.value.schedule)
+        AppBlockerService.instance?.initializeRepository()
+    }
+
+}

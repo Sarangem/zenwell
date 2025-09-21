@@ -6,6 +6,12 @@ import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -17,28 +23,98 @@ import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass
-import com.sarangem.zenwell.data.ZenwellNavigationPage
+import com.sarangem.zenwell.data.FocusPage
+import com.sarangem.zenwell.data.HomePage
+import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.editscreen.EditScreen
 import com.sarangem.zenwell.ui.editscreen.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.focusscreen.FocusScreen
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ZenwellAppScreen() {
 
-    val viewModel: ZenwellAppViewModel = viewModel(factory = ZenwellAppViewModel.factory)
-    val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
+    val backStack = rememberNavBackStack(HomePage)
+    NavDisplay(
+        modifier = Modifier.fillMaxSize(),
+        backStack = backStack,
+        transitionSpec = {
+            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween()) togetherWith
+                    slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween())
+        },
+        popTransitionSpec = {
+            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween()) togetherWith
+                    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween())
+        },
+        predictivePopTransitionSpec = {
+            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween()) togetherWith
+                    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween())
+        },
+        entryProvider = { key ->
+            when (key) {
 
+                is HomePage -> NavEntry(key) {
+                    ListDetailScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        openFocusScreen = {
+                            backStack.add(FocusPage(it))
+                        }
+                    )
+                }
+
+                is FocusPage -> NavEntry(
+                    key = key,
+                    metadata = NavDisplay.transitionSpec {
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(1000)
+                        ) togetherWith ExitTransition.KeepUntilTransitionsFinished
+                    } + NavDisplay.popTransitionSpec {
+                        EnterTransition.None togetherWith
+                                slideOutHorizontally(
+                                    targetOffsetX = { it },
+                                    animationSpec = tween()
+                                )
+                    } + NavDisplay.predictivePopTransitionSpec {
+                        EnterTransition.None togetherWith
+                                slideOutHorizontally(
+                                    targetOffsetX = { it },
+                                    animationSpec = tween()
+                                )
+                    }
+                ) {
+                    FocusScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        schedule = key.schedules,
+                        goBack = {
+                            backStack.removeLastOrNull()
+                        }
+                    )
+                }
+
+                else -> {
+                    error("Unknown route: $key")
+                }
+
+            }
+
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+fun ListDetailScreen(
+    modifier: Modifier = Modifier,
+    openFocusScreen: (Schedules) -> Unit = {}
+) {
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) {}
@@ -54,85 +130,44 @@ fun ZenwellAppScreen() {
         activity?.startActivity(intent)
     }
 
-    val schedulesList by viewModel.getAllSchedules().collectAsState(emptyList())
-
-    val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator<Int>()
+    val navigator = rememberListDetailPaneScaffoldNavigator<Schedules>()
     val coroutineScope = rememberCoroutineScope()
     val paneExpansionState = rememberPaneExpansionState()
     paneExpansionState.setFirstPaneProportion(0.5f)
 
     NavigableListDetailPaneScaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        navigator = scaffoldNavigator,
+        modifier = modifier.background(MaterialTheme.colorScheme.surface),
+        navigator = navigator,
         paneExpansionState = paneExpansionState,
         listPane = {
-            AnimatedPane{
-                if(uiState.navigationPage == ZenwellNavigationPage.Home) {
-                    val schedulesList by viewModel.getAllSchedules().collectAsState(emptyList())
-
-                    HomeScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        schedulesList = schedulesList,
-                        scheduleClicked = uiState.schedule.id,
-                        startPermissionActivity = startPermissionActivity,
-                        requestNotification = requestNotification,
-                        addNewSchedule = { viewModel.addNewSchedule(context) },
-                        openEditScreen = {
-                            viewModel.updateUiState(
-                                uiState.copy(
-                                    schedule = it,
-                                )
+            AnimatedPane {
+                HomeScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    scheduleClicked = navigator.currentDestination?.contentKey?.id ?: 0,
+                    startPermissionActivity = startPermissionActivity,
+                    requestNotification = requestNotification,
+                    openEditScreen = {
+                        coroutineScope.launch {
+                            navigator.navigateTo(
+                                ListDetailPaneScaffoldRole.Detail,
+                                it
                             )
-                            coroutineScope.launch {
-                                scaffoldNavigator.navigateTo(
-                                    ListDetailPaneScaffoldRole.Detail,
-                                    it.id
-                                )
-                            }
-                        },
-                        openFocusScreen = {
-                            viewModel.updateUiState(
-                                uiState.copy(
-                                    navigationPage = ZenwellNavigationPage.Focus,
-                                    schedule = it,
-                                )
-                            )
-                            coroutineScope.launch {
-                                paneExpansionState.setFirstPaneProportion(1f)
-                                scaffoldNavigator.navigateTo(ListDetailPaneScaffoldRole.List)
-                            }
                         }
-                    )
-                } else if (uiState.navigationPage == ZenwellNavigationPage.Focus){
-                    FocusScreen(
-                        schedule = uiState.schedule,
-                        goBack = {
-                            viewModel.updateUiState(AppUiState())
-                            paneExpansionState.setFirstPaneProportion(0.5f)
-                        }
-                    )
-                }
+                    },
+                    openFocusScreen = openFocusScreen
+                )
             }
         },
         detailPane = {
             AnimatedPane {
-                scaffoldNavigator.currentDestination?.contentKey?.let {
+                navigator.currentDestination?.contentKey?.let {
                     EditScreen(
                         modifier = Modifier.fillMaxSize(),
-                        uiState = uiState,
+                        schedule = it,
                         showTopAppBar = !isExpandedWidth,
-                        updateUiState = { viewModel.updateUiState(it) },
-                        setAppNamesInUiState = { viewModel.setAppNamesInUiState() },
-                        onSave = { viewModel.saveToDatabase() },
-                        onDelete = { viewModel.deleteSchedule() },
                         goBack = {
-                            viewModel.updateUiState(
-                                AppUiState()
-                            )
                             coroutineScope.launch {
-                                scaffoldNavigator.navigateBack()
+                                navigator.navigateBack()
                             }
                         }
                     )
@@ -145,4 +180,5 @@ fun ZenwellAppScreen() {
             }
         },
     )
+
 }

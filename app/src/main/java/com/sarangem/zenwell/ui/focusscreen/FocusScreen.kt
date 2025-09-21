@@ -28,9 +28,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -41,26 +43,57 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
+import com.sarangem.zenwell.ui.AppViewModelProvider
 import com.sarangem.zenwell.ui.commonui.TimerBox
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FocusScreen(
     modifier: Modifier = Modifier,
     schedule: Schedules,
+    goBack: () -> Unit
+) {
+    val viewModel: FocusViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(schedule) {
+        viewModel.updateUiState(uiState.copy(schedule = schedule))
+    }
+
+    FocusScreenBody(
+        modifier = modifier,
+        schedule = uiState.schedule,
+        goBack = goBack,
+        isFullScreen = uiState.isFullScreen,
+        updateFullScreen = {
+            viewModel.updateUiState(
+                uiState.copy(
+                    isFullScreen = it
+                )
+            )
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FocusScreenBody(
+    modifier: Modifier = Modifier,
+    schedule: Schedules,
     pomodoroWindow: PomodoroWindow? = AppBlockerService.instance?.getPomodoroWindow(schedule.id),
+    isFullScreen: Boolean,
+    updateFullScreen: (Boolean) -> Unit = {},
     goBack: () -> Unit = {}
 ) {
+
     // keep screen on
     val window = LocalActivity.current?.window
     val context = LocalContext.current
-    var isFullScreen by rememberSaveable { mutableStateOf(false) }
     DisposableEffect(isFullScreen) {
         var screenWasKeptOn = false
         if (isFullScreen) {
@@ -83,7 +116,7 @@ fun FocusScreen(
     // back handler
     BackHandler {
         if (isFullScreen) {
-            isFullScreen = false
+            updateFullScreen(false)
         } else {
             goBack()
         }
@@ -193,7 +226,7 @@ fun FocusScreen(
                             .weight(0.7f)
                             .fillMaxSize()
                             .padding(animatedPadding)
-                            .clickable(onClick = { isFullScreen = !isFullScreen }),
+                            .clickable(onClick = { updateFullScreen(!isFullScreen) }),
                         progress = animatedProgress,
                         backgroundColor = if (isWorkTime) {
                             MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
@@ -258,23 +291,32 @@ fun FocusScreen(
     }
 }
 
-@Preview(showBackground = true)
+
 @Composable
 fun FocusScreenPreview() {
+    val schedule = Schedules(
+        id = 1,
+        title = "Study Time",
+        isPomodoro = false,
+        pomodoroWorkTimeInMinutes = 1,
+        pomodoroRestTimeInMinutes = 1
+    )
+    val pomodoroWindow = PomodoroWindow(schedule = schedule, context = LocalContext.current)
+    pomodoroWindow.onPomodoroStart()
+    var isFullScreen by remember { mutableStateOf(false) }
+    FocusScreenBody(
+        schedule = schedule,
+        pomodoroWindow = pomodoroWindow,
+        isFullScreen = isFullScreen,
+        updateFullScreen = { isFullScreen = it }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FocusScreenLightModePreview() {
     ZenwellTheme {
-        val schedule = Schedules(
-            id = 1,
-            title = "Study Time",
-            isPomodoro = false,
-            pomodoroWorkTimeInMinutes = 1,
-            pomodoroRestTimeInMinutes = 1
-        )
-        val pomodoroWindow = PomodoroWindow(schedule = schedule, context = LocalContext.current)
-        pomodoroWindow.onPomodoroStart()
-        FocusScreen(
-            schedule = schedule,
-            pomodoroWindow = pomodoroWindow,
-        )
+        FocusScreenPreview()
     }
 }
 
@@ -282,20 +324,6 @@ fun FocusScreenPreview() {
 @Composable
 fun FocusScreenDarkModePreview() {
     ZenwellTheme(darkTheme = true) {
-        val schedule = Schedules(
-            id = 1,
-            title = "Study Time",
-            isPomodoro = false,
-            pomodoroWorkTimeInMinutes = 1,
-            pomodoroRestTimeInMinutes = 1,
-            showPauseInWorkTime = false,
-            showSkipInRestTime = false
-        )
-        val pomodoroWindow = PomodoroWindow(schedule = schedule, context = LocalContext.current)
-        pomodoroWindow.onPomodoroStart()
-        FocusScreen(
-            schedule = schedule,
-            pomodoroWindow = pomodoroWindow,
-        )
+        FocusScreenPreview()
     }
 }

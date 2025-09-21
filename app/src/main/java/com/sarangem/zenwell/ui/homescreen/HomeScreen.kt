@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,9 +25,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.ui.AppViewModelProvider
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.areNotificationsEnabled
 
@@ -34,16 +37,19 @@ import com.sarangem.zenwell.utils.areNotificationsEnabled
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    schedulesList: List<Schedules>,
     scheduleClicked: Int = 0,
     startPermissionActivity: (Intent) -> Unit = {},
     requestNotification: () -> Unit = {},
     accessibilityPermission: () -> Boolean = { AppBlockerService.instance != null },
     notificationPermission: (Context) -> Boolean = { areNotificationsEnabled(it) },
-    addNewSchedule: suspend () -> Schedules = suspend { Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
 ) {
+    val viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val homeUiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val schedulesList = homeUiState.schedulesList
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -58,7 +64,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             NewScheduleFAB(
-                addNewSchedule = addNewSchedule,
+                addNewSchedule = { viewModel.addNewSchedule(context) },
                 openEditScreen = openEditScreen,
             )
         }
@@ -172,7 +178,7 @@ fun HomeScreenBody(
 // -- Preview -- //
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(
+    HomeScreenBody(
         schedulesList = listOf(
             Schedules(
                 id = 1,
@@ -213,17 +219,5 @@ fun HomeScreenPreviewLightMode() {
 fun HomeScreenPreviewDarkMode() {
     ZenwellTheme(darkTheme = true) {
         HomeScreenPreview()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenEmptyPreview() {
-    ZenwellTheme {
-        HomeScreen(
-            schedulesList = listOf(),
-            accessibilityPermission = { false },
-            notificationPermission = { false }
-        )
     }
 }

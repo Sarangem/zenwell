@@ -1,6 +1,5 @@
 package com.sarangem.zenwell.ui.editscreen
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +23,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,11 +36,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.ui.APP_BLOCKED
-import com.sarangem.zenwell.ui.AppUiState
+import com.sarangem.zenwell.ui.AppViewModelProvider
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,18 +51,18 @@ import kotlinx.coroutines.withContext
 @Composable
 fun EditScreen(
     modifier: Modifier = Modifier,
-    uiState: AppUiState,
+    schedule: Schedules,
     showTopAppBar: Boolean = true,
-    updateUiState: (AppUiState) -> Unit = {},
-    setAppNamesInUiState: () -> Unit = {},
-    onSave: suspend () -> Unit = {},
-    onDelete: suspend () -> Unit = {},
     goBack: () -> Unit = {}
 ) {
+    val viewModel: EditViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(schedule) {
+        viewModel.updateUiState(EditUiState(schedule = schedule))
+    }
+
     val coroutineScope = rememberCoroutineScope()
     var isSaving by rememberSaveable { mutableStateOf(false) }
-
-    BackHandler { goBack() }
 
     Scaffold(
         modifier = modifier,
@@ -98,7 +100,7 @@ fun EditScreen(
                 onSave = {
                     coroutineScope.launch(Dispatchers.IO) {
                         isSaving = true
-                        onSave()
+                        viewModel.saveToDatabase()
                         isSaving = false
                         withContext(Dispatchers.Main) {
                             goBack()
@@ -108,7 +110,7 @@ fun EditScreen(
                 onDelete = {
                     coroutineScope.launch(Dispatchers.IO) {
                         isSaving = true
-                        onDelete()
+                        viewModel.deleteSchedule()
                         isSaving = false
                         withContext(Dispatchers.Main) {
                             goBack()
@@ -124,8 +126,10 @@ fun EditScreen(
         EditScreenBody(
             modifier = Modifier.padding(innerPadding),
             uiState = uiState,
-            updateUiState = updateUiState,
-            setAppNamesInUiState = setAppNamesInUiState,
+            updateUiState = {
+                viewModel.updateUiState(it)
+            },
+            setAppNamesInUiState = { viewModel.setAppNamesInUiState() },
             isSaving = isSaving
         )
 
@@ -136,8 +140,8 @@ fun EditScreen(
 @Composable
 fun EditScreenBody(
     modifier: Modifier = Modifier,
-    uiState: AppUiState,
-    updateUiState: (AppUiState) -> Unit = {},
+    uiState: EditUiState,
+    updateUiState: (EditUiState) -> Unit = {},
     setAppNamesInUiState: () -> Unit = {},
     isSaving: Boolean = false,
 ) {
@@ -462,8 +466,8 @@ fun EditScreenBody(
 @Composable
 fun EditScreenPreviewLightMode() {
     ZenwellTheme(darkTheme = false) {
-        EditScreen(
-            uiState = AppUiState(
+        EditScreenBody(
+            uiState = EditUiState(
                 schedule = Schedules(
                     title = "Schedule 1",
                     message = APP_BLOCKED,
@@ -480,8 +484,8 @@ fun EditScreenPreviewLightMode() {
 @Composable
 fun EditScreenPreviewDarkMode() {
     ZenwellTheme(darkTheme = true) {
-        EditScreen(
-            uiState = AppUiState(
+        EditScreenBody(
+            uiState = EditUiState(
                 schedule = Schedules(
                     title = "Pomodoro Mode",
                     message = APP_BLOCKED,

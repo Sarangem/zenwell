@@ -2,7 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.android.ksp)
+}
+
+kotlin {
+    compilerOptions{
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("11")
+    }
 }
 
 android {
@@ -33,13 +41,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        kotlin {
-            compilerOptions{
-                jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("11")
-            }
-        }
-    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -63,6 +64,8 @@ dependencies {
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.androidx.animation.graphics.android)
     implementation(libs.androidx.compose.adaptive.navigation)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
