@@ -76,7 +76,7 @@ fun ChooseRunningTime(
     updateWeekDays: (Int) -> Unit = {},
     isRunningTimeInvalid: Boolean
 ) {
-    Card(modifier = modifier) {
+    Card(modifier = modifier.padding(dimensionResource(R.dimen.padding_small))) {
         RunAllDay(
             startTimeInMinutes = startTimeInMinutes,
             updateStartTime = updateStartTime,

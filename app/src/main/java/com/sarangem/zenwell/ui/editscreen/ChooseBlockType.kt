@@ -34,7 +34,10 @@ fun ChooseBlockType(
     updateUiState: (BlockType) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-    EditScreenCard(modifier = modifier) {
+    DetailsCard(
+        modifier = modifier,
+        isStacked = true
+    ) {
         Text(
             text = stringResource(R.string.choose_block_type),
             style = MaterialTheme.typography.bodyLarge,

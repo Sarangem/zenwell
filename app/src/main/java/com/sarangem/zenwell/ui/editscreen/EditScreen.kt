@@ -1,6 +1,6 @@
 package com.sarangem.zenwell.ui.editscreen
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -126,8 +126,19 @@ fun EditScreen(
         EditScreenBody(
             modifier = Modifier.padding(innerPadding),
             uiState = uiState,
-            updateUiState = {
-                viewModel.updateUiState(it)
+            updateSchedule = {
+                viewModel.updateUiState(
+                    uiState.copy(
+                        schedule = it
+                    )
+                )
+            },
+            updateAppList = {
+                viewModel.updateUiState(
+                    uiState.copy(
+                        appNames = it
+                    )
+                )
             },
             setAppNamesInUiState = { viewModel.setAppNamesInUiState() },
             isSaving = isSaving
@@ -136,312 +147,327 @@ fun EditScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun EditScreenBody(
     modifier: Modifier = Modifier,
     uiState: EditUiState,
-    updateUiState: (EditUiState) -> Unit = {},
+    updateSchedule: (Schedules) -> Unit = {},
+    updateAppList: (List<String>) -> Unit = {},
     setAppNamesInUiState: () -> Unit = {},
     isSaving: Boolean = false,
 ) {
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
 
+        // enable switch
         ChooseEnable(
             checked = uiState.schedule.isEnabled,
             updateUiState = {
-                updateUiState(
-                    uiState.copy(
-                        schedule = uiState.schedule.copy(
-                            isEnabled = it
-                        )
+                updateSchedule(
+                    uiState.schedule.copy(
+                        isEnabled = it
                     )
                 )
             },
         )
 
-        ChooseScheduleTitle(
-            title = uiState.schedule.title,
-            updateUiState = {
-                updateUiState(
-                    uiState.copy(
-                        schedule = uiState.schedule.copy(
+        StackedDetailsCard {
+
+            // title
+            DetailsCardWithTextField(
+                mainText = stringResource(R.string.schedule_title),
+                isStacked = true,
+                textFieldValue = uiState.schedule.title,
+                onValueChange = {
+                    updateSchedule(
+                        uiState.schedule.copy(
                             title = it
                         )
                     )
-                )
-            }
-        )
-        ChooseMessage(
-            message = uiState.schedule.message,
-            updateUiState = {
-                updateUiState(
-                    uiState.copy(
-                        schedule = uiState.schedule.copy(
+                },
+            )
+
+            // message
+            DetailsCardWithTextField(
+                mainText = stringResource(R.string.message),
+                isStacked = true,
+                textFieldValue = uiState.schedule.message,
+                onValueChange = {
+                    updateSchedule(
+                        uiState.schedule.copy(
                             message = it
                         )
                     )
-                )
-            }
-        )
-
-        if (!uiState.schedule.isPomodoro) {
-            ChooseBlockType(
-                blockType = uiState.schedule.blockType,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                blockType = it
-                            )
-                        )
-                    )
-                }
-            )
-        }
-
-        val blockType = uiState.schedule.blockType
-
-        if (blockType == BlockType.Wait) {
-
-            ChooseWaitTime(
-                waitTimeInSeconds = uiState.schedule.waitTimeInSeconds,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                waitTimeInSeconds = it
-                            )
-                        )
-                    )
-                }
-            )
-
-        }
-
-        AnimatedVisibility(blockType == BlockType.Breathing) {
-            Column {
-
-                ChooseBreathingCycleDuration(
-                    breathingCycleDuration = uiState.schedule.breathingCycleDuration,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    breathingCycleDuration = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-                ChooseBreathingCycleNumber(
-                    breathingCycleNumber = uiState.schedule.breathingCycleNumber,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    breathingCycleNumber = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-            }
-        }
-
-        AnimatedVisibility(
-            blockType == BlockType.Wait ||
-                    blockType == BlockType.Breathing
-        ) {
-            Column {
-
-                ChooseOpenTime(
-                    openTimeInMinutes = uiState.schedule.openTimeInMinutes,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    openTimeInMinutes = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-                ChooseWaitEnterButton(
-                    checked = uiState.schedule.waitEnterButton,
-                    updateUiState = {
-                        updateUiState(
-                            uiState.copy(
-                                schedule = uiState.schedule.copy(
-                                    waitEnterButton = it
-                                )
-                            )
-                        )
-                    }
-                )
-
-
-            }
-        }
-
-        AnimatedVisibility(!uiState.schedule.isPomodoro && blockType != BlockType.FullBlock) {
-            ChooseNotificationTime(
-                notificationTime = uiState.schedule.notificationTimeInMinutes,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                notificationTimeInMinutes = it
-                            ),
-                        )
-                    )
                 },
-                isNotificationTimeInvalid = uiState.isNotificationTimeInvalid
             )
         }
 
         ChooseAppList(
             checkedAppList = uiState.appNames,
-            updateAppList = {
-                updateUiState(
-                    uiState.copy(
-                        appNames = it
-                    )
-                )
-            },
+            updateAppList = updateAppList,
             setAppNamesInUiState = setAppNamesInUiState
         )
 
+        StackedDetailsCard {
+
+            if (!uiState.schedule.isPomodoro) {
+                // block type
+                ChooseBlockType(
+                    blockType = uiState.schedule.blockType,
+                    updateUiState = {
+                        updateSchedule(
+                            uiState.schedule.copy(
+                                blockType = it
+                            )
+                        )
+                    }
+                )
+            }
+
+            AnimatedContent(
+                targetState = uiState.schedule.blockType
+            ) { blockType ->
+                Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_elevation))) {
+
+                    if (blockType == BlockType.Wait) {
+                        // wait time
+                        DetailsCardWithNumberField(
+                            mainText = stringResource(R.string.wait_time),
+                            textFieldValue = uiState.schedule.waitTimeInSeconds,
+                            updateSchedule = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        waitTimeInSeconds = it
+                                    )
+                                )
+                            },
+                            suffixText = stringResource(R.string.seconds),
+                            isStacked = true,
+                        )
+                    }
+
+                    if (blockType == BlockType.Breathing) {
+
+                        // breathing cycle duration
+                        DetailsCardWithNumberField(
+                            mainText = stringResource(R.string.breathing_cycle_duration),
+                            textFieldValue = uiState.schedule.breathingCycleDuration,
+                            updateSchedule = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        breathingCycleDuration = it
+                                    )
+                                )
+                            },
+                            suffixText = stringResource(R.string.seconds),
+                            isStacked = true,
+                        )
+
+                        // breathing cycles number
+                        DetailsCardWithNumberField(
+                            mainText = stringResource(R.string.number_of_breathing_cycles),
+                            textFieldValue = uiState.schedule.breathingCycleDuration,
+                            updateSchedule = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        breathingCycleNumber = it
+                                    )
+                                )
+                            },
+                            isStacked = true,
+                        )
+                    }
+
+                    if (blockType != BlockType.FullBlock) {
+
+                        // open time
+                        DetailsCardWithNumberField(
+                            mainText = stringResource(R.string.open_time),
+                            textFieldValue = uiState.schedule.openTimeInMinutes,
+                            updateSchedule = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        openTimeInMinutes = it
+                                    )
+                                )
+                            },
+                            suffixText = stringResource(R.string.minutes),
+                            isStacked = true,
+                        )
+
+                        // ask before opening
+                        ChooseWaitEnterButton(
+                            checked = uiState.schedule.waitEnterButton,
+                            updateUiState = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        waitEnterButton = it
+                                    )
+                                )
+                            }
+                        )
+
+                        // notification time
+                        DetailsCardWithNumberField(
+                            mainText = stringResource(R.string.send_notification_before_closing),
+                            textFieldValue = uiState.schedule.notificationTimeInMinutes,
+                            updateSchedule = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        notificationTimeInMinutes = it
+                                    )
+                                )
+                            },
+                            suffixText = stringResource(R.string.minutes),
+                            isStacked = true,
+                            isError = uiState.isNotificationTimeInvalid,
+                            errorMessage = stringResource(R.string.notification_time_invalid)
+                        )
+                    }
+
+                }
+            }
+        }
+
         if (uiState.schedule.isPomodoro) {
 
-            ChoosePomodoroWorkTime(
-                workTimeInMinutes = uiState.schedule.pomodoroWorkTimeInMinutes,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
+            StackedDetailsCard {
+
+                // pomodoro work time
+                DetailsCardWithNumberField(
+                    mainText = stringResource(R.string.work_time),
+                    textFieldValue = uiState.schedule.pomodoroWorkTimeInMinutes,
+                    updateSchedule = {
+                        updateSchedule(
+                            uiState.schedule.copy(
                                 pomodoroWorkTimeInMinutes = it
                             )
                         )
-                    )
-                }
-            )
+                    },
+                    suffixText = stringResource(R.string.minutes),
+                    isStacked = true
+                )
 
-            ChoosePomodoroRestTime(
-                restTimeInMinutes = uiState.schedule.pomodoroRestTimeInMinutes,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
+                // pomodoro rest time
+                DetailsCardWithNumberField(
+                    mainText = stringResource(R.string.rest_time),
+                    textFieldValue = uiState.schedule.pomodoroRestTimeInMinutes,
+                    updateSchedule = {
+                        updateSchedule(
+                            uiState.schedule.copy(
                                 pomodoroRestTimeInMinutes = it
                             )
                         )
-                    )
-                }
-            )
+                    },
+                    suffixText = stringResource(R.string.minutes),
+                    isStacked = true
+                )
 
-            ChoosePomodoroSessionNumber(
-                pomodoroSessionNumber = uiState.schedule.pomodoroSessionNumber,
-                updateUiState = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
+                // pomodoro sessions count
+                DetailsCardWithNumberField(
+                    mainText = stringResource(R.string.number_of_pomodoro_sessions),
+                    textFieldValue = uiState.schedule.pomodoroSessionNumber,
+                    updateSchedule = {
+                        updateSchedule(
+                            uiState.schedule.copy(
                                 pomodoroSessionNumber = it
-                            ),
+                            )
+                        )
+                    },
+                    isError = uiState.isPomodoroSessionNumberInvalid,
+                    errorMessage = stringResource(R.string.pomodoro_session_number_invalid),
+                    isStacked = true
+                )
+
+                LabelDetailsCard(
+                    mainText = stringResource(R.string.actions_to_show_in_work_time),
+                    labelList = listOf(
+                        LabelState(
+                            title = stringResource(R.string.pause_resume),
+                            isSelected = uiState.schedule.showPauseInWorkTime,
+                            onSelectChange = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        showPauseInWorkTime = it
+                                    )
+                                )
+                            }
+                        ),
+                        LabelState(
+                            title = stringResource(R.string.skip),
+                            isSelected = uiState.schedule.showSkipInWorkTime,
+                            onSelectChange = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        showSkipInWorkTime = it
+                                    )
+                                )
+                            }
                         )
                     )
-                },
-                isPomodoroSessionNumberInvalid = uiState.isPomodoroSessionNumberInvalid
-            )
-
+                )
+                LabelDetailsCard(
+                    mainText = stringResource(R.string.actions_to_show_in_rest_time),
+                    labelList = listOf(
+                        LabelState(
+                            title = stringResource(R.string.pause_resume),
+                            isSelected = uiState.schedule.showPauseInRestTime,
+                            onSelectChange = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        showPauseInRestTime = it
+                                    )
+                                )
+                            }
+                        ),
+                        LabelState(
+                            title = stringResource(R.string.skip),
+                            isSelected = uiState.schedule.showSkipInRestTime,
+                            onSelectChange = {
+                                updateSchedule(
+                                    uiState.schedule.copy(
+                                        showSkipInRestTime = it
+                                    )
+                                )
+                            }
+                        )
+                    )
+                )
+            }
         }
 
         if (!uiState.schedule.isPomodoro) {
             ChooseRunningTime(
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                 startTimeInMinutes = uiState.schedule.startTimeInMinutes,
                 updateStartTime = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                startTimeInMinutes = it
-                            )
+                    updateSchedule(
+                        uiState.schedule.copy(
+                            startTimeInMinutes = it
                         )
                     )
                 },
                 endTimeInMinutes = uiState.schedule.endTimeInMinutes,
                 updateEndTime = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                endTimeInMinutes = it
-                            )
+                    updateSchedule(
+                        uiState.schedule.copy(
+                            endTimeInMinutes = it
                         )
                     )
                 },
                 weekDays = uiState.schedule.weekDays,
                 updateWeekDays = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                weekDays = it
-                            )
+                    updateSchedule(
+                        uiState.schedule.copy(
+                            weekDays = it
                         )
                     )
                 },
                 isRunningTimeInvalid = uiState.isRunningTimeInvalid
-            )
-        }
-
-        if(uiState.schedule.isPomodoro){
-            ChoosePomodoroActionsToShow(
-                showPauseInWorkTime = uiState.schedule.showPauseInWorkTime,
-                updateShowPauseInWorkTime = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                showPauseInWorkTime = it
-                            )
-                        )
-                    )
-                },
-                showSkipInWorkTime = uiState.schedule.showSkipInWorkTime,
-                updateShowSkipInWorkTime = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                showSkipInWorkTime = it
-                            )
-                        )
-                    )
-                },
-                showPauseInRestTime = uiState.schedule.showPauseInRestTime,
-                updateShowPauseInRestTime = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                showPauseInRestTime = it
-                            )
-                        )
-                    )
-                },
-                showSkipInRestTime = uiState.schedule.showSkipInRestTime,
-                updateShowSkipInRestTime = {
-                    updateUiState(
-                        uiState.copy(
-                            schedule = uiState.schedule.copy(
-                                showSkipInWorkTime = it
-                            )
-                        )
-                    )
-                }
             )
         }
 

@@ -83,9 +83,9 @@ fun BreathingScreen(
         )
     }
 
-    if ( currentWindowAdaptiveInfo()
-        .windowSizeClass
-        .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+    if (currentWindowAdaptiveInfo()
+            .windowSizeClass
+            .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
     ) {
         Row(
             modifier = modifier
@@ -211,7 +211,7 @@ fun BreathingCard(
 @Composable
 fun BreathingScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 10, 5, true, APP_BLOCKED)
+        BreathingScreen(Modifier, { }, 10, 2, true, APP_BLOCKED)
     }
 }
 
@@ -219,7 +219,7 @@ fun BreathingScreenColumnPreviewLight() {
 @Composable
 fun BreathingScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 10, 5, true, APP_BLOCKED)
+        BreathingScreen(Modifier, { }, 10, 2, true, APP_BLOCKED)
     }
 }
 
@@ -227,7 +227,7 @@ fun BreathingScreenColumnPreviewDark() {
 @Composable
 fun BreathingScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 10, 5, true, APP_BLOCKED)
+        BreathingScreen(Modifier, { }, 10, 2, true, APP_BLOCKED)
     }
 }
 
@@ -235,6 +235,6 @@ fun BreathingScreenRowPreviewLight() {
 @Composable
 fun BreathingScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 10, 5, true, APP_BLOCKED)
+        BreathingScreen(Modifier, { }, 10, 2, true, APP_BLOCKED)
     }
 }

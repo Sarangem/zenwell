@@ -54,8 +54,10 @@ fun ChooseAppList(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    EditScreenCard(
-        modifier = modifier.clickable(onClick = { expanded = true })
+    DetailsCard(
+        modifier = modifier
+            .padding(dimensionResource(R.dimen.padding_small))
+            .clickable(onClick = { expanded = true })
     ) {
         Text(
             text = stringResource(R.string.choose_apps),

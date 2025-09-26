@@ -50,7 +50,7 @@ data class Schedules(
 
     // how long should a breathing cycle (one inhalation + one exhalation) take
     @ColumnInfo(name = "breathing_cycle_duration")
-    val breathingCycleDuration: Int = 3,
+    val breathingCycleDuration: Int = 6,
 
     // how many breathing cycles there should be
     @ColumnInfo(name = "breathing_cycle_number")
