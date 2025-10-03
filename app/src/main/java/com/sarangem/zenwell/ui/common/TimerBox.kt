@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.ui.commonui
+package com.sarangem.zenwell.ui.common
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme

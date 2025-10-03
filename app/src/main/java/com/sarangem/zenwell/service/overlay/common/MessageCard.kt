@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui
+package com.sarangem.zenwell.service.overlay.common
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -120,7 +120,7 @@ fun TimerMessageCard(
             }
         },
         onClick = {
-            if(showOpen){
+            if (showOpen) {
                 onTimerEnd()
             }
         },

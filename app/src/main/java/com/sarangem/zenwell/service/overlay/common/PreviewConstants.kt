@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui
+package com.sarangem.zenwell.service.overlay.common
 
 // default preview message
 const val APP_BLOCKED = "This app is fully blocked"

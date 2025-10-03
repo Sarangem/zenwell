@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.ui.commonui
+package com.sarangem.zenwell.ui.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -31,8 +31,8 @@ import com.sarangem.zenwell.R
 fun ShowConfirmDialog(
     modifier: Modifier = Modifier,
     icon: ImageVector,
-    headingText: String,
-    bodyText: String,
+    title: String,
+    description: String,
     onConfirm: () -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
@@ -68,11 +68,11 @@ fun ShowConfirmDialog(
                 )
                 Text(
                     modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_large)),
-                    text = headingText,
+                    text = title,
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Text(
-                    text = bodyText,
+                    text = description,
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Spacer(Modifier.size(dimensionResource(R.dimen.padding_large)))

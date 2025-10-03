@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui
+package com.sarangem.zenwell.service.overlay
 
 import android.os.Bundle
 import androidx.lifecycle.Lifecycle
@@ -8,7 +8,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 
 @Suppress("unused")
-class BlockingScreenLifecycleOwner : SavedStateRegistryOwner {
+class OverlayWindowLifecycleOwner : SavedStateRegistryOwner {
 
     private var mLifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
     private var mSavedStateRegistryController: SavedStateRegistryController = SavedStateRegistryController.create(this)

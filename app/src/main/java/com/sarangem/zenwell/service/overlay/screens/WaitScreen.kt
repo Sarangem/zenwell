@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui.screen
+package com.sarangem.zenwell.service.overlay.screens
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -29,12 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.service.ui.APP_BLOCKED
-import com.sarangem.zenwell.service.ui.EXPANDED_WIDTH
-import com.sarangem.zenwell.service.ui.MEDIUM_WIDTH
-import com.sarangem.zenwell.service.ui.PREVIEW_HEIGHT
-import com.sarangem.zenwell.service.ui.TimerMessageCard
-import com.sarangem.zenwell.ui.commonui.TimerBox
+import com.sarangem.zenwell.service.overlay.common.APP_BLOCKED
+import com.sarangem.zenwell.service.overlay.common.EXPANDED_WIDTH
+import com.sarangem.zenwell.service.overlay.common.MEDIUM_WIDTH
+import com.sarangem.zenwell.service.overlay.common.PREVIEW_HEIGHT
+import com.sarangem.zenwell.service.overlay.common.TimerMessageCard
+import com.sarangem.zenwell.ui.common.TimerBox
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.delay
@@ -124,6 +124,7 @@ fun WaitScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun WaitScreenColumnPreviewLight() {
@@ -132,6 +133,7 @@ fun WaitScreenColumnPreviewLight() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun WaitScreenColumnPreviewDark() {
@@ -140,6 +142,7 @@ fun WaitScreenColumnPreviewDark() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun WaitScreenRowPreviewLight() {
@@ -148,6 +151,7 @@ fun WaitScreenRowPreviewLight() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun WaitScreenRowPreviewDark() {

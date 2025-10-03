@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.ui.screen.PomodoroBlockScreen
+import com.sarangem.zenwell.service.overlay.screens.PomodoroBlockScreen
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createNotification
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,7 @@ import com.sarangem.zenwell.utils.secondsToString
 
 class PomodoroWindow(
     private val schedule: Schedules,
-    private val blockingWindowList: List<BlockingWindow> = listOf(),
+    private val overlayWindowList: List<OverlayWindow> = listOf(),
     private val context: Context,
     private val recheckApp: () -> Unit = {}
 ) {
@@ -47,7 +47,7 @@ class PomodoroWindow(
 
                     startTime = System.currentTimeMillis()
                     currentSegmentTime = schedule.pomodoroWorkTimeInMinutes * 60 * 1000L
-                    blockingWindowList.forEach { window ->
+                    overlayWindowList.forEach { window ->
                         window.content = { onTimerEnd ->
                             PomodoroBlockScreen(
                                 modifier = Modifier.fillMaxSize(),
@@ -78,11 +78,11 @@ class PomodoroWindow(
                 startTime = System.currentTimeMillis()
                 isWorkTime = false
                 currentSegmentTime = schedule.pomodoroRestTimeInMinutes * 60 * 1000L
-                blockingWindowList.forEach { window ->
+                overlayWindowList.forEach { window ->
                     window.isAppOpened = true
                 }
                 withContext(Dispatchers.Main) {
-                    blockingWindowList.forEach { window ->
+                    overlayWindowList.forEach { window ->
                         window.close()
                     }
                 }
@@ -105,7 +105,7 @@ class PomodoroWindow(
 
                 // re-trigger opening window
                 ServiceLogger.d { "Rechecking the app." }
-                blockingWindowList.forEach { window ->
+                overlayWindowList.forEach { window ->
                     window.isAppOpened = false
                 }
                 withContext(Dispatchers.Main) {
@@ -128,10 +128,10 @@ class PomodoroWindow(
         coroutineScope.cancel()
         coroutineScope = CoroutineScope(Dispatchers.IO)
         deleteNotificationById(schedule.id, context)
-        blockingWindowList.forEach { window ->
+        overlayWindowList.forEach { window ->
             window.close()
         }
-        blockingWindowList.forEach { window -> // prevent executing open() if pomodoro has not started
+        overlayWindowList.forEach { window -> // prevent executing open() if pomodoro has not started
             window.isAppOpened = true
         }
     }
@@ -145,10 +145,10 @@ class PomodoroWindow(
         coroutineScope.cancel()
         coroutineScope = CoroutineScope(Dispatchers.IO)
         deleteNotificationById(schedule.id, context)
-        blockingWindowList.forEach { window ->
+        overlayWindowList.forEach { window ->
             window.close()
         }
-        blockingWindowList.forEach { window -> // prevent executing open() if pomodoro has not started
+        overlayWindowList.forEach { window -> // prevent executing open() if pomodoro has not started
             window.isAppOpened = true
         }
     }

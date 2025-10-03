@@ -23,9 +23,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @Composable
 fun AskPermissions(
@@ -108,21 +106,5 @@ fun PermissionRequestCard(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AskPermissionsLightModePreview() {
-    ZenwellTheme(darkTheme = false) {
-        AskPermissions()
-    }
-}
-
-@Preview
-@Composable
-fun AskPermissionsDarkModePreview() {
-    ZenwellTheme(darkTheme = true) {
-        AskPermissions(isSystemInDarkTheme = true)
     }
 }

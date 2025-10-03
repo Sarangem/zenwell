@@ -4,11 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.sarangem.zenwell.data.database.tables.AppNames
 import com.sarangem.zenwell.data.database.tables.BlockedApps
 import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.data.database.typeconverters.OperatorListConverter
+import com.sarangem.zenwell.data.database.typeconverters.WeekdaysListConverter
 
-@Database(entities = [Schedules::class, AppNames::class, BlockedApps::class], version = 10, exportSchema = false)
+@Database(entities = [Schedules::class, AppNames::class, BlockedApps::class], version = 12, exportSchema = false)
+@TypeConverters(OperatorListConverter::class, WeekdaysListConverter::class)
 abstract class ZenwellDatabase : RoomDatabase() {
 
     abstract fun scheduleDao() : ScheduleDao

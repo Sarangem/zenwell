@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui
+package com.sarangem.zenwell.service.overlay.common
 
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size

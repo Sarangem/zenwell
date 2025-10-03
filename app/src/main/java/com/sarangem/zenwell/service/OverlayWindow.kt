@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
@@ -17,7 +18,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.NotificationChannels
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.ui.BlockingScreenLifecycleOwner
+import com.sarangem.zenwell.service.overlay.OverlayWindowLifecycleOwner
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createNotification
@@ -29,7 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class BlockingWindow(
+class OverlayWindow(
     val appName: String,
     val schedule: Schedules,
     var content: @Composable (() -> Unit) -> Unit,
@@ -44,6 +45,7 @@ class BlockingWindow(
 
     var isAppOpened = schedule.isPomodoro // true if pomodoro to prevent open() else false
 
+    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     fun open(bounds: Rect = Rect()) {
 
         if (composeView.isAttachedToWindow) {
@@ -64,7 +66,7 @@ class BlockingWindow(
             }
 
             // set lifecycle
-            val lifecycleOwner = BlockingScreenLifecycleOwner()
+            val lifecycleOwner = OverlayWindowLifecycleOwner()
             lifecycleOwner.performRestore(null)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
             composeView.setViewTreeLifecycleOwner(lifecycleOwner)

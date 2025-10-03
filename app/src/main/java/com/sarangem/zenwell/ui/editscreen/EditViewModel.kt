@@ -3,6 +3,7 @@ package com.sarangem.zenwell.ui.editscreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.data.database.repository.SchedulesRepository
+import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +11,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+data class EditUiState(
+    val schedule: Schedules = Schedules(),
+    val appNames: List<String>? = null,
+    val validationErrors: Set<ValidationError> = emptySet(),
+)
 
 class EditViewModel(private val schedulesRepository: SchedulesRepository) : ViewModel() {
 
@@ -23,13 +30,7 @@ class EditViewModel(private val schedulesRepository: SchedulesRepository) : View
     fun updateUiState(state: EditUiState) {
         _uiState.update {
             state.copy(
-                isRunningTimeInvalid = if (state.schedule.startTimeInMinutes != null) {
-                    state.schedule.startTimeInMinutes >= state.schedule.endTimeInMinutes
-                } else {
-                    false
-                },
-                isNotificationTimeInvalid = state.schedule.openTimeInMinutes <= state.schedule.notificationTimeInMinutes,
-                isPomodoroSessionNumberInvalid = state.schedule.pomodoroSessionNumber <= 0
+                validationErrors = validateSchedule(state.schedule)
             )
         }
     }

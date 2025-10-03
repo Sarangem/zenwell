@@ -5,8 +5,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.sarangem.zenwell.data.BlockType
+import com.sarangem.zenwell.data.MathOperators
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
+import java.util.Calendar
 
 @Parcelize
 @Serializable
@@ -30,7 +32,7 @@ data class Schedules(
     // time of the day when blocking will start
     // if null, assume it would run always
     @ColumnInfo(name = "start_time")
-    val startTimeInMinutes: Int? = null,
+    val startTimeInMinutes: Int = 0,
 
     // time of the day when blocking will end
     @ColumnInfo(name = "end_time")
@@ -58,6 +60,39 @@ data class Schedules(
 
     @ColumnInfo(name = "notification_time")
     val notificationTimeInMinutes: Int = 2,
+
+    // maximum number of operands in math equation
+    @ColumnInfo(name = "math_equation_num_operands")
+    val mathEquationNumOperands: Int = 2,
+
+    // range of operands for generating equation:
+    // mathEquationMinNumber..mathEquationMaxNumber
+    @ColumnInfo(name = "math_equation_min_number")
+    val mathEquationMinNumber: Int = 10,
+
+    // range of operands for generating multiplication equation
+    @ColumnInfo(name = "math_equation_max_number")
+    val mathEquationMaxNumber: Int = 99,
+
+    // maximum number of digit in operands for multiplication
+    @ColumnInfo(name = "math_equation_min_number_in_multiplication")
+    val mathEquationMinNumberInMultiplication: Int = 1,
+
+    // maximum number of digit in operands for multiplication
+    @ColumnInfo(name = "math_equation_max_number_in_multiplication")
+    val mathEquationMaxNumberInMultiplication: Int = 9,
+
+    @ColumnInfo(name = "allowed_math_operators")
+    val allowedMathOperators: List<MathOperators> = listOf(
+        MathOperators.ADDITION,
+        MathOperators.SUBTRACTION
+    ),
+
+    @ColumnInfo(name = "math_equation_show_parentheses")
+    val mathEquationShowParentheses: Boolean = true,
+
+    @ColumnInfo(name = "math_equation_allow_negatives")
+    val mathEquationAllowNegatives: Boolean = false,
 
     // parachute means skipping the block message. check if enabled.
     @ColumnInfo(name = "is_parachute")
@@ -99,5 +134,14 @@ data class Schedules(
     val showSkipInRestTime: Boolean = true,
 
     // Check if it will work on following week days
-    val weekDays: Int = 11111110
-): Parcelable
+    val weekDays: List<Int> = listOf(
+        Calendar.SUNDAY,
+        Calendar.MONDAY,
+        Calendar.TUESDAY,
+        Calendar.WEDNESDAY,
+        Calendar.THURSDAY,
+        Calendar.FRIDAY,
+        Calendar.SATURDAY,
+    )
+
+) : Parcelable

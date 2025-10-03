@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui.screen
+package com.sarangem.zenwell.service.overlay.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
@@ -42,12 +42,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.graphics.shapes.Morph
 import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.service.ui.APP_BLOCKED
-import com.sarangem.zenwell.service.ui.EXPANDED_WIDTH
-import com.sarangem.zenwell.service.ui.MEDIUM_WIDTH
-import com.sarangem.zenwell.service.ui.MorphPolygonShape
-import com.sarangem.zenwell.service.ui.PREVIEW_HEIGHT
-import com.sarangem.zenwell.service.ui.TimerMessageCard
+import com.sarangem.zenwell.service.overlay.common.APP_BLOCKED
+import com.sarangem.zenwell.service.overlay.common.EXPANDED_WIDTH
+import com.sarangem.zenwell.service.overlay.common.MEDIUM_WIDTH
+import com.sarangem.zenwell.service.overlay.common.MorphPolygonShape
+import com.sarangem.zenwell.service.overlay.common.PREVIEW_HEIGHT
+import com.sarangem.zenwell.service.overlay.common.TimerMessageCard
 import com.sarangem.zenwell.ui.theme.Purple2
 import com.sarangem.zenwell.ui.theme.Purple3
 import com.sarangem.zenwell.ui.theme.Yellow3
@@ -207,6 +207,7 @@ fun BreathingCard(
 }
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
 fun BreathingScreenColumnPreviewLight() {
@@ -215,6 +216,7 @@ fun BreathingScreenColumnPreviewLight() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun BreathingScreenColumnPreviewDark() {
@@ -223,6 +225,7 @@ fun BreathingScreenColumnPreviewDark() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun BreathingScreenRowPreviewLight() {
@@ -231,6 +234,7 @@ fun BreathingScreenRowPreviewLight() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun BreathingScreenRowPreviewDark() {

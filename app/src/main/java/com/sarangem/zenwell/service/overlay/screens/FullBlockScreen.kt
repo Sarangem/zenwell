@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.service.ui.screen
+package com.sarangem.zenwell.service.overlay.screens
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -25,12 +25,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.service.ui.APP_BLOCKED
-import com.sarangem.zenwell.service.ui.EXPANDED_WIDTH
-import com.sarangem.zenwell.service.ui.MEDIUM_WIDTH
-import com.sarangem.zenwell.service.ui.MessageCard
-import com.sarangem.zenwell.service.ui.MorphPolygonShape
-import com.sarangem.zenwell.service.ui.PREVIEW_HEIGHT
+import com.sarangem.zenwell.service.overlay.common.APP_BLOCKED
+import com.sarangem.zenwell.service.overlay.common.EXPANDED_WIDTH
+import com.sarangem.zenwell.service.overlay.common.MEDIUM_WIDTH
+import com.sarangem.zenwell.service.overlay.common.MessageCard
+import com.sarangem.zenwell.service.overlay.common.MorphPolygonShape
+import com.sarangem.zenwell.service.overlay.common.PREVIEW_HEIGHT
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -72,6 +72,7 @@ fun FullBlockScreen(
 }
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun FullBlockScreenColumnPreviewLight() {
@@ -80,6 +81,7 @@ fun FullBlockScreenColumnPreviewLight() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun FullBlockScreenColumnPreviewDark() {
@@ -88,6 +90,7 @@ fun FullBlockScreenColumnPreviewDark() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun FullBlockScreenRowPreviewLight() {
@@ -96,6 +99,7 @@ fun FullBlockScreenRowPreviewLight() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun FullBlockScreenRowPreviewDark() {

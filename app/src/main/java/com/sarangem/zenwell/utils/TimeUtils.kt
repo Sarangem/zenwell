@@ -7,7 +7,6 @@ import androidx.compose.material3.TimePickerState
 import com.sarangem.zenwell.R
 import java.util.Calendar
 import java.util.Locale
-import kotlin.math.pow
 
 fun getCurrentTimeInMinutes(): Int {
     val calendar = Calendar.getInstance()
@@ -83,12 +82,7 @@ fun getWeekDays(): List<Pair<Int, Int>> {
     else daysList.drop(startIndex) + daysList.take(startIndex)
 }
 
-fun checkIfScheduleEnabled(weekDays: Int): Boolean {
+fun getTodayDay(): Int {
     val calendar = Calendar.getInstance(Locale.getDefault())
-    val today = calendar.get(Calendar.DAY_OF_WEEK)
-    return checkIfScheduleEnabled(weekDays, today)
-}
-
-fun checkIfScheduleEnabled(weekDays: Int, day: Int): Boolean {
-    return ((weekDays / 10.0.pow(day).toInt()) % 10) == 1
+    return calendar.get(Calendar.DAY_OF_WEEK)
 }

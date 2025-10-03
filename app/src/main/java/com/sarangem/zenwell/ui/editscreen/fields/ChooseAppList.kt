@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.ui.editscreen
+package com.sarangem.zenwell.ui.editscreen.fields
 
 import android.content.Context
 import androidx.compose.foundation.Image
@@ -36,11 +36,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.editscreen.details.DetailsCard
 import com.sarangem.zenwell.utils.PackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
 
@@ -181,42 +179,6 @@ fun AppCard(
             checked = checkedValue,
             onCheckedChange = onCheckedChange,
             modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-        )
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun ChooseAppListPreview() {
-    ZenwellTheme {
-        ChooseAppList(
-            checkedAppList = listOf()
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ShowBottomSheetPreview() {
-    var list by remember { mutableStateOf(emptyList<String>()) }
-    val icon = ContextCompat.getDrawable(LocalContext.current, R.drawable.ic_launcher_background)
-    ZenwellTheme {
-        BottomSheetContents(
-            getInstalledApps = { _ ->
-                listOf(
-                    PackageInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
-                    PackageInfo(appName = "Messages", icon = icon, packageName = "messages"),
-                    PackageInfo(appName = "Youtube", icon = icon, packageName = "youtube")
-                )
-            },
-            checkedAppList = list,
-            addAppToList = {
-                list = list.plus(it)
-            },
-            removeAppFromList = {
-                list = list.minus(it)
-            }
         )
     }
 }

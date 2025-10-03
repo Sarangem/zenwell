@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.ui.editscreen
+package com.sarangem.zenwell.ui.editscreen.fields
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,12 +24,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.commonui.ShowConfirmDialog
-import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.common.ShowConfirmDialog
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -116,8 +114,8 @@ fun SaveAndDeleteButton(
         if (checkedDelete) {
             ShowConfirmDialog(
                 icon = Icons.Filled.Delete,
-                headingText = stringResource(R.string.delete),
-                bodyText = stringResource(R.string.delete_confirmation),
+                title = stringResource(R.string.delete),
+                description = stringResource(R.string.delete_confirmation),
                 onDismiss = { checkedDelete = false },
                 onConfirm = {
                     checkedDelete = false
@@ -125,14 +123,5 @@ fun SaveAndDeleteButton(
                 }
             )
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun SaveButtonPreview() {
-    ZenwellTheme {
-        SaveAndDeleteButton()
     }
 }

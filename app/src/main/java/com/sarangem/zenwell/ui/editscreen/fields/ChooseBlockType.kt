@@ -1,9 +1,6 @@
-package com.sarangem.zenwell.ui.editscreen
+package com.sarangem.zenwell.ui.editscreen.fields
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -20,11 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.BlockType
-import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.editscreen.details.DetailsCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,23 +75,6 @@ fun ChooseBlockType(
                     )
                 }
             }
-        }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun ChooseBlockTypePreview() {
-    ZenwellTheme {
-        var blockType by remember { mutableStateOf(BlockType.FullBlock) }
-        Column {
-            Spacer(Modifier.height(10.dp))
-            ChooseBlockType(
-                blockType = blockType,
-                updateUiState = { blockType = it }
-            )
-            Spacer(Modifier.height(250.dp))
         }
     }
 }

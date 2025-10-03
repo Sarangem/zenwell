@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +50,7 @@ import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.AppViewModelProvider
-import com.sarangem.zenwell.ui.commonui.TimerBox
+import com.sarangem.zenwell.ui.common.TimerBox
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.delay
 
@@ -312,6 +313,7 @@ fun FocusScreenPreview() {
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
 fun FocusScreenLightModePreview() {
@@ -320,6 +322,7 @@ fun FocusScreenLightModePreview() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview
 @Composable
 fun FocusScreenDarkModePreview() {

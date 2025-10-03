@@ -49,15 +49,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
-import com.sarangem.zenwell.ui.commonui.ShowConfirmDialog
+import com.sarangem.zenwell.ui.common.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.Orbitron
-import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.getAmPm
 import com.sarangem.zenwell.utils.is24Hour
 import com.sarangem.zenwell.utils.minutesToString
@@ -195,9 +193,7 @@ fun PomodoroStartButton(
     } else {
         Text(
             modifier = modifier,
-            text = if (schedule.startTimeInMinutes == null) {
-                stringResource(R.string.all_day)
-            } else if (is24Hour(context)) {
+            text = if (is24Hour(context)) {
                 minutesToString(
                     schedule.startTimeInMinutes,
                     context
@@ -334,42 +330,5 @@ fun PomodoroTimerControls(
                 )
             }
         }
-    }
-}
-
-
-// PREVIEW
-
-@Preview(showBackground = true)
-@Composable
-fun RegularSchedulesCardPreview() {
-    ZenwellTheme {
-        SchedulesCard(
-            schedule = Schedules(
-                id = 1,
-                title = "Morning Focus",
-                startTimeInMinutes = 9 * 60,
-                endTimeInMinutes = 10 * 60,
-                isPomodoro = false,
-            ),
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PomodoroScheduleCardPreview() {
-    ZenwellTheme {
-        val schedule = Schedules(
-            id = 2,
-            title = "Study Session",
-            isPomodoro = true,
-            pomodoroWorkTimeInMinutes = 1,
-            pomodoroRestTimeInMinutes = 5
-        )
-        SchedulesCard(
-            schedule = schedule,
-            pomodoroWindow = PomodoroWindow(schedule, context = LocalContext.current),
-        )
     }
 }

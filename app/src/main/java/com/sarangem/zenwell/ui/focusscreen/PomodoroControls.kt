@@ -37,7 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.commonui.ShowConfirmDialog
+import com.sarangem.zenwell.ui.common.ShowConfirmDialog
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -83,8 +83,8 @@ fun PomodoroControls(
     if (isSkipChecked) {
         ShowConfirmDialog(
             icon = Icons.Filled.FastForward,
-            headingText = stringResource(R.string.skip_to_next_session),
-            bodyText = stringResource(R.string.skip_to_next_session_description),
+            title = stringResource(R.string.skip_to_next_session),
+            description = stringResource(R.string.skip_to_next_session_description),
             onConfirm = {
                 onSkip()
                 isSkipChecked = false
@@ -98,8 +98,8 @@ fun PomodoroControls(
     if (isStopChecked) {
         ShowConfirmDialog(
             icon = Icons.Filled.Stop,
-            headingText = stringResource(R.string.end),
-            bodyText = stringResource(R.string.do_you_want_to_end_this_session),
+            title = stringResource(R.string.end),
+            description = stringResource(R.string.do_you_want_to_end_this_session),
             onConfirm = onStop,
             onDismiss = { isStopChecked = false }
         )

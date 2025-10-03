@@ -12,15 +12,15 @@ import com.sarangem.zenwell.ui.homescreen.HomeViewModel
 
 object AppViewModelProvider {
 
-    fun CreationExtras.inventoryApplication(): ZenwellApplication =
+    fun CreationExtras.zenwellApplication(): ZenwellApplication =
         (this[AndroidViewModelFactory.APPLICATION_KEY] as ZenwellApplication)
 
     val Factory = viewModelFactory {
         initializer {
-            HomeViewModel(inventoryApplication().container)
+            HomeViewModel(zenwellApplication().container)
         }
         initializer {
-            EditViewModel(inventoryApplication().container)
+            EditViewModel(zenwellApplication().container)
         }
         initializer {
             FocusViewModel()

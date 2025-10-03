@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -206,6 +207,7 @@ fun HomeScreenPreview() {
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreviewLightMode() {
@@ -214,6 +216,7 @@ fun HomeScreenPreviewLightMode() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview
 @Composable
 fun HomeScreenPreviewDarkMode() {

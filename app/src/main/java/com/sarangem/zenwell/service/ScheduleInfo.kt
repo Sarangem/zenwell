@@ -4,9 +4,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.ui.screen.BreathingScreen
-import com.sarangem.zenwell.service.ui.screen.FullBlockScreen
-import com.sarangem.zenwell.service.ui.screen.WaitScreen
+import com.sarangem.zenwell.service.overlay.screens.BreathingScreen
+import com.sarangem.zenwell.service.overlay.screens.FullBlockScreen
+import com.sarangem.zenwell.service.overlay.screens.WaitScreen
+import com.sarangem.zenwell.service.overlay.screens.mathequations.MathEquationScreen
 
 data class ScheduleInfo(
     private val service: AppBlockerService,
@@ -14,13 +15,13 @@ data class ScheduleInfo(
     val appSet: Set<String>,
 ) {
     var pomodoroWindow: PomodoroWindow? = null
-    val blockingWindowList: MutableList<BlockingWindow> = mutableListOf()
+    val overlayWindowList: MutableList<OverlayWindow> = mutableListOf()
 
     init {
         appSet.forEach { appName ->
-            blockingWindowList.add(
+            overlayWindowList.add(
 
-                BlockingWindow(
+                OverlayWindow(
                     service = service,
                     schedule = schedule,
                     appName = appName,
@@ -50,6 +51,21 @@ data class ScheduleInfo(
                                 message = schedule.message
                             )
 
+                            BlockType.MathEquation -> MathEquationScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                onTimerEnd = onTimerEnd,
+                                minOperandDigits = schedule.mathEquationMinNumber,
+                                maxOperandDigits = schedule.mathEquationMaxNumber,
+                                minOperandDigitsInMultiplication = schedule.mathEquationMinNumberInMultiplication,
+                                maxOperandDigitsInMultiplication = schedule.mathEquationMaxNumberInMultiplication,
+                                numOperands = schedule.mathEquationNumOperands,
+                                allowedMathOperators = schedule.allowedMathOperators,
+                                showParentheses = schedule.mathEquationShowParentheses,
+                                allowNegatives = schedule.mathEquationAllowNegatives,
+                                showOpenDialog = schedule.waitEnterButton,
+                                message = schedule.message
+                            )
+
                             else -> {}
 
                         }
@@ -59,10 +75,10 @@ data class ScheduleInfo(
             )
         }
 
-        pomodoroWindow = if (schedule.isPomodoro){
+        pomodoroWindow = if (schedule.isPomodoro) {
             PomodoroWindow(
                 schedule = schedule,
-                blockingWindowList = blockingWindowList,
+                overlayWindowList = overlayWindowList,
                 context = service,
                 recheckApp = { service.recheckApp() }
             )

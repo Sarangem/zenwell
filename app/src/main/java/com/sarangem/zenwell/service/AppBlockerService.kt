@@ -9,9 +9,9 @@ import android.view.accessibility.AccessibilityWindowInfo
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.data.NotificationChannels
 import com.sarangem.zenwell.utils.ServiceLogger
-import com.sarangem.zenwell.utils.checkIfScheduleEnabled
 import com.sarangem.zenwell.utils.deleteNotificationByChannel
 import com.sarangem.zenwell.utils.getCurrentTimeInMinutes
+import com.sarangem.zenwell.utils.getTodayDay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -61,7 +61,7 @@ class AppBlockerService : AccessibilityService() {
     }
 
     var previousApp = listOf<CharSequence>()
-    val openedWindows = mutableListOf<BlockingWindow>()
+    val openedWindows = mutableListOf<OverlayWindow>()
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
         // get list of application windows
@@ -98,15 +98,13 @@ class AppBlockerService : AccessibilityService() {
             for (scheduleInfo in scheduleInfoList) {
 
                 if (!scheduleInfo.schedule.isEnabled) continue
-                if (!checkIfScheduleEnabled(scheduleInfo.schedule.weekDays)) continue
-                if(scheduleInfo.schedule.startTimeInMinutes != null){
-                    if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes!!..scheduleInfo.schedule.endTimeInMinutes) continue
-                }
+                if (getTodayDay() !in scheduleInfo.schedule.weekDays) continue
+                if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
 
                 if (currentApp in scheduleInfo.appSet) {
 
                     val blockingWindow =
-                        scheduleInfo.blockingWindowList.firstOrNull { it.appName == currentApp }
+                        scheduleInfo.overlayWindowList.firstOrNull { it.appName == currentApp }
                             ?: continue
                     ServiceLogger.i { "Opening window for schedule ${scheduleInfo.schedule.id} and ${blockingWindow.appName}" }
                     blockingWindow.open(windowBounds)
@@ -144,7 +142,7 @@ class AppBlockerService : AccessibilityService() {
 
     override fun onInterrupt() {
         scheduleInfoList.forEach { scheduleInfo ->
-            scheduleInfo.blockingWindowList.forEach { blockingWindow ->
+            scheduleInfo.overlayWindowList.forEach { blockingWindow ->
                 blockingWindow.close()
             }
         }
