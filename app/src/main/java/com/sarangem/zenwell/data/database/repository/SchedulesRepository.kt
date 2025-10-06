@@ -1,5 +1,6 @@
 package com.sarangem.zenwell.data.database.repository
 
+import com.sarangem.zenwell.data.BackupData
 import com.sarangem.zenwell.data.database.tables.Schedules
 import kotlinx.coroutines.flow.Flow
 
@@ -16,4 +17,6 @@ interface SchedulesRepository {
         appNames: List<String>,
         pastAppList: List<String>
     )
+    suspend fun getAllData(): BackupData
+    suspend fun restoreAllData(data: BackupData)
 }

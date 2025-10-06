@@ -7,8 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.AppViewModelProvider
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.areNotificationsEnabled
@@ -45,6 +50,7 @@ fun HomeScreen(
     notificationPermission: (Context) -> Boolean = { areNotificationsEnabled(it) },
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
+    openSettingsScreen: () -> Unit = {}
 ) {
     val viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val homeUiState by viewModel.uiState.collectAsState()
@@ -61,6 +67,14 @@ fun HomeScreen(
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
+                actions = {
+                    IconButton(onClick = openSettingsScreen) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = stringResource(R.string.settings)
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -97,6 +111,7 @@ fun HomeScreenBody(
     requestNotification: () -> Unit = {},
     accessibilityPermission: () -> Boolean,
     notificationPermission: (Context) -> Boolean,
+    pomodoroWindow: PomodoroWindow? = null
 ) {
     val context = LocalContext.current
     var filter by rememberSaveable { mutableStateOf(SchedulesFilter.All) }
@@ -169,6 +184,8 @@ fun HomeScreenBody(
                     isClicked = schedule.id == scheduleClicked,
                     openEditScreen = openEditScreen,
                     openFocusScreen = openFocusScreen,
+                    pomodoroWindow = pomodoroWindow
+                        ?: AppBlockerService.instance?.getPomodoroWindow(schedule.id),
                 )
             }
         }
@@ -203,7 +220,8 @@ fun HomeScreenPreview() {
         ),
         scheduleClicked = 1,
         accessibilityPermission = { false },
-        notificationPermission = { false }
+        notificationPermission = { false },
+        pomodoroWindow = PomodoroWindow(schedule = Schedules(), context = LocalContext.current)
     )
 }
 

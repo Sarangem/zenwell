@@ -5,7 +5,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Index
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity(
     tableName = "blocked_apps",
     foreignKeys = [
@@ -13,11 +15,13 @@ import androidx.room.Index
             entity = Schedules::class,
             parentColumns = ["id"],
             childColumns = ["schedule_id"],
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = AppNames::class,
             parentColumns = ["id"],
-            childColumns = ["app_id"]
+            childColumns = ["app_id"],
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [

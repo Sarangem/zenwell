@@ -52,7 +52,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.common.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.Orbitron
@@ -67,7 +66,7 @@ fun SchedulesCard(
     modifier: Modifier = Modifier,
     schedule: Schedules,
     isClicked: Boolean = false,
-    pomodoroWindow: PomodoroWindow? = AppBlockerService.instance?.getPomodoroWindow(schedule.id),
+    pomodoroWindow: PomodoroWindow?,
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
 ) {
@@ -79,7 +78,10 @@ fun SchedulesCard(
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
     } else {
-        CardDefaults.cardColors()
+        CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        )
     }
 
     var isPomodoroActive by rememberSaveable {
@@ -286,8 +288,8 @@ fun PomodoroTimerControls(
             if(isStopClicked){
                 ShowConfirmDialog(
                     icon = Icons.Filled.Stop,
-                    headingText = stringResource(R.string.end),
-                    bodyText = stringResource(R.string.do_you_want_to_end_this_session),
+                    title = stringResource(R.string.end),
+                    description = stringResource(R.string.do_you_want_to_end_this_session),
                     onConfirm = {
                         pomodoroWindow.onPomodoroEnd()
                         updatePomodoroActivity(false)

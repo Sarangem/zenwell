@@ -3,6 +3,7 @@ package com.sarangem.zenwell.data.database
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.sarangem.zenwell.data.database.tables.AppNames
@@ -22,8 +23,11 @@ interface ScheduleDao {
     @Query("SELECT COUNT(*) FROM schedules")
     fun getSchedulesCount(): Flow<Int>
 
-    @Query("SELECT * FROM app_names")
+    @Query("SELECT * FROM app_names ORDER BY title")
     fun getAllApps(): Flow<List<AppNames>>
+
+    @Query("SELECT * FROM blocked_apps")
+    fun getAllAppRelations(): Flow<List<BlockedApps>>
 
     @Query("SELECT id FROM app_names WHERE title=:appName")
     fun getAppId(appName: String): Flow<Int>
@@ -44,14 +48,14 @@ interface ScheduleDao {
     fun getAppRelationByScheduleId(scheduleId: Int): Flow<List<BlockedApps>>
 
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAppNames(appNames: AppNames)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAppRelation(blockedApps: BlockedApps)
 
-    @Insert
-    fun addNewSchedule(schedules: Schedules): Long
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertSchedule(schedules: Schedules): Long
 
     @Update
     fun updateSchedule(schedules: Schedules)
@@ -59,10 +63,16 @@ interface ScheduleDao {
 
     @Delete
     fun deleteSchedule(schedules: Schedules)
+    
+    @Query("DELETE from schedules")
+    fun deleteAllSchedules()
 
     @Delete
     fun deleteAppNames(appNames: AppNames)
+    
+    @Query("DELETE from app_names")
+    fun deleteAllAppNames()
 
-    @Delete
-    fun deleteAppRelation(blockedApps: BlockedApps)
+    @Query("DELETE from blocked_apps")
+    fun deleteAllAppRelations()
 }

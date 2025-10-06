@@ -31,11 +31,13 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.data.FocusPage
 import com.sarangem.zenwell.data.HomePage
+import com.sarangem.zenwell.data.SettingsPage
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.editscreen.EditScreen
 import com.sarangem.zenwell.ui.editscreen.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.focusscreen.FocusScreen
 import com.sarangem.zenwell.ui.homescreen.HomeScreen
+import com.sarangem.zenwell.ui.settingsscreen.SettingsScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -65,6 +67,9 @@ fun ZenwellAppScreen() {
                         modifier = Modifier.fillMaxSize(),
                         openFocusScreen = {
                             backStack.add(FocusPage(it))
+                        },
+                        openSettingsScreen = {
+                            backStack.add(SettingsPage)
                         }
                     )
                 }
@@ -99,6 +104,15 @@ fun ZenwellAppScreen() {
                     )
                 }
 
+                is SettingsPage -> NavEntry(key){
+                    SettingsScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        goBack = {
+                            backStack.removeLastOrNull()
+                        }
+                    )
+                }
+
                 else -> {
                     error("Unknown route: $key")
                 }
@@ -113,7 +127,8 @@ fun ZenwellAppScreen() {
 @Composable
 fun ListDetailScreen(
     modifier: Modifier = Modifier,
-    openFocusScreen: (Schedules) -> Unit = {}
+    openFocusScreen: (Schedules) -> Unit = {},
+    openSettingsScreen: () -> Unit = {}
 ) {
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -154,7 +169,8 @@ fun ListDetailScreen(
                             )
                         }
                     },
-                    openFocusScreen = openFocusScreen
+                    openFocusScreen = openFocusScreen,
+                    openSettingsScreen = openSettingsScreen
                 )
             }
         },

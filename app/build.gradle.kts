@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.androidx.compose.adaptive.navigation)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.kotlin.serialization.json)
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)

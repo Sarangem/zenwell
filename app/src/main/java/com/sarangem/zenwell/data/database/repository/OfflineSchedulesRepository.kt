@@ -1,5 +1,6 @@
 package com.sarangem.zenwell.data.database.repository
 
+import com.sarangem.zenwell.data.BackupData
 import com.sarangem.zenwell.data.database.ScheduleDao
 import com.sarangem.zenwell.data.database.tables.AppNames
 import com.sarangem.zenwell.data.database.tables.BlockedApps
@@ -14,8 +15,32 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
     override fun getScheduleInfoById(id: Int): Flow<Schedules> = scheduleDao.getScheduleInfoById(id)
     override fun getSchedulesCount(): Flow<Int> = scheduleDao.getSchedulesCount()
     override fun getAppNames(id: Int): Flow<List<String>> = scheduleDao.getAppNames(id)
-    override suspend fun addNewSchedule(schedule: Schedules): Int = scheduleDao.addNewSchedule(schedule).toInt()
+    override suspend fun addNewSchedule(schedule: Schedules): Int = scheduleDao.insertSchedule(schedule).toInt()
     override suspend fun updateSchedule(schedule: Schedules) = scheduleDao.updateSchedule(schedule)
+
+    override suspend fun getAllData(): BackupData {
+        return BackupData(
+            schedulesList = scheduleDao.getAllSchedules().first().sortedBy { it.id },
+            appNamesList = scheduleDao.getAllApps().first(),
+            blockedAppsList = scheduleDao.getAllAppRelations().first()
+        )
+    }
+
+    override suspend fun restoreAllData(data: BackupData) {
+        scheduleDao.deleteAllSchedules()
+        data.schedulesList.forEach { 
+            scheduleDao.insertSchedule(it)
+        }
+        scheduleDao.deleteAllAppNames()
+        data.appNamesList.forEach { 
+            scheduleDao.insertAppNames(it)
+        }
+        scheduleDao.deleteAllAppRelations()
+        data.blockedAppsList.forEach { 
+            scheduleDao.insertAppRelation(it)
+        }
+        removeAppNameIfUnused()
+    }
 
     override suspend fun saveToDatabase(
         schedule: Schedules,
@@ -31,10 +56,10 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
             if (app !in pastAppSet) {
 
                 // insert new app name
-                this.insertAppNameIfNotExists(
-                    app = app,
-                    id = scheduleDao.getAppId(app).firstOrNull()
-                )
+                val appId = scheduleDao.getAppId(app).firstOrNull()
+                if (appId == null || appId == 0) { // it does not exist in table
+                    scheduleDao.insertAppNames(AppNames(title = app))
+                }
 
                 // insert app to schedule relation
                 scheduleDao.insertAppRelation(
@@ -49,40 +74,18 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
             }
 
         }
-
-        for (pastApp in pastAppSet) {
-
-            // remove unnecessary schedule relations
-            val appId = scheduleDao.getAppId(pastApp).firstOrNull() ?: 0
-            scheduleDao.deleteAppRelation(
-                scheduleDao.getAppRelation(appId = appId, scheduleId = schedule.id).firstOrNull() ?: BlockedApps()
-            )
-
-        }
-
-        this.removeAppNameIfUnused()
+        removeAppNameIfUnused()
     }
 
     override suspend fun deleteSchedule(schedule: Schedules) {
-        scheduleDao.getAppRelationByScheduleId(schedule.id).first().forEach { blockedApps ->
-            scheduleDao.deleteAppRelation(blockedApps)
-        }
-        this.removeAppNameIfUnused()
         scheduleDao.deleteSchedule(schedule)
-    }
-
-    private fun insertAppNameIfNotExists(app: String, id: Int?) {
-        if (id == null || id == 0) { // it does not exist in table
-            scheduleDao.insertAppNames(AppNames(title = app))
-        }
+        removeAppNameIfUnused()
     }
 
     private suspend fun removeAppNameIfUnused() {
         val appIds = scheduleDao.getAllApps().first()
         for (app in appIds) {
-            if (scheduleDao.getAppRelationByAppId(app.id).first()
-                    .isEmpty()
-            ) { // app is not referenced
+            if (scheduleDao.getAppRelationByAppId(app.id).first().isEmpty()) { // app is not referenced
                 scheduleDao.deleteAppNames(app)
             }
         }

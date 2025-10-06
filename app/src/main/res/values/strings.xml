@@ -79,7 +79,6 @@
     <string name="pomodoro_timer">Pomodoro timer</string>
     <string name="work_time_notification">" (Work) "</string>
     <string name="rest_time_notification">" (Rest) "</string>
-    <string name="all_day">All day</string>
     <string name="skip">Skip</string>
     <string name="actions_to_show_in_work_time">Actions to show in Work Time</string>
     <string name="pause_resume">Pause/ Resume</string>
@@ -108,4 +107,14 @@
     <string name="show_parentheses">Show Parentheses</string>
     <string name="must_be_2_or_greater">Must be 2 or greater</string>
     <string name="select_at_least_one_operator">Select at least one operator</string>
+    <string name="settings">Settings</string>
+    <string name="backup_completed">Backup completed</string>
+    <string name="backup_failed">Backup failed.</string>
+    <string name="export_data">Export Data</string>
+    <string name="export_data_description">Save app data for restoring later.</string>
+    <string name="restore_data">Restore Data</string>
+    <string name="restore_data_description">Restore app data with previously exported file.</string>
+    <string name="restore_data_dialog_description">Restoring data will delete your existing app data to replace with app data in the file. Do you want to continue?</string>
+    <string name="data_restore_failed">Data restore failed.</string>
+    <string name="data_restore_completed">Data restore completed.</string>
 </resources>
