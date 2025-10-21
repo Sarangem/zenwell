@@ -80,12 +80,11 @@ fun MessageCard(
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun TimerMessageCard(
+fun OpenableMessageCard(
     modifier: Modifier = Modifier,
     showOpenDialog: Boolean = false,
     showOpen: Boolean = false,

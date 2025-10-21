@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,7 +20,6 @@ import androidx.compose.material3.MaterialShapes.Companion.Sunny
 import androidx.compose.material3.MaterialShapes.Companion.VerySunny
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,14 +38,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.graphics.shapes.Morph
-import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.service.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.service.overlay.common.EXPANDED_WIDTH
 import com.sarangem.zenwell.service.overlay.common.MEDIUM_WIDTH
 import com.sarangem.zenwell.service.overlay.common.MorphPolygonShape
+import com.sarangem.zenwell.service.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.service.overlay.common.PREVIEW_HEIGHT
-import com.sarangem.zenwell.service.overlay.common.TimerMessageCard
 import com.sarangem.zenwell.ui.theme.Purple2
 import com.sarangem.zenwell.ui.theme.Purple3
 import com.sarangem.zenwell.ui.theme.Yellow3
@@ -65,54 +62,23 @@ fun BreathingScreen(
 ) {
     var showOpen by remember { mutableStateOf(false) }
 
-    val breathingCard: @Composable (Modifier) -> Unit = { modifier ->
-        BreathingCard(
-            modifier = modifier,
-            onTimerEnd = { showOpen = true },
-            breathingCycleDuration = breathingCycleDuration,
-            breathingCycleNumber = breathingCycleNumber
-        )
-    }
-    val messageCard: @Composable (Modifier) -> Unit = { modifier ->
-        TimerMessageCard(
-            modifier = modifier,
-            showOpenDialog = showOpenDialog,
-            showOpen = showOpen,
-            message = message,
-            onTimerEnd = onTimerEnd,
-        )
-    }
-
-    if (currentWindowAdaptiveInfo()
-            .windowSizeClass
-            .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
-    ) {
-        Row(
-            modifier = modifier
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(dimensionResource(R.dimen.padding_small)),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            breathingCard(Modifier.weight(0.6f))
-            messageCard(
-                Modifier
-                    .weight(0.4f)
-                    .padding(dimensionResource(R.dimen.padding_small))
+    OverlayScaffold(
+        mainPane = { modifier ->
+            BreathingCard(
+                modifier = modifier,
+                onTimerEnd = { showOpen = true },
+                breathingCycleDuration = breathingCycleDuration,
+                breathingCycleNumber = breathingCycleNumber
             )
-        }
-    } else {
-        Column(
-            modifier = modifier
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(dimensionResource(R.dimen.padding_small)),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            breathingCard(Modifier.weight(0.7f))
-            messageCard(Modifier.weight(0.3f))
-        }
-    }
+        },
+        mainPaneRowWeight = 0.6f,
+        mainPaneColumnWeight = 0.7f,
+        showOpenDialog = showOpenDialog,
+        showOpen = showOpen,
+        message = message,
+        onTimerEnd = onTimerEnd,
+        modifier = modifier.fillMaxSize()
+    )
 }
 
 

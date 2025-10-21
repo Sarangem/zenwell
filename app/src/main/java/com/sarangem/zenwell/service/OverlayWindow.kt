@@ -76,10 +76,10 @@ class OverlayWindow(
             // set the layoutParams according to bound
             layoutParams?.apply {
                 type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-                flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 format = PixelFormat.TRANSLUCENT
                 gravity = Gravity.TOP or Gravity.START
-                height = bounds.height() - (56 * service.resources.displayMetrics.density.toInt())
+                height = bounds.height()
                 width = bounds.width()
                 x = bounds.left
                 y = bounds.top
