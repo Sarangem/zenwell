@@ -74,6 +74,14 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
             }
 
         }
+
+        for (app in pastAppSet) {
+            scheduleDao.deleteAppRelation(
+                scheduleId = schedule.id,
+                appId = scheduleDao.getAppId(app).firstOrNull() ?: 0
+            )
+        }
+
         removeAppNameIfUnused()
     }
 

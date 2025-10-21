@@ -46,7 +46,6 @@ import com.sarangem.zenwell.utils.getInstalledApps
 @Composable
 fun ChooseAppList(
     modifier: Modifier = Modifier,
-    setAppNamesInUiState: () -> Unit = {},
     checkedAppList: List<String>?,
     updateAppList: (List<String>) -> Unit = {}
 ) {
@@ -78,7 +77,6 @@ fun ChooseAppList(
         ) {
             BottomSheetContents(
                 getInstalledApps = { getInstalledApps(it) },
-                setAppNamesInUiState = setAppNamesInUiState,
                 checkedAppList = checkedAppList,
                 addAppToList = {
                     if (checkedAppList != null) updateAppList(checkedAppList.plus(it))
@@ -97,7 +95,6 @@ fun ChooseAppList(
 fun BottomSheetContents(
     modifier: Modifier = Modifier,
     getInstalledApps: (Context) -> List<PackageInfo>,
-    setAppNamesInUiState: () -> Unit = {},
     checkedAppList: List<String>?,
     addAppToList: (String) -> Unit = {},
     removeAppFromList: (String) -> Unit = {}
@@ -107,9 +104,7 @@ fun BottomSheetContents(
     var installedAppList by remember { mutableStateOf<List<PackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {
         installedAppList = getInstalledApps(context).sortedBy { it.appName }
-        setAppNamesInUiState()
     }
-
 
     if (installedAppList.isEmpty() || checkedAppList == null) {
         LoadingIndicator(

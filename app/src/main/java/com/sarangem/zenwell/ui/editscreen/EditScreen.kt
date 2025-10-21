@@ -42,7 +42,15 @@ fun EditScreen(
     val viewModel: EditViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(schedule) {
-        viewModel.updateUiState(EditUiState(schedule = schedule))
+        launch(Dispatchers.IO) {
+
+            val appNames = viewModel.getAppNames(schedule.id)
+            withContext(Dispatchers.Main) {
+                viewModel.updateUiState(EditUiState(schedule, appNames))
+            }
+            viewModel.pastAppList = appNames
+
+        }
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -122,7 +130,6 @@ fun EditScreen(
                     )
                 )
             },
-            setAppNamesInUiState = { viewModel.setAppNamesInUiState() },
             isSaving = isSaving
         )
 

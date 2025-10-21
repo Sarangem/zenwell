@@ -44,7 +44,6 @@ fun EditScreenBody(
     uiState: EditUiState,
     updateSchedule: (Schedules) -> Unit = {},
     updateAppList: (List<String>) -> Unit = {},
-    setAppNamesInUiState: () -> Unit = {},
     isSaving: Boolean = false,
 ) {
 
@@ -102,8 +101,7 @@ fun EditScreenBody(
 
         ChooseAppList(
             checkedAppList = uiState.appNames,
-            updateAppList = updateAppList,
-            setAppNamesInUiState = setAppNamesInUiState
+            updateAppList = updateAppList
         )
 
         if (!uiState.schedule.isPomodoro) {

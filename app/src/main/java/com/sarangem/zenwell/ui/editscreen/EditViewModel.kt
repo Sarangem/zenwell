@@ -1,16 +1,13 @@
 package com.sarangem.zenwell.ui.editscreen
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.data.database.repository.SchedulesRepository
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 data class EditUiState(
     val schedule: Schedules = Schedules(),
@@ -23,7 +20,7 @@ class EditViewModel(private val schedulesRepository: SchedulesRepository) : View
     private val _uiState = MutableStateFlow(EditUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun getAppNames(id: Int) = schedulesRepository.getAppNames(id)
+    suspend fun getAppNames(id: Int) = schedulesRepository.getAppNames(id).first()
 
     var pastAppList: List<String>? = null
 
@@ -35,20 +32,8 @@ class EditViewModel(private val schedulesRepository: SchedulesRepository) : View
         }
     }
 
-    fun setAppNamesInUiState() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val appNames = getAppNames(_uiState.value.schedule.id).first()
-            updateUiState(
-                _uiState.value.copy(
-                    appNames = appNames
-                )
-            )
-            pastAppList = appNames
-        }
-    }
-
     suspend fun saveToDatabase() {
-        val appNames = _uiState.value.appNames ?: getAppNames(_uiState.value.schedule.id).first()
+        val appNames = _uiState.value.appNames ?: getAppNames(_uiState.value.schedule.id)
         schedulesRepository.saveToDatabase(
             schedule = _uiState.value.schedule,
             appNames = appNames,

@@ -38,9 +38,6 @@ interface ScheduleDao {
         )""")
     fun getAppNames(id: Int): Flow<List<String>>
 
-    @Query("SELECT * FROM blocked_apps WHERE app_id=:appId AND schedule_id=:scheduleId")
-    fun getAppRelation(appId: Int, scheduleId: Int): Flow<BlockedApps>
-
     @Query("SELECT id FROM blocked_apps WHERE app_id=:appId")
     fun getAppRelationByAppId(appId: Int): Flow<List<Int>>
 
@@ -72,6 +69,9 @@ interface ScheduleDao {
     
     @Query("DELETE from app_names")
     fun deleteAllAppNames()
+
+    @Query("DELETE from blocked_apps WHERE schedule_id=:scheduleId AND app_id=:appId")
+    fun deleteAppRelation(scheduleId: Int, appId: Int)
 
     @Query("DELETE from blocked_apps")
     fun deleteAllAppRelations()
