@@ -121,7 +121,7 @@ fun QuestionCard(
             }
         }
 
-        HorizontalDivider(thickness = dimensionResource(R.dimen.card_elevation))
+        HorizontalDivider(thickness = dimensionResource(R.dimen.horizontal_divider_thickness))
 
         Spacer(Modifier.size(dimensionResource(R.dimen.image_size)))
         Row(Modifier.horizontalScroll(rememberScrollState())) {

@@ -3,7 +3,9 @@ package com.sarangem.zenwell.ui.homescreen
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -188,6 +190,10 @@ fun HomeScreenBody(
                         ?: AppBlockerService.instance?.getPomodoroWindow(schedule.id),
                 )
             }
+        }
+
+        item {
+            Spacer(Modifier.height(dimensionResource(R.dimen.floating_action_button_height)))
         }
     }
 }

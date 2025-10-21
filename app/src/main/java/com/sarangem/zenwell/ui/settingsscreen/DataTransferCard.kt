@@ -165,7 +165,7 @@ fun DataTransferCardBody(
         modifier = modifier
             .padding(dimensionResource(R.dimen.padding_small))
             .clip(MaterialTheme.shapes.medium),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_elevation))
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
     ) {
         DataTransferActionCard(
             modifier = Modifier.fillMaxWidth(),

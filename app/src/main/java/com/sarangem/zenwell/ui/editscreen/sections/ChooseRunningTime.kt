@@ -14,11 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.editscreen.ValidationError
 import com.sarangem.zenwell.ui.editscreen.fields.ClockButton
 import com.sarangem.zenwell.ui.editscreen.fields.SelectWeekDays
+import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -30,6 +32,11 @@ fun ChooseRunningTime(
 ) {
     Card(modifier = modifier.padding(dimensionResource(R.dimen.padding_small))) {
 
+        Text(
+            text = stringResource(R.string.choose_running_time),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+        )
 
         Row(
             modifier = Modifier.padding(
@@ -49,7 +56,7 @@ fun ChooseRunningTime(
                         )
                     )
                 },
-                timePickerTitle = "Choose Start Time",
+                timePickerTitle = stringResource(R.string.choose_start_time),
                 modifier = Modifier.weight(1f)
             )
 
@@ -68,7 +75,7 @@ fun ChooseRunningTime(
                         )
                     )
                 },
-                timePickerTitle = "Choose End Time",
+                timePickerTitle = stringResource(R.string.choose_end_time),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -109,5 +116,17 @@ fun ChooseRunningTime(
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Preview(showBackground = true)
+@Composable
+fun ChooseRunningTimeLightPreview() {
+    ZenwellTheme {
+        ChooseRunningTime(
+            schedule = Schedules(),
+            validationError = setOf(ValidationError.RunningTime)
+        )
     }
 }

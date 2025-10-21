@@ -23,8 +23,8 @@ fun TimerBox(
     modifier: Modifier = Modifier,
     progress: Float = 1f,
     backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    strokeColor: Color =  MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-    trackColor: Color =  MaterialTheme.colorScheme.primary,
+    strokeColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+    trackColor: Color = MaterialTheme.colorScheme.primary,
     cornerRadiusInDp: Dp = dimensionResource(R.dimen.padding_large),
     strokeWidthInDp: Dp = dimensionResource(R.dimen.padding_large),
     content: @Composable () -> Unit = {}

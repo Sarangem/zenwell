@@ -2,7 +2,6 @@ package com.sarangem.zenwell.ui.editscreen.fields
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +26,7 @@ fun SelectWeekDays(
 
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
     ) {
         daysList.forEachIndexed { index, (day, abbr) ->
 
@@ -57,9 +56,7 @@ fun SelectWeekDays(
                     checkedContainerColor = MaterialTheme.colorScheme.primary,
                     checkedContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
-                modifier = Modifier
-                    .padding(dimensionResource(R.dimen.card_elevation))
-                    .weight(1f)
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = stringResource(abbr),

@@ -117,4 +117,7 @@
     <string name="restore_data_dialog_description">Restoring data will delete your existing app data to replace with app data in the file. Do you want to continue?</string>
     <string name="data_restore_failed">Data restore failed.</string>
     <string name="data_restore_completed">Data restore completed.</string>
+    <string name="choose_running_time">Running time</string>
+    <string name="choose_start_time">Choose Start Time</string>
+    <string name="choose_end_time">Choose End Time</string>
 </resources>

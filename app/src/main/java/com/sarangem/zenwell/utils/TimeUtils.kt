@@ -23,7 +23,7 @@ fun minutesToString(num: Int, context: Context): String {
     val is24Hour = is24Hour(context)
 
     var hours: Int = num / 60
-    if(is24Hour) {
+    if(!is24Hour) {
         hours = if (hours <= 12) hours else (hours - 12)
         hours = if (hours == 0) 12 else hours
     }

@@ -19,22 +19,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.service.overlay.common.APP_BLOCKED
-import com.sarangem.zenwell.ui.editscreen.sections.BreathingDetailsSection
-import com.sarangem.zenwell.ui.editscreen.sections.WaitDetailsSection
 import com.sarangem.zenwell.ui.editscreen.details.DetailsCardColumn
 import com.sarangem.zenwell.ui.editscreen.details.DetailsCardWithNumberField
 import com.sarangem.zenwell.ui.editscreen.details.DetailsCardWithSwitch
 import com.sarangem.zenwell.ui.editscreen.details.DetailsCardWithTextField
 import com.sarangem.zenwell.ui.editscreen.fields.ChooseAppList
 import com.sarangem.zenwell.ui.editscreen.fields.ChooseBlockType
+import com.sarangem.zenwell.ui.editscreen.sections.BreathingDetailsSection
 import com.sarangem.zenwell.ui.editscreen.sections.ChooseRunningTime
 import com.sarangem.zenwell.ui.editscreen.sections.MathEquationDetailsSection
 import com.sarangem.zenwell.ui.editscreen.sections.PomodoroDetailsSection
+import com.sarangem.zenwell.ui.editscreen.sections.WaitDetailsSection
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -122,7 +121,7 @@ fun EditScreenBody(
                 AnimatedContent(
                     targetState = uiState.schedule.blockType
                 ) { blockType ->
-                    Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_elevation))) {
+                    Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))) {
 
                         if (blockType == BlockType.Wait) {
                             // wait time
@@ -185,7 +184,7 @@ fun EditScreenBody(
             )
         }
 
-        Spacer(Modifier.height(84.dp))
+        Spacer(Modifier.height(dimensionResource(R.dimen.floating_action_button_height)))
 
     }
 

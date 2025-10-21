@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,9 +38,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.editscreen.details.DetailsCard
+import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.PackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
 
@@ -121,6 +126,7 @@ fun BottomSheetContents(
             modifier = modifier
                 .padding(dimensionResource(R.dimen.padding_small))
                 .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_large))),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
         ) {
             items(installedAppList) { app ->
                 AppCard(
@@ -133,9 +139,7 @@ fun BottomSheetContents(
                             removeAppFromList(app.packageName)
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(R.dimen.card_elevation))
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -154,7 +158,7 @@ fun AppCard(
         modifier = modifier.background(MaterialTheme.colorScheme.surfaceDim),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(Modifier.padding(dimensionResource(R.dimen.card_elevation)))
+        Spacer(Modifier.width(dimensionResource(R.dimen.padding_small)))
         Image(
             painter = rememberDrawablePainter(app.icon),
             contentDescription = null,
@@ -174,6 +178,25 @@ fun AppCard(
             checked = checkedValue,
             onCheckedChange = onCheckedChange,
             modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Preview(showBackground = true)
+@Composable
+fun ShowBottomSheetPreview() {
+    val icon = ContextCompat.getDrawable(LocalContext.current, R.drawable.ic_launcher_background)
+    ZenwellTheme {
+        BottomSheetContents(
+            getInstalledApps = { _ ->
+                listOf(
+                    PackageInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
+                    PackageInfo(appName = "Messages", icon = icon, packageName = "messages"),
+                    PackageInfo(appName = "Youtube", icon = icon, packageName = "youtube")
+                )
+            },
+            checkedAppList = listOf()
         )
     }
 }
