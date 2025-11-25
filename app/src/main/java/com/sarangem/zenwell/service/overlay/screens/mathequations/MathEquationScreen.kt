@@ -1,11 +1,10 @@
 package com.sarangem.zenwell.service.overlay.screens.mathequations
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -83,6 +82,7 @@ fun MathEquationScreen(
 }
 
 enum class MathEquationAnswerState { UNCHECKED, ERROR, CORRECT }
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MathEquationCard(
@@ -93,51 +93,56 @@ fun MathEquationCard(
     var answer by remember { mutableIntStateOf(0) }
     var answerState by remember { mutableStateOf(MathEquationAnswerState.UNCHECKED) }
 
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center
-    ) {
-        QuestionCard(question = question)
-        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
+    Column(modifier = modifier) {
+        QuestionCard(
+            question = question,
+            modifier = Modifier.animateContentSize()
+        )
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = answer.toString(),
-            onValueChange = {},
-            shape = MaterialTheme.shapes.medium,
-            label = {
-                Text(
-                    text = when (answerState) {
-                        MathEquationAnswerState.UNCHECKED -> stringResource(R.string.enter_your_answer)
-                        MathEquationAnswerState.ERROR -> stringResource(R.string.wrong_answer)
-                        else -> stringResource(R.string.correct_answer)
+        Spacer(Modifier.weight(1f))
+
+        Column {
+            OutlinedTextField(
+                modifier = Modifier
+                    .padding(top = dimensionResource(R.dimen.padding_medium))
+                    .fillMaxWidth(),
+                value = answer.toString(),
+                onValueChange = {},
+                shape = MaterialTheme.shapes.medium,
+                label = {
+                    Text(
+                        text = when (answerState) {
+                            MathEquationAnswerState.UNCHECKED -> stringResource(R.string.enter_your_answer)
+                            MathEquationAnswerState.ERROR -> stringResource(R.string.wrong_answer)
+                            else -> stringResource(R.string.correct_answer)
+                        }
+                    )
+                },
+                singleLine = true,
+                isError = answerState != MathEquationAnswerState.UNCHECKED,
+                colors = OutlinedTextFieldDefaults.colors(
+                    errorBorderColor = if (answerState == MathEquationAnswerState.ERROR) Red5 else Green3,
+                    errorLabelColor = if (answerState == MathEquationAnswerState.ERROR) Red5 else Green5
+                ),
+                textStyle = MaterialTheme.typography.titleLarge,
+            )
+
+            KeypadCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = dimensionResource(R.dimen.padding_small)),
+                value = answer,
+                onValueChange = { answer = it },
+                onEnter = {
+                    if (answer == question.answer) {
+                        answerState = MathEquationAnswerState.CORRECT
+                        onCorrectAnswer()
+                    } else {
+                        answerState = MathEquationAnswerState.ERROR
                     }
-                )
-            },
-            singleLine = true,
-            isError = answerState != MathEquationAnswerState.UNCHECKED,
-            colors = OutlinedTextFieldDefaults.colors(
-                errorBorderColor = if (answerState == MathEquationAnswerState.ERROR) Red5 else Green3,
-                errorLabelColor = if (answerState == MathEquationAnswerState.ERROR) Red5 else Green5
-            ),
-            textStyle = MaterialTheme.typography.titleLarge,
-        )
-
-        KeypadCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = dimensionResource(R.dimen.padding_small)),
-            value = answer,
-            onValueChange = { answer = it },
-            onEnter = {
-                if (answer == question.answer) {
-                    answerState = MathEquationAnswerState.CORRECT
-                    onCorrectAnswer()
-                } else {
-                    answerState = MathEquationAnswerState.ERROR
                 }
-            }
-        )
+            )
+        }
     }
 }
 

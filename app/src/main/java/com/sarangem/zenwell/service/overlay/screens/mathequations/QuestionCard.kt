@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
@@ -39,6 +38,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.Orbitron
 import kotlinx.coroutines.launch
@@ -123,7 +123,6 @@ fun QuestionCard(
 
         HorizontalDivider(thickness = dimensionResource(R.dimen.horizontal_divider_thickness))
 
-        Spacer(Modifier.size(dimensionResource(R.dimen.image_size)))
         Row(Modifier.horizontalScroll(rememberScrollState())) {
             Text(
                 text = if (isExpanded) question.longQuestion else question.shortQuestion,
@@ -134,9 +133,13 @@ fun QuestionCard(
                 maxLines = if (isExpanded) Int.MAX_VALUE else 1,
                 modifier = Modifier
                     .graphicsLayer(scaleY = 1.5f)
-                    .padding(dimensionResource(R.dimen.padding_small))
+                    .padding(
+                        start = dimensionResource(R.dimen.padding_small),
+                        end = dimensionResource(R.dimen.padding_small),
+                        top = if(isExpanded) 48.dp else dimensionResource(R.dimen.padding_large),
+                        bottom = if(isExpanded) 48.dp else dimensionResource(R.dimen.padding_large)
+                    )
             )
         }
-        Spacer(Modifier.size(dimensionResource(R.dimen.image_size)))
     }
 }
