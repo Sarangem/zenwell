@@ -18,7 +18,6 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.NotificationChannels
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.overlay.OverlayWindowLifecycleOwner
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createNotification
@@ -52,7 +51,7 @@ class OverlayWindow(
             ServiceLogger.v { "Compose view already attached to window" }
             return
         }
-        if (isAppOpened){
+        if (isAppOpened) {
             ServiceLogger.v { "App is set to opened." }
             return
         }
@@ -76,7 +75,8 @@ class OverlayWindow(
             // set the layoutParams according to bound
             layoutParams?.apply {
                 type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-                flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                flags =
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 format = PixelFormat.TRANSLUCENT
                 gravity = Gravity.TOP or Gravity.START
                 height = bounds.height()
@@ -141,7 +141,10 @@ class OverlayWindow(
             if (schedule.notificationTimeInMinutes > 0) {
                 createNotification(
                     id = schedule.id + appName.hashCode(),
-                    message = schedule.title + service.getString(R.string.block_notification_message) + getAppNameFromPackageName(service, appName),
+                    message = schedule.title + service.getString(R.string.block_notification_message) + getAppNameFromPackageName(
+                        service,
+                        appName
+                    ),
                     context = service,
                     notificationChannel = NotificationChannels.BlockNotification
                 )

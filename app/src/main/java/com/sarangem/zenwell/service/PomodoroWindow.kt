@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.overlay.screens.PomodoroBlockScreen
+import com.sarangem.zenwell.ui.overlay.PomodoroBlockScreen
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createNotification
 import kotlinx.coroutines.CoroutineScope
@@ -48,7 +48,7 @@ class PomodoroWindow(
                     startTime = System.currentTimeMillis()
                     currentSegmentTime = schedule.pomodoroWorkTimeInMinutes * 60 * 1000L
                     overlayWindowList.forEach { window ->
-                        window.content = { onTimerEnd ->
+                        window.content = {
                             PomodoroBlockScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 message = schedule.message,

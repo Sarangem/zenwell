@@ -4,10 +4,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.data.BlockType
 import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.service.overlay.screens.BreathingScreen
-import com.sarangem.zenwell.service.overlay.screens.FullBlockScreen
-import com.sarangem.zenwell.service.overlay.screens.WaitScreen
-import com.sarangem.zenwell.service.overlay.screens.mathequations.MathEquationScreen
+import com.sarangem.zenwell.ui.overlay.BreathingScreen
+import com.sarangem.zenwell.ui.overlay.FullBlockScreen
+import com.sarangem.zenwell.ui.overlay.WaitScreen
+import com.sarangem.zenwell.ui.overlay.MathEquationScreen
 
 data class ScheduleInfo(
     private val service: AppBlockerService,
