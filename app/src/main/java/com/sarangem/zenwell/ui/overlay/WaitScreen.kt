@@ -22,6 +22,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.EXPANDED_WIDTH
 import com.sarangem.zenwell.ui.overlay.common.MEDIUM_WIDTH
@@ -36,13 +37,11 @@ import kotlinx.coroutines.delay
 @Composable
 fun WaitScreen(
     modifier: Modifier = Modifier,
+    schedule: Schedules,
     onTimerEnd: () -> Unit = {},
-    waitTimeInSeconds: Int,
-    showOpenDialog: Boolean,
-    message: String
 ) {
     var showOpen by remember { mutableStateOf(false) }
-    var time by remember { mutableIntStateOf(waitTimeInSeconds) }
+    var time by remember { mutableIntStateOf(schedule.waitTimeInSeconds) }
     LaunchedEffect(time) {
         if (time > 0) {
             delay(1000L)
@@ -53,7 +52,7 @@ fun WaitScreen(
     }
 
     val animatedProgress by animateFloatAsState(
-        targetValue = time / waitTimeInSeconds.toFloat(),
+        targetValue = time / schedule.waitTimeInSeconds.toFloat(),
         animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
     )
 
@@ -81,9 +80,9 @@ fun WaitScreen(
             )
         },
         mainPaneRowWeight = 0.6f,
-        showOpenDialog = showOpenDialog,
+        showOpenDialog = schedule.waitEnterButton,
         showOpen = showOpen,
-        message = message,
+        message = schedule.message,
         onTimerEnd = onTimerEnd,
         modifier = modifier.fillMaxSize()
     )
@@ -94,7 +93,7 @@ fun WaitScreen(
 @Composable
 fun WaitScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED)
+        WaitScreen(schedule = Schedules(message=APP_BLOCKED))
     }
 }
 
@@ -103,7 +102,7 @@ fun WaitScreenColumnPreviewLight() {
 @Composable
 fun WaitScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED)
+        WaitScreen(schedule = Schedules(message=APP_BLOCKED))
     }
 }
 
@@ -112,7 +111,7 @@ fun WaitScreenColumnPreviewDark() {
 @Composable
 fun WaitScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreen(Modifier, { }, Int.MAX_VALUE, true, APP_BLOCKED)
+        WaitScreen(schedule = Schedules(message=APP_BLOCKED))
     }
 }
 
@@ -121,6 +120,6 @@ fun WaitScreenRowPreviewLight() {
 @Composable
 fun WaitScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        WaitScreen(Modifier, { }, 10, true, APP_BLOCKED)
+        WaitScreen(schedule = Schedules(message=APP_BLOCKED))
     }
 }

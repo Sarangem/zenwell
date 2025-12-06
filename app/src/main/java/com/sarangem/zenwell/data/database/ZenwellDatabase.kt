@@ -11,7 +11,7 @@ import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.data.database.typeconverters.OperatorListConverter
 import com.sarangem.zenwell.data.database.typeconverters.WeekdaysListConverter
 
-@Database(entities = [Schedules::class, AppNames::class, BlockedApps::class], version = 12, exportSchema = false)
+@Database(entities = [Schedules::class, AppNames::class, BlockedApps::class], version = 13, exportSchema = false)
 @TypeConverters(OperatorListConverter::class, WeekdaysListConverter::class)
 abstract class ZenwellDatabase : RoomDatabase() {
 

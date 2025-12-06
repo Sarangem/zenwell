@@ -31,13 +31,13 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -46,37 +46,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.MathOperators
-import com.sarangem.zenwell.ui.overlay.common.KeypadCard
+import com.sarangem.zenwell.data.MathQuestion
+import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
+import com.sarangem.zenwell.ui.overlay.common.KeypadCard
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
-import com.sarangem.zenwell.ui.theme.Green3
 import com.sarangem.zenwell.ui.theme.Green5
 import com.sarangem.zenwell.ui.theme.Orbitron
-import com.sarangem.zenwell.ui.theme.Red5
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.data.MathQuestion
 import com.sarangem.zenwell.utils.generateMathQuestion
 import kotlinx.coroutines.launch
 
 @Composable
 fun MathEquationScreen(
     modifier: Modifier = Modifier,
-    numOperands: Int,
-    minOperandDigits: Int,
-    maxOperandDigits: Int,
-    minOperandDigitsInMultiplication: Int,
-    maxOperandDigitsInMultiplication: Int,
-    allowedMathOperators: List<MathOperators> = listOf(
-        MathOperators.ADDITION,
-        MathOperators.SUBTRACTION,
-        MathOperators.MULTIPLICATION
-    ),
-    showParentheses: Boolean = true,
-    allowNegatives: Boolean = false,
+    schedule: Schedules,
     onTimerEnd: () -> Unit = {},
-    showOpenDialog: Boolean,
-    message: String
 ) {
     var showOpen by remember { mutableStateOf(false) }
 
@@ -85,14 +70,14 @@ fun MathEquationScreen(
             MathEquationCard(
                 modifier = modifier,
                 question = generateMathQuestion(
-                    numOperands,
-                    minOperandDigits,
-                    maxOperandDigits,
-                    minOperandDigitsInMultiplication,
-                    maxOperandDigitsInMultiplication,
-                    allowedMathOperators,
-                    showParentheses,
-                    allowNegatives
+                    schedule.mathEquationNumOperands,
+                    schedule.mathEquationMinNumber,
+                    schedule.mathEquationMaxNumber,
+                    schedule.mathEquationMinNumberInMultiplication,
+                    schedule.mathEquationMaxNumberInMultiplication,
+                    schedule.allowedMathOperators,
+                    schedule.mathEquationShowParentheses,
+                    schedule.mathEquationAllowNegatives
                 ),
                 onCorrectAnswer = {
                     showOpen = true
@@ -101,15 +86,13 @@ fun MathEquationScreen(
         },
         mainPaneRowWeight = 0.6f,
         mainPaneColumnWeight = 0.7f,
-        showOpenDialog = showOpenDialog,
+        showOpenDialog = schedule.waitEnterButton,
         showOpen = showOpen,
-        message = message,
+        message = schedule.message,
         onTimerEnd = onTimerEnd,
         modifier = modifier.fillMaxSize()
     )
 }
-
-enum class MathEquationAnswerState { UNCHECKED, ERROR, CORRECT }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -118,8 +101,13 @@ fun MathEquationCard(
     question: MathQuestion,
     onCorrectAnswer: () -> Unit = {}
 ) {
-    var answer by remember { mutableIntStateOf(0) }
-    var answerState by remember { mutableStateOf(MathEquationAnswerState.UNCHECKED) }
+    var answer: Int? by remember { mutableStateOf(null) }
+    var isCorrect: Boolean? by remember { mutableStateOf(null) }
+    val borderColor = when (isCorrect) {
+        null -> Color.Black
+        true -> Green5
+        false -> MaterialTheme.colorScheme.error
+    }
 
     Column(modifier = modifier) {
         QuestionCard(
@@ -134,23 +122,23 @@ fun MathEquationCard(
                 modifier = Modifier
                     .padding(top = dimensionResource(R.dimen.padding_medium))
                     .fillMaxWidth(),
-                value = answer.toString(),
+                value = answer?.toString() ?: "",
                 onValueChange = {},
                 shape = MaterialTheme.shapes.medium,
                 label = {
                     Text(
-                        text = when (answerState) {
-                            MathEquationAnswerState.UNCHECKED -> stringResource(R.string.enter_your_answer)
-                            MathEquationAnswerState.ERROR -> stringResource(R.string.wrong_answer)
-                            else -> stringResource(R.string.correct_answer)
+                        text = when (isCorrect) {
+                            null -> stringResource(R.string.enter_your_answer)
+                            true -> stringResource(R.string.correct_answer)
+                            false -> stringResource(R.string.wrong_answer)
                         }
                     )
                 },
                 singleLine = true,
-                isError = answerState != MathEquationAnswerState.UNCHECKED,
+                isError = isCorrect != null,
                 colors = OutlinedTextFieldDefaults.colors(
-                    errorBorderColor = if (answerState == MathEquationAnswerState.ERROR) Red5 else Green3,
-                    errorLabelColor = if (answerState == MathEquationAnswerState.ERROR) Red5 else Green5
+                    errorBorderColor = borderColor,
+                    errorLabelColor = borderColor
                 ),
                 textStyle = MaterialTheme.typography.titleLarge,
             )
@@ -163,10 +151,10 @@ fun MathEquationCard(
                 onValueChange = { answer = it },
                 onEnter = {
                     if (answer == question.answer) {
-                        answerState = MathEquationAnswerState.CORRECT
+                        isCorrect = true
                         onCorrectAnswer()
                     } else {
-                        answerState = MathEquationAnswerState.ERROR
+                        isCorrect = false
                     }
                 }
             )
@@ -282,13 +270,15 @@ fun MathEquationScreenPreview() {
     ZenwellTheme {
         MathEquationScreen(
             modifier = Modifier.fillMaxSize(),
-            numOperands = 3,
-            minOperandDigits = 3,
-            maxOperandDigits = 4,
-            minOperandDigitsInMultiplication = 2,
-            maxOperandDigitsInMultiplication = 2,
-            showOpenDialog = true,
-            message = APP_BLOCKED
+            schedule = Schedules(
+                mathEquationNumOperands = 3,
+                mathEquationMinNumber = 3,
+                mathEquationMaxNumber = 4,
+                mathEquationMinNumberInMultiplication = 2,
+                mathEquationMaxNumberInMultiplication = 2,
+                waitEnterButton = true,
+                message = APP_BLOCKED
+            )
         )
     }
 }

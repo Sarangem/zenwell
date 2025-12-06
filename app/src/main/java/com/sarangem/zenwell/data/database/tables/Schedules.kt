@@ -94,6 +94,18 @@ data class Schedules(
     @ColumnInfo(name = "math_equation_allow_negatives")
     val mathEquationAllowNegatives: Boolean = false,
 
+    @ColumnInfo(name = "multiplication_min_num")
+    val multiplicationMinNum: Int = 1,
+
+    @ColumnInfo(name = "multiplication_max_num")
+    val multiplicationMaxNum: Int = 10,
+
+    @ColumnInfo(name = "multiplier_min_num")
+    val multiplierMinNum: Int = 1,
+
+    @ColumnInfo(name = "multiplier_max_num")
+    val multiplierMaxNum: Int = 10,
+
     // parachute means skipping the block message. check if enabled.
     @ColumnInfo(name = "is_parachute")
     val isParachute: Boolean = false,

@@ -120,4 +120,8 @@
     <string name="choose_running_time">Running time</string>
     <string name="choose_start_time">Choose Start Time</string>
     <string name="choose_end_time">Choose End Time</string>
+    <string name="multiplication_table_of">Multiplication table of</string>
+    <string name="multiplication_table">Multiplication Table</string>
+    <string name="range_of_multiplication_table_number">Range of Multiplication Table number</string>
+    <string name="range_of_multiplier">Range of multipliers in table</string>
 </resources>

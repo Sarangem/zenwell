@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Backspace
 import androidx.compose.material.icons.automirrored.outlined.KeyboardReturn
@@ -36,10 +36,12 @@ import com.sarangem.zenwell.R
 @Composable
 fun KeypadCard(
     modifier: Modifier = Modifier,
-    value: Int,
-    onValueChange: (Int) -> Unit = {},
+    value: Int?,
+    onValueChange: (Int?) -> Unit = {},
     onEnter: () -> Unit = {}
 ) {
+    val currentValue = value ?: 0
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -49,9 +51,7 @@ fun KeypadCard(
             .padding(dimensionResource(R.dimen.padding_small)),
     ) {
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight(),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_tiny))
         ) {
             Row(
@@ -61,12 +61,12 @@ fun KeypadCard(
                 (1..3).forEach {
                     KeypadButton(
                         text = it.toString(),
-                        onClick = { onValueChange(value * 10 + it) },
+                        onClick = { onValueChange(currentValue * 10 + it) },
                     )
                 }
                 KeypadButton(
                     text = "+/-",
-                    onClick = { onValueChange(-value) },
+                    onClick = { onValueChange(-currentValue) },
                     color = MaterialTheme.colorScheme.tertiaryFixedDim,
                     textColor = MaterialTheme.colorScheme.onTertiaryFixed
                 )
@@ -78,12 +78,12 @@ fun KeypadCard(
                 (4..6).forEach {
                     KeypadButton(
                         text = it.toString(),
-                        onClick = { onValueChange(value * 10 + it) },
+                        onClick = { onValueChange(currentValue * 10 + it) },
                     )
                 }
                 KeypadButton(
                     text = "0",
-                    onClick = { onValueChange(value * 10) }
+                    onClick = { onValueChange(currentValue * 10) }
                 )
             }
             Row(
@@ -93,19 +93,19 @@ fun KeypadCard(
                 (7..9).forEach {
                     KeypadButton(
                         text = it.toString(),
-                        onClick = { onValueChange(value * 10 + it) },
+                        onClick = { onValueChange(currentValue * 10 + it) },
                     )
                 }
                 KeypadButton(
                     icon = Icons.AutoMirrored.Outlined.Backspace,
                     iconContentDescription = stringResource(R.string.backspace),
-                    onClick = { onValueChange(value / 10) },
+                    onClick = { onValueChange(currentValue / 10) },
                     color = MaterialTheme.colorScheme.errorContainer,
                     textColor = MaterialTheme.colorScheme.onErrorContainer
                 )
             }
         }
-        Spacer(Modifier.size(dimensionResource(R.dimen.padding_large)))
+        Spacer(Modifier.width(dimensionResource(R.dimen.padding_large)))
         Button(
             modifier = Modifier.fillMaxHeight(),
             onClick = { onEnter() },
@@ -132,9 +132,7 @@ fun RowScope.KeypadButton(
     onClick: () -> Unit = {}
 ) {
     Button(
-        modifier = Modifier
-            .weight(1f)
-            .fillMaxHeight(),
+        modifier = Modifier.weight(1f),
         onClick = onClick,
         shapes = ButtonDefaults.shapes(
             shape = MaterialTheme.shapes.small,

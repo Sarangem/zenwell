@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.EXPANDED_WIDTH
 import com.sarangem.zenwell.ui.overlay.common.MEDIUM_WIDTH
@@ -54,11 +55,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun BreathingScreen(
     modifier: Modifier = Modifier,
+    schedule: Schedules,
     onTimerEnd: () -> Unit = {},
-    breathingCycleDuration: Int,
-    breathingCycleNumber: Int,
-    showOpenDialog: Boolean,
-    message: String
 ) {
     var showOpen by remember { mutableStateOf(false) }
 
@@ -67,15 +65,15 @@ fun BreathingScreen(
             BreathingCard(
                 modifier = modifier,
                 onTimerEnd = { showOpen = true },
-                breathingCycleDuration = breathingCycleDuration,
-                breathingCycleNumber = breathingCycleNumber
+                breathingCycleDuration = schedule.breathingCycleDuration,
+                breathingCycleNumber = schedule.breathingCycleNumber
             )
         },
         mainPaneRowWeight = 0.6f,
         mainPaneColumnWeight = 0.7f,
-        showOpenDialog = showOpenDialog,
+        showOpenDialog = schedule.waitEnterButton,
         showOpen = showOpen,
-        message = message,
+        message = schedule.message,
         onTimerEnd = onTimerEnd,
         modifier = modifier.fillMaxSize()
     )
@@ -178,8 +176,13 @@ fun BreathingCard(
 @Composable
 fun BreathingScreenColumnPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 10, 2, true, APP_BLOCKED)
-    }
+        BreathingScreen(
+            schedule = Schedules(
+                message = APP_BLOCKED,
+                breathingCycleDuration = 10,
+                breathingCycleNumber = 2
+            )
+        )    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -187,7 +190,13 @@ fun BreathingScreenColumnPreviewLight() {
 @Composable
 fun BreathingScreenColumnPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 10, 2, true, APP_BLOCKED)
+        BreathingScreen(
+            schedule = Schedules(
+                message = APP_BLOCKED,
+                breathingCycleDuration = 10,
+                breathingCycleNumber = 2
+            )
+        )
     }
 }
 
@@ -196,8 +205,13 @@ fun BreathingScreenColumnPreviewDark() {
 @Composable
 fun BreathingScreenRowPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        BreathingScreen(Modifier, { }, 10, 2, true, APP_BLOCKED)
-    }
+        BreathingScreen(
+            schedule = Schedules(
+                message = APP_BLOCKED,
+                breathingCycleDuration = 10,
+                breathingCycleNumber = 2
+            )
+        )    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -205,6 +219,11 @@ fun BreathingScreenRowPreviewLight() {
 @Composable
 fun BreathingScreenRowPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(Modifier, { }, 10, 2, true, APP_BLOCKED)
-    }
+        BreathingScreen(
+            schedule = Schedules(
+                message = APP_BLOCKED,
+                breathingCycleDuration = 10,
+                breathingCycleNumber = 2
+            )
+        )    }
 }

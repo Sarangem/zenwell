@@ -28,6 +28,7 @@ import com.sarangem.zenwell.ui.screens.edit.fields.ChooseBlockType
 import com.sarangem.zenwell.ui.screens.edit.sections.BreathingDetailsSection
 import com.sarangem.zenwell.ui.screens.edit.sections.ChooseRunningTime
 import com.sarangem.zenwell.ui.screens.edit.sections.MathEquationDetailsSection
+import com.sarangem.zenwell.ui.screens.edit.sections.MultiplicationTableDetailsSection
 import com.sarangem.zenwell.ui.screens.edit.sections.PomodoroDetailsSection
 import com.sarangem.zenwell.ui.screens.edit.sections.WaitDetailsSection
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -151,6 +152,13 @@ fun EditScreenBody(
                             )
                         }
 
+                        if(blockType == BlockType.MultiplicationTable){
+                            MultiplicationTableDetailsSection(
+                                schedule = uiState.schedule,
+                                updateSchedule = updateSchedule
+                            )
+                        }
+
                         if (blockType != BlockType.FullBlock) {
                             WaitDetailsSection(
                                 schedule = uiState.schedule,
@@ -207,7 +215,7 @@ fun EditScreenPreviewLightMode() {
                 schedule = Schedules(
                     title = "Schedule 1",
                     message = APP_BLOCKED,
-                    blockType = BlockType.MathEquation,
+                    blockType = BlockType.MultiplicationTable,
                     startTimeInMinutes = 179,
                     endTimeInMinutes = 1079,
                 ),

@@ -8,6 +8,7 @@ import com.sarangem.zenwell.ui.overlay.BreathingScreen
 import com.sarangem.zenwell.ui.overlay.FullBlockScreen
 import com.sarangem.zenwell.ui.overlay.WaitScreen
 import com.sarangem.zenwell.ui.overlay.MathEquationScreen
+import com.sarangem.zenwell.ui.overlay.MultiplicationTableScreen
 
 data class ScheduleInfo(
     private val service: AppBlockerService,
@@ -37,33 +38,25 @@ data class ScheduleInfo(
                             BlockType.Wait -> WaitScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 onTimerEnd = onTimerEnd,
-                                waitTimeInSeconds = schedule.waitTimeInSeconds,
-                                message = schedule.message,
-                                showOpenDialog = schedule.waitEnterButton,
+                                schedule = schedule
                             )
 
                             BlockType.Breathing -> BreathingScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 onTimerEnd = onTimerEnd,
-                                breathingCycleDuration = schedule.breathingCycleDuration,
-                                breathingCycleNumber = schedule.breathingCycleNumber,
-                                showOpenDialog = schedule.waitEnterButton,
-                                message = schedule.message
+                                schedule = schedule
                             )
 
                             BlockType.MathEquation -> MathEquationScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 onTimerEnd = onTimerEnd,
-                                minOperandDigits = schedule.mathEquationMinNumber,
-                                maxOperandDigits = schedule.mathEquationMaxNumber,
-                                minOperandDigitsInMultiplication = schedule.mathEquationMinNumberInMultiplication,
-                                maxOperandDigitsInMultiplication = schedule.mathEquationMaxNumberInMultiplication,
-                                numOperands = schedule.mathEquationNumOperands,
-                                allowedMathOperators = schedule.allowedMathOperators,
-                                showParentheses = schedule.mathEquationShowParentheses,
-                                allowNegatives = schedule.mathEquationAllowNegatives,
-                                showOpenDialog = schedule.waitEnterButton,
-                                message = schedule.message
+                                schedule = schedule
+                            )
+
+                            BlockType.MultiplicationTable -> MultiplicationTableScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                schedule = schedule,
+                                onTimerEnd = onTimerEnd,
                             )
 
                             else -> {}

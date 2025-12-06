@@ -12,7 +12,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 
-enum class SchedulesFilter(@StringRes val title: Int) {
+enum class SchedulesFilter(@get:StringRes val title: Int) {
     All(R.string.all),
     Regular(R.string.regular),
     Pomodoro(R.string.pomodoro)

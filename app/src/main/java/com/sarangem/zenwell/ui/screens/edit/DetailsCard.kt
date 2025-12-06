@@ -12,13 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -98,77 +97,6 @@ fun DetailsCardColumn(
 }
 
 @Composable
-fun DetailsCardWithNumberField(
-    modifier: Modifier = Modifier,
-    isStacked: Boolean = false,
-    mainText: String = "",
-    textFieldValue: Int,
-    updateSchedule: (Int) -> Unit = {},
-    suffixText: String = "",
-    isError: Boolean = false,
-    errorMessage: String = ""
-) {
-    DetailsCardWithTextField(
-        modifier = modifier,
-        isStacked = isStacked,
-        mainText = mainText,
-        textFieldValue = textFieldValue.toString(),
-        onValueChange = { num ->
-            if (num.isDigitsOnly()) {
-                val num = num.toIntOrNull()
-                if (num == null) {
-                    updateSchedule(0)
-                } else {
-                    updateSchedule(num)
-                }
-            }
-        },
-        keyboardType = KeyboardType.Number,
-        suffixText = suffixText,
-        isError = isError,
-        errorMessage = errorMessage
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DetailsCardWithSlider(
-    modifier: Modifier = Modifier,
-    isStacked: Boolean = false,
-    mainText: String,
-    minValue: Int,
-    maxValue: Int,
-    updateValue: (ClosedFloatingPointRange<Float>) -> Unit = {},
-) {
-    DetailsCard(
-        modifier = modifier,
-        isStacked = isStacked
-    ) {
-        Text(
-            text = mainText,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(0.5f)
-        )
-        Spacer(Modifier.weight(0.1f))
-        Column(Modifier.weight(0.8f)) {
-            Row {
-                Text("1")
-                Spacer(Modifier.weight(1f))
-                Text("10")
-            }
-            RangeSlider(
-                value = minValue.toFloat()..maxValue.toFloat(),
-                onValueChange = {
-                    updateValue(it)
-                },
-                valueRange = 1f..10f,
-                steps = 8,
-            )
-        }
-    }
-}
-
-@Composable
 fun DetailsCardWithTextField(
     modifier: Modifier = Modifier,
     isStacked: Boolean = false,
@@ -211,6 +139,129 @@ fun DetailsCardWithTextField(
     }
 }
 
+@Composable
+fun DetailsCardWithNumberField(
+    modifier: Modifier = Modifier,
+    isStacked: Boolean = false,
+    mainText: String = "",
+    textFieldValue: Int,
+    updateSchedule: (Int) -> Unit = {},
+    suffixText: String = "",
+    isError: Boolean = false,
+    errorMessage: String = ""
+) {
+    DetailsCardWithTextField(
+        modifier = modifier,
+        isStacked = isStacked,
+        mainText = mainText,
+        textFieldValue = textFieldValue.toString(),
+        onValueChange = { num ->
+            if (num.isDigitsOnly()) {
+                val num = num.toIntOrNull()
+                if (num == null) {
+                    updateSchedule(0)
+                } else {
+                    updateSchedule(num)
+                }
+            }
+        },
+        keyboardType = KeyboardType.Number,
+        suffixText = suffixText,
+        isError = isError,
+        errorMessage = errorMessage
+    )
+}
+
+@Composable
+fun DetailsCardWithRangeNumberField(
+    modifier: Modifier = Modifier,
+    isStacked: Boolean = false,
+    mainText: String = "",
+    firstFieldValue: Int,
+    lastFieldValue: Int,
+    updateFirstValue: (Int) -> Unit = {},
+    updateLastValue: (Int) -> Unit = {},
+    suffixText: String = "",
+    isError: Boolean = false,
+    errorMessage: String = ""
+) {
+    DetailsCard(
+        modifier = modifier,
+        isStacked = isStacked
+    ) {
+        Text(
+            text = mainText,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(0.5f)
+        )
+        Row(Modifier.weight(0.8f)) {
+            OutlinedTextField(
+                modifier = Modifier.weight(1f),
+                value = firstFieldValue.toString(),
+                shape = MaterialTheme.shapes.large,
+                onValueChange = { num ->
+                    if (num.isDigitsOnly()) {
+                        val num = num.toIntOrNull()
+                        if (num == null) {
+                            updateFirstValue(0)
+                        } else {
+                            updateFirstValue(num)
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                suffix = {
+                    Text(suffixText)
+                },
+                isError = isError,
+                label = {
+                    if (isError) {
+                        Text(errorMessage)
+                    }
+                }
+            )
+            Text(
+                text = stringResource(R.string.to),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .padding(dimensionResource(R.dimen.padding_small))
+                    .align(Alignment.CenterVertically)
+            )
+            OutlinedTextField(
+                modifier = Modifier.weight(1f),
+                value = lastFieldValue.toString(),
+                shape = MaterialTheme.shapes.large,
+                onValueChange = { num ->
+                    if (num.isDigitsOnly()) {
+                        val num = num.toIntOrNull()
+                        if (num == null) {
+                            updateLastValue(0)
+                        } else {
+                            updateLastValue(num)
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                suffix = {
+                    Text(suffixText)
+                },
+                isError = isError,
+                label = {
+                    if (isError) {
+                        Text(errorMessage)
+                    }
+                }
+            )
+        }
+    }
+}
+
 data class LabelState(
     val title: String,
     val isSelected: Boolean,
@@ -240,7 +291,10 @@ fun LabelDetailsCard(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                modifier = Modifier.padding(
+                    start = dimensionResource(R.dimen.padding_small),
+                    end = dimensionResource(R.dimen.padding_small)
+                )
             )
         }
         FlowRow(
@@ -256,7 +310,8 @@ fun LabelDetailsCard(
                     selected = label.isSelected,
                     onClick = { label.onSelectChange(!label.isSelected) },
                     label = {
-                        Text(                            text = label.title,
+                        Text(
+                            text = label.title,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
