@@ -39,7 +39,7 @@ import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.KeypadCard
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
-import com.sarangem.zenwell.ui.theme.Green5
+import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @Composable
@@ -199,7 +199,7 @@ fun TableCard(
                                         Color.Black
                                     }
                                     multiplier * number -> {
-                                        Green5
+                                        Green500
                                     }
                                     else -> {
                                         MaterialTheme.colorScheme.error

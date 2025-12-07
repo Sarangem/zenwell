@@ -51,7 +51,7 @@ import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.KeypadCard
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
-import com.sarangem.zenwell.ui.theme.Green5
+import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.generateMathQuestion
@@ -105,7 +105,7 @@ fun MathEquationCard(
     var isCorrect: Boolean? by remember { mutableStateOf(null) }
     val borderColor = when (isCorrect) {
         null -> Color.Black
-        true -> Green5
+        true -> Green500
         false -> MaterialTheme.colorScheme.error
     }
 
@@ -268,6 +268,26 @@ fun QuestionCard(
 @Composable
 fun MathEquationScreenPreview() {
     ZenwellTheme {
+        MathEquationScreen(
+            modifier = Modifier.fillMaxSize(),
+            schedule = Schedules(
+                mathEquationNumOperands = 3,
+                mathEquationMinNumber = 3,
+                mathEquationMaxNumber = 4,
+                mathEquationMinNumberInMultiplication = 2,
+                mathEquationMaxNumberInMultiplication = 2,
+                waitEnterButton = true,
+                message = APP_BLOCKED
+            )
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Preview
+@Composable
+fun MathEquationScreenDarkPreview() {
+    ZenwellTheme(darkTheme = true) {
         MathEquationScreen(
             modifier = Modifier.fillMaxSize(),
             schedule = Schedules(

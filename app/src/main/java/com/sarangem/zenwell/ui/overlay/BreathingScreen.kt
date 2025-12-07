@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,9 +47,6 @@ import com.sarangem.zenwell.ui.overlay.common.MEDIUM_WIDTH
 import com.sarangem.zenwell.ui.overlay.common.MorphPolygonShape
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.overlay.common.PREVIEW_HEIGHT
-import com.sarangem.zenwell.ui.theme.Purple2
-import com.sarangem.zenwell.ui.theme.Purple3
-import com.sarangem.zenwell.ui.theme.Yellow3
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.delay
 
@@ -88,6 +86,10 @@ fun BreathingCard(
     breathingCycleDuration: Int,
     breathingCycleNumber: Int
 ) {
+    val yellow500 = Color(0xFFFFC107)
+    val purple300 = Color(0xFFBA68C8)
+    val purple500 = Color(0xFF9C27B0)
+
     var completedBreathingCycle by remember { mutableIntStateOf(breathingCycleNumber) }
     val halfDuration = (breathingCycleDuration / 2) * 1000L
     var inhale by remember { mutableStateOf(false) }
@@ -134,7 +136,7 @@ fun BreathingCard(
                     .fillMaxSize(animatedShapeProgress)
                     .background(
                         brush = Brush.radialGradient(
-                            colors = listOf(Yellow3, Purple2.copy(alpha = 0.7f)),
+                            colors = listOf(yellow500, purple300.copy(alpha = 0.7f)),
                             center = Offset.Unspecified,
                         ),
                         shape = Sunny.toShape()
@@ -150,7 +152,7 @@ fun BreathingCard(
                             percentage = animatedMorphProgress
                         )
                     )
-                    .background(Purple3),
+                    .background(purple500),
             )
         }
         AnimatedContent(
