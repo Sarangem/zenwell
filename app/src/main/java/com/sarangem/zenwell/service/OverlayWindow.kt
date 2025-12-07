@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
+import android.view.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
@@ -75,11 +76,14 @@ class OverlayWindow(
             // set the layoutParams according to bound
             layoutParams?.apply {
                 type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-                flags =
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 format = PixelFormat.TRANSLUCENT
+                flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 gravity = Gravity.TOP or Gravity.START
-                height = bounds.height()
+                height = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    bounds.height() - WindowInsets.Type.displayCutout()
+                } else {
+                    bounds.height()
+                }
                 width = bounds.width()
                 x = bounds.left
                 y = bounds.top
