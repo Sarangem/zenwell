@@ -97,8 +97,6 @@
     <string name="subtraction">Subtraction (-)</string>
     <string name="multiplication">Multiplication (*)</string>
     <string name="correct_answer">Answer is correct</string>
-    <string name="check_answer">Check Answer</string>
-    <string name="backspace">Backspace</string>
     <string name="number_of_operands">Number of operands</string>
     <string name="range_of_digit_of_operands">Range of digit of operands</string>
     <string name="range_of_digit_of_operands_in_multiplication">Range of digit of operands in multiplication</string>

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -42,14 +44,16 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.MathQuestion
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
-import com.sarangem.zenwell.ui.overlay.common.KeypadCard
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.Orbitron
@@ -115,41 +119,37 @@ fun MathEquationCard(
             modifier = Modifier.animateContentSize()
         )
 
-        Spacer(Modifier.weight(1f))
-
-        Column {
-            OutlinedTextField(
-                modifier = Modifier
-                    .padding(top = dimensionResource(R.dimen.padding_medium))
-                    .fillMaxWidth(),
-                value = answer?.toString() ?: "",
-                onValueChange = {},
-                shape = MaterialTheme.shapes.medium,
-                label = {
-                    Text(
-                        text = when (isCorrect) {
-                            null -> stringResource(R.string.enter_your_answer)
-                            true -> stringResource(R.string.correct_answer)
-                            false -> stringResource(R.string.wrong_answer)
-                        }
-                    )
-                },
-                singleLine = true,
-                isError = isCorrect != null,
-                colors = OutlinedTextFieldDefaults.colors(
-                    errorBorderColor = borderColor,
-                    errorLabelColor = borderColor
-                ),
-                textStyle = MaterialTheme.typography.titleLarge,
-            )
-
-            KeypadCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = dimensionResource(R.dimen.padding_small)),
-                value = answer,
-                onValueChange = { answer = it },
-                onEnter = {
+        OutlinedTextField(
+            modifier = Modifier
+                .padding(top = dimensionResource(R.dimen.padding_medium))
+                .fillMaxWidth(),
+            value = answer?.toString() ?: "",
+            onValueChange = { num ->
+                if (num.isDigitsOnly()) answer = num.toIntOrNull()
+            },
+            shape = MaterialTheme.shapes.medium,
+            label = {
+                Text(
+                    text = when (isCorrect) {
+                        null -> stringResource(R.string.enter_your_answer)
+                        true -> stringResource(R.string.correct_answer)
+                        false -> stringResource(R.string.wrong_answer)
+                    }
+                )
+            },
+            singleLine = true,
+            isError = isCorrect != null,
+            colors = OutlinedTextFieldDefaults.colors(
+                errorBorderColor = borderColor,
+                errorLabelColor = borderColor,
+            ),
+            textStyle = MaterialTheme.typography.titleLarge,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
                     if (answer == question.answer) {
                         isCorrect = true
                         onCorrectAnswer()
@@ -158,7 +158,7 @@ fun MathEquationCard(
                     }
                 }
             )
-        }
+        )
     }
 }
 

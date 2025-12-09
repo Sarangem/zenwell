@@ -1,43 +1,47 @@
 package com.sarangem.zenwell.ui.overlay
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
-import com.sarangem.zenwell.ui.overlay.common.KeypadCard
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -73,6 +77,7 @@ fun MultiplicationTableScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MultiplicationTableCard(
     modifier: Modifier = Modifier,
@@ -84,142 +89,116 @@ fun MultiplicationTableCard(
 ) {
     val number = remember { (multiplicationMinNum..multiplicationMaxNum).random() }
     val answers = remember {
-        mutableStateMapOf<Int, Int?>().apply {
+        mutableStateMapOf<Int, TextFieldState>().apply {
             (multiplierMinNum..multiplierMaxNum).forEach {
-                put(it,null)
+                put(it, TextFieldState())
             }
         }
     }
-    var selectedMultiplier by remember { mutableIntStateOf(1) }
+    val focusManager = LocalFocusManager.current
+
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        TableCard(
-            modifier = Modifier.weight(1f, fill = false),
-            number = number,
-            answers = answers,
-            selectedMultiplier = selectedMultiplier,
-            onMultiplierClick = { selectedMultiplier = it }
-        )
-
-        KeypadCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = dimensionResource(R.dimen.padding_small)),
-            value = answers[selectedMultiplier],
-            onValueChange = { answers[selectedMultiplier] = it },
-            onEnter = {
-                if (selectedMultiplier < multiplierMaxNum) selectedMultiplier++
-                val allCorrect = answers.all { (multiplier, answer) ->
-                    answer == number * multiplier
-                }
-                if(allCorrect) onAllCorrect()
-            }
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun TableCard(
-    modifier: Modifier = Modifier,
-    number: Int,
-    answers: Map<Int,Int?>,
-    selectedMultiplier: Int,
-    onMultiplierClick: (Int) -> Unit = {}
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .animateContentSize(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
-    ) {
-        Text(
-            text = stringResource(R.string.multiplication_table_of) + " $number",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-        )
-        HorizontalDivider(thickness = dimensionResource(R.dimen.horizontal_divider_thickness))
-
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = dimensionResource(R.dimen.padding_small))
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
         ) {
-            answers.forEach { (multiplier, answer) ->
+            Text(
+                text = stringResource(R.string.multiplication_table_of) + " $number",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+            )
+            HorizontalDivider(thickness = dimensionResource(R.dimen.horizontal_divider_thickness))
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            vertical = dimensionResource(R.dimen.padding_tiny),
-                            horizontal = dimensionResource(R.dimen.padding_small)
-                        ),
-                ) {
-                    Text(
-                        text = "$number",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = "×",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = "$multiplier",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = "=",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(1f)
-                    )
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = dimensionResource(R.dimen.padding_small))
+            ) {
+                answers.forEach { (multiplier, state) ->
 
-                    val isSelected = (multiplier == selectedMultiplier)
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .weight(6f)
-                            .clickable(onClick = { onMultiplierClick(multiplier) })
-                            .border(
-                                width = if (answer == null && !isSelected) 0.5.dp else 2.dp,
-                                color = when (answer) {
-                                    null if isSelected -> {
-                                        MaterialTheme.colorScheme.primary
-                                    }
-                                    null -> {
-                                        Color.Black
-                                    }
-                                    multiplier * number -> {
-                                        Green500
-                                    }
-                                    else -> {
-                                        MaterialTheme.colorScheme.error
-                                    }
-                                },
-                                shape = MaterialTheme.shapes.extraSmall
-                            )
+                            .fillMaxWidth()
+                            .padding(
+                                vertical = dimensionResource(R.dimen.padding_tiny),
+                                horizontal = dimensionResource(R.dimen.padding_small)
+                            ),
                     ) {
                         Text(
-                            text = answer?.toString() ?: "",
+                            text = "$number",
                             style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(
-                                start = dimensionResource(R.dimen.padding_small),
-                                end = dimensionResource(R.dimen.padding_small)
-                            )
+                            textAlign = TextAlign.End,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(dimensionResource(R.dimen.padding_tiny)),
+                        )
+                        Text(
+                            text = "×",
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(dimensionResource(R.dimen.padding_tiny)),
+                        )
+                        Text(
+                            text = "$multiplier",
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(dimensionResource(R.dimen.padding_tiny)),
+                        )
+                        Text(
+                            text = "=",
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(dimensionResource(R.dimen.padding_tiny)),
+                        )
+
+                        OutlinedTextField(
+                            state = state,
+                            modifier = Modifier
+                                .weight(5f)
+                                .heightIn(min = dimensionResource(R.dimen.padding_small)),
+                            contentPadding = PaddingValues(dimensionResource(R.dimen.padding_tiny)),
+                            textStyle = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.End),
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                errorBorderColor = when (state.text.toString().toIntOrNull()) {
+                                    null -> Color.Unspecified
+                                    multiplier * number -> Green500
+                                    else -> MaterialTheme.colorScheme.error
+                                },
+                            ),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = if (answers.keys.last() == multiplier) ImeAction.Done else ImeAction.Next
+                            ),
+                            onKeyboardAction = {
+                                if (answers.keys.last() != multiplier) {
+                                    focusManager.moveFocus(FocusDirection.Next)
+                                }
+                                val allCorrect = answers.all { (multiplier, state) ->
+                                    state.text.toString().toIntOrNull() == number * multiplier
+                                }
+                                if (allCorrect) {
+                                    onAllCorrect()
+                                    focusManager.clearFocus()
+                                }
+                            }
                         )
                     }
                 }
             }
         }
+
     }
 }
 
@@ -231,7 +210,8 @@ fun MultiplicationTableScreenPreview() {
         MultiplicationTableScreen(
             modifier = Modifier.fillMaxSize(),
             schedule = Schedules(
-                message = APP_BLOCKED
+                message = APP_BLOCKED,
+                multiplierMaxNum = 20
             )
         )
     }
