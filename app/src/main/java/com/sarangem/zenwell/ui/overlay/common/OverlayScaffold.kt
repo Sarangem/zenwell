@@ -24,11 +24,13 @@ import com.sarangem.zenwell.R
 fun OverlayScaffold(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
+    floatingActionButton: @Composable () -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surface),
+        floatingActionButton = floatingActionButton
     ) { innerPadding ->
         Box(
             modifier = Modifier.padding(innerPadding),

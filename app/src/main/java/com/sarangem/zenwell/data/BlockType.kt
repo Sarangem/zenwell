@@ -9,6 +9,6 @@ enum class BlockType(@get:StringRes val title: Int) {
     Breathing(R.string.breathing),
     MathEquation(R.string.math_equation),
     MultiplicationTable(R.string.multiplication_table),
-    ShowImage(R.string.show_image),
+    Typing(R.string.typing),
     Grayscale(R.string.grayscale)
 }

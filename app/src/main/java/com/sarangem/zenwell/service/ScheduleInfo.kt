@@ -9,6 +9,7 @@ import com.sarangem.zenwell.ui.overlay.FullBlockScreen
 import com.sarangem.zenwell.ui.overlay.WaitScreen
 import com.sarangem.zenwell.ui.overlay.MathEquationScreen
 import com.sarangem.zenwell.ui.overlay.MultiplicationTableScreen
+import com.sarangem.zenwell.ui.overlay.TypingScreen
 
 data class ScheduleInfo(
     private val service: AppBlockerService,
@@ -54,6 +55,12 @@ data class ScheduleInfo(
                             )
 
                             BlockType.MultiplicationTable -> MultiplicationTableScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                schedule = schedule,
+                                onTimerEnd = onTimerEnd,
+                            )
+
+                            BlockType.Typing -> TypingScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 schedule = schedule,
                                 onTimerEnd = onTimerEnd,

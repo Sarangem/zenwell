@@ -4,7 +4,6 @@
     <string name="wait">"Wait"</string>
     <string name="breathing">"Breathing"</string>
     <string name="math_equation">"Math Equation"</string>
-    <string name="show_image">"Show Image"</string>
     <string name="grayscale">"Grayscale"</string>
     <string name="new_schedule">"New schedule"</string>
     <string name="edit_this_schedule">"Edit this schedule"</string>
@@ -122,4 +121,6 @@
     <string name="multiplication_table">Multiplication Table</string>
     <string name="range_of_multiplication_table_number">Range of Multiplication Table number</string>
     <string name="range_of_multiplier">Range of multipliers in table</string>
+    <string name="typing">Typing</string>
+    <string name="check">Check</string>
 </resources>
