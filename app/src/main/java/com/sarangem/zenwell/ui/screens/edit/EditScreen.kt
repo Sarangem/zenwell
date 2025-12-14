@@ -25,7 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.AppViewModelProvider
 import com.sarangem.zenwell.ui.screens.edit.fields.SaveAndDeleteButton
 import kotlinx.coroutines.Dispatchers

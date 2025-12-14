@@ -22,7 +22,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.EXPANDED_WIDTH
 import com.sarangem.zenwell.ui.overlay.common.MEDIUM_WIDTH

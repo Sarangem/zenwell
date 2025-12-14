@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.data.database.typeconverters
+package com.sarangem.zenwell.database.typeconverters
 
 import androidx.room.TypeConverter
 

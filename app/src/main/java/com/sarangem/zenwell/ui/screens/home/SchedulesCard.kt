@@ -51,7 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.screens.common.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.Orbitron

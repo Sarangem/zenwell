@@ -2,8 +2,8 @@ package com.sarangem.zenwell.service
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.sarangem.zenwell.data.BlockType
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.model.BlockType
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.BreathingScreen
 import com.sarangem.zenwell.ui.overlay.FullBlockScreen
 import com.sarangem.zenwell.ui.overlay.WaitScreen

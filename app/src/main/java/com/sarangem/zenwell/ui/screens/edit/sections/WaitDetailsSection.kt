@@ -4,7 +4,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.edit.ValidationError
 import com.sarangem.zenwell.ui.screens.edit.DetailsCardWithNumberField
 import com.sarangem.zenwell.ui.screens.edit.DetailsCardWithSwitch

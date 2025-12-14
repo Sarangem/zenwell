@@ -1,7 +1,7 @@
-package com.sarangem.zenwell.data
+package com.sarangem.zenwell.model
 
 import androidx.navigation3.runtime.NavKey
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,10 +1,10 @@
-package com.sarangem.zenwell.data.database.repository
+package com.sarangem.zenwell.database.repository
 
-import com.sarangem.zenwell.data.BackupData
-import com.sarangem.zenwell.data.database.ScheduleDao
-import com.sarangem.zenwell.data.database.tables.AppNames
-import com.sarangem.zenwell.data.database.tables.BlockedApps
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.model.BackupData
+import com.sarangem.zenwell.database.ScheduleDao
+import com.sarangem.zenwell.database.tables.AppNames
+import com.sarangem.zenwell.database.tables.BlockedApps
+import com.sarangem.zenwell.database.tables.Schedules
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull

@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.data
+package com.sarangem.zenwell.model
 
 data class MathQuestion(
     val answer: Int,

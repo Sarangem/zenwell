@@ -1,7 +1,7 @@
 package com.sarangem.zenwell.utils
 
-import com.sarangem.zenwell.data.MathOperators
-import com.sarangem.zenwell.data.MathQuestion
+import com.sarangem.zenwell.model.MathOperators
+import com.sarangem.zenwell.model.MathQuestion
 
 fun generateMathQuestion(
     numOperands: Int,

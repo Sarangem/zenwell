@@ -37,7 +37,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ZenwellApplication
-import com.sarangem.zenwell.data.BackupData
+import com.sarangem.zenwell.model.BackupData
 import com.sarangem.zenwell.ui.screens.common.ShowConfirmDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -7,7 +7,7 @@ import android.graphics.Rect
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import com.sarangem.zenwell.ZenwellApplication
-import com.sarangem.zenwell.data.NotificationChannels
+import com.sarangem.zenwell.model.NotificationChannels
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.deleteNotificationByChannel
 import com.sarangem.zenwell.utils.getCurrentTimeInMinutes

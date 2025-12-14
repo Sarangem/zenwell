@@ -29,10 +29,10 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass
-import com.sarangem.zenwell.data.FocusPage
-import com.sarangem.zenwell.data.HomePage
-import com.sarangem.zenwell.data.SettingsPage
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.model.FocusPage
+import com.sarangem.zenwell.model.HomePage
+import com.sarangem.zenwell.model.SettingsPage
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.edit.EditScreen
 import com.sarangem.zenwell.ui.screens.edit.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.screens.focus.FocusScreen

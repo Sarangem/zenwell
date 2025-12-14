@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.database.repository.SchedulesRepository
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.repository.SchedulesRepository
+import com.sarangem.zenwell.database.tables.Schedules
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first

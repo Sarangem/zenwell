@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.BlockType
+import com.sarangem.zenwell.model.BlockType
 import com.sarangem.zenwell.ui.screens.edit.DetailsCard
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,8 +1,8 @@
 package com.sarangem.zenwell.ui.screens.edit
 
 import androidx.lifecycle.ViewModel
-import com.sarangem.zenwell.data.database.repository.SchedulesRepository
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.repository.SchedulesRepository
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -1,6 +1,6 @@
 package com.sarangem.zenwell.ui.screens.edit
 
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 
 enum class ValidationError {
     RunningTime,

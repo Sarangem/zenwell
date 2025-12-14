@@ -11,7 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.sarangem.zenwell.MainActivity
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.NotificationChannels
+import com.sarangem.zenwell.model.NotificationChannels
 
 fun areNotificationsEnabled(context: Context): Boolean {
     return NotificationManagerCompat.from(context).areNotificationsEnabled()

@@ -1,15 +1,15 @@
-package com.sarangem.zenwell.data.database
+package com.sarangem.zenwell.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.sarangem.zenwell.data.database.tables.AppNames
-import com.sarangem.zenwell.data.database.tables.BlockedApps
-import com.sarangem.zenwell.data.database.tables.Schedules
-import com.sarangem.zenwell.data.database.typeconverters.OperatorListConverter
-import com.sarangem.zenwell.data.database.typeconverters.WeekdaysListConverter
+import com.sarangem.zenwell.database.tables.AppNames
+import com.sarangem.zenwell.database.tables.BlockedApps
+import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.database.typeconverters.OperatorListConverter
+import com.sarangem.zenwell.database.typeconverters.WeekdaysListConverter
 
 @Database(entities = [Schedules::class, AppNames::class, BlockedApps::class], version = 13, exportSchema = false)
 @TypeConverters(OperatorListConverter::class, WeekdaysListConverter::class)

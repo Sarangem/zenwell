@@ -1,9 +1,9 @@
 package com.sarangem.zenwell
 
 import android.app.Application
-import com.sarangem.zenwell.data.database.repository.OfflineSchedulesRepository
-import com.sarangem.zenwell.data.database.repository.SchedulesRepository
-import com.sarangem.zenwell.data.database.ZenwellDatabase
+import com.sarangem.zenwell.database.repository.OfflineSchedulesRepository
+import com.sarangem.zenwell.database.repository.SchedulesRepository
+import com.sarangem.zenwell.database.ZenwellDatabase
 
 class ZenwellApplication : Application() {
 

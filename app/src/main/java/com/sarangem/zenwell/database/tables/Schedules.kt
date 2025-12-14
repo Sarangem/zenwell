@@ -1,11 +1,11 @@
-package com.sarangem.zenwell.data.database.tables
+package com.sarangem.zenwell.database.tables
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.sarangem.zenwell.data.BlockType
-import com.sarangem.zenwell.data.MathOperators
+import com.sarangem.zenwell.model.BlockType
+import com.sarangem.zenwell.model.MathOperators
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import java.util.Calendar

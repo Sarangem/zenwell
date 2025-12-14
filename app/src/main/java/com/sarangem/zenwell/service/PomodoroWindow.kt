@@ -3,7 +3,7 @@ package com.sarangem.zenwell.service
 import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.PomodoroBlockScreen
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createNotification
@@ -14,7 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.NotificationChannels
+import com.sarangem.zenwell.model.NotificationChannels
 import com.sarangem.zenwell.utils.deleteNotificationById
 import com.sarangem.zenwell.utils.secondsToString
 

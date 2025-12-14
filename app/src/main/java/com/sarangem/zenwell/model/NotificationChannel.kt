@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.data
+package com.sarangem.zenwell.model
 
 enum class NotificationChannels {
     BlockNotification,

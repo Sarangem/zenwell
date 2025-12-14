@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.data
+package com.sarangem.zenwell.model
 
 import androidx.annotation.StringRes
 import com.sarangem.zenwell.R

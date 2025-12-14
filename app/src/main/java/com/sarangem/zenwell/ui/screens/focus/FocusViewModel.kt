@@ -1,7 +1,7 @@
 package com.sarangem.zenwell.ui.screens.focus
 
 import androidx.lifecycle.ViewModel
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

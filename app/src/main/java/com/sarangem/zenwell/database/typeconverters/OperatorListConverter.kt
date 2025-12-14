@@ -1,7 +1,7 @@
-package com.sarangem.zenwell.data.database.typeconverters
+package com.sarangem.zenwell.database.typeconverters
 
 import androidx.room.TypeConverter
-import com.sarangem.zenwell.data.MathOperators
+import com.sarangem.zenwell.model.MathOperators
 
 class OperatorListConverter {
 

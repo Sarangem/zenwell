@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.data.database
+package com.sarangem.zenwell.database
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,9 +6,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.sarangem.zenwell.data.database.tables.AppNames
-import com.sarangem.zenwell.data.database.tables.BlockedApps
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.AppNames
+import com.sarangem.zenwell.database.tables.BlockedApps
+import com.sarangem.zenwell.database.tables.Schedules
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -60,13 +60,13 @@ interface ScheduleDao {
 
     @Delete
     fun deleteSchedule(schedules: Schedules)
-    
+
     @Query("DELETE from schedules")
     fun deleteAllSchedules()
 
     @Delete
     fun deleteAppNames(appNames: AppNames)
-    
+
     @Query("DELETE from app_names")
     fun deleteAllAppNames()
 

@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.screens.AppViewModelProvider

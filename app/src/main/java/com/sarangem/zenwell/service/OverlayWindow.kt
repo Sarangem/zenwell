@@ -17,8 +17,8 @@ import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.NotificationChannels
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.model.NotificationChannels
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createNotification

@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.data.database.tables
+package com.sarangem.zenwell.database.tables
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

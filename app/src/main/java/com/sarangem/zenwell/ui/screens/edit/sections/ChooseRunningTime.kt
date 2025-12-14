@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.data.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.edit.ValidationError
 import com.sarangem.zenwell.ui.screens.edit.fields.ClockButton
 import com.sarangem.zenwell.ui.screens.edit.fields.SelectWeekDays
