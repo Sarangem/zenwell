@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 class AppBlockerService : AccessibilityService() {
 
     val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
-
     companion object {
         var instance: AppBlockerService? = null
     }
@@ -42,10 +41,11 @@ class AppBlockerService : AccessibilityService() {
 
         val schedulesRepository = (application as ZenwellApplication).container
 
-        val schedulesList = schedulesRepository.getAllSchedules().first()
+        val schedulesList = schedulesRepository.getAllSchedules().first().filter { it.isEnabled }
+        serviceInfo.eventTypes = if (schedulesList.isEmpty()) 0 else AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+
         scheduleInfoList.clear()
         schedulesList.forEach { schedule ->
-
             scheduleInfoList.add(
                 ScheduleInfo(
                     service = this,
@@ -53,11 +53,9 @@ class AppBlockerService : AccessibilityService() {
                     appSet = schedulesRepository.getAppNames(schedule.id).first().toSet()
                 )
             )
-
         }
 
         recheckApp()
-
     }
 
     var previousApp = listOf<CharSequence>()
@@ -80,10 +78,18 @@ class AppBlockerService : AccessibilityService() {
             val root = windowInfo.root ?: continue
             val currentApp = root.packageName ?: continue
             currentVisibleApps.add(currentApp)
+            scheduleInfoList.forEach {scheduleInfo ->
+                scheduleInfo.viewsList.forEach {
+                    if ( root.findAccessibilityNodeInfosByViewId(it).isNotEmpty() ){
+                        currentVisibleApps.add(it)
+                        ServiceLogger.d { "Processing view id: $it" }
+                    }
+                }
+            }
             ServiceLogger.d { "Processing app $currentApp and is in $index position." }
 
             // check for duplicate entries
-            if (currentApp in previousApp) continue
+            // if (currentApp in previousApp) continue
 
             // get window bounds
             val windowBounds = Rect()
@@ -97,15 +103,15 @@ class AppBlockerService : AccessibilityService() {
             // open the window
             for (scheduleInfo in scheduleInfoList) {
 
-                if (!scheduleInfo.schedule.isEnabled) continue
                 if (getTodayDay() !in scheduleInfo.schedule.weekDays) continue
                 if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
 
-                if (currentApp in scheduleInfo.appSet) {
+                if (currentVisibleApps.any { it in scheduleInfo.appSet }) {
 
                     val blockingWindow =
-                        scheduleInfo.overlayWindowList.firstOrNull { it.appName == currentApp }
-                            ?: continue
+                        scheduleInfo.overlayWindowList.firstOrNull {
+                            it.appName in currentVisibleApps
+                        } ?: continue
                     ServiceLogger.i { "Opening window for schedule ${scheduleInfo.schedule.id} and ${blockingWindow.appName}" }
                     blockingWindow.open(windowBounds)
 

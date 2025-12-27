@@ -122,4 +122,7 @@
     <string name="range_of_multiplier">Range of multipliers in table</string>
     <string name="typing">Typing</string>
     <string name="check">Check</string>
+    <string name="custom_views_description">Add view IDs for blocking specific part of apps.\nEg: com.google.android.youtube:id/reel_recycler for Youtube Shorts.</string>
+    <string name="enter_new_view_id">Enter new view id</string>
+    <string name="custom_views">Custom Views</string>
 </resources>

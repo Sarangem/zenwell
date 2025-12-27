@@ -16,6 +16,8 @@ data class ScheduleInfo(
     var schedule: Schedules,
     val appSet: Set<String>,
 ) {
+    val viewsList = appSet.filter { it.contains(":id/") }
+
     var pomodoroWindow: PomodoroWindow? = null
     val overlayWindowList: MutableList<OverlayWindow> = mutableListOf()
 
