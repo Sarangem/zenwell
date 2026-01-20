@@ -88,9 +88,6 @@ class AppBlockerService : AccessibilityService() {
             }
             ServiceLogger.d { "Processing app $currentApp and is in $index position." }
 
-            // check for duplicate entries
-            // if (currentApp in previousApp) continue
-
             // get window bounds
             val windowBounds = Rect()
             root.getBoundsInScreen(windowBounds)

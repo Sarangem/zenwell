@@ -24,10 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,11 +34,8 @@ import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.model.BackupData
-import com.sarangem.zenwell.ui.screens.common.ShowConfirmDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -95,21 +88,6 @@ fun DataTransferCard(
         }
     }
 
-    var showDialog by remember { mutableStateOf(false) }
-    val isConfirmed = remember { MutableStateFlow(false) }
-    if (showDialog) {
-        ShowConfirmDialog(
-            icon = Icons.Outlined.Restore,
-            title = stringResource(R.string.restore_data),
-            description = stringResource(R.string.restore_data_dialog_description),
-            onConfirm = {
-                isConfirmed.value = true
-                showDialog = false
-            },
-            onDismiss = { showDialog = false }
-        )
-    }
-
     val restoreBackup = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
@@ -122,9 +100,7 @@ fun DataTransferCard(
                     val jsonString = BufferedReader(InputStreamReader(inputStream)).use { reader ->
                         reader.readText()
                     }
-                    val restoredData = json.decodeFromString<BackupData>(jsonString)
-                    showDialog = true
-                    isConfirmed.first { it }
+                    val restoredData = json.decodeFromString<List<BackupData>>(jsonString)
                     app.container.restoreAllData(restoredData)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, R.string.data_restore_completed, Toast.LENGTH_SHORT)
@@ -205,13 +181,13 @@ fun DataTransferActionCard(
                 modifier = Modifier
                     .clip(CircleShape)
                     .size(dimensionResource(R.dimen.image_size))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.fillMaxSize(0.6f)
                 )
 
@@ -220,11 +196,13 @@ fun DataTransferActionCard(
             Column {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = description,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

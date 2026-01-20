@@ -33,11 +33,10 @@ class EditViewModel(private val schedulesRepository: SchedulesRepository) : View
     }
 
     suspend fun saveToDatabase() {
-        val appNames = _uiState.value.appNames ?: getAppNames(_uiState.value.schedule.id)
         schedulesRepository.saveToDatabase(
             schedule = _uiState.value.schedule,
-            appNames = appNames,
-            pastAppList = pastAppList ?: appNames,
+            appNames = _uiState.value.appNames,
+            pastAppList = pastAppList,
         )
         AppBlockerService.instance?.initializeRepository()
     }

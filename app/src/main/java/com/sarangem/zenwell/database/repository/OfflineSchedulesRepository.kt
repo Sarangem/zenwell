@@ -18,39 +18,43 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
     override suspend fun addNewSchedule(schedule: Schedules): Int = scheduleDao.insertSchedule(schedule).toInt()
     override suspend fun updateSchedule(schedule: Schedules) = scheduleDao.updateSchedule(schedule)
 
-    override suspend fun getAllData(): BackupData {
-        return BackupData(
-            schedulesList = scheduleDao.getAllSchedules().first().sortedBy { it.id },
-            appNamesList = scheduleDao.getAllApps().first(),
-            blockedAppsList = scheduleDao.getAllAppRelations().first()
-        )
+    override suspend fun getAllData(): List<BackupData> {
+        val schedulesList = scheduleDao.getAllSchedules().first()
+        val data = mutableListOf<BackupData>()
+        schedulesList.forEach {
+            data.add(
+                BackupData(
+                    schedule = it,
+                    appNamesList = getAppNames(it.id).first()
+                )
+            )
+        }
+        return data
     }
 
-    override suspend fun restoreAllData(data: BackupData) {
-        scheduleDao.deleteAllSchedules()
-        data.schedulesList.forEach { 
-            scheduleDao.insertSchedule(it)
+    override suspend fun restoreAllData(data: List<BackupData>) {
+        data.forEach {
+            val id = addNewSchedule(it.schedule)
+            saveToDatabase(
+                schedule = it.schedule.copy(id = id),
+                appNames = it.appNamesList,
+                pastAppList = listOf()
+            )
         }
-        scheduleDao.deleteAllAppNames()
-        data.appNamesList.forEach { 
-            scheduleDao.insertAppNames(it)
-        }
-        scheduleDao.deleteAllAppRelations()
-        data.blockedAppsList.forEach { 
-            scheduleDao.insertAppRelation(it)
-        }
-        removeAppNameIfUnused()
     }
 
     override suspend fun saveToDatabase(
         schedule: Schedules,
-        appNames: List<String>,
-        pastAppList: List<String>
+        appNames: List<String>?,
+        pastAppList: List<String>?
     ) {
         // first update the schedule table
         scheduleDao.updateSchedule(schedules = schedule)
-        val pastAppSet = pastAppList.toMutableSet()
 
+        // if appNames is null, apps are not loaded nor modified
+        if (appNames == null || pastAppList == null) return
+
+        val pastAppSet = pastAppList.toMutableSet()
         for (app in appNames) {
 
             if (app !in pastAppSet) {

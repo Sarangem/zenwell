@@ -109,8 +109,7 @@
     <string name="export_data">Export Data</string>
     <string name="export_data_description">Save app data for restoring later.</string>
     <string name="restore_data">Restore Data</string>
-    <string name="restore_data_description">Restore app data with previously exported file.</string>
-    <string name="restore_data_dialog_description">Restoring data will delete your existing app data to replace with app data in the file. Do you want to continue?</string>
+    <string name="restore_data_description">Restore app data with previously exported file. It does not delete existing data.</string>
     <string name="data_restore_failed">Data restore failed.</string>
     <string name="data_restore_completed">Data restore completed.</string>
     <string name="choose_running_time">Running time</string>
