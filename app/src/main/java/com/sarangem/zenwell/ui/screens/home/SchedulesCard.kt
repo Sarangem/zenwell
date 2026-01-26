@@ -48,13 +48,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.screens.common.ShowConfirmDialog
-import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.utils.getAmPm
 import com.sarangem.zenwell.utils.is24Hour
 import com.sarangem.zenwell.utils.minutesToString
@@ -268,7 +268,7 @@ fun PomodoroTimerControls(
                 Text(
                     text = secondsToString(elapsedTime),
                     style = MaterialTheme.typography.displayMedium,
-                    fontFamily = Orbitron,
+                    fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     color = MaterialTheme.colorScheme.onSurface,

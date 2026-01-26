@@ -40,15 +40,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.MathQuestion
@@ -56,7 +55,6 @@ import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.Green500
-import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.generateMathQuestion
 import kotlinx.coroutines.launch
@@ -245,18 +243,17 @@ fun QuestionCard(
         Row(Modifier.horizontalScroll(rememberScrollState())) {
             Text(
                 text = if (isExpanded) question.longQuestion else question.shortQuestion,
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Left,
-                fontFamily = Orbitron,
+                fontFamily = FontFamily.Monospace,
                 maxLines = if (isExpanded) Int.MAX_VALUE else 1,
                 modifier = Modifier
-                    .graphicsLayer(scaleY = 1.5f)
                     .padding(
                         start = dimensionResource(R.dimen.padding_small),
                         end = dimensionResource(R.dimen.padding_small),
-                        top = if (isExpanded) 48.dp else dimensionResource(R.dimen.padding_large),
-                        bottom = if (isExpanded) 48.dp else dimensionResource(R.dimen.padding_large)
+                        top = dimensionResource(R.dimen.padding_medium),
+                        bottom = dimensionResource(R.dimen.padding_medium)
                     )
             )
         }

@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.em
 import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.theme.Orbitron
 
 @Composable
 fun PomodoroTimerDisplay(
@@ -54,7 +54,7 @@ fun PomodoroTimerDisplay(
                 .graphicsLayer(scaleY = 1.5f),
             fontWeight = FontWeight.Bold,
             lineHeight = 1.em,
-            fontFamily = Orbitron,
+            fontFamily = FontFamily.Monospace,
             maxLines = if(isExpandedWidth) 1 else 2,
             autoSize = TextAutoSize.StepBased()
         )

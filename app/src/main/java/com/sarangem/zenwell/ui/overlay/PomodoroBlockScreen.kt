@@ -18,14 +18,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.screens.common.TimerBox
-import com.sarangem.zenwell.ui.theme.Orbitron
 import kotlinx.coroutines.delay
 
 @Composable
@@ -81,21 +80,17 @@ fun PomodoroTimerCard(
             val seconds = elapsedTime % 60
             Text(
                 text = if (minutes < 10) "0$minutes" else minutes.toString(),
-                modifier = Modifier
-                    .padding(dimensionResource(R.dimen.padding_small))
-                    .graphicsLayer(scaleY = 1.5f),
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                 fontWeight = FontWeight.Bold,
-                fontFamily = Orbitron,
+                fontFamily = FontFamily.Monospace,
                 maxLines = 1,
                 autoSize = TextAutoSize.StepBased()
             )
             Text(
                 text = if (seconds < 10) "0$seconds" else seconds.toString(),
-                modifier = Modifier
-                    .padding(dimensionResource(R.dimen.padding_small))
-                    .graphicsLayer(scaleY = 1.5f),
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                 fontWeight = FontWeight.Bold,
-                fontFamily = Orbitron,
+                fontFamily = FontFamily.Monospace,
                 maxLines = 1,
                 autoSize = TextAutoSize.StepBased()
             )

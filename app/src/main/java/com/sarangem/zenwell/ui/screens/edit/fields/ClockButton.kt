@@ -17,11 +17,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.utils.convertToTimePickerState
 import com.sarangem.zenwell.utils.getAmPm
 import com.sarangem.zenwell.utils.is24Hour
@@ -54,11 +53,10 @@ fun ClockButton(
                 Text(
                     text = minutesToString(time, context),
                     style = MaterialTheme.typography.headlineMedium,
-                    fontFamily = Orbitron,
+                    fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.ExtraBold,
                     maxLines = 1,
                     autoSize = TextAutoSize.StepBased(maxFontSize = MaterialTheme.typography.headlineMedium.fontSize),
-                    modifier = Modifier.graphicsLayer(scaleY = 1.5f)
                 )
                 Spacer(Modifier.weight(0.5f))
             }
@@ -68,11 +66,10 @@ fun ClockButton(
                     Text(
                         text = getAmPm(time),
                         style = MaterialTheme.typography.labelMedium,
-                        fontFamily = Orbitron,
+                        fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         autoSize = TextAutoSize.StepBased(maxFontSize = MaterialTheme.typography.labelMedium.fontSize),
-                        modifier = Modifier.graphicsLayer(scaleX = 1.5f)
                     )
                     Spacer(Modifier.weight(0.5f))
                 }

@@ -17,8 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
@@ -29,7 +29,6 @@ import com.sarangem.zenwell.ui.overlay.common.MEDIUM_WIDTH
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.overlay.common.PREVIEW_HEIGHT
 import com.sarangem.zenwell.ui.screens.common.TimerBox
-import com.sarangem.zenwell.ui.theme.Orbitron
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.delay
 
@@ -66,12 +65,10 @@ fun WaitScreen(
                         text = time.toString(),
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         fontWeight = FontWeight.SemiBold,
-                        fontFamily = Orbitron,
+                        fontFamily = FontFamily.Monospace,
                         maxLines = 1,
                         autoSize = TextAutoSize.StepBased(),
-                        modifier = Modifier
-                            .padding(dimensionResource(R.dimen.padding_medium))
-                            .graphicsLayer(scaleY = 1.5f),
+                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
                     )
                 },
                 modifier = modifier
