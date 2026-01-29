@@ -15,7 +15,6 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,7 +68,7 @@ fun MultiplicationTableScreen(
         },
         mainPaneRowWeight = 0.6f,
         mainPaneColumnWeight = 0.7f,
-        showOpenDialog = schedule.waitEnterButton,
+        showOpenDialog = schedule.requireManualUnlock,
         showOpen = showOpen,
         message = schedule.message,
         onTimerEnd = onTimerEnd,
@@ -202,7 +201,6 @@ fun MultiplicationTableCard(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
 fun MultiplicationTableScreenPreview() {

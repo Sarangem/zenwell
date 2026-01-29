@@ -75,7 +75,7 @@ fun TypingScreen(
                     focusManager.clearFocus()
                     if (input == schedule.message) {
                         showOpen = true
-                        if (!schedule.waitEnterButton) onTimerEnd()
+                        if (!schedule.requireManualUnlock) onTimerEnd()
                     }
                 },
                 icon = {
@@ -207,7 +207,7 @@ fun TypingTextField(
 @Composable
 fun TypingScreenPreviewLight() {
     ZenwellTheme(darkTheme = false) {
-        TypingScreen(schedule = Schedules(message = APP_BLOCKED, waitEnterButton = true))
+        TypingScreen(schedule = Schedules(message = APP_BLOCKED, requireManualUnlock = true))
     }
 }
 
@@ -216,6 +216,6 @@ fun TypingScreenPreviewLight() {
 @Composable
 fun TypingScreenPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        TypingScreen(schedule = Schedules(message = APP_BLOCKED, waitEnterButton = true))
+        TypingScreen(schedule = Schedules(message = APP_BLOCKED, requireManualUnlock = true))
     }
 }

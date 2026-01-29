@@ -17,15 +17,15 @@ import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.model.NotificationChannels
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
-import com.sarangem.zenwell.utils.createNotification
+import com.sarangem.zenwell.utils.createBlockNotification
 import com.sarangem.zenwell.utils.deleteNotificationById
 import com.sarangem.zenwell.utils.getAppNameFromPackageName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,8 +35,9 @@ class OverlayWindow(
     val schedule: Schedules,
     var content: @Composable (() -> Unit) -> Unit,
     private val service: AppBlockerService,
+    supervisorJob: Job,
 ) {
-    val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisorJob)
 
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val layoutParams =
@@ -80,9 +81,13 @@ class OverlayWindow(
                 flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 gravity = Gravity.TOP or Gravity.START
                 height = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    bounds.height() - WindowInsets.Type.displayCutout()
+                    val navBar = windowManager.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.navigationBars()).bottom
+                    bounds.height() - navBar
                 } else {
                     bounds.height()
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
                 }
                 width = bounds.width()
                 x = bounds.left
@@ -139,18 +144,14 @@ class OverlayWindow(
         coroutineScope.launch {
 
             // send notification
-            val delayTime = schedule.openTimeInMinutes - schedule.notificationTimeInMinutes
+            val delayTime = schedule.usageSessionDurationInMinutes - schedule.notificationTimeInMinutes
             if (delayTime < 0) return@launch
             delay(delayTime * 60 * 1000L)
             if (schedule.notificationTimeInMinutes > 0) {
-                createNotification(
+                createBlockNotification(
                     id = schedule.id + appName.hashCode(),
-                    message = schedule.title + service.getString(R.string.block_notification_message) + getAppNameFromPackageName(
-                        service,
-                        appName
-                    ),
+                    message = schedule.title + service.getString(R.string.block_notification_message) + getAppNameFromPackageName(service, appName),
                     context = service,
-                    notificationChannel = NotificationChannels.BlockNotification
                 )
             }
 

@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.sarangem.zenwell.model.BlockType
+import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.model.MathOperators
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
@@ -21,13 +21,13 @@ data class Schedules(
 
     val title: String = "", // would be set be viewmodel
 
-    val message: String = "",
+    val message: String = "\uD83E\uDDD8",
 
-    @ColumnInfo(name = "is_enabled")
-    val isEnabled: Boolean = true,
+    @ColumnInfo(name = "is_active")
+    val isActive: Boolean = true,
 
-    @ColumnInfo(name = "block_type")
-    val blockType: BlockType = BlockType.FullBlock,
+    @ColumnInfo(name = "unlock_method")
+    val unlockMethod: UnlockMethod = UnlockMethod.StrictBlock,
 
     // time of the day when blocking will start
     // if null, assume it would run always
@@ -39,16 +39,16 @@ data class Schedules(
     val endTimeInMinutes: Int = 1439,
 
     // time to wait before opening the app
-    @ColumnInfo(name = "wait_time")
-    val waitTimeInSeconds: Int = 10,
+    @ColumnInfo(name = "timer_duration")
+    val timerDurationInSeconds: Int = 10,
 
     // should the app use a button to enter or enter automatically
-    @ColumnInfo(name = "wait_enter_button")
-    val waitEnterButton: Boolean = true,
+    @ColumnInfo(name = "require_manual_unlock")
+    val requireManualUnlock: Boolean = true,
 
     // how long would the app be opened before again showing block message
-    @ColumnInfo(name = "open_time")
-    val openTimeInMinutes: Int = 10,
+    @ColumnInfo(name = "usage_session_duration")
+    val usageSessionDurationInMinutes: Int = 10,
 
     // how long should a breathing cycle (one inhalation + one exhalation) take
     @ColumnInfo(name = "breathing_cycle_duration")
@@ -105,14 +105,6 @@ data class Schedules(
 
     @ColumnInfo(name = "multiplier_max_num")
     val multiplierMaxNum: Int = 10,
-
-    // parachute means skipping the block message. check if enabled.
-    @ColumnInfo(name = "is_parachute")
-    val isParachute: Boolean = false,
-
-    // number of parachutes for each day
-    @ColumnInfo(name = "parachute_count")
-    val parachuteCount: Int = 0,
 
     // make the schedule of pomodoro type
     @ColumnInfo(name = "is_pomodoro")

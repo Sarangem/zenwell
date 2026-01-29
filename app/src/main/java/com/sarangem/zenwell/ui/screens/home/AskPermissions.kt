@@ -1,12 +1,10 @@
 package com.sarangem.zenwell.ui.screens.home
 
-import android.content.Intent
 import android.os.Build
-import android.provider.Settings
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,39 +24,31 @@ import androidx.compose.ui.text.withStyle
 import com.sarangem.zenwell.R
 
 @Composable
-fun AskPermissions(
+fun AccessibilityPermissionCard(
     modifier: Modifier = Modifier,
-    hasAccessibilityServicePermission: Boolean = false,
-    hasNotificationsPermission: Boolean = false,
-    startPermissionActivity: (Intent) -> Unit = {},
-    requestNotification: () -> Unit = {},
-    isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
-) {
-    Column {
+    recheckPermission: () -> Unit = {}
+){
+    PermissionRequestCard(
+        modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
+        permissionName = stringResource(R.string.accessibility_service_permission),
+        permissionExplanation = stringResource(R.string.accessibility_service_permission_explanation),
+        onGrantClick = recheckPermission
+    )
+}
 
-        if (!hasAccessibilityServicePermission) {
-            PermissionRequestCard(
-                modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
-                permissionName = stringResource(R.string.accessibility_service_permission),
-                permissionExplanation = stringResource(R.string.accessibility_service_permission_explanation),
-                onGrantClick = {
-                    startPermissionActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-                }
-            )
-        }
-
-        if (!hasNotificationsPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            PermissionRequestCard(
-                modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
-                permissionName = stringResource(R.string.notification_permission),
-                permissionExplanation = stringResource(R.string.notification_permission_explanation),
-                cardColor = if (isSystemInDarkTheme) Color(0xFF7C5900) else Color(0xFFF9DEBB),
-                onGrantClick = {
-                    requestNotification()
-                }
-            )
-        }
-
+@Composable
+fun NotificationPermissionCard(
+    modifier: Modifier = Modifier,
+    onGrantClick: () -> Unit = {}
+){
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        PermissionRequestCard(
+            modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
+            permissionName = stringResource(R.string.notification_permission),
+            permissionExplanation = stringResource(R.string.notification_permission_explanation),
+            cardColor = if (isSystemInDarkTheme()) Color(0xFF7C5900) else Color(0xFFF9DEBB),
+            onGrantClick = onGrantClick
+        )
     }
 }
 
@@ -71,14 +61,12 @@ fun PermissionRequestCard(
     cardColor: Color = MaterialTheme.colorScheme.errorContainer,
     textColor: Color = MaterialTheme.colorScheme.onErrorContainer
 ) {
-    val buttonColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
-
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = dimensionResource(R.dimen.card_elevation)
         ),
         colors = CardDefaults.cardColors(cardColor),
-        modifier = modifier
+        modifier = modifier.fillMaxWidth()
     ) {
         Text(
             text = buildAnnotatedString {
@@ -95,7 +83,7 @@ fun PermissionRequestCard(
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = onGrantClick,
-                colors = ButtonDefaults.buttonColors(buttonColor),
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error.copy(alpha = 0.1f)),
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
             ) {
                 Text(

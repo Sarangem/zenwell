@@ -51,7 +51,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.screens.edit.DetailsCard
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.PackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
@@ -59,27 +58,26 @@ import com.sarangem.zenwell.utils.getInstalledApps
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseAppList(
-    modifier: Modifier = Modifier,
-    checkedAppList: List<String>?,
-    updateAppList: (List<String>) -> Unit = {}
+    appNames: List<String>?,
+    updateValue: (List<String>) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    DetailsCard(
-        modifier = modifier
-            .padding(dimensionResource(R.dimen.padding_small))
-            .clickable(onClick = { expanded = true })
-    ) {
-        Text(
-            text = stringResource(R.string.choose_apps),
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Spacer(Modifier.weight(1f))
-        IconButton(onClick = { expanded = true }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowRight,
-                contentDescription = stringResource(R.string.show_apps_to_block)
+    DetailsCardColumn{
+        DetailsCard(
+            modifier = Modifier.clickable { expanded = true }
+        ) {
+            Text(
+                text = stringResource(R.string.choose_apps),
+                style = MaterialTheme.typography.bodyLarge
             )
+            Spacer(Modifier.weight(1f))
+            IconButton(onClick = { expanded = true }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                    contentDescription = stringResource(R.string.show_apps_to_block)
+                )
+            }
         }
     }
 
@@ -91,12 +89,16 @@ fun ChooseAppList(
         ) {
             BottomSheetContents(
                 getInstalledApps = { getInstalledApps(it) },
-                checkedAppList = checkedAppList,
+                checkedAppList = appNames,
                 addAppToList = {
-                    if (checkedAppList != null) updateAppList(checkedAppList.plus(it))
+                    if (appNames != null) {
+                        updateValue(appNames + it)
+                    }
                 },
                 removeAppFromList = {
-                    if (checkedAppList != null) updateAppList(checkedAppList.minus(it))
+                    if (appNames != null) {
+                        updateValue(appNames - it)
+                    }
                 }
             )
         }

@@ -23,11 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.screens.common.ShowConfirmDialog
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -36,13 +36,17 @@ fun SaveAndDeleteButton(
     isError: Boolean = false,
     onSave: () -> Unit = {},
     onDelete: () -> Unit = {},
+    goBack: () -> Unit = {}
 ) {
     var checkedSave by remember { mutableStateOf(false) }
     var checkedDelete by remember { mutableStateOf(false) }
 
     HorizontalFloatingToolbar(
         expanded = true,
-        modifier = modifier
+        modifier = modifier.padding(
+            start = dimensionResource(R.dimen.padding_small),
+            end = dimensionResource(R.dimen.padding_small)
+        )
     ) {
 
         // SAVE BUTTON
@@ -52,6 +56,7 @@ fun SaveAndDeleteButton(
                 if(!isError){
                     checkedSave = false
                     onSave()
+                    goBack()
                     checkedSave = true
                 }
             },
@@ -120,6 +125,7 @@ fun SaveAndDeleteButton(
                 onConfirm = {
                     checkedDelete = false
                     onDelete()
+                    goBack()
                 }
             )
         }

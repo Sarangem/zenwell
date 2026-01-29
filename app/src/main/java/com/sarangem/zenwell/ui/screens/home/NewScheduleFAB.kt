@@ -1,5 +1,6 @@
 package com.sarangem.zenwell.ui.screens.home
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -24,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -39,9 +41,10 @@ import kotlinx.coroutines.withContext
 @Composable
 fun NewScheduleFAB(
     modifier: Modifier = Modifier,
-    addNewSchedule: suspend () -> Schedules = suspend { Schedules() },
+    addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
 ) {
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var fabMenuExpanded by remember { mutableStateOf(false) }
     val expanded = stringResource(R.string.expanded)
@@ -86,7 +89,7 @@ fun NewScheduleFAB(
             onClick = {
                 fabMenuExpanded = false
                 coroutineScope.launch(Dispatchers.IO) {
-                    val newSchedule = addNewSchedule()
+                    val newSchedule = addNewSchedule(context, false)
                     withContext(Dispatchers.Main) {
                         openEditScreen(newSchedule)
                     }
@@ -107,7 +110,7 @@ fun NewScheduleFAB(
             onClick = {
                 fabMenuExpanded = false
                 coroutineScope.launch(Dispatchers.IO) {
-                    val newSchedule = addNewSchedule()
+                    val newSchedule = addNewSchedule(context, true)
                     withContext(Dispatchers.Main) {
                         openEditScreen(newSchedule.copy(isPomodoro = true))
                     }

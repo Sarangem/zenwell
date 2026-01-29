@@ -1,38 +1,18 @@
 package com.sarangem.zenwell.ui.screens.edit
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.AppViewModelProvider
-import com.sarangem.zenwell.ui.screens.edit.fields.SaveAndDeleteButton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.compose.ui.tooling.preview.Preview
+import com.sarangem.zenwell.model.UnlockMethod
+import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
+import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(
     modifier: Modifier = Modifier,
@@ -42,99 +22,44 @@ fun EditScreen(
 ) {
     val viewModel: EditViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val uiState by viewModel.uiState.collectAsState()
-    LaunchedEffect(schedule) {
-        launch(Dispatchers.IO) {
-
-            val appNames = viewModel.getAppNames(schedule.id)
-            withContext(Dispatchers.Main) {
-                viewModel.updateUiState(EditUiState(schedule, appNames))
-            }
-            viewModel.pastAppList = appNames
-
-        }
+    LaunchedEffect(schedule.id) {
+        viewModel.initialize(schedule)
     }
 
-    val coroutineScope = rememberCoroutineScope()
-    var isSaving by rememberSaveable { mutableStateOf(false) }
-
-    Scaffold(
+    EditScreenContents(
         modifier = modifier,
-        topBar = {
-            if (showTopAppBar) {
-                TopAppBar(
-                    navigationIcon = {
-                        IconButton(
-                            onClick = goBack,
-                            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-                        ) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.go_back)
-                            )
-                        }
-                    },
-                    title = {
-                        Text(
-                            text = stringResource(R.string.edit) + " " + uiState.schedule.title,
-                            style = MaterialTheme.typography.headlineSmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                )
-            }
-        },
-        floatingActionButton = {
-            SaveAndDeleteButton(
-                modifier = Modifier.padding(
-                    start = dimensionResource(R.dimen.padding_small),
-                    end = dimensionResource(R.dimen.padding_small)
+        uiState = uiState,
+        updateSchedule = viewModel::updateSchedule,
+        updateAppNames = viewModel::updateAppNames,
+        showTopAppBar = showTopAppBar,
+        saveToDatabase = viewModel::saveToDatabase,
+        deleteSchedule = viewModel::deleteSchedule,
+        goBack = {
+            goBack()
+            viewModel.emptyUiState()
+        }
+    )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun EditScreenPreview() {
+    ZenwellTheme(darkTheme = false) {
+        EditScreenContents(
+            uiState = EditUiState(
+                schedule = Schedules(
+                    title = "Schedule 1",
+                    message = APP_BLOCKED,
+                    unlockMethod = UnlockMethod.MathProblem,
+                    startTimeInMinutes = 179,
+                    endTimeInMinutes = 1079,
                 ),
-                onSave = {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        isSaving = true
-                        viewModel.saveToDatabase()
-                        isSaving = false
-                        withContext(Dispatchers.Main) {
-                            goBack()
-                        }
-                    }
-                },
-                onDelete = {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        isSaving = true
-                        viewModel.deleteSchedule()
-                        isSaving = false
-                        withContext(Dispatchers.Main) {
-                            goBack()
-                        }
-                    }
-                },
-                isError = uiState.validationErrors.isNotEmpty()
+                validationErrors = setOf(
+                    ValidationError.ActiveTime,
+                    ValidationError.NotificationTime
+                )
             )
-        },
-        floatingActionButtonPosition = FabPosition.Center
-    ) { innerPadding ->
-
-        EditScreenBody(
-            modifier = Modifier.padding(innerPadding),
-            uiState = uiState,
-            updateSchedule = {
-                viewModel.updateUiState(
-                    uiState.copy(
-                        schedule = it
-                    )
-                )
-            },
-            updateAppList = {
-                viewModel.updateUiState(
-                    uiState.copy(
-                        appNames = it
-                    )
-                )
-            },
-            isSaving = isSaving
         )
-
     }
 }

@@ -8,14 +8,11 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.sarangem.zenwell.MainActivity
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.model.NotificationChannels
 
-fun areNotificationsEnabled(context: Context): Boolean {
-    return NotificationManagerCompat.from(context).areNotificationsEnabled()
-}
+const val BlockNotification = "BlockNotification"
+const val PomodoroNotification = "PomodoroNotification"
 
 fun createNotificationChannel(context: Context) {
     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) return
@@ -23,55 +20,67 @@ fun createNotificationChannel(context: Context) {
 
     manager.createNotificationChannel(
         NotificationChannel(
-            /* id = */ NotificationChannels.BlockNotification.name,
-            /* name = */ context.getString(R.string.send_notification_before_closing),
+            /* id = */ BlockNotification,
+            /* name = */ context.getString(R.string.notify_before_closing),
             /* importance = */ NotificationManager.IMPORTANCE_LOW
         ).apply {
             description = context.getString(R.string.block_notification_description)
-            setSound(null, null)
         }
     )
 
     manager.createNotificationChannel(
         NotificationChannel(
-            /* id = */ NotificationChannels.PomodoroNotification.name,
+            /* id = */ PomodoroNotification,
             /* name = */ context.getString(R.string.pomodoro_timer),
             /* importance = */ NotificationManager.IMPORTANCE_DEFAULT
         )
     )
 }
 
-fun createNotification(
+fun createPomodoroNotification(
+    time: String,
+    id: Int,
+    isWork: Boolean,
+    context: Context,
+) {
+    val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
+    val intent = PendingIntent.getActivity(
+        /* context = */ context,
+        /* requestCode = */ 0,
+        /* intent = */ Intent(
+            /* packageContext = */ context,
+            /* cls = */ MainActivity::class.java
+        ).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        },
+        /* flags = */ PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+    )
+    val builder = NotificationCompat.Builder(context, PomodoroNotification)
+        .setSmallIcon(if(isWork) R.drawable.work_white else R.drawable.local_cafe_white)
+        .setContentTitle(time)
+        .setContentText(if(isWork) context.getString(R.string.work_time_notification) else context.getString(R.string.rest_time_notification))
+        .setOnlyAlertOnce(true)
+        .setOngoing(true)
+        .setCategory(NotificationCompat.CATEGORY_ALARM)
+        .setPriority(NotificationCompat.PRIORITY_LOW)
+        .setContentIntent(intent)
+        .build()
+    ServiceLogger.v { "Notification sent with $time" }
+    manager.notify(id, builder)
+}
+
+fun createBlockNotification(
     message: String,
     id: Int,
     context: Context,
-    notificationChannel: NotificationChannels
 ) {
     val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
-
-    val intent = if(notificationChannel == NotificationChannels.PomodoroNotification) {
-        PendingIntent.getActivity(
-            /* context = */ context,
-            /* requestCode = */ 0,
-            /* intent = */ Intent(
-                /* packageContext = */ context,
-                /* cls = */ MainActivity::class.java
-            ).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            },
-            /* flags = */ PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-    } else {
-        null
-    }
-
-    val builder = NotificationCompat.Builder(context, notificationChannel.name)
+    val builder = NotificationCompat.Builder(context, BlockNotification)
         .setSmallIcon(R.drawable.ic_launcher_foreground)
         .setContentTitle(message)
         .setVibrate(LongArray(0))
-        .setContentIntent(intent)
+        .setSound(null)
         .build()
-
     ServiceLogger.v { "Notification sent with message: $message" }
     manager.notify(id, builder)
 }
@@ -81,20 +90,12 @@ fun deleteNotificationById(
     context: Context
 ) {
     val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
-    ServiceLogger.v { "Notification with ID $id cancelled." }
     manager.cancel(id)
+    ServiceLogger.v { "Notification with ID $id cancelled." }
 }
-
-fun deleteNotificationByChannel(
-    channels: NotificationChannels,
-    context: Context
-){
+fun deleteAllNotificationChannel(context: Context){
     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) return
-
     val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
-    manager.activeNotifications.forEach { status ->
-        if (status.notification.channelId == channels.name){
-            manager.cancel(status.id)
-        }
-    }
+    manager.deleteNotificationChannel(BlockNotification)
+    manager.deleteNotificationChannel(PomodoroNotification)
 }

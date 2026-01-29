@@ -3,11 +3,11 @@ package com.sarangem.zenwell.model
 import androidx.annotation.StringRes
 import com.sarangem.zenwell.R
 
-enum class BlockType(@get:StringRes val title: Int) {
-    FullBlock(R.string.full_block),
-    Wait(R.string.wait),
+enum class UnlockMethod(@get:StringRes val title: Int) {
+    StrictBlock(R.string.strict_block),
+    Timer(R.string.timer),
     Breathing(R.string.breathing),
-    MathEquation(R.string.math_equation),
+    MathProblem(R.string.math_problem),
     MultiplicationTable(R.string.multiplication_table),
     Typing(R.string.typing),
 }

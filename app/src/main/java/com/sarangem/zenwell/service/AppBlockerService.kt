@@ -7,13 +7,14 @@ import android.graphics.Rect
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import com.sarangem.zenwell.ZenwellApplication
-import com.sarangem.zenwell.model.NotificationChannels
 import com.sarangem.zenwell.utils.ServiceLogger
-import com.sarangem.zenwell.utils.deleteNotificationByChannel
+import com.sarangem.zenwell.utils.deleteAllNotificationChannel
 import com.sarangem.zenwell.utils.getCurrentTimeInMinutes
 import com.sarangem.zenwell.utils.getTodayDay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -25,6 +26,7 @@ class AppBlockerService : AccessibilityService() {
     companion object {
         var instance: AppBlockerService? = null
     }
+    val supervisorJob = SupervisorJob()
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -38,23 +40,22 @@ class AppBlockerService : AccessibilityService() {
     }
 
     suspend fun initializeRepository() {
-
+        supervisorJob.cancelChildren()
         val schedulesRepository = (application as ZenwellApplication).container
-
-        val schedulesList = schedulesRepository.getAllSchedules().first().filter { it.isEnabled }
-        serviceInfo.eventTypes = if (schedulesList.isEmpty()) 0 else AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-
+        val schedulesList = schedulesRepository.getAllSchedules().first().filter { it.isActive }
         scheduleInfoList.clear()
         schedulesList.forEach { schedule ->
             scheduleInfoList.add(
                 ScheduleInfo(
                     service = this,
                     schedule = schedule,
-                    appSet = schedulesRepository.getAppNames(schedule.id).first().toSet()
+                    appSet = schedulesRepository.getAppNames(schedule.id).first().toSet(),
+                    supervisorJob = supervisorJob
                 )
             )
         }
-
+        scheduleInfoList.removeAll { !it.schedule.isPomodoro && it.appSet.isEmpty() }
+        serviceInfo.eventTypes = if (schedulesList.isEmpty()) 0 else AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
         recheckApp()
     }
 
@@ -149,7 +150,8 @@ class AppBlockerService : AccessibilityService() {
                 blockingWindow.close()
             }
         }
-        deleteNotificationByChannel(NotificationChannels.BlockNotification, this)
+        deleteAllNotificationChannel(this)
+        supervisorJob.cancel()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {

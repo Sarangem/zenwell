@@ -1,23 +1,18 @@
-package com.sarangem.zenwell.ui.screens.edit
+package com.sarangem.zenwell.ui.screens.edit.fields
 
+import androidx.annotation.StringRes
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,58 +20,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @Composable
 fun DetailsCard(
     modifier: Modifier = Modifier,
-    isStacked: Boolean = false,
     content: @Composable RowScope.() -> Unit = {}
 ) {
     Card(
         modifier = modifier,
-        shape = if (isStacked) RoundedCornerShape(0.dp) else MaterialTheme.shapes.medium,
+        shape = RoundedCornerShape(0.dp)
     ) {
         Row(
             modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             content()
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-fun DetailsCardWithSwitch(
-    modifier: Modifier = Modifier,
-    isStacked: Boolean = false,
-    mainText: String,
-    checked: Boolean,
-    motionScheme: MotionScheme = MotionScheme.standard(),
-    onCheckedChange: (Boolean) -> Unit = {}
-) {
-    DetailsCard(
-        modifier = modifier,
-        isStacked = isStacked
-    ) {
-        Text(
-            text = mainText,
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Spacer(Modifier.weight(1f))
-        ZenwellTheme(motionScheme = motionScheme) {
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                modifier = Modifier.padding(end = dimensionResource(R.dimen.padding_small))
-            )
         }
     }
 }
@@ -89,7 +52,8 @@ fun DetailsCardColumn(
     Column(
         modifier = modifier
             .padding(dimensionResource(R.dimen.padding_small))
-            .clip(MaterialTheme.shapes.medium),
+            .clip(MaterialTheme.shapes.medium)
+            .animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
     ) {
         content()
@@ -98,27 +62,22 @@ fun DetailsCardColumn(
 
 @Composable
 fun DetailsCardWithTextField(
-    modifier: Modifier = Modifier,
-    isStacked: Boolean = false,
-    mainText: String = "",
+    @StringRes mainText: Int,
     textFieldValue: String = "",
-    onValueChange: (String) -> Unit = {},
-    keyboardType: KeyboardType = KeyboardType.Text,
-    suffixText: String = "",
+    @StringRes suffixText: Int? = null,
     isError: Boolean = false,
-    errorMessage: String = ""
+    @StringRes errorMessage: Int? = null,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    onValueChange: (String) -> Unit = {},
 ) {
-    DetailsCard(
-        modifier = modifier,
-        isStacked = isStacked
-    ) {
+    DetailsCard {
         Text(
-            text = mainText,
+            text = stringResource(mainText),
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(1f)
         )
         OutlinedTextField(
-            modifier = Modifier.weight(0.8f),
+            modifier = Modifier.weight(2f),
             value = textFieldValue,
             shape = MaterialTheme.shapes.large,
             onValueChange = onValueChange,
@@ -127,12 +86,14 @@ fun DetailsCardWithTextField(
                 keyboardType = keyboardType
             ),
             suffix = {
-                Text(suffixText)
+                Text(
+                    suffixText?.let { stringResource(it) } ?: ""
+                )
             },
             isError = isError,
             label = {
                 if (isError) {
-                    Text(errorMessage)
+                    errorMessage?.let { stringResource(it) } ?: ""
                 }
             }
         )
@@ -141,18 +102,14 @@ fun DetailsCardWithTextField(
 
 @Composable
 fun DetailsCardWithNumberField(
-    modifier: Modifier = Modifier,
-    isStacked: Boolean = false,
-    mainText: String = "",
+    @StringRes mainText: Int,
     textFieldValue: Int,
-    updateSchedule: (Int) -> Unit = {},
-    suffixText: String = "",
+    @StringRes suffixText: Int? = null,
     isError: Boolean = false,
-    errorMessage: String = ""
+    @StringRes errorMessage: Int? = null,
+    updateSchedule: (Int) -> Unit = {},
 ) {
     DetailsCardWithTextField(
-        modifier = modifier,
-        isStacked = isStacked,
         mainText = mainText,
         textFieldValue = textFieldValue.toString(),
         onValueChange = { num ->
@@ -174,9 +131,7 @@ fun DetailsCardWithNumberField(
 
 @Composable
 fun DetailsCardWithRangeNumberField(
-    modifier: Modifier = Modifier,
-    isStacked: Boolean = false,
-    mainText: String = "",
+    @StringRes mainText: Int,
     firstFieldValue: Int,
     lastFieldValue: Int,
     updateFirstValue: (Int) -> Unit = {},
@@ -185,16 +140,13 @@ fun DetailsCardWithRangeNumberField(
     isError: Boolean = false,
     errorMessage: String = ""
 ) {
-    DetailsCard(
-        modifier = modifier,
-        isStacked = isStacked
-    ) {
+    DetailsCard {
         Text(
-            text = mainText,
+            text = stringResource(mainText),
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(1f)
         )
-        Row(Modifier.weight(0.8f)) {
+        Row(Modifier.weight(2f)) {
             OutlinedTextField(
                 modifier = Modifier.weight(1f),
                 value = firstFieldValue.toString(),
@@ -258,65 +210,6 @@ fun DetailsCardWithRangeNumberField(
                     }
                 }
             )
-        }
-    }
-}
-
-data class LabelState(
-    val title: String,
-    val isSelected: Boolean,
-    val onSelectChange: (Boolean) -> Unit = {}
-)
-
-@Composable
-fun LabelDetailsCard(
-    modifier: Modifier = Modifier,
-    mainText: String,
-    labelList: List<LabelState> = listOf(),
-    isError: Boolean = false,
-    errorMessage: String = ""
-) {
-    Card(
-        modifier = modifier.fillMaxSize(),
-        shape = RoundedCornerShape(0.dp)
-    ) {
-        Text(
-            text = mainText,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-        )
-        if (isError) {
-            Text(
-                text = errorMessage,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.error,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(
-                    start = dimensionResource(R.dimen.padding_small),
-                    end = dimensionResource(R.dimen.padding_small)
-                )
-            )
-        }
-        FlowRow(
-            modifier = Modifier.padding(
-                start = dimensionResource(R.dimen.padding_small),
-                end = dimensionResource(R.dimen.padding_small),
-                bottom = dimensionResource(R.dimen.padding_small)
-            ),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
-        ) {
-            labelList.forEach { label ->
-                FilterChip(
-                    selected = label.isSelected,
-                    onClick = { label.onSelectChange(!label.isSelected) },
-                    label = {
-                        Text(
-                            text = label.title,
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
-                )
-            }
         }
     }
 }

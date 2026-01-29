@@ -69,7 +69,7 @@ fun BreathingScreen(
         },
         mainPaneRowWeight = 0.6f,
         mainPaneColumnWeight = 0.7f,
-        showOpenDialog = schedule.waitEnterButton,
+        showOpenDialog = schedule.requireManualUnlock,
         showOpen = showOpen,
         message = schedule.message,
         onTimerEnd = onTimerEnd,
@@ -173,7 +173,6 @@ fun BreathingCard(
 }
 
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
 fun BreathingScreenColumnPreviewLight() {
@@ -184,10 +183,10 @@ fun BreathingScreenColumnPreviewLight() {
                 breathingCycleDuration = 10,
                 breathingCycleNumber = 2
             )
-        )    }
+        )
+    }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun BreathingScreenColumnPreviewDark() {
@@ -202,7 +201,6 @@ fun BreathingScreenColumnPreviewDark() {
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun BreathingScreenRowPreviewLight() {
@@ -213,10 +211,10 @@ fun BreathingScreenRowPreviewLight() {
                 breathingCycleDuration = 10,
                 breathingCycleNumber = 2
             )
-        )    }
+        )
+    }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun BreathingScreenRowPreviewDark() {
@@ -227,5 +225,6 @@ fun BreathingScreenRowPreviewDark() {
                 breathingCycleDuration = 10,
                 breathingCycleNumber = 2
             )
-        )    }
+        )
+    }
 }

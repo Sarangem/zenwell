@@ -2,8 +2,11 @@ package com.sarangem.zenwell.ui.screens.home
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.foundation.layout.Box
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,18 +23,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import android.Manifest
+import android.net.Uri
+import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
@@ -39,26 +45,84 @@ import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.screens.AppViewModelProvider
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.utils.areNotificationsEnabled
+
+@Composable
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    scheduleClicked: Int = 0,
+    openEditScreen: (Schedules) -> Unit = {},
+    openFocusScreen: (Schedules) -> Unit = {},
+    openSettingsScreen: () -> Unit = {}
+) {
+    val context = LocalContext.current
+    val viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val homeUiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(homeUiState.schedulesList) {
+        viewModel.recheckNotificationPermission(context)
+    }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        viewModel.recheckNotificationPermission(context)
+    }
+    val grantNotificationPermission = {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                    putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                }
+            } else {
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+            }
+            context.startActivity(intent)
+        }
+    }
+    val accessibilityPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        viewModel.updateUiState(
+            homeUiState.copy(
+                showAccessibilityPermissionRationale = AppBlockerService.instance == null
+            )
+        )
+    }
+    val grantAccessibilityPermission = { accessibilityPermissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+
+    HomeScreen(
+        modifier,
+        homeUiState,
+        scheduleClicked,
+        viewModel::addNewSchedule,
+        viewModel::updateUiState,
+        grantAccessibilityPermission,
+        grantNotificationPermission,
+        openEditScreen,
+        openFocusScreen,
+        openSettingsScreen
+    )
+
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    uiState: HomeUiState,
     scheduleClicked: Int = 0,
-    startPermissionActivity: (Intent) -> Unit = {},
-    requestNotification: () -> Unit = {},
-    accessibilityPermission: () -> Boolean = { AppBlockerService.instance != null },
-    notificationPermission: (Context) -> Boolean = { areNotificationsEnabled(it) },
+    addNewSchedule: suspend (Context, Boolean) -> Schedules = { _, _ -> Schedules() },
+    updateUiState: (HomeUiState) -> Unit = {},
+    grantAccessibilityPermission: () -> Unit = {},
+    grantNotificationPermission: () -> Unit = {},
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
-    openSettingsScreen: () -> Unit = {}
+    openSettingsScreen: () -> Unit = {},
+    pomodoroWindow: PomodoroWindow? = null
 ) {
-    val viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
-    val homeUiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
-    val schedulesList = homeUiState.schedulesList
-
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -81,162 +145,111 @@ fun HomeScreen(
         },
         floatingActionButton = {
             NewScheduleFAB(
-                addNewSchedule = { viewModel.addNewSchedule(context) },
+                addNewSchedule = addNewSchedule,
                 openEditScreen = openEditScreen,
             )
         }
     ) { innerPadding ->
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
 
-        HomeScreenBody(
-            modifier = Modifier.padding(innerPadding),
-            schedulesList = schedulesList,
-            scheduleClicked = scheduleClicked,
-            openEditScreen = openEditScreen,
-            openFocusScreen = openFocusScreen,
-            startPermissionActivity = startPermissionActivity,
-            requestNotification = requestNotification,
-            accessibilityPermission = accessibilityPermission,
-            notificationPermission = notificationPermission
-        )
+                item {
+                    AnimatedVisibility(uiState.showAccessibilityPermissionRationale) {
+                        AccessibilityPermissionCard {
+                            grantAccessibilityPermission()
+                        }
+                    }
+                }
 
-    }
-}
+                item {
+                    AnimatedVisibility(uiState.showNotificationPermissionRationale) {
+                        NotificationPermissionCard {
+                            grantNotificationPermission()
+                        }
+                    }
+                }
 
-@Composable
-fun HomeScreenBody(
-    modifier: Modifier = Modifier,
-    schedulesList: List<Schedules>,
-    scheduleClicked: Int = 0,
-    openEditScreen: (Schedules) -> Unit = {},
-    openFocusScreen: (Schedules) -> Unit = {},
-    startPermissionActivity: (Intent) -> Unit = {},
-    requestNotification: () -> Unit = {},
-    accessibilityPermission: () -> Boolean,
-    notificationPermission: (Context) -> Boolean,
-    pomodoroWindow: PomodoroWindow? = null
-) {
-    val context = LocalContext.current
-    var filter by rememberSaveable { mutableStateOf(SchedulesFilter.All) }
-    var hasAccessibilityPermission by remember { mutableStateOf(accessibilityPermission()) }
-    var hasNotificationPermission by remember { mutableStateOf(notificationPermission(context)) }
+                item {
+                    if (uiState.schedulesList.isNotEmpty()) {
+                        SchedulesFilterChips(
+                            modifier = Modifier.fillMaxWidth(),
+                            filter = uiState.currentFilter,
+                            updateFilter = {
+                                updateUiState(
+                                    uiState.copy(
+                                        currentFilter = it
+                                    )
+                                )
+                            }
+                        )
+                    }
+                }
 
-    LazyColumn(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+                items(
+                    items = uiState.schedulesList,
+                    key = { it.id }
+                ) { schedule ->
+                    val showSchedule = when (uiState.currentFilter) {
+                        SchedulesFilter.All -> true
+                        SchedulesFilter.Regular -> !schedule.isPomodoro
+                        SchedulesFilter.Pomodoro -> schedule.isPomodoro
+                    }
 
-        item {
-            AskPermissions(
-                startPermissionActivity = { intent ->
-                    startPermissionActivity(intent)
-                    hasAccessibilityPermission = accessibilityPermission()
-                },
-                requestNotification = {
-                    requestNotification()
-                    hasNotificationPermission = notificationPermission(context)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                hasAccessibilityServicePermission = hasAccessibilityPermission,
-                hasNotificationsPermission = hasNotificationPermission
-            )
-        }
+                    if (showSchedule) {
+                        SchedulesCard(
+                            modifier = Modifier
+                                .animateItem()
+                                .fillMaxWidth()
+                                .padding(dimensionResource(R.dimen.padding_small)),
+                            schedule = schedule,
+                            isClicked = schedule.id == scheduleClicked,
+                            openEditScreen = openEditScreen,
+                            openFocusScreen = openFocusScreen,
+                            pomodoroWindow = pomodoroWindow ?: AppBlockerService.instance?.getPomodoroWindow(schedule.id),
+                        )
+                    }
+                }
 
-        item {
-            if (schedulesList.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxHeight()
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.no_schedules),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-                    )
+                item {
+                    Spacer(Modifier.height(dimensionResource(R.dimen.floating_action_button_height)))
                 }
             }
-        }
 
-        item {
-            if (!schedulesList.isEmpty()) {
-                SchedulesFilterChips(
-                    modifier = Modifier.fillMaxWidth(),
-                    filter = filter,
-                    updateFilter = {
-                        filter = it
-                    }
+            AnimatedVisibility(
+                visible = uiState.schedulesList.isEmpty(),
+                modifier =  Modifier
+                    .align(Alignment.Center)
+                    .padding(dimensionResource(R.dimen.padding_small))
+            ) {
+                Text(
+                    text = stringResource(R.string.home_screen_description),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
                 )
             }
-        }
-
-        items(schedulesList) { schedule ->
-            val showSchedule = when (filter) {
-                SchedulesFilter.All -> true
-                SchedulesFilter.Regular -> !schedule.isPomodoro
-                SchedulesFilter.Pomodoro -> schedule.isPomodoro
-            }
-
-            if (showSchedule) {
-                SchedulesCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(R.dimen.padding_small)),
-                    schedule = schedule,
-                    isClicked = schedule.id == scheduleClicked,
-                    openEditScreen = openEditScreen,
-                    openFocusScreen = openFocusScreen,
-                    pomodoroWindow = pomodoroWindow
-                        ?: AppBlockerService.instance?.getPomodoroWindow(schedule.id),
-                )
-            }
-        }
-
-        item {
-            Spacer(Modifier.height(dimensionResource(R.dimen.floating_action_button_height)))
         }
     }
 }
 
-
-// -- Preview -- //
-@Composable
-fun HomeScreenPreview() {
-    HomeScreenBody(
-        schedulesList = listOf(
-            Schedules(
-                id = 1,
-                title = "Schedule 1",
-                startTimeInMinutes = 9 * 60 + 14,
-                endTimeInMinutes = 10 * 60 + 17
-            ),
-            Schedules(
-                id = 2,
-                title = "A reallyyyyyyyyyyyyyyyyyyyyyyyyy long name",
-                startTimeInMinutes = 0,
-                endTimeInMinutes = 1 * 60 + 1
-            ),
-            Schedules(
-                id = 3,
-                title = "A very long schedules title with spaces in between",
-                startTimeInMinutes = 7 * 60 + 34,
-                endTimeInMinutes = 11 * 60 + 12,
-                isEnabled = false
-            )
-        ),
-        scheduleClicked = 1,
-        accessibilityPermission = { false },
-        notificationPermission = { false },
-        pomodoroWindow = PomodoroWindow(schedule = Schedules(), context = LocalContext.current)
-    )
-}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreviewLightMode() {
     ZenwellTheme(darkTheme = false) {
-        HomeScreenPreview()
+        HomeScreen(
+            uiState = HomeUiState(
+                showAccessibilityPermissionRationale = true,
+                showNotificationPermissionRationale = true
+            )
+        )
     }
 }
 
@@ -245,6 +258,32 @@ fun HomeScreenPreviewLightMode() {
 @Composable
 fun HomeScreenPreviewDarkMode() {
     ZenwellTheme(darkTheme = true) {
-        HomeScreenPreview()
+        HomeScreen(
+            uiState = HomeUiState(
+                schedulesList = listOf(
+                    Schedules(
+                        id = 1,
+                        title = "Schedule 1",
+                        startTimeInMinutes = 9 * 60 + 14,
+                        endTimeInMinutes = 10 * 60 + 17
+                    ),
+                    Schedules(
+                        id = 2,
+                        title = "A reallyyyyyyyyyyyyyyyyyyyyyyyyy long name",
+                        startTimeInMinutes = 0,
+                        endTimeInMinutes = 1 * 60 + 1
+                    ),
+                    Schedules(
+                        id = 3,
+                        title = "A very long schedules title with spaces in between",
+                        startTimeInMinutes = 7 * 60 + 34,
+                        endTimeInMinutes = 11 * 60 + 12,
+                        isActive = false
+                    )
+                )
+            ),
+            scheduleClicked = 1,
+            pomodoroWindow = null
+        )
     }
 }

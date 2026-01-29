@@ -50,17 +50,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.text.isDigitsOnly
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.model.MathQuestion
+import com.sarangem.zenwell.model.MathProblem
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.utils.generateMathQuestion
+import com.sarangem.zenwell.utils.generateMathProblem
 import kotlinx.coroutines.launch
 
 @Composable
-fun MathEquationScreen(
+fun MathProblemScreen(
     modifier: Modifier = Modifier,
     schedule: Schedules,
     onTimerEnd: () -> Unit = {},
@@ -71,7 +71,7 @@ fun MathEquationScreen(
         mainPane = { modifier ->
             MathEquationCard(
                 modifier = modifier,
-                question = generateMathQuestion(
+                question = generateMathProblem(
                     schedule.mathEquationNumOperands,
                     schedule.mathEquationMinNumber,
                     schedule.mathEquationMaxNumber,
@@ -88,7 +88,7 @@ fun MathEquationScreen(
         },
         mainPaneRowWeight = 0.6f,
         mainPaneColumnWeight = 0.7f,
-        showOpenDialog = schedule.waitEnterButton,
+        showOpenDialog = schedule.requireManualUnlock,
         showOpen = showOpen,
         message = schedule.message,
         onTimerEnd = onTimerEnd,
@@ -100,7 +100,7 @@ fun MathEquationScreen(
 @Composable
 fun MathEquationCard(
     modifier: Modifier = Modifier,
-    question: MathQuestion,
+    question: MathProblem,
     onCorrectAnswer: () -> Unit = {}
 ) {
     var answer: Int? by remember { mutableStateOf(null) }
@@ -164,7 +164,7 @@ fun MathEquationCard(
 @Composable
 fun QuestionCard(
     modifier: Modifier = Modifier,
-    question: MathQuestion
+    question: MathProblem
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -263,9 +263,9 @@ fun QuestionCard(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
-fun MathEquationScreenPreview() {
+fun MathProblemScreenPreview() {
     ZenwellTheme {
-        MathEquationScreen(
+        MathProblemScreen(
             modifier = Modifier.fillMaxSize(),
             schedule = Schedules(
                 mathEquationNumOperands = 3,
@@ -273,19 +273,18 @@ fun MathEquationScreenPreview() {
                 mathEquationMaxNumber = 4,
                 mathEquationMinNumberInMultiplication = 2,
                 mathEquationMaxNumberInMultiplication = 2,
-                waitEnterButton = true,
+                requireManualUnlock = true,
                 message = APP_BLOCKED
             )
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview
 @Composable
-fun MathEquationScreenDarkPreview() {
+fun MathProblemScreenDarkPreview() {
     ZenwellTheme(darkTheme = true) {
-        MathEquationScreen(
+        MathProblemScreen(
             modifier = Modifier.fillMaxSize(),
             schedule = Schedules(
                 mathEquationNumOperands = 3,
@@ -293,7 +292,7 @@ fun MathEquationScreenDarkPreview() {
                 mathEquationMaxNumber = 4,
                 mathEquationMinNumberInMultiplication = 2,
                 mathEquationMaxNumberInMultiplication = 2,
-                waitEnterButton = true,
+                requireManualUnlock = true,
                 message = APP_BLOCKED
             )
         )

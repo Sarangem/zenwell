@@ -1,9 +1,9 @@
 package com.sarangem.zenwell.utils
 
 import com.sarangem.zenwell.model.MathOperators
-import com.sarangem.zenwell.model.MathQuestion
+import com.sarangem.zenwell.model.MathProblem
 
-fun generateMathQuestion(
+fun generateMathProblem(
     numOperands: Int,
     minNumber: Int,
     maxNumber: Int,
@@ -12,7 +12,7 @@ fun generateMathQuestion(
     operators: List<MathOperators>,
     showParentheses: Boolean = false,
     allowNegatives: Boolean = false,
-): MathQuestion {
+): MathProblem {
 
     var answer = (minNumber..maxNumber).random()
     var shortQuestion = "$answer"
@@ -63,5 +63,5 @@ fun generateMathQuestion(
 
     shortQuestion += " = ?"
     longQuestion += "\n= ?"
-    return MathQuestion(answer, shortQuestion, longQuestion)
+    return MathProblem(answer, shortQuestion, longQuestion)
 }

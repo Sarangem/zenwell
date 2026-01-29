@@ -1,5 +1,6 @@
 package com.sarangem.zenwell.ui.screens.edit.fields
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,28 +19,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.model.BlockType
-import com.sarangem.zenwell.ui.screens.edit.DetailsCard
+import com.sarangem.zenwell.model.UnlockMethod
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChooseBlockType(
-    modifier: Modifier = Modifier,
-    blockType: BlockType,
-    updateUiState: (BlockType) -> Unit = {}
+fun ChooseUnlockMethod(
+    unlockMethod: UnlockMethod,
+    updateValue: (UnlockMethod) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
-    DetailsCard(
-        modifier = modifier,
-        isStacked = true
-    ) {
-        Text(
-            text = stringResource(R.string.choose_block_type),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(0.5f)
-        )
+    DetailsCard {
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = stringResource(R.string.unlock_method),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
         ExposedDropdownMenuBox(
-            modifier = Modifier.weight(0.8f),
+            modifier = Modifier.weight(2f),
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
         ) {
@@ -48,7 +45,7 @@ fun ChooseBlockType(
                     .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                     .fillMaxWidth(),
                 readOnly = true,
-                value = TextFieldValue(stringResource(blockType.title)),
+                value = TextFieldValue(stringResource(unlockMethod.title)),
                 onValueChange = {},
                 shape = MaterialTheme.shapes.large,
                 trailingIcon = @Composable {
@@ -60,7 +57,7 @@ fun ChooseBlockType(
                 onDismissRequest = { expanded = !expanded },
                 shape = MaterialTheme.shapes.large
             ) {
-                BlockType.entries.forEach {
+                UnlockMethod.entries.forEach {
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -69,7 +66,7 @@ fun ChooseBlockType(
                             )
                         },
                         onClick = {
-                            updateUiState(it)
+                            updateValue(it)
                             expanded = !expanded
                         }
                     )

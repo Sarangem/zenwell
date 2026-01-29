@@ -40,7 +40,6 @@ fun ZenwellTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    motionScheme: MotionScheme = MotionScheme.expressive(),
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -55,7 +54,7 @@ fun ZenwellTheme(
 
     MaterialExpressiveTheme(
         colorScheme = colorScheme,
-        motionScheme = motionScheme,
+        motionScheme = MotionScheme.expressive(),
         typography = Typography,
         content = content
     )

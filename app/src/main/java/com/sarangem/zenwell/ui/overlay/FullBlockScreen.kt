@@ -65,7 +65,6 @@ fun FullBlockScreen(
 }
 
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun FullBlockScreenColumnPreviewLight() {
@@ -74,7 +73,6 @@ fun FullBlockScreenColumnPreviewLight() {
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
 @Composable
 fun FullBlockScreenColumnPreviewDark() {
@@ -83,7 +81,6 @@ fun FullBlockScreenColumnPreviewDark() {
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun FullBlockScreenRowPreviewLight() {
@@ -92,7 +89,6 @@ fun FullBlockScreenRowPreviewLight() {
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
 @Composable
 fun FullBlockScreenRowPreviewDark() {

@@ -1,13 +1,17 @@
 package com.sarangem.zenwell.ui.screens.edit
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class EditUiState(
     val schedule: Schedules = Schedules(),
@@ -19,31 +23,59 @@ class EditViewModel(private val schedulesRepository: SchedulesRepository) : View
 
     private val _uiState = MutableStateFlow(EditUiState())
     val uiState = _uiState.asStateFlow()
-
-    suspend fun getAppNames(id: Int) = schedulesRepository.getAppNames(id).first()
-
     var pastAppList: List<String>? = null
 
-    fun updateUiState(state: EditUiState) {
+    fun updateSchedule(schedule: Schedules) {
         _uiState.update {
-            state.copy(
-                validationErrors = validateSchedule(state.schedule)
+            _uiState.value.copy(
+                schedule = schedule,
+                validationErrors = validateSchedule(schedule)
             )
         }
     }
-
-    suspend fun saveToDatabase() {
-        schedulesRepository.saveToDatabase(
-            schedule = _uiState.value.schedule,
-            appNames = _uiState.value.appNames,
-            pastAppList = pastAppList,
-        )
-        AppBlockerService.instance?.initializeRepository()
+    fun updateAppNames(appNames: List<String>) {
+        _uiState.update {
+            _uiState.value.copy(
+                appNames = appNames
+            )
+        }
+    }
+    fun emptyUiState(){
+        _uiState.update { EditUiState() }
+        pastAppList = null
     }
 
-    suspend fun deleteSchedule() {
-        schedulesRepository.deleteSchedule(_uiState.value.schedule)
-        AppBlockerService.instance?.initializeRepository()
+    fun initialize(schedule: Schedules) {
+        if (_uiState.value.schedule.id == schedule.id) return
+        viewModelScope.launch(Dispatchers.IO) {
+            val appNames = schedulesRepository.getAppNames(schedule.id).first()
+            withContext(Dispatchers.Main) {
+                updateSchedule(schedule)
+                updateAppNames(appNames)
+            }
+            pastAppList = appNames
+        }
     }
 
+    fun saveToDatabase() {
+        val schedule = _uiState.value.schedule
+        val appNames = _uiState.value.appNames
+        val pastApps = pastAppList
+        viewModelScope.launch(Dispatchers.IO) {
+            schedulesRepository.saveToDatabase(
+                schedule = schedule,
+                appNames = appNames,
+                pastAppList = pastApps
+            )
+            AppBlockerService.instance?.initializeRepository()
+        }
+    }
+
+    fun deleteSchedule() {
+        val schedule = _uiState.value.schedule
+        viewModelScope.launch(Dispatchers.IO) {
+            schedulesRepository.deleteSchedule(schedule)
+            AppBlockerService.instance?.initializeRepository()
+        }
+    }
 }

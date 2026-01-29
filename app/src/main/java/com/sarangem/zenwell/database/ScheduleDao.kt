@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ScheduleDao {
 
-    @Query("SELECT * FROM schedules ORDER BY is_enabled DESC, start_time ASC")
+    @Query("SELECT * FROM schedules ORDER BY is_active DESC, start_time ASC")
     fun getAllSchedules() : Flow<List<Schedules>>
 
     @Query("SELECT * FROM schedules WHERE id=:id")

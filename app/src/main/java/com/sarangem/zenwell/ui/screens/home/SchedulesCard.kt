@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.outlined.SelfImprovement
@@ -35,7 +36,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -54,11 +54,8 @@ import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.PomodoroWindow
-import com.sarangem.zenwell.ui.screens.common.ShowConfirmDialog
-import com.sarangem.zenwell.utils.getAmPm
-import com.sarangem.zenwell.utils.is24Hour
+import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.utils.minutesToString
-import com.sarangem.zenwell.utils.secondsToString
 import kotlinx.coroutines.delay
 
 @Composable
@@ -71,7 +68,7 @@ fun SchedulesCard(
     openFocusScreen: (Schedules) -> Unit = {},
 ) {
     val tint =
-        if (schedule.isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
+        if (schedule.isActive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
     val cardColor = if (isClicked) {
         CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -86,7 +83,8 @@ fun SchedulesCard(
 
     var isPomodoroActive by rememberSaveable {
         mutableStateOf(
-            pomodoroWindow?.isActive ?: false
+            pomodoroWindow?.isActive == true || pomodoroWindow?.isPaused == true // <- why this logic does not work
+            // i want the pomodoro window to show active when it is paused
         )
     }
 
@@ -126,7 +124,7 @@ fun SchedulesCard(
                     )
                 }
             }
-            if (schedule.isEnabled && schedule.isPomodoro && isPomodoroActive && pomodoroWindow != null) {
+            if (schedule.isActive && schedule.isPomodoro && isPomodoroActive && pomodoroWindow != null) {
                 Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_small)))
                 PomodoroTimerControls(
                     pomodoroWindow = pomodoroWindow,
@@ -149,7 +147,7 @@ fun PomodoroStartButton(
     updatePomodoroActivity: (Boolean) -> Unit = {},
 ) {
     val context = LocalContext.current
-    if (schedule.isEnabled && schedule.isPomodoro && pomodoroWindow != null && !isPomodoroActive) {
+    if (schedule.isActive && schedule.isPomodoro && pomodoroWindow != null && !isPomodoroActive) {
         Box(
             modifier = modifier
                 .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
@@ -195,22 +193,13 @@ fun PomodoroStartButton(
     } else {
         Text(
             modifier = modifier,
-            text = if (is24Hour(context)) {
-                minutesToString(
-                    schedule.startTimeInMinutes,
-                    context
-                ) + " " + stringResource(R.string.to) + " " + minutesToString(
-                    schedule.endTimeInMinutes,
-                    context
-                )
-            } else {
-                minutesToString(schedule.startTimeInMinutes, context) + " " + getAmPm(
-                    schedule.startTimeInMinutes
-                ) + " " + stringResource(R.string.to) + " " + minutesToString(
-                    schedule.endTimeInMinutes,
-                    context
-                ) + " " + getAmPm(schedule.endTimeInMinutes)
-            },
+            text = minutesToString(
+                schedule.startTimeInMinutes,
+                context
+            ) + " " + stringResource(R.string.to) + " " + minutesToString(
+                schedule.endTimeInMinutes,
+                context
+            ),
             style = MaterialTheme.typography.labelLarge,
             color = tint,
             fontWeight = FontWeight.Bold,
@@ -225,13 +214,14 @@ fun PomodoroTimerControls(
     updatePomodoroActivity: (Boolean) -> Unit = {},
     openFocusScreen: () -> Unit = {},
 ) {
-    var elapsedTime by rememberSaveable { mutableIntStateOf(pomodoroWindow.getElapsedTimeInSeconds()) }
-    var isWorkTime by rememberSaveable { mutableStateOf(pomodoroWindow.isWorkTime) }
+    var formattedTime by remember { mutableStateOf(pomodoroWindow.getFormattedTime()) }
+    var isWorkTime by remember { mutableStateOf(pomodoroWindow.isWorkTime) }
+    var isPaused by remember { mutableStateOf(pomodoroWindow.isPaused) }
     LaunchedEffect(Unit) {
-        while (pomodoroWindow.isActive) {
-            delay(1000L)
+        while (pomodoroWindow.isActive || pomodoroWindow.isPaused) {
+            delay(500L)
             isWorkTime = pomodoroWindow.isWorkTime
-            elapsedTime = pomodoroWindow.getElapsedTimeInSeconds()
+            formattedTime = pomodoroWindow.getFormattedTime()
         }
         updatePomodoroActivity(false)
     }
@@ -257,16 +247,24 @@ fun PomodoroTimerControls(
                         vertical = dimensionResource(R.dimen.padding_small)
                     )
             ) {
-                Icon(
-                    imageVector = if (isWorkTime) Icons.Filled.Work else Icons.Filled.LocalCafe,
-                    contentDescription = stringResource(if (isWorkTime) R.string.work_time else R.string.rest_time),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .size(dimensionResource(R.dimen.padding_large))
-                        .align(Alignment.TopEnd)
-                )
+                Column(Modifier.align(Alignment.TopEnd)) {
+                    Icon(
+                        imageVector = if (isWorkTime) Icons.Filled.Work else Icons.Filled.LocalCafe,
+                        contentDescription = stringResource(if (isWorkTime) R.string.work_time else R.string.rest_time),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(dimensionResource(R.dimen.padding_large))
+                    )
+                    if(isPaused){
+                        Icon(
+                            imageVector = Icons.Filled.Pause,
+                            contentDescription = stringResource(R.string.pause),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(dimensionResource(R.dimen.padding_large))
+                        )
+                    }
+                }
                 Text(
-                    text = secondsToString(elapsedTime),
+                    text = formattedTime,
                     style = MaterialTheme.typography.displayMedium,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
@@ -327,7 +325,7 @@ fun PomodoroTimerControls(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SelfImprovement,
-                    contentDescription = stringResource(R.string.focus_mode),
+                    contentDescription = stringResource(R.string.focus),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

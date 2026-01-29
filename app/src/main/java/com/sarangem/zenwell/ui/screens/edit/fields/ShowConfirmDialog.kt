@@ -1,4 +1,4 @@
-package com.sarangem.zenwell.ui.screens.common
+package com.sarangem.zenwell.ui.screens.edit.fields
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
