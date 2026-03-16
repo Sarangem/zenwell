@@ -1,10 +1,7 @@
 package com.sarangem.zenwell.service
 
 import android.content.Context
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.ui.overlay.PomodoroBlockScreen
 import com.sarangem.zenwell.utils.ServiceLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,15 +42,6 @@ class PomodoroWindow(
                     startTime = System.currentTimeMillis()
                     currentSegmentTime = schedule.pomodoroWorkTimeInMinutes * 60 * 1000L
                     overlayWindowList.forEach { window ->
-                        window.content = {
-                            PomodoroBlockScreen(
-                                modifier = Modifier.fillMaxSize(),
-                                message = schedule.message,
-                                getElapsedTimeInSeconds = { getElapsedTimeInSeconds() },
-                                segmentTime = schedule.pomodoroWorkTimeInMinutes * 60,
-                                getFormattedTime = { getFormattedTime() }
-                            )
-                        }
                         window.isAppOpened = false
                     }
                     deleteNotificationById(schedule.id, context)

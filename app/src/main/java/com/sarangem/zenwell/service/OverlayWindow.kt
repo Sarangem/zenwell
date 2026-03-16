@@ -2,12 +2,10 @@ package com.sarangem.zenwell.service
 
 import android.content.Context
 import android.graphics.PixelFormat
-import android.graphics.Rect
 import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
 import android.view.WindowInsets
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
@@ -38,92 +36,69 @@ class OverlayWindow(
     supervisorJob: Job,
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisorJob)
-
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    private val layoutParams =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams() else null
     private val composeView = ComposeView(service)
-
     var isAppOpened = schedule.isPomodoro // true if pomodoro to prevent open() else false
+    var isAttachedToWindow = false
 
-    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-    fun open(bounds: Rect = Rect()) {
-
-        if (composeView.isAttachedToWindow) {
-            ServiceLogger.v { "Compose view already attached to window" }
-            return
-        }
-        if (isAppOpened) {
-            ServiceLogger.v { "App is set to opened." }
-            return
-        }
+    fun open() {
+        ServiceLogger.d { "Attached to window: ${composeView.isAttachedToWindow} and app opened: $isAppOpened" }
+        if (isAttachedToWindow || isAppOpened) return
 
         try {
-
-            // set view model
+            isAttachedToWindow = true
             val viewModelStore = ViewModelStore()
             val viewModelStoreOwner = object : ViewModelStoreOwner {
                 override val viewModelStore = viewModelStore
             }
-
-            // set lifecycle
             val lifecycleOwner = OverlayWindowLifecycleOwner()
             lifecycleOwner.performRestore(null)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-            composeView.setViewTreeLifecycleOwner(lifecycleOwner)
-            composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
-            composeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
-
-            // set the layoutParams according to bound
-            layoutParams?.apply {
-                type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-                format = PixelFormat.TRANSLUCENT
-                flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                gravity = Gravity.TOP or Gravity.START
-                height = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    val navBar = windowManager.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.navigationBars()).bottom
-                    bounds.height() - navBar
-                } else {
-                    bounds.height()
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-                }
-                width = bounds.width()
-                x = bounds.left
-                y = bounds.top
-
-                ServiceLogger.v { "Applying specific bounds to overlay: $bounds" }
-            }
-
-            // set the view
             composeView.apply {
+                setViewTreeLifecycleOwner(lifecycleOwner)
+                setViewTreeSavedStateRegistryOwner(lifecycleOwner)
+                setViewTreeViewModelStoreOwner(viewModelStoreOwner)
                 setContent {
                     ZenwellTheme {
                         content { onTimerEnd() }
                     }
                 }
             }
+            val layoutParams = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                WindowManager.LayoutParams().apply {
+                    type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+                    format = PixelFormat.TRANSPARENT
+                    flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                    gravity = Gravity.TOP or Gravity.START
+                    height = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        val navBar = windowManager.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.navigationBars()).bottom
+                        windowManager.currentWindowMetrics.bounds.height() - navBar
+                    } else {
+                        WindowManager.LayoutParams.MATCH_PARENT
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                    }
+                    width = WindowManager.LayoutParams.MATCH_PARENT
+                }
+            } else null
+            ServiceLogger.d { "Added layoutParams $layoutParams" }
             windowManager.addView(composeView, layoutParams)
-
-            // advance lifecycle for animation
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-
-            // log window opened
             service.openedWindows.add(this)
             ServiceLogger.d { "Successfully added composeView" }
 
         } catch (e: Exception) {
-
+            isAttachedToWindow = false
             ServiceLogger.e({ "Error adding ComposeView" }, e)
-
         }
 
     }
 
     fun close() {
-        if (!composeView.isAttachedToWindow) return
+        if (!isAttachedToWindow) return
+        isAttachedToWindow = false
         try {
             windowManager.removeView(composeView)
             service.openedWindows.remove(this)
@@ -165,7 +140,7 @@ class OverlayWindow(
             ServiceLogger.d { "Rechecking the app." }
             isAppOpened = false
             withContext(Dispatchers.Main) {
-                service.recheckApp()
+                service.onAccessibilityEvent(null)
             }
 
         }

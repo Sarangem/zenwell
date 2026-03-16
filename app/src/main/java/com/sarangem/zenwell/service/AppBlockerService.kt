@@ -3,42 +3,39 @@ package com.sarangem.zenwell.service
 import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Rect
+import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.deleteAllNotificationChannel
 import com.sarangem.zenwell.utils.getCurrentTimeInMinutes
-import com.sarangem.zenwell.utils.getTodayDay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-
+import java.util.Calendar
+import java.util.Locale
 
 @SuppressLint("AccessibilityPolicy")
 class AppBlockerService : AccessibilityService() {
-
-    val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
     companion object {
         var instance: AppBlockerService? = null
     }
     val supervisorJob = SupervisorJob()
+    var calendar: Calendar? = null
 
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
-
         CoroutineScope(Dispatchers.IO).launch {
             initializeRepository()
-            ServiceLogger.v { "Service fully initiated with $serviceInfo" }
         }
-
     }
 
+    val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
     suspend fun initializeRepository() {
         supervisorJob.cancelChildren()
         val schedulesRepository = (application as ZenwellApplication).container
@@ -49,79 +46,86 @@ class AppBlockerService : AccessibilityService() {
                 ScheduleInfo(
                     service = this,
                     schedule = schedule,
-                    appSet = schedulesRepository.getAppNames(schedule.id).first().toSet(),
+                    appList = schedulesRepository.getAppNames(schedule.id).first(),
                     supervisorJob = supervisorJob
                 )
             )
         }
-        scheduleInfoList.removeAll { !it.schedule.isPomodoro && it.appSet.isEmpty() }
-        serviceInfo.eventTypes = if (schedulesList.isEmpty()) 0 else AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-        recheckApp()
+        scheduleInfoList.removeAll { !it.schedule.isPomodoro && it.appList.isEmpty() }
+        val info = serviceInfo
+        info.eventTypes = when {
+            scheduleInfoList.isEmpty() -> 0
+            scheduleInfoList.any { it.viewsMap.isNotEmpty() } -> {
+                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+            }
+            else -> AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+        }
+        serviceInfo = info
+        calendar = Calendar.getInstance(Locale.getDefault())
+        ServiceLogger.i { "Service fully initiated with $serviceInfo" }
+        onAccessibilityEvent(null)
     }
 
-    var previousApp = listOf<CharSequence>()
     val openedWindows = mutableListOf<OverlayWindow>()
+    var lastCheckedTime: Long = 0L
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
+        // only continue if major content change
+        if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val isPaneChange =
+                    (event.contentChangeTypes and AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED != 0) ||
+                            (event.contentChangeTypes and AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED != 0)
+                if (!isPaneChange) return
+            } else {
+                val time = System.currentTimeMillis()
+                if (time < lastCheckedTime) return else lastCheckedTime = time + 2000L
+            }
+        }
+
         // get list of application windows
-        val applicationWindows =
-            windows.filter { it.type == AccessibilityWindowInfo.TYPE_APPLICATION }
-        ServiceLogger.d { "There are ${applicationWindows.size} and they are $applicationWindows" }
-
-        ServiceLogger.d { "Previous app(s) were $previousApp" }
-
+        val appWindows = windows.filter { it.type == AccessibilityWindowInfo.TYPE_APPLICATION }
+        ServiceLogger.d { "There are ${appWindows.size} and they are $appWindows" }
         val currentVisibleApps = mutableListOf<CharSequence>()
-        var index = 1
 
-        for (windowInfo in applicationWindows) {
+        val currentTime = calendar?.let { getCurrentTimeInMinutes(it) }
+        val todayDay = calendar?.get(Calendar.DAY_OF_WEEK)
+
+        for (windowInfo in appWindows) {
 
             // get current root and package name && terminate if null
             val root = windowInfo.root ?: continue
             val currentApp = root.packageName ?: continue
+            ServiceLogger.d { root.className.toString() }
             currentVisibleApps.add(currentApp)
-            scheduleInfoList.forEach {scheduleInfo ->
-                scheduleInfo.viewsList.forEach {
-                    if ( root.findAccessibilityNodeInfosByViewId(it).isNotEmpty() ){
+            scheduleInfoList.forEach { scheduleInfo ->
+                scheduleInfo.viewsMap[currentApp]?.forEach {
+                    if (root.findAccessibilityNodeInfosByViewId(it).isNotEmpty()) {
                         currentVisibleApps.add(it)
                         ServiceLogger.d { "Processing view id: $it" }
                     }
                 }
             }
-            ServiceLogger.d { "Processing app $currentApp and is in $index position." }
-
-            // get window bounds
-            val windowBounds = Rect()
-            root.getBoundsInScreen(windowBounds)
-            if (windowBounds.width() <= 0 || windowBounds.height() <= 0) {
-                ServiceLogger.w { "Invalid window bounds received: $windowBounds for app $currentApp. Skipping overlay." }
-                windowInfo.recycle()
-                continue
-            }
+            ServiceLogger.d { "Processing app $currentApp" }
 
             // open the window
             for (scheduleInfo in scheduleInfoList) {
-
-                if (getTodayDay() !in scheduleInfo.schedule.weekDays) continue
-                if (getCurrentTimeInMinutes() !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
-
-                if (currentVisibleApps.any { it in scheduleInfo.appSet }) {
-
+                if (todayDay !in scheduleInfo.schedule.weekDays) continue
+                if (currentTime !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
+                if (currentVisibleApps.any { it in scheduleInfo.appList }) {
                     val blockingWindow =
                         scheduleInfo.overlayWindowList.firstOrNull {
                             it.appName in currentVisibleApps
                         } ?: continue
                     ServiceLogger.i { "Opening window for schedule ${scheduleInfo.schedule.id} and ${blockingWindow.appName}" }
-                    blockingWindow.open(windowBounds)
-
+                    blockingWindow.open()
                 }
             }
             windowInfo.recycle()
-            index++
-
         }
 
         // close the window
-        val iterator = openedWindows.iterator() // use iterator to avoid concurrent modification exception
+        val iterator = openedWindows.iterator() // avoid concurrent modification exception
         while (iterator.hasNext()) {
             val blockingWindow = iterator.next()
             if (blockingWindow.appName !in currentVisibleApps) {
@@ -129,20 +133,10 @@ class AppBlockerService : AccessibilityService() {
                 blockingWindow.close()
             }
         }
-
-        previousApp = currentVisibleApps
         ServiceLogger.d { "Accessibility Event completed." }
     }
 
-    fun recheckApp() {
-        previousApp = listOf()
-        ServiceLogger.d { "Rechecking to open blocking window" }
-        onAccessibilityEvent(null)
-    }
-
-    fun getPomodoroWindow(scheduleId: Int): PomodoroWindow? {
-        return scheduleInfoList.firstOrNull { it.schedule.id == scheduleId}?.pomodoroWindow
-    }
+    fun getPomodoroWindow(scheduleId: Int) = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId }?.pomodoroWindow
 
     override fun onInterrupt() {
         scheduleInfoList.forEach { scheduleInfo ->
