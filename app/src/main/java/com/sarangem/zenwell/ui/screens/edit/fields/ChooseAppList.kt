@@ -44,16 +44,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.PackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
+import androidx.core.graphics.drawable.toDrawable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -314,7 +315,7 @@ fun NewViewInputCard(
 @Preview(showBackground = true)
 @Composable
 fun ShowBottomSheetPreview() {
-    val icon = ContextCompat.getDrawable(LocalContext.current, R.drawable.ic_launcher_background)
+    val icon = Color.Red.toArgb().toDrawable()
     ZenwellTheme {
         BottomSheetContents(
             getInstalledApps = { _ ->
