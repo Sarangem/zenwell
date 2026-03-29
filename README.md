@@ -21,8 +21,7 @@
 ## 🛠 Bug Reporting
 
 > [!WARNING]
-> **PiP Mode Limitation**
-> Zenwell does not currently support apps in Picture-in-Picture mode. You must **disable PiP** in the settings of the app you are trying to block. Failure to do so may cause the overlay window to appear globally over all other apps.
+> Zenwell **cannot block apps in Picture-in-Picture mode** for security reasons. Please disable PiP for the media apps you are trying to block.
 
 > [!IMPORTANT]
 > **Navigating the Overlay**

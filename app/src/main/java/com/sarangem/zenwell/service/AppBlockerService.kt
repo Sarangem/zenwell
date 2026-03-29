@@ -83,15 +83,19 @@ class AppBlockerService : AccessibilityService() {
             }
         }
 
-        // get list of application windows
-        val appWindows = windows.filter { it.type == AccessibilityWindowInfo.TYPE_APPLICATION }
-        ServiceLogger.d { "There are ${appWindows.size} and they are $appWindows" }
+        ServiceLogger.d { "There are ${windows.size} and they are $windows" }
         val currentVisibleApps = mutableListOf<CharSequence>()
-
         val currentTime = calendar?.let { getCurrentTimeInMinutes(it) }
         val todayDay = calendar?.get(Calendar.DAY_OF_WEEK)
 
-        for (windowInfo in appWindows) {
+        for (windowInfo in windows) {
+
+            // only if application window
+            if (windowInfo.type != AccessibilityWindowInfo.TYPE_APPLICATION) continue
+
+            // if blocked app in PiP mode, the overlay window never closes forcing a reboot
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                windowInfo.isInPictureInPictureMode) continue
 
             // get current root and package name && terminate if null
             val root = windowInfo.root ?: continue
