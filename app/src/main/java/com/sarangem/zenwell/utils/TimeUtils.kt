@@ -3,7 +3,6 @@ package com.sarangem.zenwell.utils
 import android.content.Context
 import android.text.format.DateFormat
 import java.util.Calendar
-import java.util.Locale
 
 fun getCurrentTimeInMinutes(calendar: Calendar = Calendar.getInstance()): Int {
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
@@ -17,9 +16,4 @@ fun minutesToString(num: Int, context: Context): String {
         set(Calendar.MINUTE, num % 60)
     }
     return DateFormat.getTimeFormat(context).format(calendar.time)
-}
-
-fun getTodayDay(): Int {
-    val calendar = Calendar.getInstance(Locale.getDefault())
-    return calendar.get(Calendar.DAY_OF_WEEK)
 }

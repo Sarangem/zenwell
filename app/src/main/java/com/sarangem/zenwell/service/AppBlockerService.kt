@@ -21,11 +21,11 @@ import java.util.Locale
 
 @SuppressLint("AccessibilityPolicy")
 class AppBlockerService : AccessibilityService() {
+
     companion object {
         var instance: AppBlockerService? = null
     }
     val supervisorJob = SupervisorJob()
-    var calendar: Calendar? = null
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -61,7 +61,6 @@ class AppBlockerService : AccessibilityService() {
             else -> AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
         }
         serviceInfo = info
-        calendar = Calendar.getInstance(Locale.getDefault())
         ServiceLogger.i { "Service fully initiated with $serviceInfo" }
         onAccessibilityEvent(null)
     }
@@ -85,8 +84,10 @@ class AppBlockerService : AccessibilityService() {
 
         ServiceLogger.d { "There are ${windows.size} and they are $windows" }
         val currentVisibleApps = mutableListOf<CharSequence>()
-        val currentTime = calendar?.let { getCurrentTimeInMinutes(it) }
-        val todayDay = calendar?.get(Calendar.DAY_OF_WEEK)
+
+        val calendar = Calendar.getInstance(Locale.getDefault())
+        val currentTime = getCurrentTimeInMinutes(calendar)
+        val todayDay = calendar.get(Calendar.DAY_OF_WEEK)
 
         for (windowInfo in windows) {
 
