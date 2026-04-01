@@ -52,6 +52,7 @@ fun MultiplicationTableScreen(
     onTimerEnd: () -> Unit = {}
 ) {
     var showOpen by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     OverlayScaffold(
         mainPane = { modifier ->
@@ -62,13 +63,14 @@ fun MultiplicationTableScreen(
                 multiplierMinNum = schedule.multiplierMinNum,
                 multiplierMaxNum = schedule.multiplierMaxNum,
                 onAllCorrect = {
+                    focusManager.clearFocus()
+                    if (!schedule.requireManualUnlock) onTimerEnd()
                     showOpen = true
                 }
             )
         },
         mainPaneRowWeight = 0.6f,
         mainPaneColumnWeight = 0.7f,
-        showOpenDialog = schedule.requireManualUnlock,
         showOpen = showOpen,
         message = schedule.message,
         onTimerEnd = onTimerEnd,

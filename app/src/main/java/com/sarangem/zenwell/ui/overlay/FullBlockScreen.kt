@@ -20,12 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
-import com.sarangem.zenwell.ui.overlay.common.EXPANDED_WIDTH
-import com.sarangem.zenwell.ui.overlay.common.MEDIUM_WIDTH
 import com.sarangem.zenwell.ui.overlay.common.MessageCard
 import com.sarangem.zenwell.ui.overlay.common.MorphPolygonShape
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
-import com.sarangem.zenwell.ui.overlay.common.PREVIEW_HEIGHT
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -65,34 +62,10 @@ fun FullBlockScreen(
 }
 
 
-@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
+@Preview(showBackground = true)
 @Composable
-fun FullBlockScreenColumnPreviewLight() {
+fun FullBlockScreenPreview() {
     ZenwellTheme(darkTheme = false) {
-        FullBlockScreen()
-    }
-}
-
-@Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
-@Composable
-fun FullBlockScreenColumnPreviewDark() {
-    ZenwellTheme(darkTheme = true) {
-        FullBlockScreen()
-    }
-}
-
-@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
-@Composable
-fun FullBlockScreenRowPreviewLight() {
-    ZenwellTheme(darkTheme = false) {
-        FullBlockScreen()
-    }
-}
-
-@Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
-@Composable
-fun FullBlockScreenRowPreviewDark() {
-    ZenwellTheme(darkTheme = true) {
         FullBlockScreen()
     }
 }

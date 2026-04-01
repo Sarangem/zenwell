@@ -6,7 +6,7 @@ import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.BreathingScreen
 import com.sarangem.zenwell.ui.overlay.FullBlockScreen
-import com.sarangem.zenwell.ui.overlay.WaitScreen
+import com.sarangem.zenwell.ui.overlay.TimerScreen
 import com.sarangem.zenwell.ui.overlay.MathProblemScreen
 import com.sarangem.zenwell.ui.overlay.MultiplicationTableScreen
 import com.sarangem.zenwell.ui.overlay.PomodoroBlockScreen
@@ -45,38 +45,44 @@ data class ScheduleInfo(
                     when (schedule.unlockMethod) {
 
                         UnlockMethod.StrictBlock -> FullBlockScreen(
-                            message = schedule.message,
-                            modifier = Modifier.fillMaxSize()
+                            Modifier.fillMaxSize(),
+                            schedule.message,
                         )
 
-                        UnlockMethod.Timer -> WaitScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            onTimerEnd = onTimerEnd,
-                            schedule = schedule
+                        UnlockMethod.Timer -> TimerScreen(
+                            Modifier.fillMaxSize(),
+                            schedule.message,
+                            schedule.timerDurationInSeconds,
+                            schedule.requireManualUnlock,
+                            onTimerEnd,
                         )
 
                         UnlockMethod.Breathing -> BreathingScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            onTimerEnd = onTimerEnd,
-                            schedule = schedule
+                            Modifier.fillMaxSize(),
+                            schedule.message,
+                            schedule.breathingCycleDuration,
+                            schedule.breathingCycleNumber,
+                            schedule.requireManualUnlock,
+                            onTimerEnd,
                         )
 
                         UnlockMethod.MathProblem -> MathProblemScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            onTimerEnd = onTimerEnd,
-                            schedule = schedule
+                            Modifier.fillMaxSize(),
+                            schedule,
+                            onTimerEnd
                         )
 
                         UnlockMethod.MultiplicationTable -> MultiplicationTableScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            schedule = schedule,
-                            onTimerEnd = onTimerEnd,
+                            Modifier.fillMaxSize(),
+                            schedule,
+                            onTimerEnd
                         )
 
                         UnlockMethod.Typing -> TypingScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            schedule = schedule,
-                            onTimerEnd = onTimerEnd,
+                            Modifier.fillMaxSize(),
+                            schedule.message,
+                            schedule.requireManualUnlock,
+                            onTimerEnd,
                         )
 
                     }

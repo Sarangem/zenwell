@@ -26,34 +26,31 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
-import com.sarangem.zenwell.ui.overlay.common.EXPANDED_WIDTH
-import com.sarangem.zenwell.ui.overlay.common.MEDIUM_WIDTH
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
-import com.sarangem.zenwell.ui.overlay.common.PREVIEW_HEIGHT
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun WaitScreen(
+fun TimerScreen(
     modifier: Modifier = Modifier,
-    schedule: Schedules,
+    message: String = APP_BLOCKED,
+    timerDurationInSeconds: Int = 10,
+    requireManualUnlock: Boolean = true,
     onTimerEnd: () -> Unit = {},
 ) {
     var showOpen by remember { mutableStateOf(false) }
-    var time by remember { mutableIntStateOf(schedule.timerDurationInSeconds) }
+    var time by remember { mutableIntStateOf(timerDurationInSeconds) }
     LaunchedEffect(time) {
         if (time > 0) {
             delay(1000L)
             time--
         } else {
+            if(!requireManualUnlock) onTimerEnd()
             showOpen = true
         }
     }
-
-
 
     OverlayScaffold(
         mainPane = { modifier ->
@@ -62,7 +59,7 @@ fun WaitScreen(
                 modifier = modifier.aspectRatio(1f).fillMaxSize()
             ) {
                 val animatedProgress by animateFloatAsState(
-                    targetValue = time / schedule.timerDurationInSeconds.toFloat(),
+                    targetValue = time / timerDurationInSeconds.toFloat(),
                     animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
                 )
                 CircularProgressIndicator(
@@ -87,46 +84,17 @@ fun WaitScreen(
             }
         },
         mainPaneRowWeight = 0.6f,
-        showOpenDialog = schedule.requireManualUnlock,
         showOpen = showOpen,
-        message = schedule.message,
+        message = message,
         onTimerEnd = onTimerEnd,
         modifier = modifier.fillMaxSize()
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
+@Preview(showBackground = true)
 @Composable
-fun WaitScreenColumnPreviewLight() {
+fun TimerScreenPreview() {
     ZenwellTheme(darkTheme = false) {
-        WaitScreen(schedule = Schedules(message=APP_BLOCKED))
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
-@Composable
-fun WaitScreenColumnPreviewDark() {
-    ZenwellTheme(darkTheme = true) {
-        WaitScreen(schedule = Schedules(message=APP_BLOCKED))
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
-@Composable
-fun WaitScreenRowPreviewLight() {
-    ZenwellTheme(darkTheme = false) {
-        WaitScreen(schedule = Schedules(message=APP_BLOCKED))
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
-@Composable
-fun WaitScreenRowPreviewDark() {
-    ZenwellTheme(darkTheme = true) {
-        WaitScreen(schedule = Schedules(message=APP_BLOCKED))
+        TimerScreen()
     }
 }

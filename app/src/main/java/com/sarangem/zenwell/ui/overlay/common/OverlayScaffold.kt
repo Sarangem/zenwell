@@ -19,6 +19,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
 
+const val APP_BLOCKED = "This app is fully blocked"
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun OverlayScaffold(
@@ -100,7 +102,6 @@ fun OverlayScaffold(
     mainPane: @Composable (Modifier) -> Unit,
     @FloatRange(from = 0.0, to = 1.0) mainPaneRowWeight: Float = 0.5f,
     @FloatRange(from = 0.0, to = 1.0) mainPaneColumnWeight: Float = 0.5f,
-    showOpenDialog: Boolean = false,
     showOpen: Boolean = false,
     message: String,
     onTimerEnd: () -> Unit = {}
@@ -113,7 +114,6 @@ fun OverlayScaffold(
         supportingPane = { modifier ->
             OpenableMessageCard(
                 modifier = modifier,
-                showOpenDialog = showOpenDialog,
                 showOpen = showOpen,
                 message = message,
                 onTimerEnd = onTimerEnd,

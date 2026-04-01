@@ -86,7 +86,6 @@ fun MessageCard(
 @Composable
 fun OpenableMessageCard(
     modifier: Modifier = Modifier,
-    showOpenDialog: Boolean = false,
     showOpen: Boolean = false,
     message: String = "",
     onTimerEnd: () -> Unit = {}
@@ -104,19 +103,16 @@ fun OpenableMessageCard(
             percentage = animatedRotation.value
         ),
         falseStateContent = {
-            if (showOpenDialog) {
-                Text(
-                    text = stringResource(R.string.open),
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    lineHeight = 80.sp,
-                    autoSize = TextAutoSize.StepBased(maxFontSize = 80.sp),
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                )
-            } else {
-                onTimerEnd()
-            }
+            Text(
+                text = stringResource(R.string.open),
+                style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.onPrimary,
+                lineHeight = 80.sp,
+                autoSize = TextAutoSize.StepBased(maxFontSize = 80.sp),
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+            )
+
         },
         onClick = {
             if (showOpen) {

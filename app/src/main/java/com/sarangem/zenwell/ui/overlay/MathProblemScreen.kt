@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -66,6 +67,7 @@ fun MathProblemScreen(
     onTimerEnd: () -> Unit = {},
 ) {
     var showOpen by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     OverlayScaffold(
         mainPane = { modifier ->
@@ -82,13 +84,14 @@ fun MathProblemScreen(
                     schedule.mathEquationAllowNegatives
                 ),
                 onCorrectAnswer = {
+                    focusManager.clearFocus()
+                    if(!schedule.requireManualUnlock) onTimerEnd()
                     showOpen = true
                 }
             )
         },
         mainPaneRowWeight = 0.6f,
         mainPaneColumnWeight = 0.7f,
-        showOpenDialog = schedule.requireManualUnlock,
         showOpen = showOpen,
         message = schedule.message,
         onTimerEnd = onTimerEnd,

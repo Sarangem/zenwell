@@ -24,7 +24,6 @@ import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,20 +39,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
-import com.sarangem.zenwell.ui.overlay.common.EXPANDED_WIDTH
-import com.sarangem.zenwell.ui.overlay.common.MEDIUM_WIDTH
 import com.sarangem.zenwell.ui.overlay.common.MorphPolygonShape
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
-import com.sarangem.zenwell.ui.overlay.common.PREVIEW_HEIGHT
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import kotlinx.coroutines.delay
 
 @Composable
 fun BreathingScreen(
     modifier: Modifier = Modifier,
-    schedule: Schedules,
+    message: String = APP_BLOCKED,
+    breathingCycleDuration: Int = 10,
+    breathingCycleNumber: Int = 2,
+    requireManualUnlock: Boolean = true,
     onTimerEnd: () -> Unit = {},
 ) {
     var showOpen by remember { mutableStateOf(false) }
@@ -62,16 +60,17 @@ fun BreathingScreen(
         mainPane = { modifier ->
             BreathingCard(
                 modifier = modifier,
-                onTimerEnd = { showOpen = true },
-                breathingCycleDuration = schedule.breathingCycleDuration,
-                breathingCycleNumber = schedule.breathingCycleNumber
+                showOpenButton = { showOpen = true },
+                onTimerEnd,
+                breathingCycleDuration,
+                breathingCycleNumber,
+                requireManualUnlock
             )
         },
         mainPaneRowWeight = 0.6f,
         mainPaneColumnWeight = 0.7f,
-        showOpenDialog = schedule.requireManualUnlock,
         showOpen = showOpen,
-        message = schedule.message,
+        message = message,
         onTimerEnd = onTimerEnd,
         modifier = modifier.fillMaxSize()
     )
@@ -82,32 +81,31 @@ fun BreathingScreen(
 @Composable
 fun BreathingCard(
     modifier: Modifier = Modifier,
+    showOpenButton: () -> Unit,
     onTimerEnd: () -> Unit,
     breathingCycleDuration: Int,
-    breathingCycleNumber: Int
+    breathingCycleNumber: Int,
+    requireManualUnlock: Boolean,
 ) {
     val yellow500 = Color(0xFFFFC107)
     val purple300 = Color(0xFFBA68C8)
     val purple500 = Color(0xFF9C27B0)
 
-    var completedBreathingCycle by remember { mutableIntStateOf(breathingCycleNumber) }
-    val halfDuration = (breathingCycleDuration / 2) * 1000L
     var inhale by remember { mutableStateOf(false) }
 
-    LaunchedEffect(completedBreathingCycle) {
-        if (completedBreathingCycle <= 0) {
-            onTimerEnd()
-        }
-        repeat(2) {
+    LaunchedEffect(Unit) {
+        val halfDuration = breathingCycleDuration * 500L
+        repeat(breathingCycleNumber * 2) {
             inhale = !inhale
             delay(halfDuration)
         }
-        completedBreathingCycle--
+        if (!requireManualUnlock) onTimerEnd()
+        showOpenButton()
     }
 
     val animatedShapeProgress by animateFloatAsState(
         targetValue = if (inhale) 0.6f else 1f,
-        animationSpec = tween(easing = LinearEasing, durationMillis = halfDuration.toInt())
+        animationSpec = tween(easing = LinearEasing, durationMillis = breathingCycleDuration * 500)
     )
     val animatedMorphProgress by animateFloatAsState(
         targetValue = if (inhale) 1f else 0f,
@@ -175,56 +173,16 @@ fun BreathingCard(
 
 @Preview(showBackground = true)
 @Composable
-fun BreathingScreenColumnPreviewLight() {
-    ZenwellTheme(darkTheme = false) {
-        BreathingScreen(
-            schedule = Schedules(
-                message = APP_BLOCKED,
-                breathingCycleDuration = 10,
-                breathingCycleNumber = 2
-            )
-        )
+fun BreathingScreenPreviewLight() {
+    ZenwellTheme {
+        BreathingScreen()
     }
 }
 
-@Preview(heightDp = PREVIEW_HEIGHT, widthDp = MEDIUM_WIDTH)
+@Preview
 @Composable
-fun BreathingScreenColumnPreviewDark() {
+fun BreathingScreenPreviewDark() {
     ZenwellTheme(darkTheme = true) {
-        BreathingScreen(
-            schedule = Schedules(
-                message = APP_BLOCKED,
-                breathingCycleDuration = 10,
-                breathingCycleNumber = 2
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true, heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
-@Composable
-fun BreathingScreenRowPreviewLight() {
-    ZenwellTheme(darkTheme = false) {
-        BreathingScreen(
-            schedule = Schedules(
-                message = APP_BLOCKED,
-                breathingCycleDuration = 10,
-                breathingCycleNumber = 2
-            )
-        )
-    }
-}
-
-@Preview(heightDp = PREVIEW_HEIGHT, widthDp = EXPANDED_WIDTH)
-@Composable
-fun BreathingScreenRowPreviewDark() {
-    ZenwellTheme(darkTheme = true) {
-        BreathingScreen(
-            schedule = Schedules(
-                message = APP_BLOCKED,
-                breathingCycleDuration = 10,
-                breathingCycleNumber = 2
-            )
-        )
+        BreathingScreen()
     }
 }

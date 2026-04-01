@@ -49,7 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -58,7 +57,8 @@ import com.sarangem.zenwell.ui.theme.ZenwellTheme
 @Composable
 fun TypingScreen(
     modifier: Modifier = Modifier,
-    schedule: Schedules,
+    message: String = APP_BLOCKED,
+    requireManualUnlock: Boolean = true,
     onTimerEnd: () -> Unit = {}
 ) {
     var showOpen by remember { mutableStateOf(false) }
@@ -73,9 +73,9 @@ fun TypingScreen(
             MediumExtendedFloatingActionButton(
                 onClick = {
                     focusManager.clearFocus()
-                    if (input == schedule.message) {
+                    if (input == message) {
+                        if (!requireManualUnlock) onTimerEnd()
                         showOpen = true
-                        if (!schedule.requireManualUnlock) onTimerEnd()
                     }
                 },
                 icon = {
@@ -128,7 +128,7 @@ fun TypingScreen(
                         }
                     } else {
                         TypingTextField(
-                            message = schedule.message,
+                            message = message,
                             input = input,
                             onInputChange = { input = it }
                         )
@@ -205,17 +205,8 @@ fun TypingTextField(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
-fun TypingScreenPreviewLight() {
+fun TypingScreenPreview() {
     ZenwellTheme(darkTheme = false) {
-        TypingScreen(schedule = Schedules(message = APP_BLOCKED, requireManualUnlock = true))
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Preview
-@Composable
-fun TypingScreenPreviewDark() {
-    ZenwellTheme(darkTheme = true) {
-        TypingScreen(schedule = Schedules(message = APP_BLOCKED, requireManualUnlock = true))
+        TypingScreen()
     }
 }
