@@ -94,7 +94,7 @@ fun FocusScreen(
                 },
                 title = {
                     Text(
-                        text = stringResource(R.string.focus) + uiState.schedule.title,
+                        text = stringResource(R.string.focus) + " " + uiState.schedule.title,
                         style = MaterialTheme.typography.headlineSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

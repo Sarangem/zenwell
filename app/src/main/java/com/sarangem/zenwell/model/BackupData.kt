@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BackupData(
     var schedule: Schedules = Schedules(),
-    var appNamesList: List<String> = listOf(),
+    var appNamesList: List<Pair<String, String?>> = listOf(),
 )

@@ -46,12 +46,12 @@ class AppBlockerService : AccessibilityService() {
                 ScheduleInfo(
                     service = this,
                     schedule = schedule,
-                    appList = schedulesRepository.getAppNames(schedule.id).first(),
+                    appNamesList = schedulesRepository.getAppNamesById(schedule.id).first(),
                     supervisorJob = supervisorJob
                 )
             )
         }
-        scheduleInfoList.removeAll { !it.schedule.isPomodoro && it.appList.isEmpty() }
+        scheduleInfoList.removeAll { !it.schedule.isPomodoro && it.appNamesList.isEmpty() }
         val info = serviceInfo
         info.eventTypes = when {
             scheduleInfoList.isEmpty() -> 0
@@ -62,6 +62,7 @@ class AppBlockerService : AccessibilityService() {
         }
         serviceInfo = info
         ServiceLogger.i { "Service fully initiated with $serviceInfo" }
+        ServiceLogger.i { "Apps to block are: ${scheduleInfoList.map { it.appSet }}"}
         onAccessibilityEvent(null)
     }
 
@@ -117,10 +118,10 @@ class AppBlockerService : AccessibilityService() {
             for (scheduleInfo in scheduleInfoList) {
                 if (todayDay !in scheduleInfo.schedule.weekDays) continue
                 if (currentTime !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
-                if (currentVisibleApps.any { it in scheduleInfo.appList }) {
+                if (currentVisibleApps.any { it in scheduleInfo.appSet }) {
                     val blockingWindow =
                         scheduleInfo.overlayWindowList.firstOrNull {
-                            it.appName in currentVisibleApps
+                            it.packageName in currentVisibleApps
                         } ?: continue
                     ServiceLogger.i { "Opening window for schedule ${scheduleInfo.schedule.id} and ${blockingWindow.appName}" }
                     blockingWindow.open()
@@ -133,8 +134,8 @@ class AppBlockerService : AccessibilityService() {
         val iterator = openedWindows.iterator() // avoid concurrent modification exception
         while (iterator.hasNext()) {
             val blockingWindow = iterator.next()
-            if (blockingWindow.appName !in currentVisibleApps) {
-                ServiceLogger.i { "Closing window for ${blockingWindow.appName} for schedule ${blockingWindow.schedule.id}." }
+            if (blockingWindow.packageName !in currentVisibleApps) {
+                ServiceLogger.i { "Closing window for ${blockingWindow.packageName} for schedule ${blockingWindow.schedule.id}." }
                 blockingWindow.close()
             }
         }

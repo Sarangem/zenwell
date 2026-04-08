@@ -16,6 +16,10 @@ data class AppNames (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
+    // contains packageName or viewID
     @ColumnInfo(name = "title")
-    val title: String
+    val title: String,
+
+    @ColumnInfo(name = "view_title")
+    val viewTitle: String? = null
 )

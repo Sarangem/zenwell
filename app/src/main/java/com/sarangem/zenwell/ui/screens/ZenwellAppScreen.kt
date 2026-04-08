@@ -35,6 +35,7 @@ import com.sarangem.zenwell.ui.screens.ListDetailScene.Companion.DETAIL_KEY
 import com.sarangem.zenwell.ui.screens.ListDetailScene.Companion.LIST_KEY
 import com.sarangem.zenwell.ui.screens.ListDetailScene.Companion.detailPane
 import com.sarangem.zenwell.ui.screens.ListDetailScene.Companion.listPane
+import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityScreen
 import com.sarangem.zenwell.ui.screens.edit.EditScreen
 import com.sarangem.zenwell.ui.screens.edit.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.screens.focus.FocusScreen
@@ -116,6 +117,14 @@ fun ZenwellAppScreen() {
                 ) {
                     SettingsScreen(
                         modifier = Modifier.fillMaxSize(),
+                        openCustomActivityScreen = { backStack.add(CustomActivityPage) },
+                        goBack = { backStack.removeLastOrNull() }
+                    )
+                }
+
+                is CustomActivityPage -> NavEntry(key){
+                    CustomActivityScreen(
+                        modifier = Modifier.fillMaxSize(),
                         goBack = { backStack.removeLastOrNull() }
                     )
                 }
@@ -132,6 +141,7 @@ fun ZenwellAppScreen() {
 @Serializable data class EditPage(val schedule: Schedules) : NavKey
 @Serializable data class FocusPage(val schedule: Schedules) : NavKey
 @Serializable data object SettingsPage : NavKey
+@Serializable data object CustomActivityPage: NavKey
 
 
 @Composable

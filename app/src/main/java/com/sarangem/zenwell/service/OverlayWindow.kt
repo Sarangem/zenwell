@@ -20,7 +20,6 @@ import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createBlockNotification
 import com.sarangem.zenwell.utils.deleteNotificationById
-import com.sarangem.zenwell.utils.getAppNameFromPackageName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class OverlayWindow(
+    val packageName: String, // only for use in AppBlockerService
     val appName: String,
     val schedule: Schedules,
     var content: @Composable (() -> Unit) -> Unit,
@@ -36,6 +36,8 @@ class OverlayWindow(
     supervisorJob: Job,
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisorJob)
+    private val notificationId = schedule.id + appName.hashCode()
+
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val composeView = ComposeView(service)
     var isAppOpened = schedule.isPomodoro // true if pomodoro to prevent open() else false
@@ -124,15 +126,15 @@ class OverlayWindow(
             delay(delayTime * 60 * 1000L)
             if (schedule.notificationTimeInMinutes > 0) {
                 createBlockNotification(
-                    id = schedule.id + appName.hashCode(),
-                    message = schedule.title + service.getString(R.string.block_notification_message) + getAppNameFromPackageName(service, appName),
+                    id = notificationId,
+                    message = schedule.title + service.getString(R.string.block_notification_message) + appName,
                     context = service,
                 )
             }
 
             delay(schedule.notificationTimeInMinutes * 60 * 1000L)
             deleteNotificationById(
-                id = schedule.id + appName.hashCode(),
+                id = notificationId,
                 context = service
             )
 

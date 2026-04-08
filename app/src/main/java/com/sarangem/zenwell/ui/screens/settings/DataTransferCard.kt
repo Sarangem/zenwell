@@ -137,26 +137,31 @@ fun DataTransferCardBody(
     createBackup: () -> Unit = {},
     restoreBackup: () -> Unit = {}
 ) {
-    Column(
-        modifier = modifier
-            .padding(dimensionResource(R.dimen.padding_small))
-            .clip(MaterialTheme.shapes.medium),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
-    ) {
-        DataTransferActionCard(
-            modifier = Modifier.fillMaxWidth(),
-            icon = Icons.Outlined.Backup,
-            title = stringResource(R.string.export_data),
-            description = stringResource(R.string.export_data_description),
-            onClick = createBackup
+    Column {
+        Text(
+            stringResource(R.string.data_backup),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_tiny))
         )
-        DataTransferActionCard(
-            modifier = Modifier.fillMaxWidth(),
-            icon = Icons.Outlined.Restore,
-            title = stringResource(R.string.restore_data),
-            description = stringResource(R.string.restore_data_description),
-            onClick = restoreBackup
-        )
+        Column(
+            modifier = modifier.clip(MaterialTheme.shapes.medium),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+        ) {
+            DataTransferActionCard(
+                modifier = Modifier.fillMaxWidth(),
+                icon = Icons.Outlined.Backup,
+                title = stringResource(R.string.export_data),
+                description = stringResource(R.string.export_data_description),
+                onClick = createBackup
+            )
+            DataTransferActionCard(
+                modifier = Modifier.fillMaxWidth(),
+                icon = Icons.Outlined.Restore,
+                title = stringResource(R.string.restore_data),
+                description = stringResource(R.string.restore_data_description),
+                onClick = restoreBackup
+            )
+        }
     }
 }
 

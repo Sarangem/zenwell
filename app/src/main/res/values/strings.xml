@@ -119,10 +119,17 @@
     <string name="range_of_multiplier">Range of multipliers in table</string>
     <string name="typing">Typing</string>
     <string name="check">Check</string>
-    <string name="custom_views_description">Add view IDs for blocking specific part of apps.\nEg: com.google.android.youtube:id/reel_recycler for Youtube Shorts.</string>
-    <string name="enter_new_view_id">Enter new view id</string>
-    <string name="custom_views">Custom Views</string>
     <string name="additional_options">Additional Options</string>
     <string name="home_screen_description">Create schedules to block distracting apps. Tap \'+\' to begin.</string>
     <string name="example">"Eg: "</string>
+    <string name="edit_custom_views">Edit custom views</string>
+    <string name="add_new_custom_view">Add new Custom View</string>
+    <string name="select_app">Select app</string>
+    <string name="view_title">View title</string>
+    <string name="view_id">View id</string>
+    <string name="save_custom_view">Save custom view</string>
+    <string name="delete_confirmation_custom_view">Are you sure you want to delete this custom view? All schedules using this would stop working. You can restore by it by clicking \"Reset\".</string>
+    <string name="data_backup">Data Backup</string>
+    <string name="restore_custom_views">Restore custom views</string>
+    <string name="restore_custom_views_description">Are you sure you want to delete all custom views and restore it back to default state? The schedules using this custom view would not be deleted.</string>
 </resources>

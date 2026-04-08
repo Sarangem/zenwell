@@ -7,11 +7,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -114,58 +114,60 @@ fun BreathingCard(
         )
     )
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
-            .padding(dimensionResource(R.dimen.padding_small)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .weight(6f)
-                .padding(dimensionResource(R.dimen.padding_small)),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(dimensionResource(R.dimen.padding_small))
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize(animatedShapeProgress)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(yellow500, purple300.copy(alpha = 0.7f)),
-                            center = Offset.Unspecified,
+                    .weight(6f)
+                    .align(Alignment.CenterHorizontally),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(animatedShapeProgress)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(yellow500, purple300.copy(alpha = 0.7f)),
+                                center = Offset.Unspecified,
+                            ),
+                            shape = Sunny.toShape()
                         ),
-                        shape = Sunny.toShape()
-                    ),
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(0.07f)
-                    .aspectRatio(1f)
-                    .clip(
-                        MorphPolygonShape(
-                            morph = Morph(VerySunny, Gem),
-                            percentage = animatedMorphProgress
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(0.07f)
+                        .aspectRatio(1f)
+                        .clip(
+                            MorphPolygonShape(
+                                morph = Morph(VerySunny, Gem),
+                                percentage = animatedMorphProgress
+                            )
                         )
-                    )
-                    .background(purple500),
-            )
-        }
-        AnimatedContent(
-            targetState = inhale,
-            modifier = Modifier
-                .weight(1f)
-                .padding(dimensionResource(R.dimen.padding_small))
-                .wrapContentSize(align = Alignment.Center)
-        ) { textState ->
-            Text(
-                text = stringResource(if (textState) R.string.inhale else R.string.exhale),
-                style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+                        .background(purple500),
+                )
+            }
+            AnimatedContent(
+                targetState = inhale,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentSize(align = Alignment.BottomCenter)
+            ) { textState ->
+                Text(
+                    text = stringResource(if (textState) R.string.inhale else R.string.exhale),
+                    style = MaterialTheme.typography.displayMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
     }
 }

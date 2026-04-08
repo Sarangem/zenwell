@@ -3,6 +3,7 @@ package com.sarangem.zenwell.ui.screens.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.database.repository.SchedulesRepository
+import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import kotlinx.coroutines.Dispatchers
@@ -11,11 +12,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 data class EditUiState(
     val schedule: Schedules = Schedules(),
     val appNames: List<String>? = null,
+    val viewsList: List<AppNames> = listOf(),
     val validationErrors: Set<ValidationError> = emptySet(),
 )
 
@@ -48,12 +49,16 @@ class EditViewModel(private val schedulesRepository: SchedulesRepository) : View
     fun initialize(schedule: Schedules) {
         if (_uiState.value.schedule.id == schedule.id) return
         viewModelScope.launch(Dispatchers.IO) {
-            val appNames = schedulesRepository.getAppNames(schedule.id).first()
-            withContext(Dispatchers.Main) {
-                updateSchedule(schedule)
-                updateAppNames(appNames)
+            val appNames = schedulesRepository.getAppNamesById(schedule.id).first()
+            val viewsList = schedulesRepository.getAllApps().first().filter { it.viewTitle != null }
+            _uiState.update {
+                _uiState.value.copy(
+                    schedule = schedule,
+                    appNames = appNames.map { it.title },
+                    viewsList = viewsList
+                )
             }
-            pastAppList = appNames
+            pastAppList = appNames.map { it.title }
         }
     }
 

@@ -21,14 +21,18 @@ fun generateMathProblem(
 
     repeat(numOperands - 1) {
 
-        val operator = operators.random()
+        val operator = if(minNumber > answer && !allowNegatives){
+            (operators - MathOperators.SUBTRACTION).randomOrNull() ?: MathOperators.SUBTRACTION
+        } else {
+            operators.random()
+        }
 
         val num = when (operator) {
             MathOperators.MULTIPLICATION -> {
                 (minNumberInMultiplication..maxNumberInMultiplication).random()
             }
             MathOperators.SUBTRACTION if !allowNegatives -> {
-                (minNumber..answer).random()
+                (minNumber..answer).randomOrNull() ?: 0
             }
             else -> {
                 (minNumber..maxNumber).random()

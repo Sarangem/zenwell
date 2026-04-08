@@ -75,20 +75,26 @@ fun OverlayScaffold(
         content = {
             if (showRowLayout) {
                 Row(
-                    modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    mainPane(Modifier.weight(mainPaneRowWeight))
+                    mainPane(
+                        Modifier
+                            .weight(mainPaneRowWeight)
+                            .padding(dimensionResource(R.dimen.padding_small))
+                    )
                     supportingPane(Modifier.weight(1f - mainPaneRowWeight))
                 }
             } else {
                 Column(
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    mainPane(Modifier.weight(mainPaneColumnWeight))
+                    mainPane(
+                        Modifier
+                            .weight(mainPaneColumnWeight)
+                            .padding(dimensionResource(R.dimen.padding_small))
+                    )
                     supportingPane(Modifier.weight(1f - mainPaneColumnWeight))
                 }
             }

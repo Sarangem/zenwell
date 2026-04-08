@@ -49,6 +49,7 @@ fun MessageCard(
             ) togetherWith fadeOut(animationSpec = tween(1000))
         },
         modifier = modifier
+            .padding(dimensionResource(R.dimen.padding_small))
             .clip(morphPolygonShape)
             .background(MaterialTheme.colorScheme.primary)
             .fillMaxSize()

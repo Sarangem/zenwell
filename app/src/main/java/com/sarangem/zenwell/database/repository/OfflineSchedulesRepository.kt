@@ -5,39 +5,42 @@ import com.sarangem.zenwell.database.ScheduleDao
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.BlockedApps
 import com.sarangem.zenwell.database.tables.Schedules
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 
 class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : SchedulesRepository {
 
-    override fun getAllSchedules(): Flow<List<Schedules>> = scheduleDao.getAllSchedules()
-    override fun getScheduleInfoById(id: Int): Flow<Schedules> = scheduleDao.getScheduleInfoById(id)
-    override fun getSchedulesCount(): Flow<Int> = scheduleDao.getSchedulesCount()
-    override fun getAppNames(id: Int): Flow<List<String>> = scheduleDao.getAppNames(id)
-    override suspend fun addNewSchedule(schedule: Schedules): Int = scheduleDao.insertSchedule(schedule).toInt()
-    override suspend fun updateSchedule(schedule: Schedules) = scheduleDao.updateSchedule(schedule)
+    override fun getAllSchedules()= scheduleDao.getAllSchedules()
+    override fun getScheduleInfoById(id: Int)= scheduleDao.getScheduleInfoById(id)
+    override fun getSchedulesCount()= scheduleDao.getSchedulesCount()
+    override fun getAppNamesById(id: Int)= scheduleDao.getAppNamesById(id)
+    override fun getAllApps()= scheduleDao.getAllApps()
+    override fun insertApp(appName: AppNames)= scheduleDao.insertAppNames(appName)
+    override fun deleteApp(appName: AppNames)= scheduleDao.deleteAppNames(appName)
+    override suspend fun addNewSchedule(schedule: Schedules)= scheduleDao.insertSchedule(schedule).toInt()
+    override suspend fun updateSchedule(schedule: Schedules)= scheduleDao.updateSchedule(schedule)
 
     override suspend fun getAllData(): List<BackupData> {
         val schedulesList = scheduleDao.getAllSchedules().first()
         val data = mutableListOf<BackupData>()
-        schedulesList.forEach {
+        schedulesList.forEach { schedule ->
             data.add(
                 BackupData(
-                    schedule = it,
-                    appNamesList = getAppNames(it.id).first()
+                    schedule = schedule,
+                    appNamesList = getAppNamesById(schedule.id).first().map { it.title to it.viewTitle }
                 )
             )
         }
         return data
     }
 
-    override suspend fun restoreAllData(data: List<BackupData>) {
-        data.forEach {
-            val id = addNewSchedule(it.schedule)
+    override suspend fun restoreAllData(list: List<BackupData>) {
+        list.forEach { data ->
+            data.appNamesList.forEach { app -> insertApp(AppNames(0, app.first, app.second)) }
+            val id = addNewSchedule(data.schedule)
             saveToDatabase(
-                schedule = it.schedule.copy(id = id),
-                appNames = it.appNamesList,
+                schedule = data.schedule.copy(id = id),
+                appNames = data.appNamesList.map { it.first },
                 pastAppList = listOf()
             )
         }
@@ -97,9 +100,9 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
     private suspend fun removeAppNameIfUnused() {
         val appIds = scheduleDao.getAllApps().first()
         for (app in appIds) {
-            if (scheduleDao.getAppRelationByAppId(app.id).first().isEmpty()) { // app is not referenced
-                scheduleDao.deleteAppNames(app)
-            }
+            if (app.viewTitle != null) continue // do not remove custom views
+            if (scheduleDao.getAppRelationByAppId(app.id).first().isNotEmpty()) continue // app is not referenced
+            scheduleDao.deleteAppNames(app)
         }
     }
 }

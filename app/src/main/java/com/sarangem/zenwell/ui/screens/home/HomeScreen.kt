@@ -5,10 +5,8 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,9 +33,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import android.Manifest
 import android.net.Uri
 import android.os.Build
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
@@ -150,34 +150,38 @@ fun HomeScreen(
             )
         }
     ) { innerPadding ->
-        Box(
+        Column(
             Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-
-                item {
-                    AnimatedVisibility(uiState.showAccessibilityPermissionRationale) {
-                        AccessibilityPermissionCard {
-                            grantAccessibilityPermission()
-                        }
-                    }
+            AnimatedVisibility(uiState.showAccessibilityPermissionRationale) {
+                AccessibilityPermissionCard {
+                    grantAccessibilityPermission()
                 }
-
-                item {
-                    AnimatedVisibility(uiState.showNotificationPermissionRationale) {
-                        NotificationPermissionCard {
-                            grantNotificationPermission()
-                        }
-                    }
+            }
+            AnimatedVisibility(uiState.showNotificationPermissionRationale) {
+                NotificationPermissionCard {
+                    grantNotificationPermission()
                 }
-
-                item {
-                    if (uiState.schedulesList.isNotEmpty()) {
+            }
+            AnimatedContent(
+                targetState = uiState.schedulesList.isEmpty(),
+                modifier = Modifier.fillMaxSize()
+            ){state ->
+                if(state){
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.home_screen_description),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                        )
+                    }
+                } else {
+                    Column(Modifier.fillMaxSize()){
                         SchedulesFilterChips(
                             modifier = Modifier.fillMaxWidth(),
                             filter = uiState.currentFilter,
@@ -189,50 +193,39 @@ fun HomeScreen(
                                 )
                             }
                         )
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            contentPadding = PaddingValues(
+                                bottom = dimensionResource(R.dimen.floating_action_button_height)
+                            )
+                        ) {
+                            items(
+                                items = uiState.schedulesList,
+                                key = { it.id }
+                            ) { schedule ->
+                                val showSchedule = when (uiState.currentFilter) {
+                                    SchedulesFilter.All -> true
+                                    SchedulesFilter.Regular -> !schedule.isPomodoro
+                                    SchedulesFilter.Pomodoro -> schedule.isPomodoro
+                                }
+                                if (showSchedule) {
+                                    SchedulesCard(
+                                        modifier = Modifier
+                                            .animateItem()
+                                            .fillMaxWidth()
+                                            .padding(dimensionResource(R.dimen.padding_small)),
+                                        schedule = schedule,
+                                        isClicked = schedule.id == scheduleClicked,
+                                        openEditScreen = openEditScreen,
+                                        openFocusScreen = openFocusScreen,
+                                        pomodoroWindow = pomodoroWindow ?: AppBlockerService.instance?.getPomodoroWindow(schedule.id),
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
-
-                items(
-                    items = uiState.schedulesList,
-                    key = { it.id }
-                ) { schedule ->
-                    val showSchedule = when (uiState.currentFilter) {
-                        SchedulesFilter.All -> true
-                        SchedulesFilter.Regular -> !schedule.isPomodoro
-                        SchedulesFilter.Pomodoro -> schedule.isPomodoro
-                    }
-
-                    if (showSchedule) {
-                        SchedulesCard(
-                            modifier = Modifier
-                                .animateItem()
-                                .fillMaxWidth()
-                                .padding(dimensionResource(R.dimen.padding_small)),
-                            schedule = schedule,
-                            isClicked = schedule.id == scheduleClicked,
-                            openEditScreen = openEditScreen,
-                            openFocusScreen = openFocusScreen,
-                            pomodoroWindow = pomodoroWindow ?: AppBlockerService.instance?.getPomodoroWindow(schedule.id),
-                        )
-                    }
-                }
-
-                item {
-                    Spacer(Modifier.height(dimensionResource(R.dimen.floating_action_button_height)))
-                }
-            }
-
-            AnimatedVisibility(
-                visible = uiState.schedulesList.isEmpty(),
-                modifier =  Modifier
-                    .align(Alignment.Center)
-                    .padding(dimensionResource(R.dimen.padding_small))
-            ) {
-                Text(
-                    text = stringResource(R.string.home_screen_description),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                )
             }
         }
     }

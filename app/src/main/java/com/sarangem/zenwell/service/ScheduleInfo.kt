@@ -2,6 +2,7 @@ package com.sarangem.zenwell.service
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.BreathingScreen
@@ -11,23 +12,29 @@ import com.sarangem.zenwell.ui.overlay.MathProblemScreen
 import com.sarangem.zenwell.ui.overlay.MultiplicationTableScreen
 import com.sarangem.zenwell.ui.overlay.PomodoroBlockScreen
 import com.sarangem.zenwell.ui.overlay.TypingScreen
+import com.sarangem.zenwell.utils.getAppNameFromPackageName
 import kotlinx.coroutines.Job
 
 data class ScheduleInfo(
     private val service: AppBlockerService,
-    var schedule: Schedules,
-    val appList: List<String>,
+    val schedule: Schedules,
+    val appNamesList: List<AppNames>,
     val supervisorJob: Job
 ) {
-    val viewsMap: Map<String, List<String>> = appList
-        .filter { it.contains(":id/") }
+    val appSet = appNamesList
+        .map { it.title }
+        .toSet()
+    val viewsMap: Map<String, List<String>> = appNamesList
+        .filter { it.viewTitle != null }
+        .map { it.title }
         .groupBy { it.substringBefore(":id/") }
 
-    val overlayWindowList: List<OverlayWindow> = appList.map { appName ->
+    val overlayWindowList: List<OverlayWindow> = appNamesList.map { app ->
         OverlayWindow(
             service = service,
             schedule = schedule,
-            appName = appName,
+            packageName = app.title,
+            appName = app.viewTitle ?: getAppNameFromPackageName(service, app.title) ?: app.title,
             supervisorJob = supervisorJob,
             content = { onTimerEnd ->
 

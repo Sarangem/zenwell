@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.sarangem.zenwell.ZenwellApplication
+import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityViewModel
 import com.sarangem.zenwell.ui.screens.edit.EditViewModel
 import com.sarangem.zenwell.ui.screens.focus.FocusViewModel
 import com.sarangem.zenwell.ui.screens.home.HomeViewModel
@@ -23,6 +24,9 @@ object AppViewModelProvider {
         }
         initializer {
             FocusViewModel()
+        }
+        initializer {
+            CustomActivityViewModel(zenwellApplication().container)
         }
     }
 }

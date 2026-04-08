@@ -66,7 +66,7 @@ fun EditScreenContents(
                 DetailsCardWithTextField(R.string.schedule_title, uiState.schedule.title) { updateSchedule(uiState.schedule.copy(title = it)) }
                 DetailsCardWithTextField(R.string.message, uiState.schedule.message) { updateSchedule(uiState.schedule.copy(message = it)) }
             }
-            ChooseAppList(uiState.appNames, updateAppNames)
+            ChooseAppList(uiState.appNames, uiState.viewsList, updateAppNames)
 
             if (!uiState.schedule.isPomodoro){
                 DetailsCardColumn {
@@ -121,7 +121,7 @@ fun EditScreenContents(
                                             uiState.schedule.mathEquationMinNumberInMultiplication,
                                             uiState.schedule.mathEquationMaxNumberInMultiplication,
                                             { updateSchedule(uiState.schedule.copy(mathEquationMinNumberInMultiplication = it)) },
-                                            { updateSchedule(uiState.schedule.copy(mathEquationMinNumberInMultiplication = it)) }
+                                            { updateSchedule(uiState.schedule.copy(mathEquationMaxNumberInMultiplication = it)) }
                                         )
                                     }
                                     LabelDetailsCard(
@@ -134,7 +134,7 @@ fun EditScreenContents(
                                                     if (it) {
                                                         updateSchedule(uiState.schedule.copy(allowedMathOperators = uiState.schedule.allowedMathOperators + operator))
                                                     } else if (uiState.schedule.allowedMathOperators.size > 1) {
-                                                        updateSchedule(uiState.schedule.copy(allowedMathOperators = uiState.schedule.allowedMathOperators + operator))
+                                                        updateSchedule(uiState.schedule.copy(allowedMathOperators = uiState.schedule.allowedMathOperators - operator))
                                                     }
                                                 }
                                             )

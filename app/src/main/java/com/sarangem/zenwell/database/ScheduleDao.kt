@@ -33,10 +33,10 @@ interface ScheduleDao {
     fun getAppId(appName: String): Flow<Int>
 
     @Query("""
-        SELECT title FROM app_names WHERE id IN (
+        SELECT * FROM app_names WHERE id IN (
             SELECT app_id FROM blocked_apps WHERE schedule_id=:id
         )""")
-    fun getAppNames(id: Int): Flow<List<String>>
+    fun getAppNamesById(id: Int): Flow<List<AppNames>>
 
     @Query("SELECT id FROM blocked_apps WHERE app_id=:appId")
     fun getAppRelationByAppId(appId: Int): Flow<List<Int>>
