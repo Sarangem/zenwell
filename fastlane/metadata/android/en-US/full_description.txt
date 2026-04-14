@@ -1,0 +1,17 @@
+Zenwell helps you break the cycle of mindless doomscrolling and reduce screentime. Select which apps you want to block(Eg: Instagram, Youtube Shorts) and Zenwell would not allow you open the app, unless you solve some hard math problems or practice breathing.
+
+<B><U>🚀 Key Features</U></B>
+• <B>Customizable Schedules:</B> Select specific apps to block and set active windows (e.g., 9:00 AM – 5:00 PM) and specific weekdays.
+• <B>Dynamic Unlock Methods:</B> Choose your level of friction to regain focus:
+	• <B>Strict Block:</B> No entry allowed during restricted hours.
+    • <B>Timer:</B> Wait for a set countdown before the app opens.
+    • <B>Breathing Timer:</B> A guided pause to calm the "scroll reflex."
+    • <B>Math Problems:</B> Solve math equations or multiplication tables.
+    • <B>Intentional Typing:</B> Type a custom message to proceed.
+• <B>Pomodoro Mode:</B> Integrated focus sessions to balance work and rest.
+• <B>Privacy First:</B> No Internet permission. Your data stays on your device. Only Accessibility Service is required to function.
+
+<B><U>🛠 Bug Reporting</U></B>
+• Zenwell <B>cannot block apps in Picture-in-Picture mode</B> for security reasons. Please disable PiP for the media apps you are trying to block.
+• When the overlay is active, the <B>Back gesture/button will not work</B>. To exit the overlay and return to your home screen, you must use your Home gesture or the Recents key.
+• This project is in active development and multiple bugs are expected. Please report any issues at Github.

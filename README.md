@@ -1,6 +1,12 @@
 # <img src="app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" width="40"> Zenwell
 
-**Zenwell** is a privacy-first Android utility designed to help break the cycle of mindless scrolling. By placing a deliberate friction barrier over distracting apps, Zenwell forces a moment of mindfulness, encouraging you to step away and reclaim your time.
+**Zenwell** is a privacy-first Android utility designed to help break the cycle of mindless scrolling. Select which apps you want to block(Eg: Instagram, Youtube Shorts) and Zenwell would not allow you open the app, unless you solve some hard math problems or practice breathing.
+
+<div align="center">
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="30%" align="middle">
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg" width="30%" align="middle">
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg" width="30%" align="middle">
+</div>
 
 [**Download Latest APK**](../../releases)
 
@@ -28,13 +34,3 @@
 > When the overlay is active, the **Back gesture/button will not work**. To exit the overlay and return to your home screen, you must use your **Home gesture** or the **Recents key**.
 
 This project is in active development and multiple bugs are expected. Please report any issues you encounter or features you need in the [Issues tab](../../issues).
-
-## Screenshots
-<div align="center">
-    <img src="images/home_screen.webp" width="30%">
-    <img src="images/edit_screen.webp" width="30%">
-    <img src="images/focus_screen.webp" width="30%">
-    <img src="images/strict_block.webp" width="30%">
-    <img src="images/math_problem.webp" width="30%">
-    <img src="images/breathing.webp" width="30%">
-</div>
