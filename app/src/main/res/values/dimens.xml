@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2026 Proneel Pal <palproneel@gmail.com>
+  ~ Licensed under the GNU General Public License v3.0 or later.
+  -->
+
 <resources>
     <dimen name="padding_tiny">4dp</dimen>
     <dimen name="padding_small">8dp</dimen>
