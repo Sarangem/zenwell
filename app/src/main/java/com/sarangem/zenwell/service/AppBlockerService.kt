@@ -35,10 +35,14 @@ class AppBlockerService : AccessibilityService() {
         var instance: AppBlockerService? = null
     }
     val supervisorJob = SupervisorJob()
+    val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
+
 
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
+
+        // set error logging to file
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
@@ -52,14 +56,18 @@ class AppBlockerService : AccessibilityService() {
             }
             defaultHandler?.uncaughtException(thread, throwable)
         }
+
         CoroutineScope(Dispatchers.IO).launch {
             initializeRepository()
         }
     }
 
-    val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
+
     suspend fun initializeRepository() {
-        supervisorJob.cancelChildren()
+
+        supervisorJob.cancelChildren() // close all windows to prevent crashes
+
+        // load ACTIVE schedules WITH APPS into scheduleInfoList
         val schedulesRepository = (application as ZenwellApplication).container
         val schedulesList = schedulesRepository.getAllSchedules().first().filter { it.isActive }
         scheduleInfoList.clear()
@@ -74,6 +82,8 @@ class AppBlockerService : AccessibilityService() {
             )
         }
         scheduleInfoList.removeAll { !it.schedule.isPomodoro && it.appNamesList.isEmpty() }
+
+        // Change service info and log
         val info = serviceInfo
         info.eventTypes = when {
             scheduleInfoList.isEmpty() -> 0
@@ -85,8 +95,10 @@ class AppBlockerService : AccessibilityService() {
         serviceInfo = info
         ServiceLogger.i { "Service fully initiated with $serviceInfo" }
         ServiceLogger.i { "Apps to block are: ${scheduleInfoList.map { it.appSet }}"}
-        onAccessibilityEvent(null)
+
+        onAccessibilityEvent(null) // open overlay window if required
     }
+
 
     val openedWindows = mutableListOf<OverlayWindow>()
     var lastCheckedTime: Long = 0L
@@ -164,7 +176,9 @@ class AppBlockerService : AccessibilityService() {
         ServiceLogger.d { "Accessibility Event completed." }
     }
 
+
     fun getPomodoroWindow(scheduleId: Int) = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId }?.pomodoroWindow
+
 
     override fun onInterrupt() {
         scheduleInfoList.forEach { scheduleInfo ->
@@ -175,6 +189,7 @@ class AppBlockerService : AccessibilityService() {
         deleteAllNotificationChannel(this)
         supervisorJob.cancel()
     }
+
 
     override fun onUnbind(intent: Intent?): Boolean {
         instance = null

@@ -15,11 +15,9 @@ enum class ValidationError {
 }
 
 fun validateSchedule(schedule: Schedules): Set<ValidationError> = buildSet {
-
     if (schedule.startTimeInMinutes >= schedule.endTimeInMinutes) {
         add(ValidationError.ActiveTime)
     }
-
     if (schedule.usageSessionDurationInMinutes <= schedule.notificationTimeInMinutes) {
         add(ValidationError.NotificationTime)
     }

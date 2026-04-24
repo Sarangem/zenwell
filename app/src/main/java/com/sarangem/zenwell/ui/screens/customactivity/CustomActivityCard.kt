@@ -17,9 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -63,7 +61,7 @@ fun CustomActivityCard(
     var showDeleteDialog by remember { mutableStateOf(false) }
     if (showDeleteDialog) {
         ShowConfirmDialog(
-            icon = Icons.Filled.Delete,
+            icon = R.drawable.filled_delete,
             title = stringResource(R.string.delete),
             description = stringResource(R.string.delete_confirmation_custom_view),
             onDismiss = { showDeleteDialog = false },
@@ -110,7 +108,7 @@ fun CustomActivityCard(
                         )
                     ) {
                         Icon(
-                            Icons.Filled.Check,
+                            painterResource(R.drawable.filled_check),
                             contentDescription = stringResource(R.string.save_custom_view),
                             tint = Color.White
                         )
@@ -128,7 +126,7 @@ fun CustomActivityCard(
                         )
                     ) {
                         Icon(
-                            Icons.Filled.Delete,
+                            painterResource(R.drawable.filled_delete),
                             contentDescription = stringResource(R.string.delete),
                             tint = if(isSystemInDarkTheme()){
                                 MaterialTheme.colorScheme.onErrorContainer

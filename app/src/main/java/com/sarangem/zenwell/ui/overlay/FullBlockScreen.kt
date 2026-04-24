@@ -9,8 +9,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes.Companion.ClamShell
@@ -22,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
@@ -29,6 +28,7 @@ import com.sarangem.zenwell.ui.overlay.common.MessageCard
 import com.sarangem.zenwell.ui.overlay.common.MorphPolygonShape
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.R
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -55,7 +55,7 @@ fun FullBlockScreen(
                 ),
                 falseStateContent = {
                     Icon(
-                        imageVector = Icons.Filled.Lock,
+                        painterResource(R.drawable.filled_lock),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.fillMaxSize(0.45f)

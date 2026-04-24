@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalFloatingToolbar
@@ -29,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,7 +84,7 @@ fun SaveAndDeleteButton(
                 modifier = Modifier.padding(4.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Save,
+                    painter = painterResource(R.drawable.filled_save),
                     contentDescription = null,
                 )
                 Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
@@ -115,7 +113,7 @@ fun SaveAndDeleteButton(
             )
         ) {
             Icon(
-                imageVector = Icons.Filled.Delete,
+                painter = painterResource(R.drawable.filled_delete),
                 contentDescription = stringResource(R.string.delete),
                 tint = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier.padding(4.dp)
@@ -123,7 +121,7 @@ fun SaveAndDeleteButton(
         }
         if (checkedDelete) {
             ShowConfirmDialog(
-                icon = Icons.Filled.Delete,
+                icon = R.drawable.filled_delete,
                 title = stringResource(R.string.delete),
                 description = stringResource(R.string.delete_confirmation),
                 onDismiss = { checkedDelete = false },

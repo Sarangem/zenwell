@@ -5,8 +5,6 @@
 
 package com.sarangem.zenwell.ui.screens.edit.fields
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.sarangem.zenwell.R
@@ -28,7 +27,7 @@ fun EditScreenTopAppBar(
         navigationIcon = {
             IconButton(onClick = goBack) {
                 Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
+                    painterResource(R.drawable.filled_arrow_back),
                     contentDescription = stringResource(R.string.go_back)
                 )
             }

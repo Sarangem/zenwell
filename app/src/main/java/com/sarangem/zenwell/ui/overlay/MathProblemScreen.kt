@@ -16,10 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -228,7 +225,7 @@ fun QuestionCard(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.Info,
+                        painterResource(R.drawable.outlined_info),
                         contentDescription = stringResource(R.string.more_information)
                     )
                 }
@@ -238,7 +235,7 @@ fun QuestionCard(
                 onClick = { isExpanded = !isExpanded }
             ) {
                 Icon(
-                    imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    painterResource(if (isExpanded) R.drawable.filled_keyboard_arrow_up else R.drawable.filled_keyboard_arrow_down),
                     contentDescription = if (isExpanded) stringResource(R.string.collapse) else stringResource(
                         R.string.expand
                     )

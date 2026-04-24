@@ -14,11 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.Report
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.GITHUB_REPO_ISSUES_URL
@@ -65,7 +61,7 @@ fun SettingsScreen(
                 navigationIcon = {
                     IconButton(onClick = goBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            painterResource(R.drawable.filled_arrow_back),
                             contentDescription = stringResource(R.string.go_back)
                         )
                     }
@@ -85,11 +81,12 @@ fun SettingsScreen(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
-                .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                .padding(horizontal = dimensionResource(R.dimen.padding_small)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
         ) {
             DataTransferCard(Modifier.fillMaxWidth())
 
-            Column(Modifier.padding(top = dimensionResource(R.dimen.padding_small))) {
+            Column {
                 Text(
                     stringResource(R.string.report_issue),
                     style = MaterialTheme.typography.titleMedium,
@@ -103,14 +100,14 @@ fun SettingsScreen(
                 ) {
                     SettingsActionCard(
                         modifier = Modifier.fillMaxWidth(),
-                        icon = Icons.Outlined.BugReport,
+                        icon = R.drawable.outlined_bug_report,
                         title = stringResource(R.string.app_crash_log),
                         description = stringResource(R.string.app_crash_log_description),
                         onClick = { showCrashLog = true }
                     )
                     SettingsActionCard(
                         modifier = Modifier.fillMaxWidth(),
-                        icon = Icons.Outlined.Report,
+                        icon = R.drawable.outlined_report,
                         title = stringResource(R.string.report_issue),
                         description = stringResource(R.string.report_issue_description),
                         onClick = { uriHandler.openUri(GITHUB_REPO_ISSUES_URL) }
@@ -120,9 +117,7 @@ fun SettingsScreen(
 
             Card(
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = dimensionResource(R.dimen.padding_small))
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
                     Modifier
@@ -137,7 +132,7 @@ fun SettingsScreen(
                     Spacer(Modifier.weight(1f))
                     IconButton(onClick = openCustomActivityScreen) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                            painterResource(R.drawable.filled_arrow_right),
                             contentDescription = null
                         )
                     }

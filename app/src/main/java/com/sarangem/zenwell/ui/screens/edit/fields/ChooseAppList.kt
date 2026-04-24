@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -45,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -75,7 +74,7 @@ fun ChooseAppList(
             Spacer(Modifier.weight(1f))
             IconButton(onClick = { expanded = true }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                    painterResource(R.drawable.filled_arrow_right),
                     contentDescription = stringResource(R.string.show_apps_to_block)
                 )
             }

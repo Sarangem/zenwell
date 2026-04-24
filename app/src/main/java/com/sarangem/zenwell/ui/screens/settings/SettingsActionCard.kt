@@ -5,6 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens.settings
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,14 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import com.sarangem.zenwell.R
 
 @Composable
 fun SettingsActionCard(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
+    @DrawableRes icon: Int,
     title: String,
     description: String,
     onClick: () -> Unit = {}
@@ -51,7 +52,7 @@ fun SettingsActionCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = icon,
+                    painterResource(icon),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.fillMaxSize(0.6f)

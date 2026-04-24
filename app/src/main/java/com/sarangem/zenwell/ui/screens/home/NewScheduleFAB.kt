@@ -7,11 +7,6 @@ package com.sarangem.zenwell.ui.screens.home
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
@@ -29,8 +24,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -77,13 +72,13 @@ fun NewScheduleFAB(
                 checked = fabMenuExpanded,
                 onCheckedChange = { fabMenuExpanded = it },
             ) {
-                val imageVector by remember {
+                val image by remember {
                     derivedStateOf {
-                        if (checkedProgress > 0.5f) Icons.Filled.Close else Icons.Filled.Add
+                        if (checkedProgress > 0.5f) R.drawable.filled_close else R.drawable.filled_add
                     }
                 }
                 Icon(
-                    painter = rememberVectorPainter(imageVector),
+                    painter = painterResource(image),
                     contentDescription = null,
                     modifier = Modifier.animateIcon({ checkedProgress }),
                 )
@@ -102,7 +97,7 @@ fun NewScheduleFAB(
             },
             icon = {
                 Icon(
-                    imageVector = Icons.Default.CalendarToday,
+                    painterResource(R.drawable.filled_calendar_today),
                     contentDescription = null
                 )
             },
@@ -123,7 +118,7 @@ fun NewScheduleFAB(
             },
             icon = {
                 Icon(
-                    imageVector = Icons.Default.HourglassEmpty,
+                    painterResource(R.drawable.filled_hourglass_empty),
                     contentDescription = null
                 )
             },

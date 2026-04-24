@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Backup
-import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -137,14 +134,14 @@ fun DataTransferCard(
         ) {
             SettingsActionCard(
                 modifier = Modifier.fillMaxWidth(),
-                icon = Icons.Outlined.Backup,
+                icon = R.drawable.outlined_backup,
                 title = stringResource(R.string.export_data),
                 description = stringResource(R.string.export_data_description),
                 onClick = createBackup
             )
             SettingsActionCard(
                 modifier = Modifier.fillMaxWidth(),
-                icon = Icons.Outlined.Restore,
+                icon = R.drawable.filled_settings_backup_restore,
                 title = stringResource(R.string.restore_data),
                 description = stringResource(R.string.restore_data_description),
                 onClick = restoreBackup

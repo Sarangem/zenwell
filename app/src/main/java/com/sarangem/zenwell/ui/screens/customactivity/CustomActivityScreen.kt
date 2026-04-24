@@ -14,10 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -40,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -93,7 +90,7 @@ fun CustomActivityScreen(
     var showResetDialog by remember { mutableStateOf(false) }
     if (showResetDialog) {
         ShowConfirmDialog(
-            icon = Icons.Filled.Restore,
+            icon = R.drawable.filled_history,
             title = stringResource(R.string.restore_custom_views),
             description = stringResource(R.string.restore_custom_views_description),
             onDismiss = { showResetDialog = false },
@@ -112,7 +109,7 @@ fun CustomActivityScreen(
                 navigationIcon = {
                     IconButton(onClick = goBack) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            painterResource(R.drawable.filled_arrow_back),
                             contentDescription = stringResource(R.string.go_back)
                         )
                     }
@@ -120,7 +117,7 @@ fun CustomActivityScreen(
                 actions = {
                     IconButton(onClick = { showResetDialog = true }) {
                         Icon(
-                            Icons.Filled.Restore,
+                            painterResource(R.drawable.filled_history),
                             contentDescription = stringResource(R.string.restore_custom_views)
                         )
                     }
@@ -133,7 +130,7 @@ fun CustomActivityScreen(
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))) {
                     Icon(
-                        Icons.Default.Add,
+                        painterResource(R.drawable.filled_add),
                         contentDescription = null
                     )
                     Text(stringResource(R.string.add_new_custom_view))

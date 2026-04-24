@@ -1,13 +1,12 @@
 [versions]
 accompanistDrawablepainter = "0.37.3"
 agp = "8.13.2"
-kotlin = "2.3.0"
-kotlin-serialization = "1.9.0"
+kotlin = "2.3.20"
+kotlin-serialization = "1.11.0"
 coreKtx = "1.17.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.2"
 composeBom = "2025.12.01"
-materialIconsExtended = "1.7.8"
 roomVersion = "2.8.4"
 ksp = "2.3.3"
 animationGraphicsAndroid = "1.10.0"
@@ -26,7 +25,6 @@ androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview"}
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion"}
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion"}
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion"}

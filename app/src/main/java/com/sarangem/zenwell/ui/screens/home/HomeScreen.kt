@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -43,6 +41,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
@@ -141,7 +140,7 @@ fun HomeScreen(
                 actions = {
                     IconButton(onClick = openSettingsScreen) {
                         Icon(
-                            imageVector = Icons.Outlined.Settings,
+                            painterResource(R.drawable.outlined_settings),
                             contentDescription = stringResource(R.string.settings)
                         )
                     }

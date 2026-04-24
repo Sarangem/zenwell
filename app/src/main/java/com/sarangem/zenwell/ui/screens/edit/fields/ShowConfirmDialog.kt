@@ -5,6 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens.edit.fields
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -24,8 +25,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -35,7 +36,7 @@ import com.sarangem.zenwell.R
 @Composable
 fun ShowConfirmDialog(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
+    @DrawableRes icon: Int,
     title: String,
     description: String,
     onConfirm: () -> Unit = {},
@@ -62,7 +63,7 @@ fun ShowConfirmDialog(
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_large))
             ) {
                 Icon(
-                    imageVector = icon,
+                    painter = painterResource(icon),
                     contentDescription = null,
                     modifier = Modifier
                         .size(60.dp)

@@ -61,7 +61,7 @@ fun createPomodoroNotification(
         /* flags = */ PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
     )
     val builder = NotificationCompat.Builder(context, PomodoroNotification)
-        .setSmallIcon(if(isWork) R.drawable.work_white else R.drawable.local_cafe_white)
+        .setSmallIcon(if(isWork) R.drawable.filled_work else R.drawable.outlined_local_cafe)
         .setContentTitle(time)
         .setContentText(if(isWork) context.getString(R.string.work_time_notification) else context.getString(R.string.rest_time_notification))
         .setOnlyAlertOnce(true)

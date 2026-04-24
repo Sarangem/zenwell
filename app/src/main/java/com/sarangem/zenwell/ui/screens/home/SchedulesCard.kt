@@ -20,14 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.LocalCafe
-import androidx.compose.material.icons.filled.Navigation
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Work
-import androidx.compose.material.icons.outlined.SelfImprovement
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -52,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -122,7 +115,7 @@ fun SchedulesCard(
                     colors = IconButtonDefaults.iconButtonColors(MaterialTheme.colorScheme.surfaceDim),
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Edit,
+                        painterResource(R.drawable.outlined_edit),
                         contentDescription = stringResource(R.string.edit_this_schedule),
                         tint = tint,
                         modifier = Modifier.size(24.dp)
@@ -164,7 +157,7 @@ fun PomodoroStartButton(
         ) {
             Row(Modifier.padding(dimensionResource(R.dimen.padding_tiny))) {
                 Icon(
-                    imageVector = Icons.Filled.Navigation,
+                    painterResource(R.drawable.filled_navigation),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
@@ -254,14 +247,14 @@ fun PomodoroTimerControls(
             ) {
                 Column(Modifier.align(Alignment.TopEnd)) {
                     Icon(
-                        imageVector = if (isWorkTime) Icons.Filled.Work else Icons.Filled.LocalCafe,
+                        painterResource(if (isWorkTime) R.drawable.filled_work else R.drawable.outlined_local_cafe),
                         contentDescription = stringResource(if (isWorkTime) R.string.work_time else R.string.rest_time),
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(dimensionResource(R.dimen.padding_large))
                     )
                     if(isPaused){
                         Icon(
-                            imageVector = Icons.Filled.Pause,
+                            painterResource(R.drawable.filled_pause),
                             contentDescription = stringResource(R.string.pause),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(dimensionResource(R.dimen.padding_large))
@@ -290,7 +283,7 @@ fun PomodoroTimerControls(
             var isStopClicked by remember { mutableStateOf(false) }
             if(isStopClicked){
                 ShowConfirmDialog(
-                    icon = Icons.Filled.Stop,
+                    icon = R.drawable.filled_close,
                     title = stringResource(R.string.end),
                     description = stringResource(R.string.do_you_want_to_end_this_session),
                     onConfirm = {
@@ -313,7 +306,7 @@ fun PomodoroTimerControls(
                 shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium))
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Stop,
+                    painterResource(R.drawable.filled_close),
                     contentDescription = stringResource(R.string.end),
                     tint = MaterialTheme.colorScheme.onError,
                 )
@@ -329,8 +322,8 @@ fun PomodoroTimerControls(
                 shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium))
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.SelfImprovement,
-                    contentDescription = stringResource(R.string.focus),
+                    painterResource(R.drawable.filled_zoom_out_map),
+                    contentDescription = stringResource(R.string.enter_focus_mode),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

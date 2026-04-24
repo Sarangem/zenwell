@@ -143,4 +143,5 @@
     <string name="app_crash_log_description">View the crash logs of the app and report if any</string>
     <string name="report_issue">Report issue</string>
     <string name="report_issue_description">Report any app issue to the developer or request new features</string>
+    <string name="enter_focus_mode">Enter focus mode</string>
 </resources>

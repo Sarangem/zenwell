@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocalCafe
-import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -27,6 +24,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -36,13 +34,15 @@ import com.sarangem.zenwell.R
 @Composable
 fun PomodoroTimer(
     modifier: Modifier = Modifier,
-    progress:  Float,
+    progress: Float,
     formattedTime: String,
     isWork: Boolean
-){
+) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.aspectRatio(1f).fillMaxSize()
+        modifier = modifier
+            .aspectRatio(1f)
+            .fillMaxSize()
     ) {
         CircularWavyProgressIndicator(
             modifier = Modifier.fillMaxSize(),
@@ -67,7 +67,7 @@ fun PomodoroTimer(
                     1f
                 }
             },
-            color = if(isWork) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
+            color = if (isWork) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
             wavelength = dimensionResource(R.dimen.pomodoro_rest_time_wavelength)
         )
         Box(
@@ -76,7 +76,7 @@ fun PomodoroTimer(
         ) {
             Column {
                 Icon(
-                    imageVector = if (isWork) Icons.Filled.Work else Icons.Filled.LocalCafe,
+                    painter = painterResource(if (isWork) R.drawable.filled_work else R.drawable.outlined_local_cafe),
                     contentDescription = stringResource(if (isWork) R.string.work_time else R.string.rest_time),
                     modifier = Modifier
                         .padding(dimensionResource(R.dimen.padding_large))
