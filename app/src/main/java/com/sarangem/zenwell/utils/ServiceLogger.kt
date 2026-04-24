@@ -27,11 +27,6 @@ object ServiceLogger {
         if (isDebug) Log.i(TAG, message())
     }
 
-    // for some exceptions opening/closing window
-    inline fun w(message: () -> String) {
-        if (isDebug) Log.w(TAG, message())
-    }
-
     // for errors
     inline fun e(message: () -> String, e: Exception? = null) {
         if (isDebug) Log.e(TAG, message(), e)

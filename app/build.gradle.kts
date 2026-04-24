@@ -68,5 +68,5 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.kotlin.serialization.json)
     ksp(libs.androidx.room.compiler)
-
+    debugImplementation(libs.androidx.ui.tooling)
 }

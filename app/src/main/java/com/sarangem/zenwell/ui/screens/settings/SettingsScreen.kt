@@ -6,14 +6,19 @@
 package com.sarangem.zenwell.ui.screens.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.Report
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,11 +30,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.sarangem.zenwell.GITHUB_REPO_ISSUES_URL
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
@@ -40,6 +52,12 @@ fun SettingsScreen(
     openCustomActivityScreen: () -> Unit = {},
     goBack: () -> Unit = {}
 ) {
+    val uriHandler = LocalUriHandler.current
+    var showCrashLog by remember { mutableStateOf(false) }
+    if (showCrashLog) {
+        CrashLogDialog { showCrashLog = false }
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -65,25 +83,53 @@ fun SettingsScreen(
 
         Column(
             modifier = modifier
+                .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
-                .padding(dimensionResource(R.dimen.padding_small))
-        ){
+                .padding(horizontal = dimensionResource(R.dimen.padding_small))
+        ) {
             DataTransferCard(Modifier.fillMaxWidth())
+
+            Column(Modifier.padding(top = dimensionResource(R.dimen.padding_small))) {
+                Text(
+                    stringResource(R.string.report_issue),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_tiny))
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(MaterialTheme.shapes.medium),
+                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+                ) {
+                    SettingsActionCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = Icons.Outlined.BugReport,
+                        title = stringResource(R.string.app_crash_log),
+                        description = stringResource(R.string.app_crash_log_description),
+                        onClick = { showCrashLog = true }
+                    )
+                    SettingsActionCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = Icons.Outlined.Report,
+                        title = stringResource(R.string.report_issue),
+                        description = stringResource(R.string.report_issue_description),
+                        onClick = { uriHandler.openUri(GITHUB_REPO_ISSUES_URL) }
+                    )
+                }
+            }
+
             Card(
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        top = dimensionResource(R.dimen.padding_small),
-                        bottom = dimensionResource(R.dimen.padding_small)
-                    )
-            ){
+                    .padding(vertical = dimensionResource(R.dimen.padding_small))
+            ) {
                 Row(
                     Modifier
                         .clickable(onClick = openCustomActivityScreen)
                         .padding(dimensionResource(R.dimen.padding_small)),
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Text(
                         stringResource(R.string.edit_custom_views),
                         style = MaterialTheme.typography.titleMedium
@@ -97,6 +143,7 @@ fun SettingsScreen(
                     }
                 }
             }
+
         }
     }
 }
@@ -104,10 +151,10 @@ fun SettingsScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
-fun SettingsScreenPreview(){
+fun SettingsScreenPreview() {
     ZenwellTheme {
         Column {
-            DataTransferCardBody(Modifier.fillMaxWidth())
+            DataTransferCard(Modifier.fillMaxWidth()){}
             Spacer(Modifier.weight(1f))
         }
     }

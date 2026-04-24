@@ -69,10 +69,10 @@
     <string name="regular_schedule">Regular schedule</string>
     <string name="pomodoro_schedule">Pomodoro Schedule</string>
     <string name="number_of_pomodoro_sessions">Number of pomodoro sessions</string>
-    <string name="pomodoro_session_number_invalid">Cannot be zero or less.</string>
+    <string name="pomodoro_session_number_invalid">Cannot be zero or less</string>
     <string name="pause">Pause</string>
     <string name="pomodoro_session_completed">Pomodoro session completed!</string>
-    <string name="accessibility_service_not_started">Accessibility service not started.</string>
+    <string name="accessibility_service_not_started">Accessibility service not started</string>
     <string name="do_you_want_to_end_this_session">Do you want to end this session?</string>
     <string name="skip_to_next_session">Skip to next session</string>
     <string name="confirm">Confirm</string>
@@ -113,8 +113,8 @@
     <string name="export_data_description">Save app data for restoring later.</string>
     <string name="restore_data">Restore Data</string>
     <string name="restore_data_description">Restore app data with previously exported file. It does not delete existing data.</string>
-    <string name="data_restore_failed">Data restore failed.</string>
-    <string name="data_restore_completed">Data restore completed.</string>
+    <string name="data_restore_failed">Data restore failed</string>
+    <string name="data_restore_completed">Data restore completed</string>
     <string name="choose_active_time">Active time</string>
     <string name="choose_start_time">Choose Start Time</string>
     <string name="choose_end_time">Choose End Time</string>
@@ -137,4 +137,10 @@
     <string name="data_backup">Data Backup</string>
     <string name="restore_custom_views">Restore custom views</string>
     <string name="restore_custom_views_description">Are you sure you want to delete all custom views and restore it back to default state? The schedules using this custom view would not be deleted.</string>
+    <string name="app_crash_log">App Crash Log</string>
+    <string name="copy_to_clipboard">Copy to Clipboard</string>
+    <string name="no_logs_found">No logs found</string>
+    <string name="app_crash_log_description">View the crash logs of the app and report if any</string>
+    <string name="report_issue">Report issue</string>
+    <string name="report_issue_description">Report any app issue to the developer or request new features</string>
 </resources>

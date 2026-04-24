@@ -11,6 +11,7 @@ import android.content.Intent
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
+import com.sarangem.zenwell.CRASH_LOG_FILE
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.deleteAllNotificationChannel
@@ -21,7 +22,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.io.File
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 @SuppressLint("AccessibilityPolicy")
@@ -35,6 +39,19 @@ class AppBlockerService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            try {
+                val logFile = File(filesDir, CRASH_LOG_FILE)
+                val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+                logFile.writeText(
+                    "\n === AppBlockerService Crash at $timestamp === \n ${throwable.stackTraceToString()}"
+                )
+            } catch (e: Exception) {
+                ServiceLogger.e({ "Unable to save crash to file." }, e)
+            }
+            defaultHandler?.uncaughtException(thread, throwable)
+        }
         CoroutineScope(Dispatchers.IO).launch {
             initializeRepository()
         }

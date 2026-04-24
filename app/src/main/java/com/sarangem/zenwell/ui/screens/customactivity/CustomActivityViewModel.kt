@@ -7,6 +7,8 @@ package com.sarangem.zenwell.ui.screens.customactivity
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sarangem.zenwell.YOUTUBE_SHORTS_NAME
+import com.sarangem.zenwell.YOUTUBE_SHORTS_VIEW_ID
 import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.database.tables.AppNames
 import kotlinx.coroutines.Dispatchers
@@ -83,14 +85,10 @@ class CustomActivityViewModel(private val schedulesRepository: SchedulesReposito
 
     fun onReset(){
         viewModelScope.launch(Dispatchers.IO) {
-            schedulesRepository.insertApp(
-                AppNames(
-                    1,
-                    "com.google.android.youtube:id/reel_watch_fragment_root",
-                    "Youtube Shorts"
-                )
-            )
             _uiState.value.forEach { onDelete(it.key, it.value) }
+            schedulesRepository.insertApp(
+                AppNames(0, YOUTUBE_SHORTS_VIEW_ID, YOUTUBE_SHORTS_NAME)
+            )
             initialize()
         }
     }

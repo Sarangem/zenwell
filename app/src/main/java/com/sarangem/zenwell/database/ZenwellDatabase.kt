@@ -11,6 +11,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.sarangem.zenwell.YOUTUBE_SHORTS_NAME
+import com.sarangem.zenwell.YOUTUBE_SHORTS_VIEW_ID
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.BlockedApps
 import com.sarangem.zenwell.database.tables.Schedules
@@ -56,15 +58,12 @@ abstract class ZenwellDatabase : RoomDatabase() {
                 Instance?.let { database ->
                     scope.launch {
                         database.scheduleDao().insertAppNames(
-                            AppNames(
-                                1,
-                                "com.google.android.youtube:id/reel_watch_fragment_root",
-                                "Youtube Shorts"
-                            )
+                            AppNames(1, YOUTUBE_SHORTS_VIEW_ID, YOUTUBE_SHORTS_NAME)
                         )
                     }
                 }
             }
         }
+
     }
 }
