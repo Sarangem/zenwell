@@ -6,25 +6,39 @@
 package com.sarangem.zenwell.ui.screens.edit
 
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.model.MathOperators
+import com.sarangem.zenwell.model.UnlockMethod
 
 enum class ValidationError {
+    Default,
     ActiveTime,
     NotificationTime,
-    PomodoroSessionNumber,
     MathEquationNumOperands,
 }
 
-fun validateSchedule(schedule: Schedules): Set<ValidationError> = buildSet {
-    if (schedule.startTimeInMinutes >= schedule.endTimeInMinutes) {
-        add(ValidationError.ActiveTime)
+fun validateSchedule(s: Schedules): Set<ValidationError> = with(s) {
+    if (isPomodoro) {
+        return if (pomodoroWorkTimeInMinutes == 0 || pomodoroRestTimeInMinutes == 0 || pomodoroSessionNumber == 0) {
+            setOf(ValidationError.Default)
+        } else emptySet()
     }
-    if (schedule.usageSessionDurationInMinutes <= schedule.notificationTimeInMinutes) {
-        add(ValidationError.NotificationTime)
+    val errors: MutableSet<ValidationError> = mutableSetOf()
+    if (isActive && startTimeInMinutes >= endTimeInMinutes) errors.add(ValidationError.ActiveTime)
+    if (unlockMethod != UnlockMethod.StrictBlock) {
+        if (usageSessionDurationInMinutes == 0) errors.add(ValidationError.Default)
+        if (usageSessionDurationInMinutes <= notificationTimeInMinutes) errors.add(ValidationError.NotificationTime)
     }
-    if (schedule.pomodoroSessionNumber <= 0) {
-        add(ValidationError.PomodoroSessionNumber)
+    when (unlockMethod) {
+        UnlockMethod.Timer -> if (timerDurationInSeconds == 0) errors.add(ValidationError.Default)
+        UnlockMethod.Breathing -> if (breathingCycleDurationInSeconds == 0 || breathingCycleNumber == 0) errors.add(ValidationError.Default)
+        UnlockMethod.MathProblem -> {
+            if (mathEquationNumOperands < 2) errors.add(ValidationError.MathEquationNumOperands)
+            if (mathEquationMinNumber > mathEquationMaxNumber ||
+                (MathOperators.MULTIPLICATION in allowedMathOperators && mathEquationMinNumberInMultiplication > mathEquationMaxNumberInMultiplication)
+            ) errors.add(ValidationError.Default)
+        }
+        UnlockMethod.MultiplicationTable -> if (multiplierMinNum > multiplierMaxNum || multiplicationMinNum > multiplicationMaxNum) errors.add(ValidationError.Default)
+        else -> {}
     }
-    if (schedule.mathEquationNumOperands < 2) {
-        add(ValidationError.MathEquationNumOperands)
-    }
+    return errors
 }

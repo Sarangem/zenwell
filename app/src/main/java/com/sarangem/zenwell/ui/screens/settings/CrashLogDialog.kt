@@ -6,6 +6,7 @@
 package com.sarangem.zenwell.ui.screens.settings
 
 import android.content.ClipData
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
@@ -23,8 +24,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalClipboard
@@ -41,6 +46,7 @@ import com.sarangem.zenwell.GITHUB_REPO_ISSUES_URL
 import com.sarangem.zenwell.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -52,9 +58,13 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
     val clipboardManager = LocalClipboard.current
     val uriHandler = LocalUriHandler.current
     val coroutineScope = rememberCoroutineScope()
-    val crashLogText = remember {
-        val file = File(context.filesDir, CRASH_LOG_FILE)
-        if (file.exists()) file.readText() else null
+    var crashLogText by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(Unit) {
+        val log = withContext(Dispatchers.IO) {
+            val file = File(context.filesDir, CRASH_LOG_FILE)
+            if (file.exists()) file.readText().take(1000) else null
+        }
+        crashLogText = log
     }
 
     AlertDialog(
@@ -82,8 +92,8 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
             }
         },
         confirmButton = {
-            Column {
-                crashLogText?.let {
+            AnimatedVisibility(crashLogText != null) {
+                Column {
                     Button(
                         onClick = {
                             val title = URLEncoder.encode(
@@ -91,7 +101,7 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
                                 StandardCharsets.UTF_8.toString()
                             )
                             val body = URLEncoder.encode(
-                                "### Crash Log\n```\n$crashLogText\n```",
+                                "### Crash Log\n```\n${crashLogText ?: "No logs found"}\n```",
                                 StandardCharsets.UTF_8.toString()
                             )
                             uriHandler.openUri("$GITHUB_REPO_ISSUES_URL/new?title=$title&body=$body")
@@ -100,24 +110,39 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
                     ) {
                         Text(stringResource(R.string.report_issue))
                     }
-                }
-                Button(
-                    onClick = {
-                        coroutineScope.launch(Dispatchers.IO) {
-                            clipboardManager.setClipEntry(
-                                ClipData.newPlainText("Crash Log", crashLogText).toClipEntry()
-                            )
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
-                ) {
-                    Text(stringResource(R.string.copy_to_clipboard))
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                clipboardManager.setClipEntry(
+                                    ClipData.newPlainText("Crash Log", crashLogText).toClipEntry()
+                                )
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+                    ) {
+                        Text(stringResource(R.string.copy_to_clipboard))
+                    }
                 }
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.ok))
+            Column {
+                AnimatedVisibility(crashLogText != null) {
+                    TextButton(
+                        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_small)),
+                        onClick = {
+                            coroutineScope.launch(Dispatchers.IO) {
+                                File(context.filesDir, CRASH_LOG_FILE).delete()
+                                crashLogText = null
+                            }
+                        }
+                    ) {
+                        Text(stringResource(R.string.clear))
+                    }
+                }
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.ok))
+                }
             }
         }
     )

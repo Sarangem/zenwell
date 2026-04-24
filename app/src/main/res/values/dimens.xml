@@ -5,14 +5,15 @@
   -->
 
 <resources>
+    <dimen name="spacing_small">2dp</dimen>
     <dimen name="padding_tiny">4dp</dimen>
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
     <dimen name="padding_large">24dp</dimen>
     <dimen name="card_elevation">2dp</dimen>
-    <dimen name="floating_action_button_height">84dp</dimen>
     <dimen name="horizontal_divider_thickness">2dp</dimen>
+    <dimen name="text_field_border">1dp</dimen>
     <dimen name="image_size">48dp</dimen>
-    <dimen name="spacing_small">2dp</dimen>
     <dimen name="pomodoro_rest_time_wavelength">40dp</dimen>
+    <dimen name="floating_action_button_height">84dp</dimen>
 </resources>

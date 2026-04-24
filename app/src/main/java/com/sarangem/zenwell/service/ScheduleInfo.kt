@@ -72,7 +72,7 @@ data class ScheduleInfo(
                         UnlockMethod.Breathing -> BreathingScreen(
                             Modifier.fillMaxSize(),
                             schedule.message,
-                            schedule.breathingCycleDuration,
+                            schedule.breathingCycleDurationInSeconds,
                             schedule.breathingCycleNumber,
                             schedule.requireManualUnlock,
                             onTimerEnd,

@@ -20,16 +20,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.sarangem.zenwell.R
+import androidx.compose.ui.text.input.VisualTransformation
 
 @Composable
 fun DetailsCard(
@@ -73,6 +78,7 @@ fun DetailsCardWithTextField(
     isError: Boolean = false,
     @StringRes errorMessage: Int? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
+    showPlaceholder: Boolean = false,
     onValueChange: (String) -> Unit = {},
 ) {
     DetailsCard {
@@ -97,10 +103,14 @@ fun DetailsCardWithTextField(
             },
             isError = isError,
             label = {
-                if (isError) {
-                    errorMessage?.let { stringResource(it) } ?: ""
+                if (isError && errorMessage != null) {
+                    Text(
+                        stringResource(errorMessage),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
-            }
+            },
+            visualTransformation = if (showPlaceholder) ZeroPlaceholder else VisualTransformation.None
         )
     }
 }
@@ -112,11 +122,15 @@ fun DetailsCardWithNumberField(
     @StringRes suffixText: Int? = null,
     isError: Boolean = false,
     @StringRes errorMessage: Int? = null,
+    canBeZero: Boolean = true,
     updateSchedule: (Int) -> Unit = {},
 ) {
+    val illegalValue = remember(canBeZero, textFieldValue) {
+        !canBeZero && textFieldValue == 0
+    }
     DetailsCardWithTextField(
         mainText = mainText,
-        textFieldValue = textFieldValue.toString(),
+        textFieldValue = if (textFieldValue == 0) "" else textFieldValue.toString(),
         onValueChange = { num ->
             if (num.isDigitsOnly()) {
                 val num = num.toIntOrNull()
@@ -129,8 +143,9 @@ fun DetailsCardWithNumberField(
         },
         keyboardType = KeyboardType.Number,
         suffixText = suffixText,
-        isError = isError,
-        errorMessage = errorMessage
+        isError = isError || illegalValue,
+        errorMessage = if (illegalValue) R.string.no_zero else errorMessage,
+        showPlaceholder = true
     )
 }
 
@@ -141,10 +156,19 @@ fun DetailsCardWithRangeNumberField(
     lastFieldValue: Int,
     updateFirstValue: (Int) -> Unit = {},
     updateLastValue: (Int) -> Unit = {},
-    suffixText: String = "",
-    isError: Boolean = false,
-    errorMessage: String = ""
+    suffixText: String = ""
 ) {
+    val illegalValue = remember(firstFieldValue, lastFieldValue) {
+        firstFieldValue > lastFieldValue
+    }
+    val errorLabel = @Composable {
+        if (illegalValue) {
+            Text(
+                stringResource(R.string.invalid_range),
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
     DetailsCard {
         Text(
             text = stringResource(mainText),
@@ -154,7 +178,7 @@ fun DetailsCardWithRangeNumberField(
         Row(Modifier.weight(2f)) {
             OutlinedTextField(
                 modifier = Modifier.weight(1f),
-                value = firstFieldValue.toString(),
+                value = if (firstFieldValue == 0) "" else firstFieldValue.toString(),
                 shape = MaterialTheme.shapes.large,
                 onValueChange = { num ->
                     if (num.isDigitsOnly()) {
@@ -170,15 +194,10 @@ fun DetailsCardWithRangeNumberField(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
                 ),
-                suffix = {
-                    Text(suffixText)
-                },
-                isError = isError,
-                label = {
-                    if (isError) {
-                        Text(errorMessage)
-                    }
-                }
+                suffix = { Text(suffixText) },
+                isError = illegalValue,
+                label = errorLabel,
+                visualTransformation = ZeroPlaceholder
             )
             Text(
                 text = stringResource(R.string.to),
@@ -189,7 +208,7 @@ fun DetailsCardWithRangeNumberField(
             )
             OutlinedTextField(
                 modifier = Modifier.weight(1f),
-                value = lastFieldValue.toString(),
+                value = if (lastFieldValue == 0) "" else lastFieldValue.toString(),
                 shape = MaterialTheme.shapes.large,
                 onValueChange = { num ->
                     if (num.isDigitsOnly()) {
@@ -205,14 +224,25 @@ fun DetailsCardWithRangeNumberField(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
                 ),
-                suffix = {
-                    Text(suffixText)
-                },
-                isError = isError,
-                label = {
-                    if (isError) {
-                        Text(errorMessage)
-                    }
+                suffix = { Text(suffixText) },
+                isError = illegalValue,
+                label = errorLabel,
+                visualTransformation = ZeroPlaceholder
+            )
+        }
+    }
+}
+
+object ZeroPlaceholder : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        return if (text.isNotEmpty()) {
+            TransformedText(text, OffsetMapping.Identity)
+        } else {
+            TransformedText(
+                AnnotatedString("0"),
+                object : OffsetMapping {
+                    override fun originalToTransformed(offset: Int) = 0
+                    override fun transformedToOriginal(offset: Int) = 0
                 }
             )
         }

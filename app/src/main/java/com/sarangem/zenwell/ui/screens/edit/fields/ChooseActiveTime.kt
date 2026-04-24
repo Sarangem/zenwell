@@ -7,9 +7,8 @@ package com.sarangem.zenwell.ui.screens.edit.fields
 
 import android.content.Context
 import android.text.format.DateFormat
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -63,6 +62,14 @@ fun ChooseActiveTime(
         )
 
         Column(Modifier.weight(2f)) {
+            if (isError) {
+                Text(
+                    text = stringResource(R.string.active_time_is_invalid),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                )
+            }
             ClockButton(
                 time = startTimeInMinutes,
                 timePickerTitle = stringResource(R.string.choose_start_time),
@@ -74,14 +81,13 @@ fun ChooseActiveTime(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(dimensionResource(R.dimen.padding_small))
+                    .padding(vertical = dimensionResource(R.dimen.padding_small))
             )
+
             ClockButton(
                 time = endTimeInMinutes,
                 timePickerTitle = stringResource(R.string.choose_end_time),
-                updateUiState = updateEndTime,
-                isError = isError,
-                errorMessage = stringResource(R.string.active_time_is_invalid)
+                updateUiState = updateEndTime
             )
         }
     }
@@ -93,38 +99,34 @@ fun ClockButton(
     time: Int,
     timePickerTitle: String,
     updateUiState: (Int) -> Unit,
-    isError: Boolean = false,
-    errorMessage: String = ""
 ) {
     val context = LocalContext.current
     var showPopup by remember { mutableStateOf(false) }
-
-    Box{
-        OutlinedTextField(
-            modifier = modifier.fillMaxWidth(),
-            value = minutesToString(time, context),
-            readOnly = true,
-            onValueChange = {},
-            shape = MaterialTheme.shapes.medium,
-            isError = isError,
-            trailingIcon = {
-                Icon(
-                    painterResource(R.drawable.outlined_schedule),
-                    contentDescription = null
-                )
-            },
-            label = {
-                if (isError) {
-                    Text(errorMessage)
-                }
-            }
-        )
-
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clickable { showPopup = true }
-        )
+    Surface(
+        onClick = { showPopup = true },
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(
+            width = dimensionResource(R.dimen.text_field_border),
+            color =MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        color = Color.Transparent,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = minutesToString(time, context),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                painter = painterResource(R.drawable.outlined_schedule),
+                contentDescription = null,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.padding_small))
+            )
+        }
     }
 
     if (showPopup) {

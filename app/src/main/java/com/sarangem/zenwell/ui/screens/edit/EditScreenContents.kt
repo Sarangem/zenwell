@@ -89,19 +89,22 @@ fun EditScreenContents(
                                     DetailsCardWithNumberField(
                                         R.string.timer_duration,
                                         uiState.schedule.timerDurationInSeconds,
-                                        R.string.seconds
+                                        R.string.seconds,
+                                        canBeZero = false
                                     ) { updateSchedule(uiState.schedule.copy(timerDurationInSeconds = it)) }
                                 }
 
                                 UnlockMethod.Breathing -> {
                                     DetailsCardWithNumberField(
                                         R.string.breathing_cycle_duration,
-                                        uiState.schedule.breathingCycleDuration,
-                                        R.string.seconds
-                                    ) { updateSchedule(uiState.schedule.copy(breathingCycleDuration = it)) }
+                                        uiState.schedule.breathingCycleDurationInSeconds,
+                                        R.string.seconds,
+                                        canBeZero = false
+                                    ) { updateSchedule(uiState.schedule.copy(breathingCycleDurationInSeconds = it)) }
                                     DetailsCardWithNumberField(
                                         R.string.number_of_breathing_cycles,
-                                        uiState.schedule.breathingCycleNumber
+                                        uiState.schedule.breathingCycleNumber,
+                                        canBeZero = false
                                     ) { updateSchedule(uiState.schedule.copy(breathingCycleNumber = it)) }
                                 }
 
@@ -176,7 +179,8 @@ fun EditScreenContents(
                             DetailsCardWithNumberField(
                                 R.string.usage_session_duration,
                                 uiState.schedule.usageSessionDurationInMinutes,
-                                R.string.minutes
+                                R.string.minutes,
+                                canBeZero = false
                             ) { updateSchedule(uiState.schedule.copy(usageSessionDurationInMinutes = it)) }
                             DetailsCardWithNumberField(
                                 R.string.notify_before_closing,
@@ -207,12 +211,18 @@ fun EditScreenContents(
                             )
                         }
                     }
-                    AnimatedVisibility(
-                        visible = uiState.schedule.unlockMethod == UnlockMethod.MathProblem,
-                        enter = expandVertically() + fadeIn(),
-                        exit = shrinkVertically() + fadeOut()
-                    ) {
-                        MathProblemExample(uiState.schedule)
+                    if(
+                        ValidationError.MathEquationNumOperands !in uiState.validationErrors &&
+                        uiState.schedule.mathEquationMinNumber <= uiState.schedule.mathEquationMaxNumber &&
+                        uiState.schedule.mathEquationMinNumberInMultiplication <= uiState.schedule.mathEquationMaxNumberInMultiplication
+                    ){
+                        AnimatedVisibility(
+                            visible = uiState.schedule.unlockMethod == UnlockMethod.MathProblem,
+                            enter = expandVertically() + fadeIn(),
+                            exit = shrinkVertically() + fadeOut()
+                        ) {
+                            MathProblemExample(uiState.schedule)
+                        }
                     }
                 }
             }
@@ -222,21 +232,22 @@ fun EditScreenContents(
                     DetailsCardWithNumberField(
                         R.string.work_time,
                         uiState.schedule.pomodoroWorkTimeInMinutes,
-                        R.string.minutes
+                        R.string.minutes,
+                        canBeZero = false
                     ) { updateSchedule(uiState.schedule.copy(pomodoroWorkTimeInMinutes = it)) }
 
                     DetailsCardWithNumberField(
                         R.string.rest_time,
                         uiState.schedule.pomodoroRestTimeInMinutes,
-                        R.string.minutes
+                        R.string.minutes,
+                        canBeZero = false
                     ) { updateSchedule(uiState.schedule.copy(pomodoroRestTimeInMinutes = it)) }
 
                     DetailsCardWithNumberField(
                         R.string.number_of_pomodoro_sessions,
                         uiState.schedule.pomodoroSessionNumber,
                         null,
-                        ValidationError.PomodoroSessionNumber in uiState.validationErrors,
-                        R.string.pomodoro_session_number_invalid
+                        canBeZero = false
                     ) { updateSchedule(uiState.schedule.copy(pomodoroSessionNumber = it)) }
 
                     LabelDetailsCard(

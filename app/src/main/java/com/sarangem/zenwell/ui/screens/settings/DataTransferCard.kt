@@ -96,7 +96,7 @@ fun DataTransferCard(
                     }
                 }
 
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, R.string.data_restore_failed, Toast.LENGTH_SHORT).show()
                 }

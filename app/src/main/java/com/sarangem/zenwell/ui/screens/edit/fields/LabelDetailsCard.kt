@@ -88,7 +88,7 @@ fun LabelDetailsCard(
                             )
                         },
                         border = BorderStroke(
-                            width = 0.5.dp,
+                            width = dimensionResource(R.dimen.text_field_border),
                             color = MaterialTheme.colorScheme.primary
                         )
                     )

@@ -69,7 +69,8 @@
     <string name="regular_schedule">Regular schedule</string>
     <string name="pomodoro_schedule">Pomodoro Schedule</string>
     <string name="number_of_pomodoro_sessions">Number of pomodoro sessions</string>
-    <string name="pomodoro_session_number_invalid">Cannot be zero or less</string>
+    <string name="no_zero">Cannot be zero or less</string>
+    <string name="invalid_range">Invalid range</string>
     <string name="pause">Pause</string>
     <string name="pomodoro_session_completed">Pomodoro session completed!</string>
     <string name="accessibility_service_not_started">Accessibility service not started</string>
@@ -144,4 +145,5 @@
     <string name="report_issue">Report issue</string>
     <string name="report_issue_description">Report any app issue to the developer or request new features</string>
     <string name="enter_focus_mode">Enter focus mode</string>
+    <string name="clear">Clear</string>
 </resources>

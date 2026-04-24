@@ -69,7 +69,7 @@ class AppBlockerService : AccessibilityService() {
 
         // load ACTIVE schedules WITH APPS into scheduleInfoList
         val schedulesRepository = (application as ZenwellApplication).container
-        val schedulesList = schedulesRepository.getAllSchedules().first().filter { it.isActive }
+        val schedulesList = schedulesRepository.getAllSchedules().first().filter { it.isActive && it.weekDays.isNotEmpty() }
         scheduleInfoList.clear()
         schedulesList.forEach { schedule ->
             scheduleInfoList.add(
