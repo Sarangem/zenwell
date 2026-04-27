@@ -48,6 +48,8 @@ import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.PackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun CustomActivityScreen(
@@ -60,7 +62,9 @@ fun CustomActivityScreen(
     var installedAppList by remember { mutableStateOf<List<PackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {
         viewModel.initialize()
-        installedAppList = getInstalledApps(context).sortedBy { it.appName.lowercase() }
+        launch(Dispatchers.IO){
+            installedAppList = getInstalledApps(context).sortedBy { it.appName.lowercase() }
+        }
     }
 
     CustomActivityScreen(

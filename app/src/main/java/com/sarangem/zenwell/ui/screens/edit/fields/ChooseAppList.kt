@@ -5,9 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens.edit.fields
 
-import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,13 +44,15 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.PackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
 import androidx.core.graphics.drawable.toDrawable
 import com.sarangem.zenwell.database.tables.AppNames
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,9 +61,32 @@ fun ChooseAppList(
     viewsList: List<AppNames>,
     updateValue: (List<String>) -> Unit = {},
 ) {
+    val context = LocalContext.current
+    var installedAppList by remember { mutableStateOf<List<PackageInfo>>(listOf()) }
+    LaunchedEffect(Unit) {
+        launch(Dispatchers.IO) {
+            val list = getInstalledApps(context).toMutableList()
+            viewsList.forEach { view ->
+                val element =
+                    list.firstOrNull { it.packageName == view.title.substringBefore(":id/") }
+                element?.let {
+                    list.add(
+                        PackageInfo(
+                            packageName = view.title,
+                            appName = view.viewTitle ?: "",
+                            icon = element.icon
+                        )
+                    )
+                }
+            }
+            list.sortBy { it.appName.lowercase() }
+            installedAppList = list
+        }
+    }
+
     var expanded by remember { mutableStateOf(false) }
 
-    DetailsCardColumn{
+    DetailsCardColumn {
         DetailsCard(
             modifier = Modifier.clickable { expanded = true }
         ) {
@@ -81,16 +104,14 @@ fun ChooseAppList(
         }
     }
 
-
     if (expanded) {
         ModalBottomSheet(
             onDismissRequest = { expanded = false },
             sheetState = rememberModalBottomSheetState()
         ) {
             BottomSheetContents(
-                getInstalledApps = { getInstalledApps(it) },
+                installedAppList = installedAppList,
                 checkedAppList = appNames,
-                viewsList = viewsList,
                 addAppToList = {
                     if (appNames != null) {
                         updateValue(appNames + it)
@@ -111,32 +132,11 @@ fun ChooseAppList(
 @Composable
 fun BottomSheetContents(
     modifier: Modifier = Modifier,
-    getInstalledApps: (Context) -> List<PackageInfo>,
-    viewsList: List<AppNames> = listOf(),
+    installedAppList: List<PackageInfo>,
     checkedAppList: List<String>? = listOf(),
     addAppToList: (String) -> Unit = {},
     removeAppFromList: (String) -> Unit = {}
 ) {
-    val context = LocalContext.current
-    var installedAppList by remember { mutableStateOf<List<PackageInfo>>(listOf()) }
-    LaunchedEffect(Unit) {
-        val list = getInstalledApps(context).toMutableList()
-        viewsList.forEach { view ->
-            val element = list.firstOrNull { it.packageName == view.title.substringBefore(":id/") }
-            element?.let {
-                list.add(
-                    PackageInfo(
-                        packageName = view.title,
-                        appName = view.viewTitle ?: "",
-                        icon = element.icon
-                    )
-                )
-            }
-        }
-        list.sortBy { it.appName.lowercase() }
-        installedAppList = list
-    }
-
     if (installedAppList.isEmpty() || checkedAppList == null) {
         LoadingIndicator(
             Modifier
@@ -183,15 +183,14 @@ fun AppCard(
     ) {
         Spacer(Modifier.width(dimensionResource(R.dimen.padding_small)))
 
-            Image(
-                painter = rememberDrawablePainter(icon),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(dimensionResource(R.dimen.padding_small))
-                    .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
-                    .size(dimensionResource(R.dimen.image_size))
-            )
-
+        AsyncImage(
+            icon,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(dimensionResource(R.dimen.padding_small))
+                .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
+                .size(dimensionResource(R.dimen.image_size))
+        )
 
         Text(
             text = label,
@@ -215,13 +214,11 @@ fun ShowBottomSheetPreview() {
     val icon = Color.Red.toArgb().toDrawable()
     ZenwellTheme {
         BottomSheetContents(
-            getInstalledApps = { _ ->
-                listOf(
-                    PackageInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
-                    PackageInfo(appName = "Messages", icon = icon, packageName = "messages"),
-                    PackageInfo(appName = "Youtube", icon = icon, packageName = "youtube")
-                )
-            },
+            installedAppList = listOf(
+                PackageInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
+                PackageInfo(appName = "Messages", icon = icon, packageName = "messages"),
+                PackageInfo(appName = "Youtube", icon = icon, packageName = "youtube")
+            )
         )
     }
 }

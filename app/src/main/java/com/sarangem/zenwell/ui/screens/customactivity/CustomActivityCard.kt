@@ -5,7 +5,6 @@
 
 package com.sarangem.zenwell.ui.screens.customactivity
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,7 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.Green500
@@ -182,8 +181,8 @@ fun AppListDropdownMenu(
             value = TextFieldValue(currentApp?.appName ?: stringResource(R.string.select_app)),
             onValueChange = {},
             leadingIcon = {
-                Image(
-                    painter = rememberDrawablePainter(currentApp?.icon),
+                AsyncImage(
+                    currentApp?.icon,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(dimensionResource(R.dimen.padding_small))
@@ -213,8 +212,8 @@ fun AppListDropdownMenu(
                         expanded = !expanded
                     },
                     leadingIcon = {
-                        Image(
-                            painter = rememberDrawablePainter(it.icon),
+                        AsyncImage(
+                            it.icon,
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(dimensionResource(R.dimen.padding_small))
