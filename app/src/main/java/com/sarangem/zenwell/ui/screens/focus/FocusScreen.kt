@@ -156,13 +156,14 @@ fun FocusScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(innerPadding)
-                            .verticalScroll(rememberScrollState()),
+                            .padding(innerPadding),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         PomodoroTimer(
-                            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(dimensionResource(R.dimen.padding_small)),
                             progress = animatedProgress,
                             formattedTime = uiState.formattedTime,
                             isWork = uiState.isWorkTime

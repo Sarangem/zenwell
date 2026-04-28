@@ -61,7 +61,7 @@ fun PomodoroControls(
     var isStopChecked by remember { mutableStateOf(false) }
     if (isStopChecked) {
         ShowConfirmDialog(
-            icon = R.drawable.filled_close,
+            icon = R.drawable.filled_bold_close,
             title = stringResource(R.string.end),
             description = stringResource(R.string.do_you_want_to_end_this_session),
             onConfirm = {
@@ -122,7 +122,7 @@ fun PomodoroControls(
             )
         ) {
             Icon(
-                painterResource(R.drawable.filled_close),
+                painterResource(R.drawable.filled_bold_close),
                 contentDescription = stringResource(R.string.end),
                 modifier = Modifier.size(dimensionResource(R.dimen.image_size))
             )

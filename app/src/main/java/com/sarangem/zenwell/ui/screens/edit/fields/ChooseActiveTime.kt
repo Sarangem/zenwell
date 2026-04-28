@@ -40,7 +40,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.sarangem.zenwell.R
@@ -143,12 +143,13 @@ fun ClockButton(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
 fun AdvancedTimePickerDialog(
-    title: String,
+    title: String = "Choose Time",
     onDismiss: () -> Unit = {},
     onConfirm: (TimePickerState) -> Unit = {},
-    timePickerState: TimePickerState
+    timePickerState: TimePickerState = TimePickerState(0,0,false)
 ) {
     var showDial by remember { mutableStateOf(true) }
 
@@ -174,16 +175,12 @@ fun AdvancedTimePickerDialog(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 20.dp),
+                        .padding(bottom = dimensionResource(R.dimen.padding_medium)),
                     text = title,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
                 if (showDial) TimePicker(timePickerState) else TimeInput(timePickerState)
-                Row(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .fillMaxWidth()
-                ) {
+                Row(Modifier.fillMaxWidth()) {
                     IconButton(onClick = { showDial = !showDial }) {
                         Icon(
                             painterResource(if (showDial) R.drawable.outlined_keyboard else R.drawable.outlined_schedule),

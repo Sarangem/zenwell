@@ -40,9 +40,7 @@ fun PomodoroTimer(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier
-            .aspectRatio(1f)
-            .fillMaxSize()
+        modifier = modifier.aspectRatio(1f)
     ) {
         CircularWavyProgressIndicator(
             modifier = Modifier.fillMaxSize(),

@@ -69,8 +69,8 @@ fun SchedulesCard(
         if (schedule.isActive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
     val cardColor = if (isClicked) {
         CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f),
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
         )
     } else {
         CardDefaults.cardColors(
@@ -81,8 +81,7 @@ fun SchedulesCard(
 
     var isPomodoroActive by rememberSaveable {
         mutableStateOf(
-            pomodoroWindow?.isActive == true || pomodoroWindow?.isPaused == true // <- why this logic does not work
-            // i want the pomodoro window to show active when it is paused
+            pomodoroWindow?.isActive == true || pomodoroWindow?.isPaused == true
         )
     }
 
@@ -283,7 +282,7 @@ fun PomodoroTimerControls(
             var isStopClicked by remember { mutableStateOf(false) }
             if(isStopClicked){
                 ShowConfirmDialog(
-                    icon = R.drawable.filled_close,
+                    icon = R.drawable.filled_bold_close,
                     title = stringResource(R.string.end),
                     description = stringResource(R.string.do_you_want_to_end_this_session),
                     onConfirm = {
@@ -306,7 +305,7 @@ fun PomodoroTimerControls(
                 shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium))
             ) {
                 Icon(
-                    painterResource(R.drawable.filled_close),
+                    painterResource(R.drawable.filled_bold_close),
                     contentDescription = stringResource(R.string.end),
                     tint = MaterialTheme.colorScheme.onError,
                 )
