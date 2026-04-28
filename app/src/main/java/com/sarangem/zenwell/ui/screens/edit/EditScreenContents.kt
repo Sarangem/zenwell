@@ -5,7 +5,6 @@
 
 package com.sarangem.zenwell.ui.screens.edit
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -43,7 +42,6 @@ fun EditScreenContents(
     deleteSchedule: () -> Unit = {},
     goBack: () -> Unit = {},
 ) {
-    BackHandler { goBack() }
     Scaffold(
         modifier = modifier,
         topBar = {

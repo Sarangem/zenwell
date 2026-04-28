@@ -46,13 +46,8 @@ class EditViewModel(private val schedulesRepository: SchedulesRepository) : View
             )
         }
     }
-    fun emptyUiState(){
-        _uiState.update { EditUiState() }
-        pastAppList = null
-    }
 
     fun initialize(schedule: Schedules) {
-        if (_uiState.value.schedule.id == schedule.id) return
         viewModelScope.launch(Dispatchers.IO) {
             val appNames = schedulesRepository.getAppNamesById(schedule.id).first()
             val viewsList = schedulesRepository.getAllApps().first().filter { it.viewTitle != null }

@@ -8,7 +8,7 @@ activityCompose = "1.13.0"
 composeBom = "2026.03.01"
 roomVersion = "2.8.4"
 ksp = "2.3.3"
-navigation3 = "1.0.0"
+navigation3 = "1.1.1"
 coil = "3.4.0"
 
 [libraries]
@@ -26,7 +26,7 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion" }
 androidx-animation-graphics-android = { group = "androidx.compose.animation", name = "animation-graphics-android" }
-androidx-compose-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation" }
+androidx-compose-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3" }
 androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }

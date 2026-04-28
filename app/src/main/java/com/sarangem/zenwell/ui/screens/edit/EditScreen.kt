@@ -6,13 +6,10 @@
 package com.sarangem.zenwell.ui.screens.edit
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.ui.screens.AppViewModelProvider
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
@@ -21,16 +18,11 @@ import com.sarangem.zenwell.ui.theme.ZenwellTheme
 @Composable
 fun EditScreen(
     modifier: Modifier = Modifier,
-    schedule: Schedules,
+    viewModel: EditViewModel,
     showTopAppBar: Boolean = true,
     goBack: () -> Unit = {}
 ) {
-    val viewModel: EditViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val uiState by viewModel.uiState.collectAsState()
-    LaunchedEffect(schedule.id) {
-        viewModel.initialize(schedule)
-    }
-
     EditScreenContents(
         modifier = modifier,
         uiState = uiState,
@@ -39,10 +31,7 @@ fun EditScreen(
         showTopAppBar = showTopAppBar,
         saveToDatabase = viewModel::saveToDatabase,
         deleteSchedule = viewModel::deleteSchedule,
-        goBack = {
-            goBack()
-            viewModel.emptyUiState()
-        }
+        goBack = goBack
     )
 }
 
