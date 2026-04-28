@@ -146,4 +146,5 @@
     <string name="report_issue_description">Report any app issue to the developer or request new features</string>
     <string name="enter_focus_mode">Enter focus mode</string>
     <string name="clear">Clear</string>
+    <string name="none_selected_yet">None selected yet</string>
 </resources>

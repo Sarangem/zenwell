@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,6 +85,14 @@ fun ChooseAppList(
             installedAppList = list
         }
     }
+    val selectedAppsText by remember(installedAppList, appNames) {
+        derivedStateOf {
+            installedAppList
+                .filter { appNames?.contains(it.packageName) == true }
+                .joinToString(", ") { it.appName }
+                .ifEmpty { null }
+        }
+    }
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -90,11 +100,19 @@ fun ChooseAppList(
         DetailsCard(
             modifier = Modifier.clickable { expanded = true }
         ) {
-            Text(
-                text = stringResource(R.string.choose_apps),
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Spacer(Modifier.weight(1f))
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+            ){
+                Text(
+                    text = stringResource(R.string.choose_apps),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = selectedAppsText ?: stringResource(R.string.none_selected_yet),
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
             IconButton(onClick = { expanded = true }) {
                 Icon(
                     painterResource(R.drawable.filled_arrow_right),

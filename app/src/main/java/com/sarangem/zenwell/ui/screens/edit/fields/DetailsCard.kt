@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -46,7 +47,9 @@ fun DetailsCard(
         shape = RoundedCornerShape(0.dp)
     ) {
         Row(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.padding_small)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             content()
