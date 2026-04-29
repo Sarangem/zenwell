@@ -39,6 +39,7 @@ class FocusViewModel : ViewModel() {
                         formattedTime = pomodoroWindow!!.getFormattedTime(),
                         isWorkTime = pomodoroWindow!!.isWorkTime,
                         isPaused = pomodoroWindow!!.isPaused,
+                        sessionsLeft = pomodoroWindow!!.sessions,
                         isCompleted = false
                     )
                 }
@@ -66,16 +67,4 @@ class FocusViewModel : ViewModel() {
             )
         }
     }
-}
-
-data class FocusUiState(
-    val schedule: Schedules = Schedules(),
-    val elapsedTime: Long = 0L,
-    val formattedTime: String = "",
-    val isWorkTime: Boolean = true,
-    val isPaused: Boolean = false,
-    val isCompleted: Boolean = false,
-    val isServiceRunning: Boolean = false
-){
-    val segmentTime = if(isWorkTime) schedule.pomodoroWorkTimeInMinutes * 60 else schedule.pomodoroRestTimeInMinutes * 60
 }

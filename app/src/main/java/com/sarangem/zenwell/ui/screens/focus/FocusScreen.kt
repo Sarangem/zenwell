@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -57,7 +55,6 @@ fun FocusScreen(
     LaunchedEffect(schedule.id) {
         viewModel.startObserving(schedule)
     }
-
     FocusScreen(
         modifier,
         goBack,
@@ -160,6 +157,11 @@ fun FocusScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        PomodoroProgressPills(
+                            totalSessions = uiState.schedule.pomodoroSessionNumber,
+                            sessionsLeft = uiState.sessionsLeft,
+                            modifier = Modifier
+                        )
                         PomodoroTimer(
                             modifier = Modifier
                                 .weight(1f)
@@ -185,7 +187,8 @@ fun FocusScreenPreview() {
             uiState = FocusUiState(
                 elapsedTime = 600,
                 formattedTime = "15:00",
-                isServiceRunning = true
+                isServiceRunning = true,
+                sessionsLeft = 4
             )
         )
     }
