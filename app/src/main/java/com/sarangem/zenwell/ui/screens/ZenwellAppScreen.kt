@@ -51,11 +51,13 @@ import com.sarangem.zenwell.ui.screens.home.HomeScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
 import kotlinx.serialization.Serializable
 import androidx.compose.runtime.collectAsState
+import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityViewModel
 
 @Composable
 fun ZenwellAppScreen() {
     val backStack = rememberNavBackStack(HomePage)
     val editViewModel: EditViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val customActivityViewModel: CustomActivityViewModel = viewModel(factory = AppViewModelProvider.Factory)
 
     NavDisplay(
         modifier = Modifier
@@ -122,7 +124,10 @@ fun ZenwellAppScreen() {
             ) {
                 SettingsScreen(
                     modifier = Modifier.fillMaxSize(),
-                    openCustomActivityScreen = { backStack.add(CustomActivityPage) },
+                    openCustomActivityScreen = {
+                        customActivityViewModel.initialize()
+                        backStack.add(CustomActivityPage)
+                    },
                     goBack = { backStack.removeLastOrNull() }
                 )
             }
@@ -130,6 +135,7 @@ fun ZenwellAppScreen() {
             entry<CustomActivityPage> {
                 CustomActivityScreen(
                     modifier = Modifier.fillMaxSize(),
+                    viewModel = customActivityViewModel,
                     goBack = { backStack.removeLastOrNull() }
                 )
             }

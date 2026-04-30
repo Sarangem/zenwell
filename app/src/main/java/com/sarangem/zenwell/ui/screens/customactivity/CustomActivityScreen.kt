@@ -41,8 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sarangem.zenwell.ui.screens.AppViewModelProvider
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -54,14 +52,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun CustomActivityScreen(
     modifier: Modifier = Modifier,
+    viewModel: CustomActivityViewModel,
     goBack: () -> Unit = {},
 ) {
-    val viewModel: CustomActivityViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var installedAppList by remember { mutableStateOf<List<PackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {
-        viewModel.initialize()
         launch(Dispatchers.IO){
             installedAppList = getInstalledApps(context).sortedBy { it.appName.lowercase() }
         }
