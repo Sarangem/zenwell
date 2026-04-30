@@ -155,14 +155,13 @@ class ListDetailSceneStrategy<T : Any>(val windowSizeClass: WindowSizeClass) : S
         val topEntry = entries.lastOrNull() ?: return null
         val listEntry = entries.findLast { it.metadata.contains(ListDetailScene.ListKey) } ?: return null
         val isDetail = topEntry.metadata.contains(ListDetailScene.DetailKey)
-        return if (isDetail || topEntry === listEntry) {
-            ListDetailScene(
-                key = listEntry.contentKey,
-                previousEntries = entries.takeWhile { it !== listEntry },
-                listEntry = listEntry,
-                detailEntry = topEntry.takeIf { isDetail }
-            )
-        } else null
+        if (!isDetail &&  topEntry !== listEntry) return null
+        return ListDetailScene(
+            key = listEntry.contentKey,
+            previousEntries = if (isDetail) entries.dropLast(1) else entries.takeWhile { it !== listEntry },
+            listEntry = listEntry,
+            detailEntry = topEntry.takeIf { isDetail }
+        )
     }
 }
 data class ListDetailScene<T : Any>(
