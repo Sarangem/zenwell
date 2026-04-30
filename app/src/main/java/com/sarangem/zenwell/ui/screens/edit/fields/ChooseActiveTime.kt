@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.utils.minutesToString
 
@@ -54,6 +57,7 @@ fun ChooseActiveTime(
     updateEndTime: (Int) -> Unit = {},
     isError: Boolean
 ) {
+    val isExpandedWidth = currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
     DetailsCard {
         Text(
             text = stringResource(R.string.choose_active_time),
@@ -70,27 +74,46 @@ fun ChooseActiveTime(
                     modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
                 )
             }
-            ClockButton(
-                time = startTimeInMinutes,
-                timePickerTitle = stringResource(R.string.choose_start_time),
-                updateUiState = updateStartTime
-            )
-            Text(
-                text = stringResource(R.string.to),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = dimensionResource(R.dimen.padding_small))
-            )
-
-            ClockButton(
-                time = endTimeInMinutes,
-                timePickerTitle = stringResource(R.string.choose_end_time),
-                updateUiState = updateEndTime
-            )
+            if(isExpandedWidth){
+                Row(Modifier.fillMaxSize()){
+                    ClockRange(Modifier.weight(1f), Modifier.align(Alignment.CenterVertically), startTimeInMinutes, updateStartTime, endTimeInMinutes, updateEndTime)
+                }
+            } else {
+                Column(Modifier.fillMaxSize()) {
+                    ClockRange(Modifier.fillMaxWidth(), Modifier.align(Alignment.CenterHorizontally), startTimeInMinutes, updateStartTime, endTimeInMinutes, updateEndTime)
+                }
+            }
         }
     }
+}
+
+@Composable
+fun ClockRange(
+    clockModifier: Modifier = Modifier,
+    textModifier: Modifier = Modifier,
+    startTimeInMinutes: Int,
+    updateStartTime: (Int) -> Unit = {},
+    endTimeInMinutes: Int,
+    updateEndTime: (Int) -> Unit = {},
+){
+    ClockButton(
+        modifier = clockModifier,
+        time = startTimeInMinutes,
+        timePickerTitle = stringResource(R.string.choose_start_time),
+        updateUiState = updateStartTime
+    )
+    Text(
+        text = stringResource(R.string.to),
+        style = MaterialTheme.typography.bodyLarge,
+        textAlign = TextAlign.Center,
+        modifier = textModifier.padding(vertical = dimensionResource(R.dimen.padding_small))
+    )
+    ClockButton(
+        modifier = clockModifier,
+        time = endTimeInMinutes,
+        timePickerTitle = stringResource(R.string.choose_end_time),
+        updateUiState = updateEndTime
+    )
 }
 
 @Composable
@@ -98,7 +121,7 @@ fun ClockButton(
     modifier: Modifier = Modifier,
     time: Int,
     timePickerTitle: String,
-    updateUiState: (Int) -> Unit,
+    updateUiState: (Int) -> Unit
 ) {
     val context = LocalContext.current
     var showPopup by remember { mutableStateOf(false) }
@@ -107,10 +130,10 @@ fun ClockButton(
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(
             width = dimensionResource(R.dimen.text_field_border),
-            color =MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         color = Color.Transparent,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),

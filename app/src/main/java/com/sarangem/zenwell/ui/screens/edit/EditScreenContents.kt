@@ -67,7 +67,7 @@ fun EditScreenContents(
         ) {
             DetailsCardColumn {
                 DetailsCardWithTextField(R.string.schedule_title, uiState.schedule.title) { updateSchedule(uiState.schedule.copy(title = it)) }
-                DetailsCardWithTextField(R.string.message, uiState.schedule.message) { updateSchedule(uiState.schedule.copy(message = it)) }
+                DetailsCardWithTextField(R.string.message, uiState.schedule.message, singleLine = false) { updateSchedule(uiState.schedule.copy(message = it)) }
             }
             ChooseAppList(uiState.appNames, uiState.viewsList, updateAppNames)
 

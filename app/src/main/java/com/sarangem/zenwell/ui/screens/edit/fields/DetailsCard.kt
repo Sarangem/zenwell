@@ -82,6 +82,7 @@ fun DetailsCardWithTextField(
     @StringRes errorMessage: Int? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     showPlaceholder: Boolean = false,
+    singleLine: Boolean = true,
     onValueChange: (String) -> Unit = {},
 ) {
     DetailsCard {
@@ -95,8 +96,9 @@ fun DetailsCardWithTextField(
             value = textFieldValue,
             shape = MaterialTheme.shapes.large,
             onValueChange = onValueChange,
+            singleLine = singleLine,
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
+                imeAction = if(singleLine) ImeAction.Default else ImeAction.Done,
                 keyboardType = keyboardType
             ),
             suffix = {

@@ -69,7 +69,7 @@ fun SchedulesCard(
         if (schedule.isActive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
     val cardColor = if (isClicked) {
         CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f),
+            containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.25f),
             contentColor = MaterialTheme.colorScheme.onTertiaryContainer
         )
     } else {

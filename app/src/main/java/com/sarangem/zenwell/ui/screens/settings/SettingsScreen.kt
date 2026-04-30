@@ -81,7 +81,8 @@ fun SettingsScreen(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
-                .padding(horizontal = dimensionResource(R.dimen.padding_small)),
+                .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                .padding(bottom = dimensionResource(R.dimen.padding_medium)),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
         ) {
             DataTransferCard(Modifier.fillMaxWidth())
