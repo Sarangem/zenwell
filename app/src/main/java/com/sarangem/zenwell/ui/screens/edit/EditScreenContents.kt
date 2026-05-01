@@ -187,28 +187,32 @@ fun EditScreenContents(
                                 ValidationError.NotificationTime in uiState.validationErrors,
                                 R.string.notification_time_invalid
                             ) { updateSchedule(uiState.schedule.copy(notificationTimeInMinutes = it)) }
-
-                            LabelDetailsCard(
-                                mainText = R.string.additional_options,
-                                labelList = listOf(
-                                    LabelState(
-                                        R.string.require_manual_unlock,
-                                        uiState.schedule.requireManualUnlock,
-                                    ) { updateSchedule(uiState.schedule.copy(requireManualUnlock = it)) },
-                                    LabelState(
-                                        R.string.show_parentheses,
-                                        uiState.schedule.mathEquationShowParentheses,
-                                        uiState.schedule.unlockMethod == UnlockMethod.MathProblem
-                                    )  { updateSchedule(uiState.schedule.copy(mathEquationShowParentheses = it)) },
-                                    LabelState(
-                                        R.string.allow_negative_answers,
-                                        uiState.schedule.mathEquationAllowNegatives,
-                                        uiState.schedule.unlockMethod == UnlockMethod.MathProblem
-                                    ) { updateSchedule(uiState.schedule.copy(mathEquationAllowNegatives = it)) }
-                                )
-                            )
                         }
                     }
+                    LabelDetailsCard(
+                        mainText = R.string.additional_options,
+                        labelList = listOf(
+                            LabelState(
+                                R.string.show_exit_button,
+                                uiState.schedule.showExit
+                            ) { updateSchedule(uiState.schedule.copy(showExit = it)) },
+                            LabelState(
+                                R.string.require_manual_unlock,
+                                uiState.schedule.requireManualUnlock,
+                                uiState.schedule.unlockMethod != UnlockMethod.StrictBlock
+                            ) { updateSchedule(uiState.schedule.copy(requireManualUnlock = it)) },
+                            LabelState(
+                                R.string.show_parentheses,
+                                uiState.schedule.mathEquationShowParentheses,
+                                uiState.schedule.unlockMethod == UnlockMethod.MathProblem
+                            )  { updateSchedule(uiState.schedule.copy(mathEquationShowParentheses = it)) },
+                            LabelState(
+                                R.string.allow_negative_answers,
+                                uiState.schedule.mathEquationAllowNegatives,
+                                uiState.schedule.unlockMethod == UnlockMethod.MathProblem
+                            ) { updateSchedule(uiState.schedule.copy(mathEquationAllowNegatives = it)) }
+                        )
+                    )
                     if(
                         ValidationError.MathEquationNumOperands !in uiState.validationErrors &&
                         uiState.schedule.mathEquationMinNumber <= uiState.schedule.mathEquationMaxNumber &&

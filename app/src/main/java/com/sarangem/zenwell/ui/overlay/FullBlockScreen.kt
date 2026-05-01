@@ -34,7 +34,9 @@ import com.sarangem.zenwell.R
 @Composable
 fun FullBlockScreen(
     modifier: Modifier = Modifier,
-    message: String = APP_BLOCKED
+    message: String = APP_BLOCKED,
+    showExit: Boolean = true,
+    onExit: () -> Unit = {}
 ) {
     var isClicked by remember { mutableStateOf(false) }
     val animatedRotation = animateFloatAsState(
@@ -62,7 +64,9 @@ fun FullBlockScreen(
                     )
                 }
             )
-        }
+        },
+        showExit = showExit,
+        onExit = onExit
     )
 }
 

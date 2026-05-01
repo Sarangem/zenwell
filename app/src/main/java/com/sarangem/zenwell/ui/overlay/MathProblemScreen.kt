@@ -67,6 +67,7 @@ fun MathProblemScreen(
     modifier: Modifier = Modifier,
     schedule: Schedules,
     onTimerEnd: () -> Unit = {},
+    onExit: () -> Unit = {}
 ) {
     var showOpen by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -97,6 +98,8 @@ fun MathProblemScreen(
         showOpen = showOpen,
         message = schedule.message,
         onTimerEnd = onTimerEnd,
+        showExit = schedule.showExit,
+        onExit = onExit,
         modifier = modifier.fillMaxSize()
     )
 }

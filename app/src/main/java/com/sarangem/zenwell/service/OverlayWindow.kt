@@ -5,6 +5,7 @@
 
 package com.sarangem.zenwell.service
 
+import android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_HOME
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Build
@@ -36,7 +37,7 @@ class OverlayWindow(
     val packageName: String, // only for use in AppBlockerService
     val appName: String,
     val schedule: Schedules,
-    var content: @Composable (() -> Unit) -> Unit,
+    var content: @Composable (() -> Unit, () -> Unit) -> Unit,
     private val service: AppBlockerService,
     supervisorJob: Job,
 ) {
@@ -67,7 +68,10 @@ class OverlayWindow(
                 setViewTreeViewModelStoreOwner(viewModelStoreOwner)
                 setContent {
                     ZenwellTheme {
-                        content { onTimerEnd() }
+                        content(
+                            { onTimerEnd() },
+                            { onExit() }
+                        )
                     }
                 }
             }
@@ -151,6 +155,11 @@ class OverlayWindow(
             }
 
         }
+    }
+
+    fun onExit() {
+        service.performGlobalAction(GLOBAL_ACTION_HOME)
+        close()
     }
 
 }

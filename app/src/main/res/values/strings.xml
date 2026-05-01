@@ -148,4 +148,6 @@
     <string name="clear">Clear</string>
     <string name="none_selected_yet">None selected yet</string>
     <string name="pomodoro_sessions_left">"Pomodoro sessions left: "</string>
+    <string name="show_exit_button">Show exit button</string>
+    <string name="exit">Exit</string>
 </resources>

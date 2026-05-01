@@ -63,7 +63,9 @@ fun TypingScreen(
     modifier: Modifier = Modifier,
     message: String = APP_BLOCKED,
     requireManualUnlock: Boolean = true,
-    onTimerEnd: () -> Unit = {}
+    onTimerEnd: () -> Unit = {},
+    showExit: Boolean = true,
+    onExit: () -> Unit = {}
 ) {
     var showOpen by remember { mutableStateOf(false) }
     var input by remember { mutableStateOf("") }
@@ -73,6 +75,8 @@ fun TypingScreen(
         modifier = modifier
             .fillMaxSize()
             .imePadding(),
+        showExit = showExit,
+        onExit = onExit,
         floatingActionButton = {
             MediumExtendedFloatingActionButton(
                 onClick = {
@@ -159,8 +163,7 @@ fun TypingTextField(
         cursorBrush = SolidColor(TextFieldDefaults.colors().cursorColor),
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(bottom = dimensionResource(R.dimen.floating_action_button_height)),
+            .verticalScroll(rememberScrollState()),
         textStyle = MaterialTheme.typography.displaySmall.copy(
             color = Color.Transparent,
             fontWeight = FontWeight.SemiBold,

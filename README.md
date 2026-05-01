@@ -29,8 +29,4 @@
 > [!WARNING]
 > Zenwell **cannot block apps in Picture-in-Picture mode** for security reasons. Please disable PiP for the media apps you are trying to block.
 
-> [!IMPORTANT]
-> **Navigating the Overlay**
-> When the overlay is active, the **Back gesture/button will not work**. To exit the overlay and return to your home screen, you must use your **Home gesture** or the **Recents key**.
-
 This project is in active development and multiple bugs are expected. Please report any issues you encounter or features you need in the [Issues tab](../../issues).

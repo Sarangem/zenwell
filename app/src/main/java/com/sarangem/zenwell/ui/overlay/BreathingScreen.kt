@@ -58,6 +58,8 @@ fun BreathingScreen(
     breathingCycleNumber: Int = 2,
     requireManualUnlock: Boolean = true,
     onTimerEnd: () -> Unit = {},
+    showExit: Boolean = true,
+    onExit: () -> Unit = {}
 ) {
     var showOpen by remember { mutableStateOf(false) }
 
@@ -77,6 +79,8 @@ fun BreathingScreen(
         showOpen = showOpen,
         message = message,
         onTimerEnd = onTimerEnd,
+        showExit = showExit,
+        onExit = onExit,
         modifier = modifier.fillMaxSize()
     )
 }

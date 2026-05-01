@@ -44,6 +44,8 @@ fun TimerScreen(
     timerDurationInSeconds: Int = 10,
     requireManualUnlock: Boolean = true,
     onTimerEnd: () -> Unit = {},
+    showExit: Boolean = true,
+    onExit: () -> Unit = {}
 ) {
     var showOpen by remember { mutableStateOf(false) }
     var time by remember { mutableIntStateOf(timerDurationInSeconds) }
@@ -92,6 +94,8 @@ fun TimerScreen(
         showOpen = showOpen,
         message = message,
         onTimerEnd = onTimerEnd,
+        showExit = showExit,
+        onExit = onExit,
         modifier = modifier.fillMaxSize()
     )
 }

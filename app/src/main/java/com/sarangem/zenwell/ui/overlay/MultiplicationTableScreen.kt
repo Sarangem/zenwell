@@ -54,7 +54,8 @@ import com.sarangem.zenwell.ui.theme.ZenwellTheme
 fun MultiplicationTableScreen(
     modifier: Modifier = Modifier,
     schedule: Schedules,
-    onTimerEnd: () -> Unit = {}
+    onTimerEnd: () -> Unit = {},
+    onExit: () -> Unit = {}
 ) {
     var showOpen by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -79,6 +80,8 @@ fun MultiplicationTableScreen(
         showOpen = showOpen,
         message = schedule.message,
         onTimerEnd = onTimerEnd,
+        showExit = schedule.showExit,
+        onExit = onExit,
         modifier = modifier.fillMaxSize()
     )
 }

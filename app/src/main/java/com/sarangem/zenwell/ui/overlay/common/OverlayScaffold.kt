@@ -14,13 +14,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumExtendedFloatingActionButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
 
@@ -31,16 +37,45 @@ const val APP_BLOCKED = "This app is fully blocked"
 fun OverlayScaffold(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
-    floatingActionButton: @Composable () -> Unit = {}
+    floatingActionButton: @Composable () -> Unit = {},
+    showExit: Boolean = true,
+    onExit: () -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
-        floatingActionButton = floatingActionButton
+        floatingActionButton = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+            ) {
+                if(showExit){
+                    MediumExtendedFloatingActionButton(
+                        onClick = onExit,
+                        icon = {
+                            Icon(
+                                painterResource(R.drawable.filled_exit_to_app),
+                                contentDescription = null
+                            )
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.exit),
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    )
+                }
+                floatingActionButton()
+            }
+        }
     ) { innerPadding ->
         Box(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .padding(innerPadding)
+                .then(
+                    if(showExit) Modifier.padding(dimensionResource(R.dimen.floating_action_button_height)) else Modifier
+                ),
             contentAlignment = Alignment.Center
         ) {
             content()
@@ -67,6 +102,8 @@ fun OverlayScaffold(
         toInclusive = false
     ) mainPaneColumnWeight: Float = 0.5f,
     supportingPane: @Composable (Modifier) -> Unit,
+    showExit: Boolean = true,
+    onExit: () -> Unit = {}
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val isExpandedWidth =
@@ -103,7 +140,9 @@ fun OverlayScaffold(
                     supportingPane(Modifier.weight(1f - mainPaneColumnWeight))
                 }
             }
-        }
+        },
+        showExit = showExit,
+        onExit = onExit
     )
 }
 
@@ -115,7 +154,9 @@ fun OverlayScaffold(
     @FloatRange(from = 0.0, to = 1.0) mainPaneColumnWeight: Float = 0.5f,
     showOpen: Boolean = false,
     message: String,
-    onTimerEnd: () -> Unit = {}
+    onTimerEnd: () -> Unit = {},
+    showExit: Boolean = true,
+    onExit: () -> Unit = {}
 ) {
     OverlayScaffold(
         modifier = modifier,
@@ -129,6 +170,8 @@ fun OverlayScaffold(
                 message = message,
                 onTimerEnd = onTimerEnd,
             )
-        }
+        },
+        showExit = showExit,
+        onExit = onExit
     )
 }

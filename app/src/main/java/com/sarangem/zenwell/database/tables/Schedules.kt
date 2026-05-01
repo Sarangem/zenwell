@@ -142,6 +142,9 @@ data class Schedules(
     @ColumnInfo(name = "show_skip_in_rest_time")
     val showSkipInRestTime: Boolean = true,
 
+    @ColumnInfo(name = "show_exit")
+    val showExit: Boolean = true,
+
     // Check if it will work on following week days
     val weekDays: List<Int> = listOf(
         Calendar.SUNDAY,

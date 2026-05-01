@@ -41,7 +41,7 @@ data class ScheduleInfo(
             packageName = app.title,
             appName = app.viewTitle ?: getAppNameFromPackageName(service, app.title) ?: app.title,
             supervisorJob = supervisorJob,
-            content = { onTimerEnd ->
+            content = { onTimerEnd, onExit ->
 
                 if (pomodoroWindow?.isWorkTime == true) {
 
@@ -59,6 +59,8 @@ data class ScheduleInfo(
                         UnlockMethod.StrictBlock -> FullBlockScreen(
                             Modifier.fillMaxSize(),
                             schedule.message,
+                            schedule.showExit,
+                            onExit
                         )
 
                         UnlockMethod.Timer -> TimerScreen(
@@ -67,6 +69,8 @@ data class ScheduleInfo(
                             schedule.timerDurationInSeconds,
                             schedule.requireManualUnlock,
                             onTimerEnd,
+                            schedule.showExit,
+                            onExit
                         )
 
                         UnlockMethod.Breathing -> BreathingScreen(
@@ -76,18 +80,22 @@ data class ScheduleInfo(
                             schedule.breathingCycleNumber,
                             schedule.requireManualUnlock,
                             onTimerEnd,
+                            schedule.showExit,
+                            onExit
                         )
 
                         UnlockMethod.MathProblem -> MathProblemScreen(
                             Modifier.fillMaxSize(),
                             schedule,
-                            onTimerEnd
+                            onTimerEnd,
+                            onExit
                         )
 
                         UnlockMethod.MultiplicationTable -> MultiplicationTableScreen(
                             Modifier.fillMaxSize(),
                             schedule,
-                            onTimerEnd
+                            onTimerEnd,
+                            onExit
                         )
 
                         UnlockMethod.Typing -> TypingScreen(
@@ -95,6 +103,8 @@ data class ScheduleInfo(
                             schedule.message,
                             schedule.requireManualUnlock,
                             onTimerEnd,
+                            schedule.showExit,
+                            onExit
                         )
 
                     }

@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Schedules::class, AppNames::class, BlockedApps::class],
-    version = 15,
+    version = 16,
     exportSchema = false
 )
 @TypeConverters(OperatorListConverter::class, WeekdaysListConverter::class)
