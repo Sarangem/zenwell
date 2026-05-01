@@ -59,7 +59,7 @@ fun generateMathProblem(
 
             MathOperators.MULTIPLICATION -> {
                 answer *= num
-                if (previousOperator != MathOperators.MULTIPLICATION && !showParentheses) {
+                if (previousOperator != MathOperators.MULTIPLICATION && showParentheses) {
                     shortQuestion = "($shortQuestion) * $num"
                 } else {
                     shortQuestion += " * $num"

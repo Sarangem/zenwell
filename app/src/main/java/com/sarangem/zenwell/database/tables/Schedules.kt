@@ -49,7 +49,7 @@ data class Schedules(
 
     // should the app use a button to enter or enter automatically
     @ColumnInfo(name = "require_manual_unlock")
-    val requireManualUnlock: Boolean = true,
+    val requireManualUnlock: Boolean = false,
 
     // how long would the app be opened before again showing block message
     @ColumnInfo(name = "usage_session_duration")

@@ -11,30 +11,24 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialShapes.Companion.SoftBoom
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumExtendedFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -46,15 +40,15 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
+import com.sarangem.zenwell.ui.overlay.common.OpenableMessageCard
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
+import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -116,24 +110,10 @@ fun TypingScreen(
                         .padding(dimensionResource(R.dimen.padding_small)),
                 ) {
                     if (state) {
-                        Button(
-                            onClick = onTimerEnd,
-                            shape = SoftBoom.toShape(),
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .aspectRatio(1f)
-                                .align(Alignment.Center)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.open),
-                                style = MaterialTheme.typography.displayLarge,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                lineHeight = 1.em,
-                                autoSize = TextAutoSize.StepBased(maxFontSize = 80.sp),
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
+                        OpenableMessageCard(
+                            showOpen = true,
+                            onTimerEnd = onTimerEnd
+                        )
                     } else {
                         TypingTextField(
                             message = message,
@@ -172,7 +152,8 @@ fun TypingTextField(
         keyboardOptions = KeyboardOptions(
             showKeyboardOnFocus = true,
             autoCorrectEnabled = false,
-            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Default,
+            keyboardType = KeyboardType.Text,
         ),
         decorationBox = {
             Box {
@@ -189,18 +170,21 @@ fun TypingTextField(
                                     },
                                     background = if (inputChar != null && inputChar != char) {
                                         MaterialTheme.colorScheme.errorContainer
+                                    } else if (inputChar == char) {
+                                        Green500.copy(alpha = 0.25f)
                                     } else {
                                         Color.Unspecified
-                                    }
+                                    },
+                                    fontWeight = if(char == '\n') FontWeight.Thin else FontWeight.SemiBold,
+                                    fontFamily = FontFamily.Monospace
                                 )
                             ) {
+                                if (char == '\n') append('↲')
                                 append(char)
                             }
                         }
                     },
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = FontFamily.Monospace
+                    style = MaterialTheme.typography.displaySmall
                 )
                 it()
             }
@@ -209,11 +193,10 @@ fun TypingTextField(
 
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
 fun TypingScreenPreview() {
-    ZenwellTheme(darkTheme = false) {
-        TypingScreen()
+    ZenwellTheme(darkTheme = true) {
+        TypingScreen(message = "This app is\nfully blocked.\n")
     }
 }

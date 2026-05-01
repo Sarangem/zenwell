@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.R
 
@@ -120,12 +119,12 @@ fun OpenableMessageCard(
         falseStateContent = {
             Text(
                 text = stringResource(R.string.open),
-                style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.onPrimary,
-                lineHeight = 80.sp,
-                autoSize = TextAutoSize.StepBased(maxFontSize = 80.sp),
+                autoSize = TextAutoSize.StepBased(),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
+                maxLines = 1,
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
             )
 
         },
