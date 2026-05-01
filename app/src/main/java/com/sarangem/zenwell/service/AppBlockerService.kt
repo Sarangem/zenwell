@@ -129,10 +129,6 @@ class AppBlockerService : AccessibilityService() {
             // only if application window
             if (windowInfo.type != AccessibilityWindowInfo.TYPE_APPLICATION) continue
 
-            // if blocked app in PiP mode, the overlay window never closes forcing a reboot
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                windowInfo.isInPictureInPictureMode) continue
-
             // get current root and package name && terminate if null
             val root = windowInfo.root ?: continue
             val currentApp = root.packageName ?: continue

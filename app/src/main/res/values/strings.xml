@@ -61,7 +61,6 @@
     <string name="pomodoro">Pomodoro</string>
     <string name="end">End</string>
     <string name="start">Start</string>
-    <string name="focus">Focus</string>
     <string name="work_time">Work Time</string>
     <string name="rest_time">Rest Time</string>
     <string name="expanded">Expanded</string>

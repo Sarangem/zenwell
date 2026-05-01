@@ -27,6 +27,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
 
@@ -73,9 +74,7 @@ fun OverlayScaffold(
         Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .then(
-                    if(showExit) Modifier.padding(dimensionResource(R.dimen.floating_action_button_height)) else Modifier
-                ),
+                .padding(bottom = if(showExit) dimensionResource(R.dimen.floating_action_button_height) else 0.dp),
             contentAlignment = Alignment.Center
         ) {
             content()
