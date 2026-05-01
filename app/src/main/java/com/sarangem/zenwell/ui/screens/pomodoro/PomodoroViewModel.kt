@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.screens.focus
+package com.sarangem.zenwell.ui.screens.pomodoro
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class FocusViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(FocusUiState())
-    val uiState: StateFlow<FocusUiState> = _uiState.asStateFlow()
+class PomodoroViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(PomodoroUiState())
+    val uiState: StateFlow<PomodoroUiState> = _uiState.asStateFlow()
 
     var pomodoroWindow: PomodoroWindow? = null
 

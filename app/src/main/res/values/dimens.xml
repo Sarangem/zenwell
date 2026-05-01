@@ -16,4 +16,5 @@
     <dimen name="image_size">48dp</dimen>
     <dimen name="pomodoro_rest_time_wavelength">40dp</dimen>
     <dimen name="floating_action_button_height">88dp</dimen>
+    <dimen name="circular_pomodoro_timer_size">500dp</dimen>
 </resources>

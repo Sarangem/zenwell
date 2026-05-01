@@ -3,11 +3,11 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.screens.focus
+package com.sarangem.zenwell.ui.screens.pomodoro
 
 import com.sarangem.zenwell.database.tables.Schedules
 
-data class FocusUiState(
+data class PomodoroUiState(
     val schedule: Schedules = Schedules(),
     val elapsedTime: Long = 0L,
     val formattedTime: String = "",

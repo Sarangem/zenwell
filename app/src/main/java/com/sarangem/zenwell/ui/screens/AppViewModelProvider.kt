@@ -12,7 +12,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityViewModel
 import com.sarangem.zenwell.ui.screens.edit.EditViewModel
-import com.sarangem.zenwell.ui.screens.focus.FocusViewModel
+import com.sarangem.zenwell.ui.screens.pomodoro.PomodoroViewModel
 import com.sarangem.zenwell.ui.screens.home.HomeViewModel
 
 object AppViewModelProvider {
@@ -28,7 +28,7 @@ object AppViewModelProvider {
             EditViewModel(zenwellApplication().container)
         }
         initializer {
-            FocusViewModel()
+            PomodoroViewModel()
         }
         initializer {
             CustomActivityViewModel(zenwellApplication().container)

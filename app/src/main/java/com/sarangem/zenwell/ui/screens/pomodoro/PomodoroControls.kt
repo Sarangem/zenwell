@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.screens.focus
+package com.sarangem.zenwell.ui.screens.pomodoro
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Spacer
@@ -83,6 +83,7 @@ fun PomodoroControls(
         // 1. pause/resume button (Leading)
         if (showPause) {
             ToggleButton(
+                modifier = Modifier.weight(1f, false),
                 checked = isPaused,
                 onCheckedChange = { onPauseOrResume() },
                 colors = ToggleButtonDefaults.toggleButtonColors(
@@ -93,7 +94,7 @@ fun PomodoroControls(
                 ),
                 shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
             ) {
-                AnimatedContent(isPaused, label = "PauseResumeIcon") {
+                AnimatedContent(isPaused) {
                     Icon(
                         painterResource(if (it) R.drawable.filled_play_arrow else R.drawable.filled_pause),
                         contentDescription = if (it) stringResource(R.string.resume) else stringResource(R.string.pause),
@@ -106,6 +107,7 @@ fun PomodoroControls(
 
         // 2. end button (Middle / Dynamic)
         ToggleButton(
+            modifier = Modifier.weight(1f, false),
             checked = isStopChecked,
             onCheckedChange = { isStopChecked = !isStopChecked },
             shapes = when {
@@ -133,6 +135,7 @@ fun PomodoroControls(
         // 3. skip button (Trailing)
         if (showSkip) {
             ToggleButton(
+                modifier = Modifier.weight(1f, false),
                 checked = isSkipChecked,
                 onCheckedChange = { isSkipChecked = !isSkipChecked },
                 colors = ToggleButtonDefaults.toggleButtonColors(

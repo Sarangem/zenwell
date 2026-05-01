@@ -3,14 +3,14 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.screens.focus
+package com.sarangem.zenwell.ui.screens.pomodoro
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -40,7 +40,7 @@ fun PomodoroTimer(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.aspectRatio(1f)
+        modifier = modifier.aspectRatio(1f, matchHeightConstraintsFirst = false)
     ) {
         CircularWavyProgressIndicator(
             modifier = Modifier.fillMaxSize(),
@@ -72,14 +72,16 @@ fun PomodoroTimer(
             modifier = Modifier.fillMaxSize(0.8f),
             contentAlignment = Alignment.Center
         ) {
-            Column {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     painter = painterResource(if (isWork) R.drawable.filled_work else R.drawable.outlined_local_cafe),
                     contentDescription = stringResource(if (isWork) R.string.work_time else R.string.rest_time),
                     modifier = Modifier
-                        .padding(dimensionResource(R.dimen.padding_large))
-                        .size(dimensionResource(R.dimen.image_size))
-                        .align(Alignment.CenterHorizontally)
+                        .weight(1f, false)
+                        .heightIn(
+                            min = dimensionResource(R.dimen.padding_large),
+                            max = dimensionResource(R.dimen.image_size)
+                        )
                 )
                 Text(
                     text = formattedTime,

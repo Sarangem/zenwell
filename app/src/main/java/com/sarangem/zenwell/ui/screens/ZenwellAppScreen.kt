@@ -46,7 +46,7 @@ import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityScreen
 import com.sarangem.zenwell.ui.screens.edit.EditScreen
 import com.sarangem.zenwell.ui.screens.edit.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.screens.edit.EditViewModel
-import com.sarangem.zenwell.ui.screens.focus.FocusScreen
+import com.sarangem.zenwell.ui.screens.pomodoro.FocusScreen
 import com.sarangem.zenwell.ui.screens.home.HomeScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
 import kotlinx.serialization.Serializable
@@ -89,7 +89,7 @@ fun ZenwellAppScreen() {
                         editViewModel.initialize(schedules)
                         backStack.add(EditPage)
                     },
-                    openFocusScreen = { backStack.add(FocusPage(it)) },
+                    openFocusScreen = { backStack.add(PomodoroPage(it)) },
                     openSettingsScreen = { backStack.add(SettingsPage) }
                 )
             }
@@ -105,7 +105,7 @@ fun ZenwellAppScreen() {
                 )
             }
 
-            entry<FocusPage> { key ->
+            entry<PomodoroPage> { key ->
                 FocusScreen(
                     modifier = Modifier.fillMaxSize(),
                     schedule = key.schedule,
@@ -146,7 +146,7 @@ fun ZenwellAppScreen() {
 
 @Serializable data object HomePage : NavKey
 @Serializable data object EditPage : NavKey
-@Serializable data class FocusPage(val schedule: Schedules) : NavKey
+@Serializable data class PomodoroPage(val schedule: Schedules) : NavKey
 @Serializable data object SettingsPage : NavKey
 @Serializable data object CustomActivityPage : NavKey
 

@@ -98,7 +98,7 @@ fun DetailsCardWithTextField(
             onValueChange = onValueChange,
             singleLine = singleLine,
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = if(singleLine) ImeAction.Default else ImeAction.Done,
+                imeAction = if(singleLine) ImeAction.Done else ImeAction.Default,
                 keyboardType = keyboardType
             ),
             suffix = {

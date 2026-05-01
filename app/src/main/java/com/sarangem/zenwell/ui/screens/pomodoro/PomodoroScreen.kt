@@ -3,20 +3,22 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.screens.focus
+package com.sarangem.zenwell.ui.screens.pomodoro
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -25,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,6 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.window.core.layout.WindowSizeClass.Companion.HEIGHT_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.AppViewModelProvider
@@ -50,7 +54,7 @@ fun FocusScreen(
     schedule: Schedules,
     goBack: () -> Unit = {}
 ) {
-    val viewModel: FocusViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val viewModel: PomodoroViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(schedule.id) {
         viewModel.startObserving(schedule)
@@ -70,7 +74,7 @@ fun FocusScreen(
 fun FocusScreen(
     modifier: Modifier = Modifier,
     goBack: () -> Unit = {},
-    uiState: FocusUiState,
+    uiState: PomodoroUiState,
     onEnd: () -> Unit = {},
     onPauseOrResume: () -> Unit = {},
     onSkip: () -> Unit = {},
@@ -95,7 +99,7 @@ fun FocusScreen(
                 },
                 title = {
                     Text(
-                        text = stringResource(R.string.focus) + " " + uiState.schedule.title,
+                        text = uiState.schedule.title,
                         style = MaterialTheme.typography.headlineSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -135,7 +139,10 @@ fun FocusScreen(
                 )
             }
         } else {
-            AnimatedContent(uiState.isCompleted) {
+            AnimatedContent(
+                targetState = uiState.isCompleted,
+                modifier = Modifier.fillMaxSize()
+            ) {
                 if (it) {
                     Box(
                         Modifier
@@ -150,11 +157,15 @@ fun FocusScreen(
                         )
                     }
                 } else {
+                    val isCompactHeight = !currentWindowAdaptiveInfo().windowSizeClass.isHeightAtLeastBreakpoint(HEIGHT_DP_MEDIUM_LOWER_BOUND)
                     Column(
                         modifier = Modifier
+                            .verticalScroll(
+                                state = rememberScrollState(),
+                                enabled = isCompactHeight
+                            )
                             .fillMaxSize()
                             .padding(innerPadding),
-                        verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         PomodoroProgressPills(
@@ -164,15 +175,20 @@ fun FocusScreen(
                         )
                         PomodoroTimer(
                             modifier = Modifier
-                                .weight(1f)
-                                .padding(dimensionResource(R.dimen.padding_small)),
+                                .padding(dimensionResource(R.dimen.padding_small))
+                                .then(
+                                    if (isCompactHeight) {
+                                        Modifier.size(dimensionResource(R.dimen.circular_pomodoro_timer_size))
+                                    } else {
+                                        Modifier.weight(1f)
+                                    }
+                                ),
                             progress = animatedProgress,
                             formattedTime = uiState.formattedTime,
                             isWork = uiState.isWorkTime
                         )
                         Spacer(Modifier.height(dimensionResource(R.dimen.floating_action_button_height)))
                     }
-
                 }
             }
         }
@@ -184,11 +200,12 @@ fun FocusScreen(
 fun FocusScreenPreview() {
     ZenwellTheme {
         FocusScreen(
-            uiState = FocusUiState(
+            uiState = PomodoroUiState(
                 elapsedTime = 600,
                 formattedTime = "15:00",
                 isServiceRunning = true,
-                sessionsLeft = 4
+                sessionsLeft = 4,
+                schedule = Schedules(title = "Schedule 1")
             )
         )
     }
@@ -199,7 +216,7 @@ fun FocusScreenPreview() {
 fun FocusScreenRestPreview() {
     ZenwellTheme(darkTheme = true) {
         FocusScreen(
-            uiState = FocusUiState(
+            uiState = PomodoroUiState(
                 elapsedTime = 150,
                 formattedTime = "5:00",
                 isServiceRunning = true,

@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.screens.focus
+package com.sarangem.zenwell.ui.screens.pomodoro
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -58,7 +58,7 @@ fun PomodoroProgressPills(
                     .background(
                         when {
                             isCurrent -> MaterialTheme.colorScheme.primary
-                            isCompleted -> MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                            isCompleted -> MaterialTheme.colorScheme.primaryContainer
                             else -> MaterialTheme.colorScheme.outlineVariant
                         }
                     )
