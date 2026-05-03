@@ -48,14 +48,14 @@ fun FullBlockScreen(
         modifier = modifier.fillMaxSize(),
         content = {
             MessageCard(
-                state = isClicked,
+                showOpen = isClicked,
                 onClick = { isClicked = !isClicked },
                 message = message,
                 morphPolygonShape = MorphPolygonShape(
                     morph = Morph(ClamShell, SoftBoom),
                     percentage = animatedRotation.value
                 ),
-                falseStateContent = {
+                openStateContent = {
                     Icon(
                         painterResource(R.drawable.filled_lock),
                         contentDescription = null,

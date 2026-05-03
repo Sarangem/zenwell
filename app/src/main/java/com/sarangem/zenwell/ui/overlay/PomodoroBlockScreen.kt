@@ -44,7 +44,9 @@ fun PomodoroBlockScreen(
     message: String,
     getElapsedTimeInSeconds: () -> Long,
     segmentTime: Int,
-    getFormattedTime: () -> String
+    getFormattedTime: () -> String,
+    showExit: Boolean = true,
+    onExit: () -> Unit = {}
 ) {
     var elapsedTime by rememberSaveable { mutableFloatStateOf(getElapsedTimeInSeconds().toFloat()) }
     var formattedTime by rememberSaveable { mutableStateOf(getFormattedTime()) }
@@ -89,7 +91,9 @@ fun PomodoroBlockScreen(
                     )
                 }
             }
-        }
+        },
+        showExit = showExit,
+        onExit = onExit
     )
 }
 

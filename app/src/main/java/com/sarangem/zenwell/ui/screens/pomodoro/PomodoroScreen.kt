@@ -168,12 +168,12 @@ fun FocusScreen(
                             .padding(innerPadding),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        PomodoroProgressPills(
+                        ProgressPills(
                             totalSessions = uiState.schedule.pomodoroSessionNumber,
                             sessionsLeft = uiState.sessionsLeft,
                             modifier = Modifier
                         )
-                        PomodoroTimer(
+                        CircularPomodoroTimer(
                             modifier = Modifier
                                 .padding(dimensionResource(R.dimen.padding_small))
                                 .then(
@@ -220,7 +220,6 @@ fun FocusScreenRestPreview() {
                 elapsedTime = 150,
                 formattedTime = "5:00",
                 isServiceRunning = true,
-                isWorkTime = false,
                 isCompleted = true
             )
         )

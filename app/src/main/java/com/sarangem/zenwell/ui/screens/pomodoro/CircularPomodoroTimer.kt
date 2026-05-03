@@ -32,7 +32,7 @@ import com.sarangem.zenwell.R
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun PomodoroTimer(
+fun CircularPomodoroTimer(
     modifier: Modifier = Modifier,
     progress: Float,
     formattedTime: String,

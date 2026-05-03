@@ -50,7 +50,9 @@ data class ScheduleInfo(
                         message = schedule.message,
                         getElapsedTimeInSeconds = { pomodoroWindow.getElapsedTimeInSeconds() },
                         segmentTime = schedule.pomodoroWorkTimeInMinutes * 60,
-                        getFormattedTime = { pomodoroWindow.getFormattedTime() }
+                        getFormattedTime = { pomodoroWindow.getFormattedTime() },
+                        showExit = schedule.showExit,
+                        onExit = onExit
                     )
 
                 } else {

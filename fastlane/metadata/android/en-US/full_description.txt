@@ -11,7 +11,4 @@ Zenwell helps you break the cycle of mindless doomscrolling and reduce screentim
 • <B>Pomodoro Mode:</B> Integrated focus sessions to balance work and rest.
 • <B>Privacy First:</B> No Internet permission. Your data stays on your device. Only Accessibility Service is required to function.
 
-<B><U>🛠 Bug Reporting</U></B>
-• Zenwell <B>cannot block apps in Picture-in-Picture mode</B> for security reasons. Please disable PiP for the media apps you are trying to block.
-• When the overlay is active, the <B>Back gesture/button will not work</B>. To exit the overlay and return to your home screen, you must use your Home gesture or the Recents key.
-• This project is in active development and multiple bugs are expected. Please report any issues at Github.
+This project is in active development and various bugs are expected. Please report any issues at Github.

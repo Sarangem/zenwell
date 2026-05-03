@@ -6,7 +6,6 @@
 package com.sarangem.zenwell.ui.overlay.common
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -26,9 +25,10 @@ import androidx.compose.material3.MaterialShapes.Companion.SoftBoom
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -43,22 +43,21 @@ import com.sarangem.zenwell.R
 @Composable
 fun MessageCard(
     modifier: Modifier = Modifier,
-    state: Boolean,
+    showOpen: Boolean,
     message: String,
     morphPolygonShape: MorphPolygonShape,
-    falseStateContent: @Composable () -> Unit = {},
+    openStateContent: @Composable () -> Unit = {},
     onClick: () -> Unit = {},
 ) {
     AnimatedContent(
-        targetState = state,
-        transitionSpec = {
-            fadeIn(
-                animationSpec = tween(1000)
-            ) togetherWith fadeOut(animationSpec = tween(1000))
-        },
+        targetState = showOpen,
+        transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
         modifier = modifier
             .padding(dimensionResource(R.dimen.padding_small))
-            .clip(morphPolygonShape)
+            .graphicsLayer {
+                shape = morphPolygonShape
+                clip = true
+            }
             .background(MaterialTheme.colorScheme.primary)
             .fillMaxSize()
             .clickable(onClick = {
@@ -71,8 +70,9 @@ fun MessageCard(
             contentAlignment = Alignment.Center
         ) {
             if (state) {
-                falseStateContent()
+                openStateContent()
             } else {
+                val wordCount = remember(message) { message.split("\\s+".toRegex()).size }
                 BasicText(
                     text = message,
                     style = TextStyle(
@@ -85,10 +85,9 @@ fun MessageCard(
                     ),
                     autoSize = TextAutoSize.StepBased(),
                     softWrap = true,
-                    maxLines = message.split(" ").size,
+                    maxLines = wordCount,
                     modifier = Modifier
-                        .padding(dimensionResource(R.dimen.padding_medium))
-                        .fillMaxSize(0.7f)
+                        .fillMaxSize(0.65f)
                         .wrapContentSize(Alignment.Center)
                 )
             }
@@ -106,17 +105,18 @@ fun OpenableMessageCard(
 ) {
     val animatedRotation = animateFloatAsState(
         targetValue = if (showOpen) 1f else 0f,
-        animationSpec = tween(1500, easing = FastOutSlowInEasing)
+        animationSpec = tween()
     )
+    val morph = remember { Morph(ClamShell, SoftBoom) }
     MessageCard(
         modifier = modifier,
-        state = showOpen,
+        showOpen = showOpen,
         message = message,
         morphPolygonShape = MorphPolygonShape(
-            morph = Morph(ClamShell, SoftBoom),
+            morph = morph,
             percentage = animatedRotation.value
         ),
-        falseStateContent = {
+        openStateContent = {
             Text(
                 text = stringResource(R.string.open),
                 color = MaterialTheme.colorScheme.onPrimary,
@@ -124,14 +124,12 @@ fun OpenableMessageCard(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
+                modifier = Modifier
+                    .fillMaxSize(0.45f)
+                    .wrapContentSize(Alignment.Center)
             )
 
         },
-        onClick = {
-            if (showOpen) {
-                onTimerEnd()
-            }
-        },
+        onClick = { if (showOpen) onTimerEnd() },
     )
 }

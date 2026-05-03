@@ -26,7 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import com.sarangem.zenwell.R
 
 @Composable
-fun PomodoroProgressPills(
+fun ProgressPills(
     totalSessions: Int,
     sessionsLeft: Int,
     modifier: Modifier = Modifier
