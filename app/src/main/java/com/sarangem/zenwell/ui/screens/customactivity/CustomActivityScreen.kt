@@ -35,7 +35,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +43,7 @@ import androidx.core.graphics.drawable.toDrawable
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.PackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
 import kotlinx.coroutines.Dispatchers
@@ -129,7 +129,7 @@ fun CustomActivityScreen(
             SmallExtendedFloatingActionButton (
                 onClick = { updateUiState(0, CustomActivityUiState()) }
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))) {
+                Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)) {
                     Icon(
                         painterResource(R.drawable.filled_add),
                         contentDescription = null
@@ -142,9 +142,9 @@ fun CustomActivityScreen(
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(dimensionResource(R.dimen.padding_small))
+                .padding(MaterialTheme.sizing.small)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
         ) {
             uiState.entries.forEachIndexed { index, (id, appName) ->
                 item(key = id){
@@ -167,7 +167,7 @@ fun CustomActivityScreen(
                 }
             }
             item{
-                Spacer(Modifier.height(dimensionResource(R.dimen.floating_action_button_height)))
+                Spacer(Modifier.height(MaterialTheme.sizing.floatingBar))
             }
         }
     }

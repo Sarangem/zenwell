@@ -20,13 +20,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun AccessibilityPermissionCard(
@@ -34,7 +34,7 @@ fun AccessibilityPermissionCard(
     recheckPermission: () -> Unit = {}
 ){
     PermissionRequestCard(
-        modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
+        modifier = modifier.padding(MaterialTheme.sizing.small),
         permissionName = stringResource(R.string.accessibility_service_permission),
         permissionExplanation = stringResource(R.string.accessibility_service_permission_explanation),
         onGrantClick = recheckPermission
@@ -48,7 +48,7 @@ fun NotificationPermissionCard(
 ){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         PermissionRequestCard(
-            modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
+            modifier = modifier.padding(MaterialTheme.sizing.small),
             permissionName = stringResource(R.string.notification_permission),
             permissionExplanation = stringResource(R.string.notification_permission_explanation),
             cardColor = if (isSystemInDarkTheme()) Color(0xFF7C5900) else Color(0xFFF9DEBB),
@@ -67,9 +67,7 @@ fun PermissionRequestCard(
     textColor: Color = MaterialTheme.colorScheme.onErrorContainer
 ) {
     Card(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = dimensionResource(R.dimen.card_elevation)
-        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.sizing.tiny),
         colors = CardDefaults.cardColors(cardColor),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -82,14 +80,14 @@ fun PermissionRequestCard(
             },
             style = MaterialTheme.typography.titleMedium,
             color = textColor,
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.padding(MaterialTheme.sizing.small)
         )
         Row {
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = onGrantClick,
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error.copy(alpha = 0.1f)),
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                modifier = Modifier.padding(MaterialTheme.sizing.small)
             ) {
                 Text(
                     text = stringResource(R.string.grant_permission),

@@ -42,17 +42,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.graphics.drawable.toDrawable
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.PackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
-import androidx.core.graphics.drawable.toDrawable
-import com.sarangem.zenwell.database.tables.AppNames
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -102,7 +102,7 @@ fun ChooseAppList(
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
             ){
                 Text(
                     text = stringResource(R.string.choose_apps),
@@ -160,16 +160,16 @@ fun BottomSheetContents(
             Modifier
                 .fillMaxWidth()
                 .padding(
-                    top = dimensionResource(R.dimen.image_size),
-                    bottom = dimensionResource(R.dimen.image_size)
+                    top = MaterialTheme.sizing.image,
+                    bottom = MaterialTheme.sizing.image
                 )
         )
     } else {
         LazyColumn(
             modifier = modifier
-                .padding(dimensionResource(R.dimen.padding_small))
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_large))),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+                .padding(MaterialTheme.sizing.small)
+                .clip(RoundedCornerShape(MaterialTheme.sizing.large)),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
         ) {
             items(installedAppList) { app ->
                 AppCard(
@@ -199,28 +199,28 @@ fun AppCard(
         modifier = modifier.background(MaterialTheme.colorScheme.surfaceDim),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(Modifier.width(dimensionResource(R.dimen.padding_small)))
+        Spacer(Modifier.width(MaterialTheme.sizing.small))
 
         AsyncImage(
             icon,
             contentDescription = null,
             modifier = Modifier
-                .padding(dimensionResource(R.dimen.padding_small))
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
-                .size(dimensionResource(R.dimen.image_size))
+                .padding(MaterialTheme.sizing.small)
+                .clip(RoundedCornerShape(MaterialTheme.sizing.small))
+                .size(MaterialTheme.sizing.image)
         )
 
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
-                .padding(dimensionResource(R.dimen.padding_small))
+                .padding(MaterialTheme.sizing.small)
                 .weight(1f)
         )
         Checkbox(
             checked = checkedValue,
             onCheckedChange = onCheckedChange,
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.padding(MaterialTheme.sizing.small)
         )
     }
 }

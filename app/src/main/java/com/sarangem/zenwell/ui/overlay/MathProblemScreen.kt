@@ -42,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -51,14 +50,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.model.MathProblem
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.model.MathProblem
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.generateMathProblem
 import kotlinx.coroutines.launch
 
@@ -127,7 +128,7 @@ fun MathEquationCard(
 
         OutlinedTextField(
             modifier = Modifier
-                .padding(top = dimensionResource(R.dimen.padding_medium))
+                .padding(top = MaterialTheme.sizing.medium)
                 .fillMaxWidth(),
             value = answer?.toString() ?: "",
             onValueChange = { num ->
@@ -185,14 +186,14 @@ fun QuestionCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
     ) {
         Row(
-            modifier = Modifier.padding(start = dimensionResource(R.dimen.padding_small)),
+            modifier = Modifier.padding(start = MaterialTheme.sizing.small),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(R.string.problem),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                modifier = Modifier.padding(MaterialTheme.sizing.small)
             )
             Spacer(Modifier.weight(1f))
             TooltipBox(
@@ -234,7 +235,7 @@ fun QuestionCard(
                 }
             }
             IconButton(
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                modifier = Modifier.padding(MaterialTheme.sizing.small),
                 onClick = { isExpanded = !isExpanded }
             ) {
                 Icon(
@@ -246,7 +247,7 @@ fun QuestionCard(
             }
         }
 
-        HorizontalDivider(thickness = dimensionResource(R.dimen.horizontal_divider_thickness))
+        HorizontalDivider(thickness = 2.dp)
 
         Row(Modifier.horizontalScroll(rememberScrollState())) {
             Text(
@@ -258,10 +259,8 @@ fun QuestionCard(
                 maxLines = if (isExpanded) Int.MAX_VALUE else 1,
                 modifier = Modifier
                     .padding(
-                        start = dimensionResource(R.dimen.padding_small),
-                        end = dimensionResource(R.dimen.padding_small),
-                        top = dimensionResource(R.dimen.padding_medium),
-                        bottom = dimensionResource(R.dimen.padding_medium)
+                        horizontal = MaterialTheme.sizing.small,
+                        vertical = MaterialTheme.sizing.medium
                     )
             )
         }

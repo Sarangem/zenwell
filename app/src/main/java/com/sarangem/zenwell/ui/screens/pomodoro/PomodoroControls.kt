@@ -22,11 +22,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
+import com.sarangem.zenwell.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -98,7 +98,7 @@ fun PomodoroControls(
                     Icon(
                         painterResource(if (it) R.drawable.filled_play_arrow else R.drawable.filled_pause),
                         contentDescription = if (it) stringResource(R.string.resume) else stringResource(R.string.pause),
-                        modifier = Modifier.size(dimensionResource(R.dimen.image_size))
+                        modifier = Modifier.size(MaterialTheme.sizing.image)
                     )
                 }
             }
@@ -126,7 +126,7 @@ fun PomodoroControls(
             Icon(
                 painterResource(R.drawable.filled_bold_close),
                 contentDescription = stringResource(R.string.end),
-                modifier = Modifier.size(dimensionResource(R.dimen.image_size))
+                modifier = Modifier.size(MaterialTheme.sizing.image)
             )
         }
         Spacer(Modifier.width(ButtonGroupDefaults.ConnectedSpaceBetween))
@@ -149,7 +149,7 @@ fun PomodoroControls(
                 Icon(
                     painterResource(R.drawable.filled_fast_forward),
                     contentDescription = stringResource(R.string.skip),
-                    modifier = Modifier.size(dimensionResource(R.dimen.image_size))
+                    modifier = Modifier.size(MaterialTheme.sizing.image)
                 )
             }
         }

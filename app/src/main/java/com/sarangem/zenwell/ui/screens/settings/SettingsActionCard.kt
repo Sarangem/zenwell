@@ -23,9 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun SettingsActionCard(
@@ -41,13 +40,13 @@ fun SettingsActionCard(
             .clickable(onClick = onClick)
     ) {
         Row(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+            modifier = Modifier.padding(MaterialTheme.sizing.small),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .size(dimensionResource(R.dimen.image_size))
+                    .size(MaterialTheme.sizing.image)
                     .background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center
             ) {
@@ -59,7 +58,7 @@ fun SettingsActionCard(
                 )
 
             }
-            Spacer(Modifier.size(dimensionResource(R.dimen.padding_large)))
+            Spacer(Modifier.size(MaterialTheme.sizing.large))
             Column {
                 Text(
                     text = title,

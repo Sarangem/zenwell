@@ -38,15 +38,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.minutesToString
 
 @Composable
@@ -71,7 +72,7 @@ fun ChooseActiveTime(
                     text = stringResource(R.string.active_time_is_invalid),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                    modifier = Modifier.padding(MaterialTheme.sizing.small)
                 )
             }
             if(isExpandedWidth){
@@ -106,7 +107,7 @@ fun ClockRange(
         text = stringResource(R.string.to),
         style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.Center,
-        modifier = textModifier.padding(vertical = dimensionResource(R.dimen.padding_small))
+        modifier = textModifier.padding(vertical = MaterialTheme.sizing.small)
     )
     ClockButton(
         modifier = clockModifier,
@@ -129,14 +130,14 @@ fun ClockButton(
         onClick = { showPopup = true },
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(
-            width = dimensionResource(R.dimen.text_field_border),
+            width = 1.dp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         color = Color.Transparent,
         modifier = modifier
     ) {
         Row(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+            modifier = Modifier.padding(MaterialTheme.sizing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -147,7 +148,7 @@ fun ClockButton(
             Icon(
                 painter = painterResource(R.drawable.outlined_schedule),
                 contentDescription = null,
-                modifier = Modifier.padding(start = dimensionResource(R.dimen.padding_small))
+                modifier = Modifier.padding(start = MaterialTheme.sizing.small)
             )
         }
     }
@@ -182,7 +183,7 @@ fun AdvancedTimePickerDialog(
     ) {
         Surface(
             shape = MaterialTheme.shapes.extraLarge,
-            tonalElevation = dimensionResource(R.dimen.padding_small),
+            tonalElevation = MaterialTheme.sizing.small,
             modifier = Modifier
                 .width(IntrinsicSize.Min)
                 .height(IntrinsicSize.Min)
@@ -192,13 +193,13 @@ fun AdvancedTimePickerDialog(
                 ),
         ) {
             Column(
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_large)),
+                modifier = Modifier.padding(MaterialTheme.sizing.large),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = dimensionResource(R.dimen.padding_medium)),
+                        .padding(bottom = MaterialTheme.sizing.medium),
                     text = title,
                     style = MaterialTheme.typography.bodyLarge
                 )

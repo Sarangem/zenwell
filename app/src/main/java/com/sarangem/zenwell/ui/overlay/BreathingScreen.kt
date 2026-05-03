@@ -38,7 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +47,7 @@ import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.MorphPolygonShape
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.delay
 
 @Composable
@@ -132,7 +132,7 @@ fun BreathingCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(dimensionResource(R.dimen.padding_small))
+                .padding(MaterialTheme.sizing.small)
         ) {
             Box(
                 modifier = Modifier

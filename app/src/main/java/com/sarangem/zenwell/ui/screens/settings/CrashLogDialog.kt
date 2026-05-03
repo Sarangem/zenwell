@@ -37,13 +37,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.toClipEntry
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.CRASH_LOG_FILE
 import com.sarangem.zenwell.GITHUB_REPO_ISSUES_URL
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -79,7 +79,7 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
                     .background(MaterialTheme.colorScheme.surfaceDim)
                     .verticalScroll(rememberScrollState())
                     .horizontalScroll(rememberScrollState())
-                    .padding(dimensionResource(R.dimen.padding_small))
+                    .padding(MaterialTheme.sizing.small)
             ) {
                 SelectionContainer {
                     Text(
@@ -106,7 +106,7 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
                             )
                             uriHandler.openUri("$GITHUB_REPO_ISSUES_URL/new?title=$title&body=$body")
                         },
-                        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_small))
+                        modifier = Modifier.padding(bottom = MaterialTheme.sizing.small)
                     ) {
                         Text(stringResource(R.string.report_issue))
                     }
@@ -129,7 +129,7 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
             Column {
                 AnimatedVisibility(crashLogText != null) {
                     TextButton(
-                        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_small)),
+                        modifier = Modifier.padding(bottom = MaterialTheme.sizing.small),
                         onClick = {
                             coroutineScope.launch(Dispatchers.IO) {
                                 File(context.filesDir, CRASH_LOG_FILE).delete()

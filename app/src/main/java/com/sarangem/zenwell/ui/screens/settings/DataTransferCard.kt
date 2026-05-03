@@ -19,11 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.model.BackupData
+import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -126,11 +126,11 @@ fun DataTransferCard(
         Text(
             stringResource(R.string.data_backup),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_tiny))
+            modifier = Modifier.padding(bottom = MaterialTheme.sizing.extraSmall)
         )
         Column(
             modifier = modifier.clip(MaterialTheme.shapes.medium),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
         ) {
             SettingsActionCard(
                 modifier = Modifier.fillMaxWidth(),

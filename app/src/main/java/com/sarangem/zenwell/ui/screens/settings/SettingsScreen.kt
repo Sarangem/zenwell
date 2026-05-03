@@ -33,13 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.GITHUB_REPO_ISSUES_URL
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,9 +81,9 @@ fun SettingsScreen(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
-                .padding(horizontal = dimensionResource(R.dimen.padding_small))
-                .padding(bottom = dimensionResource(R.dimen.padding_medium)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+                .padding(horizontal = MaterialTheme.sizing.small)
+                .padding(bottom = MaterialTheme.sizing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.medium)
         ) {
             DataTransferCard(Modifier.fillMaxWidth())
 
@@ -91,13 +91,13 @@ fun SettingsScreen(
                 Text(
                     stringResource(R.string.report_issue),
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_tiny))
+                    modifier = Modifier.padding(bottom = MaterialTheme.sizing.extraSmall)
                 )
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(MaterialTheme.shapes.medium),
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
                 ) {
                     SettingsActionCard(
                         modifier = Modifier.fillMaxWidth(),
@@ -123,7 +123,7 @@ fun SettingsScreen(
                 Row(
                     Modifier
                         .clickable(onClick = openCustomActivityScreen)
-                        .padding(dimensionResource(R.dimen.padding_small)),
+                        .padding(MaterialTheme.sizing.small),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(

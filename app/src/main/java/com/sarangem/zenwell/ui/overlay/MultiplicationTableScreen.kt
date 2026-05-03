@@ -20,9 +20,9 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -36,19 +36,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun MultiplicationTableScreen(
@@ -119,14 +120,14 @@ fun MultiplicationTableCard(
                 text = stringResource(R.string.multiplication_table_of) + " $number",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                modifier = Modifier.padding(MaterialTheme.sizing.small)
             )
-            HorizontalDivider(thickness = dimensionResource(R.dimen.horizontal_divider_thickness))
+            HorizontalDivider(thickness = 2.dp)
 
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(vertical = dimensionResource(R.dimen.padding_small))
+                    .padding(vertical = MaterialTheme.sizing.small)
             ) {
                 answers.forEach { (multiplier, state) ->
 
@@ -134,8 +135,8 @@ fun MultiplicationTableCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
-                                vertical = dimensionResource(R.dimen.padding_tiny),
-                                horizontal = dimensionResource(R.dimen.padding_small)
+                                vertical = MaterialTheme.sizing.extraSmall,
+                                horizontal = MaterialTheme.sizing.small
                             ),
                     ) {
                         Text(
@@ -144,7 +145,7 @@ fun MultiplicationTableCard(
                             textAlign = TextAlign.End,
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(dimensionResource(R.dimen.padding_tiny)),
+                                .padding(MaterialTheme.sizing.extraSmall),
                         )
                         Text(
                             text = "×",
@@ -152,7 +153,7 @@ fun MultiplicationTableCard(
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(dimensionResource(R.dimen.padding_tiny)),
+                                .padding(MaterialTheme.sizing.extraSmall),
                         )
                         Text(
                             text = "$multiplier",
@@ -160,7 +161,7 @@ fun MultiplicationTableCard(
                             textAlign = TextAlign.End,
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(dimensionResource(R.dimen.padding_tiny)),
+                                .padding(MaterialTheme.sizing.extraSmall),
                         )
                         Text(
                             text = "=",
@@ -168,15 +169,15 @@ fun MultiplicationTableCard(
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(dimensionResource(R.dimen.padding_tiny)),
+                                .padding(MaterialTheme.sizing.extraSmall),
                         )
 
                         OutlinedTextField(
                             state = state,
                             modifier = Modifier
                                 .weight(5f)
-                                .heightIn(min = dimensionResource(R.dimen.padding_small)),
-                            contentPadding = PaddingValues(dimensionResource(R.dimen.padding_tiny)),
+                                .heightIn(min = MaterialTheme.sizing.small),
+                            contentPadding = PaddingValues(MaterialTheme.sizing.extraSmall),
                             textStyle = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.End),
                             lineLimits = TextFieldLineLimits.SingleLine,
                             colors = OutlinedTextFieldDefaults.colors(

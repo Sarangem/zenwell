@@ -21,15 +21,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.model.MathOperators
 import com.sarangem.zenwell.model.UnlockMethod
-import com.sarangem.zenwell.ui.screens.edit.fields.*
+import com.sarangem.zenwell.ui.screens.edit.fields.ChooseActiveSwitch
+import com.sarangem.zenwell.ui.screens.edit.fields.ChooseActiveTime
+import com.sarangem.zenwell.ui.screens.edit.fields.ChooseAppList
+import com.sarangem.zenwell.ui.screens.edit.fields.ChooseUnlockMethod
+import com.sarangem.zenwell.ui.screens.edit.fields.DetailsCardColumn
+import com.sarangem.zenwell.ui.screens.edit.fields.DetailsCardWithNumberField
+import com.sarangem.zenwell.ui.screens.edit.fields.DetailsCardWithRangeNumberField
+import com.sarangem.zenwell.ui.screens.edit.fields.DetailsCardWithTextField
+import com.sarangem.zenwell.ui.screens.edit.fields.EditScreenTopAppBar
+import com.sarangem.zenwell.ui.screens.edit.fields.LabelDetailsCard
+import com.sarangem.zenwell.ui.screens.edit.fields.LabelState
+import com.sarangem.zenwell.ui.screens.edit.fields.MathProblemExample
+import com.sarangem.zenwell.ui.screens.edit.fields.SaveAndDeleteButton
+import com.sarangem.zenwell.ui.screens.edit.fields.SelectWeekDays
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun EditScreenContents(
@@ -81,7 +95,7 @@ fun EditScreenContents(
                             (expandVertically() + fadeIn()) togetherWith (shrinkVertically() + fadeOut())
                         }
                     ) { unlockMethod ->
-                        Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))) {
+                        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)) {
                             when (unlockMethod) {
                                 UnlockMethod.Timer -> {
                                     DetailsCardWithNumberField(
@@ -173,7 +187,7 @@ fun EditScreenContents(
                         enter = expandVertically() + fadeIn(),
                         exit = shrinkVertically() + fadeOut()
                     ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))) {
+                        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)) {
                             DetailsCardWithNumberField(
                                 R.string.usage_session_duration,
                                 uiState.schedule.usageSessionDurationInMinutes,
@@ -288,7 +302,7 @@ fun EditScreenContents(
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut()
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))) {
+                    Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)) {
                         ChooseActiveTime(
                             uiState.schedule.startTimeInMinutes,
                             { updateSchedule(uiState.schedule.copy(startTimeInMinutes = it)) },
@@ -301,7 +315,7 @@ fun EditScreenContents(
                 }
             }
 
-            Spacer(Modifier.height(dimensionResource(R.dimen.floating_action_button_height)))
+            Spacer(Modifier.height(MaterialTheme.sizing.floatingBar))
             //@formatter:on
         }
     }

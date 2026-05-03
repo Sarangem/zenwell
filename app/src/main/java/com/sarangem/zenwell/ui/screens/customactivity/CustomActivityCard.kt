@@ -12,16 +12,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.PackageInfo
 
 @Composable
@@ -42,13 +43,13 @@ fun CustomActivityCard(
         if(isExpandedWidth){
             Row(
                 modifier = Modifier
-                    .padding(dimensionResource(R.dimen.padding_small))
+                    .padding(MaterialTheme.sizing.small)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
             ) {
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
                 ) {
                     AppListDropdownCard(
                         currentApp = appName.packageName,
@@ -61,7 +62,7 @@ fun CustomActivityCard(
                 }
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
                 ) {
                     ViewTitleField(appName.viewTitle) { updateAppNames(appName.copy(viewTitle = it)) }
                     ViewIdField(appName.viewId) { updateAppNames(appName.copy(viewId = it)) }
@@ -70,9 +71,9 @@ fun CustomActivityCard(
         } else {
             Column(
                 modifier = Modifier
-                    .padding(dimensionResource(R.dimen.padding_small))
+                    .padding(MaterialTheme.sizing.small)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
             ){
                 AppListDropdownCard(
                     currentApp = appName.packageName,

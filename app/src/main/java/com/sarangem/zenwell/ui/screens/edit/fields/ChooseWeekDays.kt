@@ -19,10 +19,10 @@ import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 import java.util.Calendar
 import java.util.Locale
 
@@ -52,7 +52,7 @@ fun SelectWeekDays(
                 Text(
                     text = stringResource(R.string.choose_week_days),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_small))
+                    modifier = Modifier.padding(bottom = MaterialTheme.sizing.small)
                 )
                 WeekDayButtonGroup(
                     modifier = Modifier.fillMaxWidth(),
@@ -75,7 +75,7 @@ fun WeekDayButtonGroup(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
     ) {
         daysList.forEachIndexed { index, (day, abbr) ->
             val shape = when (index) {

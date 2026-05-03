@@ -24,12 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.Green500
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun SaveAndDeleteButton(
@@ -69,7 +69,7 @@ fun SaveAndDeleteButton(
                 tint = Color.White
             )
         }
-        Spacer(Modifier.width(dimensionResource(R.dimen.padding_small)))
+        Spacer(Modifier.width(MaterialTheme.sizing.small))
         IconButton(
             onClick = { showDeleteDialog = true },
             shape = CircleShape,

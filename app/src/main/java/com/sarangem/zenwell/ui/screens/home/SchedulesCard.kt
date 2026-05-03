@@ -43,7 +43,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -53,6 +52,7 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
+import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.minutesToString
 import kotlinx.coroutines.delay
 
@@ -89,7 +89,7 @@ fun SchedulesCard(
         colors = cardColor,
         modifier = modifier
     ) {
-        Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
+        Column(modifier = Modifier.padding(MaterialTheme.sizing.medium)) {
             Row(
                 verticalAlignment = Alignment.Top,
             ) {
@@ -100,7 +100,7 @@ fun SchedulesCard(
                         color = tint,
                         fontWeight = FontWeight.Bold,
                     )
-                    Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_tiny)))
+                    Spacer(modifier = Modifier.size(MaterialTheme.sizing.extraSmall))
                     PomodoroStartButton(
                         schedule = schedule,
                         tint = tint,
@@ -122,7 +122,7 @@ fun SchedulesCard(
                 }
             }
             if (schedule.isActive && schedule.isPomodoro && isPomodoroActive && pomodoroWindow != null) {
-                Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_small)))
+                Spacer(modifier = Modifier.size(MaterialTheme.sizing.small))
                 PomodoroTimerControls(
                     pomodoroWindow = pomodoroWindow,
                     updatePomodoroActivity = { isPomodoroActive = it },
@@ -147,20 +147,20 @@ fun PomodoroStartButton(
     if (schedule.isActive && schedule.isPomodoro && pomodoroWindow != null && !isPomodoroActive) {
         Box(
             modifier = modifier
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
+                .clip(RoundedCornerShape(MaterialTheme.sizing.small))
                 .background(MaterialTheme.colorScheme.primary)
                 .clickable(onClick = {
                     pomodoroWindow.onPomodoroStart()
                     updatePomodoroActivity(true)
                 })
         ) {
-            Row(Modifier.padding(dimensionResource(R.dimen.padding_tiny))) {
+            Row(Modifier.padding(MaterialTheme.sizing.extraSmall)) {
                 Icon(
                     painterResource(R.drawable.filled_navigation),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
-                        .size(dimensionResource(R.dimen.padding_medium))
+                        .size(MaterialTheme.sizing.medium)
                         .align(Alignment.CenterVertically)
                 )
                 Text(
@@ -168,7 +168,7 @@ fun PomodoroStartButton(
                     style = MaterialTheme.typography.labelLargeEmphasized,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
-                Spacer(Modifier.width(dimensionResource(R.dimen.padding_small)))
+                Spacer(Modifier.width(MaterialTheme.sizing.small))
                 Text(
                     text = "(" + schedule.pomodoroWorkTimeInMinutes.toString() + " + " + schedule.pomodoroRestTimeInMinutes.toString() + " " + stringResource(
                         R.string.minutes
@@ -240,8 +240,8 @@ fun PomodoroTimerControls(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
-                        horizontal = dimensionResource(R.dimen.padding_medium),
-                        vertical = dimensionResource(R.dimen.padding_small)
+                        horizontal = MaterialTheme.sizing.medium,
+                        vertical = MaterialTheme.sizing.small
                     )
             ) {
                 Column(Modifier.align(Alignment.TopEnd)) {
@@ -249,14 +249,14 @@ fun PomodoroTimerControls(
                         painterResource(if (isWorkTime) R.drawable.filled_work else R.drawable.outlined_local_cafe),
                         contentDescription = stringResource(if (isWorkTime) R.string.work_time else R.string.rest_time),
                         tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(dimensionResource(R.dimen.padding_large))
+                        modifier = Modifier.size(MaterialTheme.sizing.large)
                     )
                     if(isPaused){
                         Icon(
                             painterResource(R.drawable.filled_pause),
                             contentDescription = stringResource(R.string.pause),
                             tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(dimensionResource(R.dimen.padding_large))
+                            modifier = Modifier.size(MaterialTheme.sizing.large)
                         )
                     }
                 }
@@ -273,7 +273,7 @@ fun PomodoroTimerControls(
                 )
             }
         }
-        Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_tiny)))
+        Spacer(modifier = Modifier.size(MaterialTheme.sizing.extraSmall))
         Column(
             Modifier
                 .weight(0.25f)
@@ -297,12 +297,12 @@ fun PomodoroTimerControls(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_tiny)),
+                    .padding(MaterialTheme.sizing.extraSmall),
                 onClick = {
                     isStopClicked = true
                 },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error),
-                shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium))
+                shape = RoundedCornerShape(MaterialTheme.sizing.medium)
             ) {
                 Icon(
                     painterResource(R.drawable.filled_bold_close),
@@ -310,15 +310,15 @@ fun PomodoroTimerControls(
                     tint = MaterialTheme.colorScheme.onError,
                 )
             }
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_tiny)))
+            Spacer(modifier = Modifier.height(MaterialTheme.sizing.extraSmall))
             Button(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_tiny)),
+                    .padding(MaterialTheme.sizing.extraSmall),
                 onClick = openFocusScreen,
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.inversePrimary),
-                shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium))
+                shape = RoundedCornerShape(MaterialTheme.sizing.medium)
             ) {
                 Icon(
                     painterResource(R.drawable.filled_zoom_out_map),

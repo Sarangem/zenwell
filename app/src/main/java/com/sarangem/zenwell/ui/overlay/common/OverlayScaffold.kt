@@ -23,13 +23,13 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 const val APP_BLOCKED = "This app is fully blocked"
 
@@ -48,7 +48,7 @@ fun OverlayScaffold(
             .background(MaterialTheme.colorScheme.surface),
         floatingActionButton = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
             ) {
                 if(showExit){
                     MediumExtendedFloatingActionButton(
@@ -74,7 +74,7 @@ fun OverlayScaffold(
         Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(bottom = if(showExit) dimensionResource(R.dimen.floating_action_button_height) else 0.dp),
+                .padding(bottom = if(showExit) MaterialTheme.sizing.floatingBar else 0.dp),
             contentAlignment = Alignment.Center
         ) {
             content()
@@ -122,7 +122,7 @@ fun OverlayScaffold(
                     mainPane(
                         Modifier
                             .weight(mainPaneRowWeight)
-                            .padding(dimensionResource(R.dimen.padding_small))
+                            .padding(MaterialTheme.sizing.small)
                     )
                     supportingPane(Modifier.weight(1f - mainPaneRowWeight))
                 }
@@ -134,7 +134,7 @@ fun OverlayScaffold(
                     mainPane(
                         Modifier
                             .weight(mainPaneColumnWeight)
-                            .padding(dimensionResource(R.dimen.padding_small))
+                            .padding(MaterialTheme.sizing.small)
                     )
                     supportingPane(Modifier.weight(1f - mainPaneColumnWeight))
                 }

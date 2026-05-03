@@ -24,11 +24,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 data class LabelState(
     @field:StringRes val title: Int,
@@ -50,7 +49,7 @@ fun LabelDetailsCard(
         Text(
             text = stringResource(mainText),
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.padding(MaterialTheme.sizing.small)
         )
         if (isError) {
             Text(
@@ -58,19 +57,16 @@ fun LabelDetailsCard(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(
-                    start = dimensionResource(R.dimen.padding_small),
-                    end = dimensionResource(R.dimen.padding_small)
-                )
+                modifier = Modifier.padding(horizontal = MaterialTheme.sizing.small)
             )
         }
         FlowRow(
             modifier = Modifier.padding(
-                start = dimensionResource(R.dimen.padding_small),
-                end = dimensionResource(R.dimen.padding_small),
-                bottom = dimensionResource(R.dimen.padding_small)
+                start = MaterialTheme.sizing.small,
+                end = MaterialTheme.sizing.small,
+                bottom = MaterialTheme.sizing.small
             ).animateContentSize(),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small),
         ) {
             labelList.forEach { label ->
                 AnimatedVisibility(
@@ -88,7 +84,7 @@ fun LabelDetailsCard(
                             )
                         },
                         border = BorderStroke(
-                            width = dimensionResource(R.dimen.text_field_border),
+                            width = 1.dp,
                             color = MaterialTheme.colorScheme.primary
                         )
                     )

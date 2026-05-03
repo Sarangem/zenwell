@@ -26,14 +26,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -72,7 +71,7 @@ fun TimerScreen(
                 CircularProgressIndicator(
                     modifier = Modifier.fillMaxSize(),
                     progress = { animatedProgress },
-                    strokeWidth = dimensionResource(R.dimen.padding_medium),
+                    strokeWidth = MaterialTheme.sizing.medium,
                     color = MaterialTheme.colorScheme.tertiary
                 )
                 Box(
@@ -85,7 +84,7 @@ fun TimerScreen(
                         fontFamily = FontFamily.Monospace,
                         maxLines = 1,
                         autoSize = TextAutoSize.StepBased(),
-                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                        modifier = Modifier.padding(MaterialTheme.sizing.small)
                     )
                 }
             }

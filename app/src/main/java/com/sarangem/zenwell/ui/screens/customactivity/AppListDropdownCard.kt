@@ -24,13 +24,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.PackageInfo
-import kotlin.collections.forEach
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,9 +57,9 @@ fun AppListDropdownCard(
                     currentApp?.icon,
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(dimensionResource(R.dimen.padding_small))
-                        .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
-                        .size(dimensionResource(R.dimen.image_size))
+                        .padding(MaterialTheme.sizing.small)
+                        .clip(RoundedCornerShape(MaterialTheme.sizing.small))
+                        .size(MaterialTheme.sizing.image)
                 )
             },
             trailingIcon = @Composable {
@@ -89,9 +88,9 @@ fun AppListDropdownCard(
                             it.icon,
                             contentDescription = null,
                             modifier = Modifier
-                                .padding(dimensionResource(R.dimen.padding_small))
-                                .clip(RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
-                                .size(dimensionResource(R.dimen.image_size))
+                                .padding(MaterialTheme.sizing.small)
+                                .clip(RoundedCornerShape(MaterialTheme.sizing.small))
+                                .size(MaterialTheme.sizing.image)
                         )
                     },
                 )

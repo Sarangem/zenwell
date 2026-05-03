@@ -5,11 +5,17 @@
 
 package com.sarangem.zenwell.ui.screens.home
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,16 +36,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import android.Manifest
-import android.net.Uri
-import android.os.Build
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
@@ -47,6 +46,7 @@ import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.screens.AppViewModelProvider
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun HomeScreen(
@@ -157,9 +157,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(
-                bottom = dimensionResource(R.dimen.floating_action_button_height)
-            )
+            contentPadding = PaddingValues(bottom = MaterialTheme.sizing.floatingBar)
         ) {
             item {
                 AnimatedVisibility(uiState.showAccessibilityPermissionRationale) {
@@ -201,7 +199,7 @@ fun HomeScreen(
                         Text(
                             text = stringResource(R.string.home_screen_description),
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                            modifier = Modifier.padding(MaterialTheme.sizing.small)
                         )
                     }
                 }
@@ -220,7 +218,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .animateItem()
                             .fillMaxWidth()
-                            .padding(dimensionResource(R.dimen.padding_small)),
+                            .padding(MaterialTheme.sizing.small),
                         schedule = schedule,
                         isClicked = schedule.id == scheduleClicked,
                         openEditScreen = openEditScreen,

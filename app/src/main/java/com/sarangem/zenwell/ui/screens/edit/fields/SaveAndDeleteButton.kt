@@ -25,12 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -46,10 +46,7 @@ fun SaveAndDeleteButton(
 
     HorizontalFloatingToolbar(
         expanded = true,
-        modifier = modifier.padding(
-            start = dimensionResource(R.dimen.padding_small),
-            end = dimensionResource(R.dimen.padding_small)
-        )
+        modifier = modifier.padding(horizontal = MaterialTheme.sizing.small)
     ) {
 
         // SAVE BUTTON

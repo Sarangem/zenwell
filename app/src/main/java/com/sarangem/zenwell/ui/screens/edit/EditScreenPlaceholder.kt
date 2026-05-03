@@ -21,13 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -41,10 +41,10 @@ fun EditScreenPlaceholder(
     ) {
         Box(
             modifier = Modifier
-                .size(dimensionResource(R.dimen.image_size))
+                .size(MaterialTheme.sizing.image)
                 .clip(Circle.toShape())
                 .background(MaterialTheme.colorScheme.inversePrimary)
-                .padding(dimensionResource(R.dimen.padding_small)),
+                .padding(MaterialTheme.sizing.small),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -58,7 +58,7 @@ fun EditScreenPlaceholder(
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.padding(MaterialTheme.sizing.small)
         )
     }
 }

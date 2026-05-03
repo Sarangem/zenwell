@@ -29,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.em
 import androidx.graphics.shapes.Morph
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun MessageCard(
@@ -53,7 +53,7 @@ fun MessageCard(
         targetState = showOpen,
         transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
         modifier = modifier
-            .padding(dimensionResource(R.dimen.padding_small))
+            .padding(MaterialTheme.sizing.small)
             .graphicsLayer {
                 shape = morphPolygonShape
                 clip = true

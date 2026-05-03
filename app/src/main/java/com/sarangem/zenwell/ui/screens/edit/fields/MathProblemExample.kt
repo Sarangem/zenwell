@@ -18,10 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.generateMathProblem
 
 @Composable
@@ -63,7 +63,7 @@ fun MathProblemExample(schedule: Schedules) {
                 fadeIn() togetherWith fadeOut()
             }
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))) {
+            Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)) {
                 Text(
                     text = it.first.shortQuestion,
                     style = MaterialTheme.typography.bodyLarge

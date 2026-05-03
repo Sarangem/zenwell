@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -50,6 +49,7 @@ import com.sarangem.zenwell.ui.overlay.common.OpenableMessageCard
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -107,7 +107,7 @@ fun TypingScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(dimensionResource(R.dimen.padding_small)),
+                        .padding(MaterialTheme.sizing.small),
                 ) {
                     if (state) {
                         OpenableMessageCard(
@@ -153,7 +153,7 @@ fun TypingTextField(
             showKeyboardOnFocus = true,
             autoCorrectEnabled = false,
             imeAction = ImeAction.Default,
-            keyboardType = KeyboardType.Text,
+            keyboardType = KeyboardType.Text
         ),
         decorationBox = {
             Box {
@@ -175,8 +175,7 @@ fun TypingTextField(
                                     } else {
                                         Color.Unspecified
                                     },
-                                    fontWeight = if(char == '\n') FontWeight.Thin else FontWeight.SemiBold,
-                                    fontFamily = FontFamily.Monospace
+                                    fontWeight = if(char == '\n') FontWeight.Thin else null
                                 )
                             ) {
                                 if (char == '\n') append('↲')
@@ -184,7 +183,9 @@ fun TypingTextField(
                             }
                         }
                     },
-                    style = MaterialTheme.typography.displaySmall
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily.Monospace
                 )
                 it()
             }
@@ -197,6 +198,6 @@ fun TypingTextField(
 @Composable
 fun TypingScreenPreview() {
     ZenwellTheme(darkTheme = true) {
-        TypingScreen(message = "This app is\nfully blocked.\n")
+        TypingScreen(message = "\uD83D\uDD90\uFE0F\nStop↲\nদাঁড়ান")
     }
 }

@@ -25,12 +25,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +49,7 @@ fun ShowConfirmDialog(
     ) {
         Surface(
             shape = MaterialTheme.shapes.extraLarge,
-            tonalElevation = dimensionResource(R.dimen.padding_small),
+            tonalElevation = MaterialTheme.sizing.small,
             modifier = Modifier
                 .width(IntrinsicSize.Min)
                 .height(IntrinsicSize.Min)
@@ -60,7 +60,7 @@ fun ShowConfirmDialog(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_large))
+                modifier = Modifier.padding(MaterialTheme.sizing.large)
             ) {
                 Icon(
                     painter = painterResource(icon),
@@ -68,12 +68,12 @@ fun ShowConfirmDialog(
                     modifier = Modifier
                         .size(60.dp)
                         .padding(
-                            top = dimensionResource(R.dimen.padding_large),
-                            bottom = dimensionResource(R.dimen.padding_small)
+                            top = MaterialTheme.sizing.large,
+                            bottom = MaterialTheme.sizing.small
                         )
                 )
                 Text(
-                    modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_large)),
+                    modifier = Modifier.padding(bottom = MaterialTheme.sizing.large),
                     text = title,
                     style = MaterialTheme.typography.headlineMedium
                 )
@@ -81,7 +81,7 @@ fun ShowConfirmDialog(
                     text = description,
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                Spacer(Modifier.size(dimensionResource(R.dimen.padding_large)))
+                Spacer(Modifier.size(MaterialTheme.sizing.large))
                 Row {
                     TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
                     Spacer(modifier = Modifier.weight(1f))

@@ -10,12 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 enum class SchedulesFilter(@get:StringRes val title: Int) {
     All(R.string.all),
@@ -30,8 +31,8 @@ fun SchedulesFilterChips(
     updateFilter: (SchedulesFilter) -> Unit = {}
 ){
     Row(
-        modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+        modifier = modifier.padding(MaterialTheme.sizing.small),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
     ){
         SchedulesFilter.entries.forEach { entry ->
             FilterChip(

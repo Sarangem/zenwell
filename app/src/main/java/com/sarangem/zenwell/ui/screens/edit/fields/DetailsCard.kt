@@ -25,17 +25,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.sarangem.zenwell.R
-import androidx.compose.ui.text.input.VisualTransformation
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun DetailsCard(
@@ -49,7 +49,7 @@ fun DetailsCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.padding_small)),
+                .padding(MaterialTheme.sizing.small),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             content()
@@ -64,10 +64,10 @@ fun DetailsCardColumn(
 ) {
     Column(
         modifier = modifier
-            .padding(dimensionResource(R.dimen.padding_small))
+            .padding(MaterialTheme.sizing.small)
             .clip(MaterialTheme.shapes.medium)
             .animateContentSize(),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
     ) {
         content()
     }
@@ -208,7 +208,7 @@ fun DetailsCardWithRangeNumberField(
                 text = stringResource(R.string.to),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
-                    .padding(dimensionResource(R.dimen.padding_small))
+                    .padding(MaterialTheme.sizing.small)
                     .align(Alignment.CenterVertically)
             )
             OutlinedTextField(

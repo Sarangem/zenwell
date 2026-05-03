@@ -19,11 +19,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun ProgressPills(
@@ -31,34 +31,30 @@ fun ProgressPills(
     sessionsLeft: Int,
     modifier: Modifier = Modifier
 ) {
-    val pillDescription = stringResource(R.string.pomodoro_sessions_left) + sessionsLeft
+    val pillDescription = stringResource(R.string.pomodoro_sessions_left, sessionsLeft)
     Row(
         modifier = modifier
-            .padding(dimensionResource(R.dimen.padding_small))
+            .padding(MaterialTheme.sizing.small)
             .semantics(mergeDescendants = true) {
                 contentDescription = pillDescription
             },
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny),
         verticalAlignment = Alignment.CenterVertically
     ) {
         repeat(totalSessions) { index ->
             val currentSessionIndex = totalSessions - sessionsLeft
             val isCompleted = index < currentSessionIndex
             val isCurrent = index == currentSessionIndex
-            val width by animateDpAsState(
-                dimensionResource(
-                    if (isCurrent) R.dimen.padding_large else R.dimen.padding_medium
-                )
-            )
+            val width by animateDpAsState(if (isCurrent) MaterialTheme.sizing.large else MaterialTheme.sizing.medium)
             Box(
                 modifier = Modifier
-                    .height(dimensionResource(R.dimen.padding_medium))
+                    .height(MaterialTheme.sizing.medium)
                     .width(width)
                     .clip(MaterialTheme.shapes.small)
                     .background(
                         when {
                             isCurrent -> MaterialTheme.colorScheme.primary
-                            isCompleted -> MaterialTheme.colorScheme.primaryContainer
+                            isCompleted -> MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
                             else -> MaterialTheme.colorScheme.outlineVariant
                         }
                     )

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,14 +28,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -75,7 +75,7 @@ fun PomodoroBlockScreen(
                 CircularProgressIndicator(
                     modifier = Modifier.fillMaxSize(),
                     progress = { animatedProgress },
-                    strokeWidth = dimensionResource(R.dimen.padding_medium),
+                    strokeWidth = MaterialTheme.sizing.medium,
                 )
                 Box(
                     modifier = Modifier.fillMaxSize(0.8f),
@@ -83,7 +83,7 @@ fun PomodoroBlockScreen(
                 ) {
                     Text(
                         text = formattedTime,
-                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                        modifier = Modifier.padding(MaterialTheme.sizing.small),
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
                         maxLines = 1,

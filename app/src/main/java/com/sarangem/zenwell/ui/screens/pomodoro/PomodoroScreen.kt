@@ -14,9 +14,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,18 +35,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.window.core.layout.WindowSizeClass.Companion.HEIGHT_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.AppViewModelProvider
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun FocusScreen(
@@ -175,10 +176,10 @@ fun FocusScreen(
                         )
                         CircularPomodoroTimer(
                             modifier = Modifier
-                                .padding(dimensionResource(R.dimen.padding_small))
+                                .padding(MaterialTheme.sizing.small)
                                 .then(
                                     if (isCompactHeight) {
-                                        Modifier.size(dimensionResource(R.dimen.circular_pomodoro_timer_size))
+                                        Modifier.size(500.dp)
                                     } else {
                                         Modifier.weight(1f)
                                     }
@@ -187,7 +188,7 @@ fun FocusScreen(
                             formattedTime = uiState.formattedTime,
                             isWork = uiState.isWorkTime
                         )
-                        Spacer(Modifier.height(dimensionResource(R.dimen.floating_action_button_height)))
+                        Spacer(Modifier.height(MaterialTheme.sizing.floatingBar))
                     }
                 }
             }

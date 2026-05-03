@@ -23,12 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -46,15 +47,11 @@ fun CircularPomodoroTimer(
             modifier = Modifier.fillMaxSize(),
             progress = { progress },
             stroke = Stroke(
-                width = with(LocalDensity.current) {
-                    dimensionResource(R.dimen.padding_medium).toPx()
-                },
+                width = with(LocalDensity.current) { MaterialTheme.sizing.medium.toPx() },
                 cap = StrokeCap.Round
             ),
             trackStroke = Stroke(
-                width = with(LocalDensity.current) {
-                    dimensionResource(R.dimen.padding_medium).toPx()
-                },
+                width = with(LocalDensity.current) { MaterialTheme.sizing.medium.toPx() },
                 cap = StrokeCap.Round
             ),
             amplitude = { progress ->
@@ -66,7 +63,7 @@ fun CircularPomodoroTimer(
                 }
             },
             color = if (isWork) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
-            wavelength = dimensionResource(R.dimen.pomodoro_rest_time_wavelength)
+            wavelength = 40.dp
         )
         Box(
             modifier = Modifier.fillMaxSize(0.8f),
@@ -79,13 +76,13 @@ fun CircularPomodoroTimer(
                     modifier = Modifier
                         .weight(1f, false)
                         .heightIn(
-                            min = dimensionResource(R.dimen.padding_large),
-                            max = dimensionResource(R.dimen.image_size)
+                            min = MaterialTheme.sizing.large,
+                            max = MaterialTheme.sizing.image
                         )
                 )
                 Text(
                     text = formattedTime,
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                    modifier = Modifier.padding(MaterialTheme.sizing.small),
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
                     maxLines = 1,

@@ -12,9 +12,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun ChooseActiveSwitch(
@@ -30,7 +30,7 @@ fun ChooseActiveSwitch(
         Switch(
             checked = isActive,
             onCheckedChange = updateValue,
-            modifier = Modifier.padding(end = dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.padding(end = MaterialTheme.sizing.small)
         )
     }
 }
