@@ -28,6 +28,7 @@ class MorphPolygonShape(
         layoutDirection: LayoutDirection,
         density: Density
     ): Outline {
+        matrix.reset()
 
         val bounds = morph.calculateMaxBounds().let { Rect(it[0], it[1], it[2], it[3]) }
         val maxDimension = max(bounds.width, bounds.height)

@@ -60,9 +60,7 @@ fun MessageCard(
             }
             .background(MaterialTheme.colorScheme.primary)
             .fillMaxSize()
-            .clickable(onClick = {
-                onClick()
-            }),
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { state ->
         Box(

@@ -97,32 +97,24 @@ fun TypingScreen(
         content = {
             AnimatedContent(
                 targetState = showOpen,
-                transitionSpec = {
-                    fadeIn(
-                        animationSpec = tween(1000)
-                    ) togetherWith fadeOut(animationSpec = tween(1000))
-                },
-                modifier = Modifier.fillMaxSize()
+                transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(MaterialTheme.sizing.small)
             ) { state ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(MaterialTheme.sizing.small),
-                ) {
-                    if (state) {
-                        OpenableMessageCard(
-                            showOpen = true,
-                            onTimerEnd = onTimerEnd
-                        )
-                    } else {
-                        TypingTextField(
-                            message = message,
-                            input = input,
-                            onInputChange = { input = it }
-                        )
-                    }
+                if (state) {
+                    OpenableMessageCard(
+                        modifier = Modifier.fillMaxSize(),
+                        showOpen = true,
+                        onTimerEnd = onTimerEnd
+                    )
+                } else {
+                    TypingTextField(
+                        message = message,
+                        input = input,
+                        onInputChange = { input = it }
+                    )
                 }
-
             }
         }
     )

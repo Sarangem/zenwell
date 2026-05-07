@@ -6,7 +6,6 @@
 package com.sarangem.zenwell.ui.overlay.common
 
 import androidx.annotation.FloatRange
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,13 +42,13 @@ fun OverlayScaffold(
     onExit: () -> Unit = {}
 ) {
     Scaffold(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
+        modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.surface,
         floatingActionButton = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
             ) {
+                floatingActionButton()
                 if(showExit){
                     MediumExtendedFloatingActionButton(
                         onClick = onExit,
@@ -67,12 +66,12 @@ fun OverlayScaffold(
                         }
                     )
                 }
-                floatingActionButton()
             }
         }
     ) { innerPadding ->
         Box(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
                 .padding(bottom = if(showExit) MaterialTheme.sizing.floatingBar else 0.dp),
             contentAlignment = Alignment.Center
