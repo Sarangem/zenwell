@@ -72,12 +72,7 @@ fun SchedulesCard(
             containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.25f),
             contentColor = MaterialTheme.colorScheme.onTertiaryContainer
         )
-    } else {
-        CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        )
-    }
+    } else CardDefaults.cardColors()
 
     var isPomodoroActive by rememberSaveable {
         mutableStateOf(

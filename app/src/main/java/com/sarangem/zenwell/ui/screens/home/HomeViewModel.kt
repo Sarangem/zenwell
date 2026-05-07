@@ -32,7 +32,7 @@ class HomeViewModel(private val schedulesRepository: SchedulesRepository) : View
             schedulesRepository.getAllSchedules().collect { list ->
                 _uiState.update { uiState ->
                     uiState.copy(
-                        schedulesList = list,
+                        schedulesList = list.sortedBy { it.title.lowercase() },
                         showAccessibilityPermissionRationale = AppBlockerService.instance == null
                     )
                 }
