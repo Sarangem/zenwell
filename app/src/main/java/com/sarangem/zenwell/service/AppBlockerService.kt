@@ -161,14 +161,12 @@ class AppBlockerService : AccessibilityService() {
         }
 
         // close the window
-        val iterator = openedWindows.iterator() // avoid concurrent modification exception
-        while (iterator.hasNext()) {
-            val blockingWindow = iterator.next()
-            if (blockingWindow.packageName !in currentVisibleApps) {
-                ServiceLogger.i { "Closing window for ${blockingWindow.packageName} for schedule ${blockingWindow.schedule.id}." }
-                blockingWindow.close()
+        openedWindows
+            .filter { it.packageName !in currentVisibleApps } // create a copy to avoid modification exceptions
+            .forEach { overlayWindow ->
+                ServiceLogger.i { "Closing window for ${overlayWindow.packageName} for schedule ${overlayWindow.schedule.id}." }
+                overlayWindow.close()
             }
-        }
         ServiceLogger.d { "Accessibility Event completed." }
     }
 
