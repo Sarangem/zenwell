@@ -81,7 +81,7 @@ fun createBlockNotification(
 ) {
     val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
     val builder = NotificationCompat.Builder(context, BlockNotification)
-        .setSmallIcon(R.drawable.ic_launcher_foreground)
+        .setSmallIcon(R.drawable.ic_notification_icon)
         .setContentTitle(message)
         .setVibrate(LongArray(0))
         .setSound(null)
