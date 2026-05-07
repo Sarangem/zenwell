@@ -104,7 +104,7 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
                                 "### Crash Log\n```\n${crashLogText ?: "No logs found"}\n```",
                                 StandardCharsets.UTF_8.toString()
                             )
-                            uriHandler.openUri("$GITHUB_REPO_ISSUES_URL/new?title=$title&body=$body")
+                            uriHandler.openUri("$GITHUB_REPO_ISSUES_URL?title=$title&body=$body")
                         },
                         modifier = Modifier.padding(bottom = MaterialTheme.sizing.small)
                     ) {
