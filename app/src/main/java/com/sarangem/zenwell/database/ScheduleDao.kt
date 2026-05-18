@@ -11,6 +11,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.BlockedApps
 import com.sarangem.zenwell.database.tables.Schedules
@@ -49,9 +50,8 @@ interface ScheduleDao {
     @Query("SELECT * FROM blocked_apps WHERE schedule_id=:scheduleId")
     fun getAppRelationByScheduleId(scheduleId: Int): Flow<List<BlockedApps>>
 
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAppNames(appNames: AppNames)
+    @Upsert
+    fun upsertAppNames(appNames: AppNames)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAppRelation(blockedApps: BlockedApps)
@@ -62,22 +62,13 @@ interface ScheduleDao {
     @Update
     fun updateSchedule(schedules: Schedules)
 
-
     @Delete
     fun deleteSchedule(schedules: Schedules)
-
-    @Query("DELETE from schedules")
-    fun deleteAllSchedules()
 
     @Delete
     fun deleteAppNames(appNames: AppNames)
 
-    @Query("DELETE from app_names")
-    fun deleteAllAppNames()
-
     @Query("DELETE from blocked_apps WHERE schedule_id=:scheduleId AND app_id=:appId")
     fun deleteAppRelation(scheduleId: Int, appId: Int)
 
-    @Query("DELETE from blocked_apps")
-    fun deleteAllAppRelations()
 }

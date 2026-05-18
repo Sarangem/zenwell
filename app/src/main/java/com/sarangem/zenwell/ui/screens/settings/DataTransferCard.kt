@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ZenwellApplication
 import com.sarangem.zenwell.model.BackupData
+import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,15 +49,12 @@ fun DataTransferCard(
         ignoreUnknownKeys = true
     }
 
-
     val createBackup = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
-
         coroutineScope.launch {
             try {
-
                 val jsonString = json.encodeToString(app.container.getAllData())
                 context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                     BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
@@ -66,13 +64,10 @@ fun DataTransferCard(
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, R.string.backup_completed, Toast.LENGTH_SHORT).show()
                 }
-
-            } catch (e: IOException) {
-
+            } catch (_: IOException) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, R.string.backup_failed, Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
     }
@@ -82,7 +77,6 @@ fun DataTransferCard(
     ) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
         coroutineScope.launch {
-
             try {
                 context.contentResolver.openInputStream(uri)?.use { inputStream ->
                     val jsonString = BufferedReader(InputStreamReader(inputStream)).use { reader ->
@@ -90,29 +84,23 @@ fun DataTransferCard(
                     }
                     val restoredData = json.decodeFromString<List<BackupData>>(jsonString)
                     app.container.restoreAllData(restoredData)
+                    AppBlockerService.instance?.initializeRepository()
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, R.string.data_restore_completed, Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(context, R.string.data_restore_completed, Toast.LENGTH_SHORT).show()
                     }
                 }
-
             } catch (_: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, R.string.data_restore_failed, Toast.LENGTH_SHORT).show()
                 }
             }
-
         }
     }
 
     DataTransferCard(
         modifier = modifier,
-        createBackup = {
-            createBackup.launch("zenwell_backup.json")
-        },
-        restoreBackup = {
-            restoreBackup.launch(arrayOf("application/json"))
-        }
+        createBackup = { createBackup.launch("zenwell_backup.json") },
+        restoreBackup = { restoreBackup.launch(arrayOf("application/json")) }
     )
 }
 

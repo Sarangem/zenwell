@@ -11,6 +11,7 @@ import com.sarangem.zenwell.YOUTUBE_SHORTS_NAME
 import com.sarangem.zenwell.YOUTUBE_SHORTS_VIEW_ID
 import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.database.tables.AppNames
+import com.sarangem.zenwell.service.AppBlockerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,13 +57,14 @@ class CustomActivityViewModel(private val schedulesRepository: SchedulesReposito
         customActivityUiState: CustomActivityUiState
     ){
         viewModelScope.launch(Dispatchers.IO) {
-            schedulesRepository.insertApp(
+            schedulesRepository.upsertApp(
                 AppNames(
                     id,
                     customActivityUiState.packageName + ":id/" + customActivityUiState.viewId,
                     customActivityUiState.viewTitle
                 )
             )
+            AppBlockerService.instance?.initializeRepository()
             initialize()
         }
     }
@@ -79,6 +81,7 @@ class CustomActivityViewModel(private val schedulesRepository: SchedulesReposito
                     customActivityUiState.viewTitle
                 )
             )
+            AppBlockerService.instance?.initializeRepository()
             _uiState.update { it - id }
         }
     }
@@ -86,7 +89,7 @@ class CustomActivityViewModel(private val schedulesRepository: SchedulesReposito
     fun onReset(){
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value.forEach { onDelete(it.key, it.value) }
-            schedulesRepository.insertApp(
+            schedulesRepository.upsertApp(
                 AppNames(0, YOUTUBE_SHORTS_VIEW_ID, YOUTUBE_SHORTS_NAME)
             )
             initialize()

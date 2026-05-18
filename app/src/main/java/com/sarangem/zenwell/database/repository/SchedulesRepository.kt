@@ -16,7 +16,7 @@ interface SchedulesRepository {
     fun getSchedulesCount(): Flow<Int>
     fun getAppNamesById(id: Int): Flow<List<AppNames>>
     fun getAllApps(): Flow<List<AppNames>>
-    fun insertApp(appName: AppNames)
+    fun upsertApp(appName: AppNames)
     fun deleteApp(appName: AppNames)
     suspend fun deleteSchedule(schedule: Schedules)
     suspend fun addNewSchedule(schedule: Schedules): Int

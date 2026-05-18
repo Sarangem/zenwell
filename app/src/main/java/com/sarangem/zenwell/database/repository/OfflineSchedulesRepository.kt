@@ -20,7 +20,7 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
     override fun getSchedulesCount()= scheduleDao.getSchedulesCount()
     override fun getAppNamesById(id: Int)= scheduleDao.getAppNamesById(id)
     override fun getAllApps()= scheduleDao.getAllApps()
-    override fun insertApp(appName: AppNames)= scheduleDao.insertAppNames(appName)
+    override fun upsertApp(appName: AppNames)= scheduleDao.upsertAppNames(appName)
     override fun deleteApp(appName: AppNames)= scheduleDao.deleteAppNames(appName)
     override suspend fun addNewSchedule(schedule: Schedules)= scheduleDao.insertSchedule(schedule).toInt()
     override suspend fun updateSchedule(schedule: Schedules)= scheduleDao.updateSchedule(schedule)
@@ -41,8 +41,10 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
 
     override suspend fun restoreAllData(list: List<BackupData>) {
         list.forEach { data ->
-            data.appNamesList.forEach { app -> insertApp(AppNames(0, app.first, app.second)) }
-            val id = addNewSchedule(data.schedule)
+            data.appNamesList.forEach { app -> // add all views with names
+                app.second?.let { upsertApp(AppNames(0, app.first, it)) }
+            }
+            val id = addNewSchedule(data.schedule.copy(id = 0))
             saveToDatabase(
                 schedule = data.schedule.copy(id = id),
                 appNames = data.appNamesList.map { it.first },
@@ -70,7 +72,7 @@ class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : Schedul
                 // insert new app name
                 val appId = scheduleDao.getAppId(app).firstOrNull()
                 if (appId == null || appId == 0) { // it does not exist in table
-                    scheduleDao.insertAppNames(AppNames(title = app))
+                    upsertApp(AppNames(title = app))
                 }
 
                 // insert app to schedule relation
