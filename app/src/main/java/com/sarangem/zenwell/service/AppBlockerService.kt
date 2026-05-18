@@ -132,7 +132,8 @@ class AppBlockerService : AccessibilityService() {
             // get current root and package name && terminate if null
             val root = windowInfo.root ?: continue
             val currentApp = root.packageName ?: continue
-            ServiceLogger.d { root.className.toString() }
+            if (currentApp == packageName && root.className == "android.view.ViewGroup") continue
+            ServiceLogger.d { "Processing app $currentApp (${root.className})" }
             currentVisibleApps.add(currentApp)
             scheduleInfoList.forEach { scheduleInfo ->
                 scheduleInfo.viewsMap[currentApp]?.forEach {
@@ -142,7 +143,6 @@ class AppBlockerService : AccessibilityService() {
                     }
                 }
             }
-            ServiceLogger.d { "Processing app $currentApp" }
 
             // open the window
             for (scheduleInfo in scheduleInfoList) {

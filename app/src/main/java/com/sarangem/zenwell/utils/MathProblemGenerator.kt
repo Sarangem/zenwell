@@ -71,6 +71,5 @@ fun generateMathProblem(
     }
 
     shortQuestion += " = ?"
-    longQuestion += "\n= ?"
     return MathProblem(answer, shortQuestion, longQuestion)
 }
