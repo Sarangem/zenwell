@@ -196,7 +196,7 @@ fun MultiplicationTableCard(
                                     focusManager.moveFocus(FocusDirection.Next)
                                 }
                                 val allCorrect = answers.all { (multiplier, state) ->
-                                    state.text.toString().toIntOrNull() == number * multiplier
+                                    state.text.toString().trim().toIntOrNull() == number * multiplier
                                 }
                                 if (allCorrect) {
                                     onAllCorrect()

@@ -51,7 +51,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.model.MathProblem
@@ -112,7 +111,7 @@ fun MathEquationCard(
     question: MathProblem,
     onCorrectAnswer: () -> Unit = {}
 ) {
-    var answer: Int? by remember { mutableStateOf(null) }
+    var answer by remember { mutableStateOf("") }
     var isCorrect: Boolean? by remember { mutableStateOf(null) }
     val borderColor = when (isCorrect) {
         null -> Color.Black
@@ -130,10 +129,8 @@ fun MathEquationCard(
             modifier = Modifier
                 .padding(top = MaterialTheme.sizing.medium)
                 .fillMaxWidth(),
-            value = answer?.toString() ?: "",
-            onValueChange = { num ->
-                if (num.isDigitsOnly()) answer = num.toIntOrNull()
-            },
+            value = answer,
+            onValueChange = { answer = it },
             shape = MaterialTheme.shapes.medium,
             label = {
                 Text(
@@ -157,7 +154,7 @@ fun MathEquationCard(
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    if (answer == question.answer) {
+                    if (answer.trim().toIntOrNull() == question.answer) {
                         isCorrect = true
                         onCorrectAnswer()
                     } else {
@@ -197,9 +194,7 @@ fun QuestionCard(
             )
             Spacer(Modifier.weight(1f))
             TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                    TooltipAnchorPosition.Left
-                ),
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Left),
                 state = tooltipState,
                 tooltip = {
                     RichTooltip(
@@ -254,7 +249,7 @@ fun QuestionCard(
                 text = if (isExpanded) question.longQuestion else question.shortQuestion,
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Left,
+                textAlign = if(isExpanded) TextAlign.End else TextAlign.Left,
                 fontFamily = FontFamily.Monospace,
                 maxLines = if (isExpanded) Int.MAX_VALUE else 1,
                 modifier = Modifier
@@ -267,38 +262,16 @@ fun QuestionCard(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun MathProblemScreenPreview() {
+fun MathProblemPreview() {
     ZenwellTheme {
         MathProblemScreen(
             modifier = Modifier.fillMaxSize(),
             schedule = Schedules(
-                mathEquationNumOperands = 3,
-                mathEquationMinNumber = 3,
-                mathEquationMaxNumber = 4,
-                mathEquationMinNumberInMultiplication = 2,
-                mathEquationMaxNumberInMultiplication = 2,
-                requireManualUnlock = true,
-                message = APP_BLOCKED
-            )
-        )
-    }
-}
-
-@Preview
-@Composable
-fun MathProblemScreenDarkPreview() {
-    ZenwellTheme(darkTheme = true) {
-        MathProblemScreen(
-            modifier = Modifier.fillMaxSize(),
-            schedule = Schedules(
-                mathEquationNumOperands = 3,
-                mathEquationMinNumber = 3,
-                mathEquationMaxNumber = 4,
-                mathEquationMinNumberInMultiplication = 2,
-                mathEquationMaxNumberInMultiplication = 2,
+                mathEquationNumOperands = 4,
+                mathEquationMinNumber = 7,
+                mathEquationMaxNumber = 20,
                 requireManualUnlock = true,
                 message = APP_BLOCKED
             )

@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -75,10 +75,7 @@ fun CircularPomodoroTimer(
                     contentDescription = stringResource(if (isWork) R.string.work_time else R.string.rest_time),
                     modifier = Modifier
                         .weight(1f, false)
-                        .heightIn(
-                            min = MaterialTheme.sizing.large,
-                            max = MaterialTheme.sizing.image
-                        )
+                        .size(MaterialTheme.sizing.image)
                 )
                 Text(
                     text = formattedTime,
