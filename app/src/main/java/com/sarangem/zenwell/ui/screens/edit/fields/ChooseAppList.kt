@@ -6,6 +6,7 @@
 package com.sarangem.zenwell.ui.screens.edit.fields
 
 import android.graphics.drawable.Drawable
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -69,8 +70,7 @@ fun ChooseAppList(
         launch(Dispatchers.IO) {
             val list = getInstalledApps(context).toMutableList()
             viewsList.forEach { view ->
-                val element =
-                    list.firstOrNull { it.packageName == view.title.substringBefore(":id/") }
+                val element = list.firstOrNull { it.packageName == view.title.substringBefore(":id/") }
                 element?.let {
                     list.add(
                         PackageInfo(
@@ -93,13 +93,10 @@ fun ChooseAppList(
                 .ifEmpty { null }
         }
     }
-
     var expanded by remember { mutableStateOf(false) }
 
     DetailsCardColumn {
-        DetailsCard(
-            modifier = Modifier.clickable { expanded = true }
-        ) {
+        DetailsCard(Modifier.clickable { expanded = true }) {
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
@@ -108,10 +105,12 @@ fun ChooseAppList(
                     text = stringResource(R.string.choose_apps),
                     style = MaterialTheme.typography.bodyLarge
                 )
-                Text(
-                    text = selectedAppsText ?: stringResource(R.string.none_selected_yet),
-                    style = MaterialTheme.typography.labelMedium,
-                )
+                AnimatedVisibility(installedAppList.isNotEmpty() || appNames?.isEmpty() == true){
+                    Text(
+                        text = selectedAppsText ?: stringResource(R.string.none_selected_yet),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
             }
             IconButton(onClick = { expanded = true }) {
                 Icon(
@@ -200,7 +199,6 @@ fun AppCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(Modifier.width(MaterialTheme.sizing.small))
-
         AsyncImage(
             icon,
             contentDescription = null,
@@ -209,7 +207,6 @@ fun AppCard(
                 .clip(RoundedCornerShape(MaterialTheme.sizing.small))
                 .size(MaterialTheme.sizing.image)
         )
-
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
