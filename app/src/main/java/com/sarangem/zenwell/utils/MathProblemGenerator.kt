@@ -7,6 +7,7 @@ package com.sarangem.zenwell.utils
 
 import com.sarangem.zenwell.model.MathOperators
 import com.sarangem.zenwell.model.MathProblem
+import kotlin.math.min
 
 fun generateMathProblem(
     numOperands: Int,
@@ -37,7 +38,7 @@ fun generateMathProblem(
                 (minNumberInMultiplication..maxNumberInMultiplication).random()
             }
             MathOperators.SUBTRACTION if !allowNegatives -> {
-                (minNumber..answer).randomOrNull() ?: 0
+                (minNumber..min(answer, maxNumber)).randomOrNull() ?: 0
             }
             else -> {
                 (minNumber..maxNumber).random()
