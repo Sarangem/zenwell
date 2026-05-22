@@ -39,12 +39,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
-import com.sarangem.zenwell.ui.screens.AppViewModelProvider
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 
@@ -57,7 +56,7 @@ fun HomeScreen(
     openSettingsScreen: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val viewModel: HomeViewModel = hiltViewModel()
     val homeUiState by viewModel.uiState.collectAsState()
     LaunchedEffect(homeUiState.schedulesList) {
         viewModel.recheckNotificationPermission(context)
@@ -92,8 +91,7 @@ fun HomeScreen(
             )
         )
     }
-    val grantAccessibilityPermission =
-        { accessibilityPermissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+    val grantAccessibilityPermission = { accessibilityPermissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
 
     HomeScreen(
         modifier,

@@ -12,7 +12,9 @@ import androidx.activity.enableEdgeToEdge
 import com.sarangem.zenwell.ui.screens.ZenwellAppScreen
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.createNotificationChannel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

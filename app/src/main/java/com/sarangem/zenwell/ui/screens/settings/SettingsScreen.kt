@@ -5,6 +5,9 @@
 
 package com.sarangem.zenwell.ui.screens.settings
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,21 +35,53 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.sarangem.zenwell.GITHUB_REPO_ISSUES_URL
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
+
+@Composable
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    openCustomActivityScreen: () -> Unit = {},
+    goBack: () -> Unit = {}
+){
+    val viewModel: SettingsViewModel = hiltViewModel()
+    val context = LocalContext.current
+
+    val createBackup = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri: Uri? ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        viewModel.createBackup(uri, context)
+    }
+    val restoreBackup = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        viewModel.restoreBackup(uri, context)
+    }
+
+    SettingsScreen(modifier, openCustomActivityScreen, goBack,
+        createBackup = { createBackup.launch("zenwell_backup.json") },
+        restoreBackup = { restoreBackup.launch(arrayOf("application/json")) }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     openCustomActivityScreen: () -> Unit = {},
-    goBack: () -> Unit = {}
+    goBack: () -> Unit = {},
+    createBackup: () -> Unit = {},
+    restoreBackup: () -> Unit = {}
 ) {
     val uriHandler = LocalUriHandler.current
     var showCrashLog by remember { mutableStateOf(false) }
@@ -85,7 +120,32 @@ fun SettingsScreen(
                 .padding(bottom = MaterialTheme.sizing.medium),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.medium)
         ) {
-            DataTransferCard(Modifier.fillMaxWidth())
+            Column {
+                Text(
+                    stringResource(R.string.data_backup),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = MaterialTheme.sizing.extraSmall)
+                )
+                Column(
+                    modifier = modifier.clip(MaterialTheme.shapes.medium),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
+                ) {
+                    SettingsActionCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = R.drawable.outlined_backup,
+                        title = stringResource(R.string.export_data),
+                        description = stringResource(R.string.export_data_description),
+                        onClick = createBackup
+                    )
+                    SettingsActionCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = R.drawable.filled_settings_backup_restore,
+                        title = stringResource(R.string.restore_data),
+                        description = stringResource(R.string.restore_data_description),
+                        onClick = restoreBackup
+                    )
+                }
+            }
 
             Column {
                 Text(
@@ -149,9 +209,6 @@ fun SettingsScreen(
 @Composable
 fun SettingsScreenPreview() {
     ZenwellTheme {
-        Column {
-            DataTransferCard(Modifier.fillMaxWidth()){}
-            Spacer(Modifier.weight(1f))
-        }
+        SettingsScreen()
     }
 }

@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.android.ksp)
+    alias(libs.plugins.google.dagger.hilt)
 }
 
 kotlin {
@@ -62,10 +63,13 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.animation.graphics.android)
     implementation(libs.androidx.compose.adaptive.navigation)
+    implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.coil.compose)
     implementation(libs.kotlin.serialization.json)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     debugImplementation(libs.androidx.ui.tooling)
 }

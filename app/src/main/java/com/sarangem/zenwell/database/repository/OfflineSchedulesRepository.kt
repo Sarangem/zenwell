@@ -5,15 +5,18 @@
 
 package com.sarangem.zenwell.database.repository
 
-import com.sarangem.zenwell.model.BackupData
 import com.sarangem.zenwell.database.ScheduleDao
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.BlockedApps
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.model.BackupData
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 
-class OfflineSchedulesRepository(private val scheduleDao: ScheduleDao) : SchedulesRepository {
+class OfflineSchedulesRepository @Inject constructor(
+    private val scheduleDao: ScheduleDao
+) : SchedulesRepository {
 
     override fun getAllSchedules()= scheduleDao.getAllSchedules()
     override fun getScheduleInfoById(id: Int)= scheduleDao.getScheduleInfoById(id)

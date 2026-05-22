@@ -45,7 +45,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.window.core.layout.WindowSizeClass.Companion.HEIGHT_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.ui.screens.AppViewModelProvider
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 
@@ -55,7 +54,7 @@ fun FocusScreen(
     schedule: Schedules,
     goBack: () -> Unit = {}
 ) {
-    val viewModel: PomodoroViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val viewModel: PomodoroViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(schedule.id) {
         viewModel.startObserving(schedule)

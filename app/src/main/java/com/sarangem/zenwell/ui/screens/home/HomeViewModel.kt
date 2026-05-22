@@ -14,6 +14,8 @@ import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.service.AppBlockerService
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +24,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val schedulesRepository: SchedulesRepository) : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val schedulesRepository: SchedulesRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()

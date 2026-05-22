@@ -23,11 +23,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.NavMetadataKey
@@ -43,21 +44,20 @@ import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityScreen
+import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityViewModel
 import com.sarangem.zenwell.ui.screens.edit.EditScreen
 import com.sarangem.zenwell.ui.screens.edit.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.screens.edit.EditViewModel
-import com.sarangem.zenwell.ui.screens.pomodoro.FocusScreen
 import com.sarangem.zenwell.ui.screens.home.HomeScreen
+import com.sarangem.zenwell.ui.screens.pomodoro.FocusScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
 import kotlinx.serialization.Serializable
-import androidx.compose.runtime.collectAsState
-import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityViewModel
 
 @Composable
 fun ZenwellAppScreen() {
     val backStack = rememberNavBackStack(HomePage)
-    val editViewModel: EditViewModel = viewModel(factory = AppViewModelProvider.Factory)
-    val customActivityViewModel: CustomActivityViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val editViewModel: EditViewModel = hiltViewModel()
+    val customActivityViewModel: CustomActivityViewModel = hiltViewModel()
 
     NavDisplay(
         modifier = Modifier

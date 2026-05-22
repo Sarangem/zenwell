@@ -11,12 +11,14 @@ import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class EditUiState(
     val schedule: Schedules = Schedules(),
@@ -25,7 +27,10 @@ data class EditUiState(
     val validationErrors: Set<ValidationError> = emptySet(),
 )
 
-class EditViewModel(private val schedulesRepository: SchedulesRepository) : ViewModel() {
+@HiltViewModel
+class EditViewModel @Inject constructor(
+    private val schedulesRepository: SchedulesRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EditUiState())
     val uiState = _uiState.asStateFlow()

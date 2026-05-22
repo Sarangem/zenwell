@@ -12,10 +12,12 @@ import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import com.sarangem.zenwell.CRASH_LOG_FILE
-import com.sarangem.zenwell.ZenwellApplication
+import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.deleteAllNotificationChannel
 import com.sarangem.zenwell.utils.getCurrentTimeInMinutes
+import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,14 +31,13 @@ import java.util.Date
 import java.util.Locale
 
 @SuppressLint("AccessibilityPolicy")
+@AndroidEntryPoint
 class AppBlockerService : AccessibilityService() {
 
-    companion object {
-        var instance: AppBlockerService? = null
-    }
+    companion object { var instance: AppBlockerService? = null }
     val supervisorJob = SupervisorJob()
     val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
-
+    @Inject lateinit var schedulesRepository: SchedulesRepository
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -68,7 +69,6 @@ class AppBlockerService : AccessibilityService() {
         supervisorJob.cancelChildren() // close all windows to prevent crashes
 
         // load ACTIVE schedules WITH APPS into scheduleInfoList
-        val schedulesRepository = (application as ZenwellApplication).container
         val schedulesList = schedulesRepository.getAllSchedules().first().filter { it.isActive && it.weekDays.isNotEmpty() }
         scheduleInfoList.clear()
         schedulesList.forEach { schedule ->
