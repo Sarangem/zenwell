@@ -113,7 +113,7 @@ fun BreathingCard(
     }
 
     val animatedShapeProgress by animateFloatAsState(
-        targetValue = if (inhale) 0.6f else 1f,
+        targetValue = if (inhale) 0.5f else 1f,
         animationSpec = tween(easing = LinearEasing, durationMillis = breathingCycleDuration * 500)
     )
     val animatedMorphProgress by animateFloatAsState(
