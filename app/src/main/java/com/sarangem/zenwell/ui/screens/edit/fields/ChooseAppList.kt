@@ -52,7 +52,7 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.PackageInfo
+import com.sarangem.zenwell.utils.MyPackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,7 +65,7 @@ fun ChooseAppList(
     updateValue: (List<String>) -> Unit = {},
 ) {
     val context = LocalContext.current
-    var installedAppList by remember { mutableStateOf<List<PackageInfo>>(listOf()) }
+    var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
             val list = getInstalledApps(context).toMutableList()
@@ -73,7 +73,7 @@ fun ChooseAppList(
                 val element = list.firstOrNull { it.packageName == view.title.substringBefore(":id/") }
                 element?.let {
                     list.add(
-                        PackageInfo(
+                        MyPackageInfo(
                             packageName = view.title,
                             appName = view.viewTitle ?: "",
                             icon = element.icon
@@ -149,7 +149,7 @@ fun ChooseAppList(
 @Composable
 fun BottomSheetContents(
     modifier: Modifier = Modifier,
-    installedAppList: List<PackageInfo>,
+    installedAppList: List<MyPackageInfo>,
     checkedAppList: List<String>? = listOf(),
     addAppToList: (String) -> Unit = {},
     removeAppFromList: (String) -> Unit = {}
@@ -158,10 +158,7 @@ fun BottomSheetContents(
         LoadingIndicator(
             Modifier
                 .fillMaxWidth()
-                .padding(
-                    top = MaterialTheme.sizing.image,
-                    bottom = MaterialTheme.sizing.image
-                )
+                .padding(vertical = MaterialTheme.sizing.image)
         )
     } else {
         LazyColumn(
@@ -230,9 +227,9 @@ fun ShowBottomSheetPreview() {
     ZenwellTheme {
         BottomSheetContents(
             installedAppList = listOf(
-                PackageInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
-                PackageInfo(appName = "Messages", icon = icon, packageName = "messages"),
-                PackageInfo(appName = "Youtube", icon = icon, packageName = "youtube")
+                MyPackageInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
+                MyPackageInfo(appName = "Messages", icon = icon, packageName = "messages"),
+                MyPackageInfo(appName = "Youtube", icon = icon, packageName = "youtube")
             )
         )
     }

@@ -53,7 +53,8 @@ fun HomeScreen(
     scheduleClicked: Int = 0,
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
-    openSettingsScreen: () -> Unit = {}
+    openSettingsScreen: () -> Unit = {},
+    openStatsScreen: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val viewModel: HomeViewModel = hiltViewModel()
@@ -103,7 +104,8 @@ fun HomeScreen(
         grantNotificationPermission,
         openEditScreen,
         openFocusScreen,
-        openSettingsScreen
+        openSettingsScreen,
+        openStatsScreen
     ) { AppBlockerService.instance?.getPomodoroWindow(it) }
 }
 
@@ -121,6 +123,7 @@ fun HomeScreen(
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
     openSettingsScreen: () -> Unit = {},
+    openStatsScreen: () -> Unit = {},
     getPomodoroWindow: (Int) -> PomodoroWindow? = { null }
 ) {
     Scaffold(
@@ -134,6 +137,12 @@ fun HomeScreen(
                     )
                 },
                 actions = {
+                    IconButton(onClick = openStatsScreen) {
+                        Icon(
+                            painterResource(R.drawable.outlined_bar_chart),
+                            contentDescription = stringResource(R.string.statistics)
+                        )
+                    }
                     IconButton(onClick = openSettingsScreen) {
                         Icon(
                             painterResource(R.drawable.outlined_settings),

@@ -28,8 +28,7 @@
     <string name="active">Active</string>
     <string name="schedule">"Schedule "</string>
     <string name="app_blocker_service_description">Zenwell uses this service to know which app you are using and show a screen to cure your phone addiction.</string>
-    <string name="accessibility_service_permission">Accessibility service for Zenwell</string>
-    <string name="accessibility_service_permission_explanation">" not enabled. The app would not be able to know which apps are you currently running."</string>
+    <string name="accessibility_service_permission">&lt;b&gt;Accessibility service for Zenwell&lt;/b&gt; not enabled. The app would not be able to know which apps are you currently running.</string>
     <string name="timer_duration">"Timer duration"</string>
     <string name="seconds">seconds</string>
     <string name="minutes">minutes</string>
@@ -41,19 +40,11 @@
     <string name="exhale">Exhale</string>
     <string name="number_of_breathing_cycles">Number of breathing cycles</string>
     <string name="breathing_cycle_duration">Breathing cycle duration</string>
-    <string name="sunday_abbr">S</string>
-    <string name="monday_abbr">M</string>
-    <string name="tuesday_abbr">T</string>
-    <string name="wednesday_abbr">W</string>
-    <string name="thursday_abbr">T</string>
-    <string name="friday_abbr">F</string>
-    <string name="saturday_abbr">S</string>
     <string name="choose_week_days">Active Weekdays</string>
     <string name="notify_before_closing">"Notify before blocking again"</string>
     <string name="block_notification_description">"Send a notification before blocking the app again."</string>
     <string name="block_notification_message">" would soon block "</string>
-    <string name="notification_permission">Notifications for Zenwell</string>
-    <string name="notification_permission_explanation">" not enabled. Some features may not work."</string>
+    <string name="notification_permission">&lt;b&gt;Notifications for Zenwell&lt;/b&gt; not enabled. Some features may not work.</string>
     <string name="notification_time_invalid">Must be less than usage session duration</string>
     <string name="active_time_is_invalid">Invalid time</string>
     <string name="all">All</string>
@@ -149,4 +140,15 @@
     <string name="pomodoro_sessions_left">"Pomodoro sessions left: "</string>
     <string name="show_exit_button">Show exit button</string>
     <string name="exit">Exit</string>
+    <string name="statistics">Statistics</string>
+    <string name="usage_stats_permission">&lt;b&gt;Usage Statistics Access&lt;/b&gt; for Zenwell not enabled. It is required to monitor your app usage and display motivational statistics.</string>
+    <string name="home">Home</string>
+    <string name="hour_abbreviation">h</string>
+    <string name="minute_abbreviation">m</string>
+    <string name="hour_minute_abbr">%1$dh %2$dmin</string>
+    <string name="positive_motivation">reclaimed yesterday than past week. That\'s a huge win!</string>
+    <string name="negative_motivation">wasted being distracted yesterday!! Today is a new chance to unplug early.</string>
+    <string name="all_apps">All apps</string>
+    <string name="blocked_apps_only">Blocked apps only</string>
+    <string name="bar_graph_for">"Bar graph for "</string>
 </resources>

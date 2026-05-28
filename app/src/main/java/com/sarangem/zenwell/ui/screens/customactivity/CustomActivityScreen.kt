@@ -44,7 +44,7 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.PackageInfo
+import com.sarangem.zenwell.utils.MyPackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,7 +57,7 @@ fun CustomActivityScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    var installedAppList by remember { mutableStateOf<List<PackageInfo>>(listOf()) }
+    var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO){
             installedAppList = getInstalledApps(context).sortedBy { it.appName.lowercase() }
@@ -81,7 +81,7 @@ fun CustomActivityScreen(
 fun CustomActivityScreen(
     modifier: Modifier = Modifier,
     goBack: () -> Unit = {},
-    installedAppList: List<PackageInfo> = listOf(),
+    installedAppList: List<MyPackageInfo> = listOf(),
     uiState: Map<Int, CustomActivityUiState>,
     updateUiState: (Int, CustomActivityUiState) -> Unit = {_, _ ->},
     onSave: (Int, CustomActivityUiState) -> Unit = {_, _ ->},
@@ -183,7 +183,7 @@ fun CustomActivityScreenPreview() {
                 2 to CustomActivityUiState("insta", "reels", "Instagram Reels")
             ),
             installedAppList = listOf(
-                PackageInfo("youtube", "youtube", Color.Red.toArgb().toDrawable())
+                MyPackageInfo("youtube", "youtube", Color.Red.toArgb().toDrawable())
             )
         )
     }

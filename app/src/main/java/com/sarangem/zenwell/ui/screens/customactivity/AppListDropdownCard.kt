@@ -29,14 +29,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.PackageInfo
+import com.sarangem.zenwell.utils.MyPackageInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListDropdownCard(
     currentApp: String,
     onCurrentAppChange: (String) -> Unit,
-    installedAppsList: List<PackageInfo>,
+    installedAppsList: List<MyPackageInfo>,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val currentApp = installedAppsList.firstOrNull { it.packageName == currentApp }

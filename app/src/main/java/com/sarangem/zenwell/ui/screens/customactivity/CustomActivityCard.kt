@@ -23,13 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.PackageInfo
+import com.sarangem.zenwell.utils.MyPackageInfo
 
 @Composable
 fun CustomActivityCard(
     modifier: Modifier,
     appName: CustomActivityUiState,
-    installedAppsList: List<PackageInfo>,
+    installedAppsList: List<MyPackageInfo>,
     updateAppNames: (CustomActivityUiState) -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit

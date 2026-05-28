@@ -18,20 +18,32 @@ import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
+import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 
 @Composable
 fun SelectWeekDays(
     weekDays: List<Int>,
     updateValue: (List<Int>) -> Unit = {}
 ) {
-    val daysList = getWeekDays()
+    val locale = LocalLocale.current.platformLocale
+    val daysList = remember {
+        val calendar = Calendar.getInstance(locale)
+        val firstDay = calendar.firstDayOfWeek
+        val dateFormat = SimpleDateFormat("EEEEE", locale)
+        List(7) { index ->
+            val dayOfWeek = ((firstDay - 1 + index) % 7) + 1
+            calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek)
+            dayOfWeek to dateFormat.format(calendar.time)
+        }
+    }
     val isExpandedWidth = currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
 
     DetailsCard {
@@ -69,7 +81,7 @@ fun SelectWeekDays(
 @Composable
 fun WeekDayButtonGroup(
     modifier: Modifier = Modifier,
-    daysList: List<Pair<Int, Int>>,
+    daysList: List<Pair<Int, String>>,
     weekDays: List<Int>,
     updateValue: (List<Int>) -> Unit
 ) {
@@ -107,29 +119,10 @@ fun WeekDayButtonGroup(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = stringResource(abbr),
+                    text = abbr,
                     style = MaterialTheme.typography.labelLarge,
                 )
             }
         }
     }
-}
-
-fun getWeekDays(): List<Pair<Int, Int>> {
-    val calendar = Calendar.getInstance(Locale.getDefault())
-    val firstDay = calendar.firstDayOfWeek
-
-    val daysList = listOf(
-        Calendar.SUNDAY to R.string.sunday_abbr,
-        Calendar.MONDAY to R.string.monday_abbr,
-        Calendar.TUESDAY to R.string.tuesday_abbr,
-        Calendar.WEDNESDAY to R.string.wednesday_abbr,
-        Calendar.THURSDAY to R.string.thursday_abbr,
-        Calendar.FRIDAY to R.string.friday_abbr,
-        Calendar.SATURDAY to R.string.saturday_abbr,
-    )
-
-    val startIndex = daysList.indexOfFirst { it.first == firstDay }
-    return if (startIndex == -1) daysList
-    else daysList.drop(startIndex) + daysList.take(startIndex)
 }

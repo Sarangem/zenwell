@@ -51,6 +51,7 @@ import com.sarangem.zenwell.ui.screens.edit.EditViewModel
 import com.sarangem.zenwell.ui.screens.home.HomeScreen
 import com.sarangem.zenwell.ui.screens.pomodoro.FocusScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
+import com.sarangem.zenwell.ui.screens.stats.StatsScreen
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -90,7 +91,8 @@ fun ZenwellAppScreen() {
                         backStack.add(EditPage)
                     },
                     openFocusScreen = { backStack.add(PomodoroPage(it)) },
-                    openSettingsScreen = { backStack.add(SettingsPage) }
+                    openSettingsScreen = { backStack.add(SettingsPage) },
+                    openStatsScreen = { backStack.add(StatsPage) }
                 )
             }
 
@@ -139,6 +141,13 @@ fun ZenwellAppScreen() {
                     goBack = { backStack.removeLastOrNull() }
                 )
             }
+
+            entry<StatsPage> {
+                StatsScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    goBack = { backStack.removeLastOrNull() }
+                )
+            }
         }
     )
 }
@@ -149,6 +158,7 @@ fun ZenwellAppScreen() {
 @Serializable data class PomodoroPage(val schedule: Schedules) : NavKey
 @Serializable data object SettingsPage : NavKey
 @Serializable data object CustomActivityPage : NavKey
+@Serializable data object StatsPage: NavKey
 
 @Composable
 fun <T : Any> rememberListDetailSceneStrategy(): ListDetailSceneStrategy<T> {

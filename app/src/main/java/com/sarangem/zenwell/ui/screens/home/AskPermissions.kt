@@ -6,6 +6,7 @@
 package com.sarangem.zenwell.ui.screens.home
 
 import android.os.Build
+import androidx.annotation.StringRes
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,10 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.fromHtml
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
 
@@ -35,8 +35,7 @@ fun AccessibilityPermissionCard(
 ){
     PermissionRequestCard(
         modifier = modifier.padding(MaterialTheme.sizing.small),
-        permissionName = stringResource(R.string.accessibility_service_permission),
-        permissionExplanation = stringResource(R.string.accessibility_service_permission_explanation),
+        name = R.string.accessibility_service_permission,
         onGrantClick = recheckPermission
     )
 }
@@ -49,8 +48,7 @@ fun NotificationPermissionCard(
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         PermissionRequestCard(
             modifier = modifier.padding(MaterialTheme.sizing.small),
-            permissionName = stringResource(R.string.notification_permission),
-            permissionExplanation = stringResource(R.string.notification_permission_explanation),
+            name = R.string.notification_permission,
             cardColor = if (isSystemInDarkTheme()) Color(0xFF7C5900) else Color(0xFFF9DEBB),
             onGrantClick = onGrantClick
         )
@@ -61,8 +59,7 @@ fun NotificationPermissionCard(
 fun PermissionRequestCard(
     modifier: Modifier = Modifier,
     onGrantClick: () -> Unit = {},
-    permissionName: String = "",
-    permissionExplanation: String = "",
+    @StringRes name: Int,
     cardColor: Color = MaterialTheme.colorScheme.errorContainer,
     textColor: Color = MaterialTheme.colorScheme.onErrorContainer
 ) {
@@ -72,12 +69,7 @@ fun PermissionRequestCard(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(permissionName)
-                }
-                append(permissionExplanation)
-            },
+            text = AnnotatedString.fromHtml(stringResource(name)),
             style = MaterialTheme.typography.titleMedium,
             color = textColor,
             modifier = Modifier.padding(MaterialTheme.sizing.small)

@@ -71,27 +71,26 @@ fun MathProblemScreen(
 ) {
     var showOpen by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+    val question = remember {
+        generateMathProblem(
+            schedule.mathEquationNumOperands,
+            schedule.mathEquationMinNumber,
+            schedule.mathEquationMaxNumber,
+            schedule.mathEquationMinNumberInMultiplication,
+            schedule.mathEquationMaxNumberInMultiplication,
+            schedule.allowedMathOperators,
+            schedule.mathEquationShowParentheses,
+            schedule.mathEquationAllowNegatives
+        )
+    }
 
     OverlayScaffold(
         mainPane = { modifier ->
-            MathEquationCard(
-                modifier = modifier,
-                question = generateMathProblem(
-                    schedule.mathEquationNumOperands,
-                    schedule.mathEquationMinNumber,
-                    schedule.mathEquationMaxNumber,
-                    schedule.mathEquationMinNumberInMultiplication,
-                    schedule.mathEquationMaxNumberInMultiplication,
-                    schedule.allowedMathOperators,
-                    schedule.mathEquationShowParentheses,
-                    schedule.mathEquationAllowNegatives
-                ),
-                onCorrectAnswer = {
-                    focusManager.clearFocus()
-                    if(!schedule.requireManualUnlock) onTimerEnd()
-                    showOpen = true
-                }
-            )
+            MathEquationCard(modifier, question) {
+                focusManager.clearFocus()
+                if(!schedule.requireManualUnlock) onTimerEnd()
+                showOpen = true
+            }
         },
         mainPaneRowWeight = 0.6f,
         mainPaneColumnWeight = 0.7f,
