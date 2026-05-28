@@ -72,8 +72,7 @@ fun OverlayScaffold(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(bottom = if(showExit) MaterialTheme.sizing.floatingBar else 0.dp),
+                .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
             content()
@@ -109,6 +108,7 @@ fun OverlayScaffold(
     val isCompactHeight =
         !windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
     val showRowLayout = isExpandedWidth || isCompactHeight
+    val fabPadding = Modifier.padding(bottom = if(showExit) MaterialTheme.sizing.floatingBar else 0.dp)
 
     OverlayScaffold(
         modifier = modifier,
@@ -123,7 +123,7 @@ fun OverlayScaffold(
                             .weight(mainPaneRowWeight)
                             .padding(MaterialTheme.sizing.small)
                     )
-                    supportingPane(Modifier.weight(1f - mainPaneRowWeight))
+                    supportingPane(fabPadding.weight(1f - mainPaneRowWeight))
                 }
             } else {
                 Column(
@@ -135,7 +135,7 @@ fun OverlayScaffold(
                             .weight(mainPaneColumnWeight)
                             .padding(MaterialTheme.sizing.small)
                     )
-                    supportingPane(Modifier.weight(1f - mainPaneColumnWeight))
+                    supportingPane(fabPadding.weight(1f - mainPaneColumnWeight))
                 }
             }
         },
