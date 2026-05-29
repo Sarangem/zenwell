@@ -53,6 +53,7 @@ import kotlinx.coroutines.launch
 fun CustomActivityScreen(
     modifier: Modifier = Modifier,
     viewModel: CustomActivityViewModel,
+    showTopAppBar: Boolean = true,
     goBack: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -67,6 +68,7 @@ fun CustomActivityScreen(
     CustomActivityScreen(
         modifier,
         goBack,
+        showTopAppBar,
         installedAppList,
         uiState,
         viewModel::updateUiState,
@@ -81,6 +83,7 @@ fun CustomActivityScreen(
 fun CustomActivityScreen(
     modifier: Modifier = Modifier,
     goBack: () -> Unit = {},
+    showTopAppBar: Boolean = true,
     installedAppList: List<MyPackageInfo> = listOf(),
     uiState: Map<Int, CustomActivityUiState>,
     updateUiState: (Int, CustomActivityUiState) -> Unit = {_, _ ->},
@@ -105,25 +108,27 @@ fun CustomActivityScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.edit_custom_views)) },
-                navigationIcon = {
-                    IconButton(onClick = goBack) {
-                        Icon(
-                            painterResource(R.drawable.filled_arrow_back),
-                            contentDescription = stringResource(R.string.go_back)
-                        )
+            if(showTopAppBar){
+                TopAppBar(
+                    title = { Text(stringResource(R.string.edit_custom_views)) },
+                    navigationIcon = {
+                        IconButton(onClick = goBack) {
+                            Icon(
+                                painterResource(R.drawable.filled_arrow_back),
+                                contentDescription = stringResource(R.string.go_back)
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { showResetDialog = true }) {
+                            Icon(
+                                painterResource(R.drawable.filled_history),
+                                contentDescription = stringResource(R.string.restore_custom_views)
+                            )
+                        }
                     }
-                },
-                actions = {
-                    IconButton(onClick = { showResetDialog = true }) {
-                        Icon(
-                            painterResource(R.drawable.filled_history),
-                            contentDescription = stringResource(R.string.restore_custom_views)
-                        )
-                    }
-                }
-            )
+                )
+            }
         },
         floatingActionButton = {
             SmallExtendedFloatingActionButton (

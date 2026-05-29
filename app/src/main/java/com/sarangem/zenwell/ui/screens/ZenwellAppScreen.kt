@@ -6,6 +6,7 @@
 package com.sarangem.zenwell.ui.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -33,6 +34,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.contains
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.get
 import androidx.navigation3.runtime.metadata
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.scene.Scene
@@ -90,11 +92,11 @@ fun ZenwellAppScreen() {
                             slideOutVertically(targetOffsetY = { it }, animationSpec = tween())
                     else
                         slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween()) togetherWith
-                                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween())
+                                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween())
                 },
                 entryProvider = entryProvider {
                     entry<HomePage>(
-                        metadata = ListDetailScene.listPane()
+                        metadata = ListDetailScene.listPane(true)
                     ) {
                         HomeScreen(
                             modifier = Modifier.fillMaxSize(),
@@ -110,7 +112,7 @@ fun ZenwellAppScreen() {
                     }
 
                     entry<EditPage>(
-                        metadata = ListDetailScene.detailPane() + NavDisplay.transitionSpec {
+                        metadata = ListDetailScene.detailPane(true) + NavDisplay.transitionSpec {
                             fadeIn(tween()) togetherWith fadeOut(tween())
                         } + NavDisplay.popTransitionSpec {
                             fadeIn(tween()) togetherWith fadeOut(tween())
@@ -138,10 +140,13 @@ fun ZenwellAppScreen() {
                         )
                     }
 
-                    entry<SettingsPage> {
+                    entry<SettingsPage>(
+                        metadata = ListDetailScene.listPane(false)
+                    ) {
                         SettingsScreen(
                             modifier = Modifier.fillMaxSize(),
                             openCustomActivityScreen = {
+                                backStack.removeAll { it is CustomActivityPage }
                                 customActivityViewModel.initialize()
                                 backStack.add(CustomActivityPage)
                             }
@@ -149,7 +154,7 @@ fun ZenwellAppScreen() {
                     }
 
                     entry<CustomActivityPage>(
-                        metadata = NavDisplay.transitionSpec {
+                        metadata = ListDetailScene.detailPane(false) + NavDisplay.transitionSpec {
                             fadeIn(tween()) togetherWith fadeOut(tween())
                         } + NavDisplay.popTransitionSpec {
                             fadeIn(tween()) togetherWith fadeOut(tween())
@@ -158,21 +163,17 @@ fun ZenwellAppScreen() {
                         CustomActivityScreen(
                             modifier = Modifier.fillMaxSize(),
                             viewModel = customActivityViewModel,
+                            showTopAppBar = LocalBackButtonVisibility.current,
                             goBack = { backStack.removeLastOrNull() }
                         )
                     }
 
-                    entry<StatsPage> {
-                        StatsScreen(
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+                    entry<StatsPage> { StatsScreen(Modifier.fillMaxSize()) }
                 }
             )
         }
     }
 }
-
 
 @Serializable data object HomePage : NavKey
 @Serializable data object EditPage : NavKey
@@ -191,13 +192,15 @@ class ListDetailSceneStrategy<T : Any>(val windowSizeClass: WindowSizeClass) : S
         if (!windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) return null
         val topEntry = entries.lastOrNull() ?: return null
         val listEntry = entries.findLast { it.metadata.contains(ListDetailScene.ListKey) } ?: return null
+        val isHome = listEntry.metadata.get<Boolean>(ListDetailScene.ListKey) == true
         val isDetail = topEntry.metadata.contains(ListDetailScene.DetailKey)
-        if (!isDetail &&  topEntry !== listEntry) return null
+        if (!isDetail && topEntry !== listEntry) return null
         return ListDetailScene(
             key = listEntry.contentKey,
             previousEntries = if (isDetail) entries.dropLast(1) else entries.takeWhile { it !== listEntry },
             listEntry = listEntry,
-            detailEntry = topEntry.takeIf { isDetail }
+            detailEntry = topEntry.takeIf { isDetail },
+            isHome = isHome
         )
     }
 }
@@ -205,19 +208,23 @@ data class ListDetailScene<T : Any>(
     override val key: Any,
     override val previousEntries: List<NavEntry<T>>,
     val listEntry: NavEntry<T>,
-    val detailEntry: NavEntry<T>?
+    val detailEntry: NavEntry<T>?,
+    val isHome: Boolean
 ) : Scene<T> {
     override val entries: List<NavEntry<T>> = listOfNotNull(listEntry, detailEntry)
     override val content: @Composable (() -> Unit) = {
         Row(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.weight(0.4f)) {
-                listEntry.Content()
-            }
-            CompositionLocalProvider(LocalBackButtonVisibility provides false) {
-                Column(modifier = Modifier.weight(0.6f)) {
+            Column(modifier =
+                Modifier
+                    .weight(0.4f)
+                    .animateContentSize()
+            ) { listEntry.Content() }
+            if(isHome || detailEntry != null) {
+                CompositionLocalProvider(LocalBackButtonVisibility provides false) {
                     AnimatedContent(
+                        modifier = Modifier.weight(0.6f),
                         targetState = detailEntry,
-                        transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
+                        transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) }
                     ) { target ->
                         if (target != null) target.Content() else EditScreenPlaceholder(Modifier.fillMaxSize())
                     }
@@ -226,8 +233,8 @@ data class ListDetailScene<T : Any>(
         }
     }
     companion object {
-        fun listPane() = metadata { put(ListKey, true) }
-        fun detailPane() = metadata { put(DetailKey, true) }
+        fun listPane(isHome: Boolean) = metadata { put(ListKey, isHome) }
+        fun detailPane(isHome: Boolean) = metadata { put(DetailKey, isHome) }
     }
     object ListKey : NavMetadataKey<Boolean>
     object DetailKey : NavMetadataKey<Boolean>
