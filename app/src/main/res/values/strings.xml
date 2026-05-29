@@ -151,4 +151,5 @@
     <string name="all_apps">All apps</string>
     <string name="blocked_apps_only">Blocked apps only</string>
     <string name="bar_graph_for">"Bar graph for "</string>
+    <string name="stats">Stats</string>
 </resources>

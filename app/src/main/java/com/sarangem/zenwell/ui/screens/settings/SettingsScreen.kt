@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +41,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.GITHUB_REPO_ISSUES_URL
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
@@ -49,8 +52,7 @@ import com.sarangem.zenwell.ui.theme.sizing
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    openCustomActivityScreen: () -> Unit = {},
-    goBack: () -> Unit = {}
+    openCustomActivityScreen: () -> Unit = {}
 ){
     val viewModel: SettingsViewModel = hiltViewModel()
     val context = LocalContext.current
@@ -68,7 +70,7 @@ fun SettingsScreen(
         viewModel.restoreBackup(uri, context)
     }
 
-    SettingsScreen(modifier, openCustomActivityScreen, goBack,
+    SettingsScreen(modifier, openCustomActivityScreen,
         createBackup = { createBackup.launch("zenwell_backup.json") },
         restoreBackup = { restoreBackup.launch(arrayOf("application/json")) }
     )
@@ -79,28 +81,17 @@ fun SettingsScreen(
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     openCustomActivityScreen: () -> Unit = {},
-    goBack: () -> Unit = {},
     createBackup: () -> Unit = {},
     restoreBackup: () -> Unit = {}
 ) {
     val uriHandler = LocalUriHandler.current
     var showCrashLog by remember { mutableStateOf(false) }
-    if (showCrashLog) {
-        CrashLogDialog { showCrashLog = false }
-    }
+    if (showCrashLog) CrashLogDialog { showCrashLog = false }
 
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = goBack) {
-                        Icon(
-                            painterResource(R.drawable.filled_arrow_back),
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                },
                 title = {
                     Text(
                         text = stringResource(R.string.settings),
@@ -117,7 +108,8 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(horizontal = MaterialTheme.sizing.small)
-                .padding(bottom = MaterialTheme.sizing.medium),
+                .padding(bottom = MaterialTheme.sizing.medium)
+                .padding(bottom = if (!currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) MaterialTheme.sizing.floatingBar else 0.dp),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.medium)
         ) {
             Column {

@@ -6,20 +6,20 @@
 package com.sarangem.zenwell.ui.screens
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -27,7 +27,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -49,6 +48,7 @@ import com.sarangem.zenwell.ui.screens.edit.EditScreen
 import com.sarangem.zenwell.ui.screens.edit.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.screens.edit.EditViewModel
 import com.sarangem.zenwell.ui.screens.home.HomeScreen
+import com.sarangem.zenwell.ui.screens.home.HomeViewModel
 import com.sarangem.zenwell.ui.screens.pomodoro.FocusScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
 import com.sarangem.zenwell.ui.screens.stats.StatsScreen
@@ -57,99 +57,120 @@ import kotlinx.serialization.Serializable
 @Composable
 fun ZenwellAppScreen() {
     val backStack = rememberNavBackStack(HomePage)
+    val homeViewModel: HomeViewModel = hiltViewModel()
     val editViewModel: EditViewModel = hiltViewModel()
     val customActivityViewModel: CustomActivityViewModel = hiltViewModel()
 
-    NavDisplay(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        backStack = backStack,
-        sceneStrategies = listOf( rememberListDetailSceneStrategy()),
-        transitionSpec = {
-            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween()) togetherWith
-                    ExitTransition.KeepUntilTransitionsFinished
-        },
-        popTransitionSpec = {
-            EnterTransition.None togetherWith
-                    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween())
-        },
-        predictivePopTransitionSpec = {
-            EnterTransition.None togetherWith
-                    scaleOut(targetScale = 0.7f, transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 0.5f))
-        },
-        entryProvider = entryProvider {
-            entry<HomePage>(
-                metadata = ListDetailScene.listPane()
-            ) {
-                HomeScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    scheduleClicked = editViewModel.uiState.collectAsState().value.schedule.id,
-                    openEditScreen = { schedules ->
-                        backStack.removeAll { it is EditPage }
-                        editViewModel.initialize(schedules)
-                        backStack.add(EditPage)
-                    },
-                    openFocusScreen = { backStack.add(PomodoroPage(it)) },
-                    openSettingsScreen = { backStack.add(SettingsPage) },
-                    openStatsScreen = { backStack.add(StatsPage) }
-                )
-            }
-
-            entry<EditPage>(
-                metadata = ListDetailScene.detailPane()
-            ) {
-                EditScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    viewModel = editViewModel,
-                    showTopAppBar = LocalBackButtonVisibility.current,
-                    goBack = { backStack.removeLastOrNull() }
-                )
-            }
-
-            entry<PomodoroPage> { key ->
-                FocusScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    schedule = key.schedule,
-                    goBack = { backStack.removeLastOrNull() }
-                )
-            }
-
-            entry<SettingsPage>(
-                metadata = NavDisplay.transitionSpec {
-                    slideInHorizontally(initialOffsetX = { it }, animationSpec = tween()) togetherWith
-                            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween())
-                } + NavDisplay.popTransitionSpec {
-                    slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween()) togetherWith
-                            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween())
-                }
-            ) {
-                SettingsScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    openCustomActivityScreen = {
-                        customActivityViewModel.initialize()
-                        backStack.add(CustomActivityPage)
-                    },
-                    goBack = { backStack.removeLastOrNull() }
-                )
-            }
-
-            entry<CustomActivityPage> {
-                CustomActivityScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    viewModel = customActivityViewModel,
-                    goBack = { backStack.removeLastOrNull() }
-                )
-            }
-
-            entry<StatsPage> {
-                StatsScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    goBack = { backStack.removeLastOrNull() }
-                )
-            }
+    val isExpanded = currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {
+            if(!isExpanded) AppNavigationFAB(backStack = backStack, addNewSchedule = homeViewModel::addNewSchedule)
         }
-    )
+    ) { padding -> padding
+        Row(Modifier.fillMaxSize()) {
+            if(isExpanded) AppNavigationRail(backStack = backStack)
+            NavDisplay(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface),
+                backStack = backStack,
+                sceneStrategies = listOf( rememberListDetailSceneStrategy()),
+                transitionSpec = {
+                    if (isExpanded)
+                        slideInVertically(initialOffsetY = { it }, animationSpec = tween()) togetherWith
+                                slideOutVertically(targetOffsetY = { -it }, animationSpec = tween())
+                    else
+                        slideInHorizontally(initialOffsetX = { it }, animationSpec = tween()) togetherWith
+                            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween())
+                },
+                popTransitionSpec = {
+                    if (isExpanded)
+                        slideInVertically(initialOffsetY = { -it }, animationSpec = tween()) togetherWith
+                            slideOutVertically(targetOffsetY = { it }, animationSpec = tween())
+                    else
+                        slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween()) togetherWith
+                                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween())
+                },
+                entryProvider = entryProvider {
+                    entry<HomePage>(
+                        metadata = ListDetailScene.listPane()
+                    ) {
+                        HomeScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            viewModel = homeViewModel,
+                            scheduleClicked = editViewModel.uiState.collectAsState().value.schedule.id,
+                            openEditScreen = { schedules ->
+                                backStack.removeAll { it is EditPage }
+                                editViewModel.initialize(schedules)
+                                backStack.add(EditPage)
+                            },
+                            openFocusScreen = { backStack.add(PomodoroPage(it)) }
+                        )
+                    }
+
+                    entry<EditPage>(
+                        metadata = ListDetailScene.detailPane() + NavDisplay.transitionSpec {
+                            fadeIn(tween()) togetherWith fadeOut(tween())
+                        } + NavDisplay.popTransitionSpec {
+                            fadeIn(tween()) togetherWith fadeOut(tween())
+                        }
+                    ) {
+                        EditScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            viewModel = editViewModel,
+                            showTopAppBar = LocalBackButtonVisibility.current,
+                            goBack = { backStack.removeLastOrNull() }
+                        )
+                    }
+
+                    entry<PomodoroPage>(
+                        metadata = NavDisplay.transitionSpec {
+                            fadeIn(tween()) togetherWith fadeOut(tween())
+                        } + NavDisplay.popTransitionSpec {
+                            fadeIn(tween()) togetherWith fadeOut(tween())
+                        }
+                    ) { key ->
+                        FocusScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            schedule = key.schedule,
+                            goBack = { backStack.removeLastOrNull() }
+                        )
+                    }
+
+                    entry<SettingsPage> {
+                        SettingsScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            openCustomActivityScreen = {
+                                customActivityViewModel.initialize()
+                                backStack.add(CustomActivityPage)
+                            }
+                        )
+                    }
+
+                    entry<CustomActivityPage>(
+                        metadata = NavDisplay.transitionSpec {
+                            fadeIn(tween()) togetherWith fadeOut(tween())
+                        } + NavDisplay.popTransitionSpec {
+                            fadeIn(tween()) togetherWith fadeOut(tween())
+                        }
+                    ) {
+                        CustomActivityScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            viewModel = customActivityViewModel,
+                            goBack = { backStack.removeLastOrNull() }
+                        )
+                    }
+
+                    entry<StatsPage> {
+                        StatsScreen(
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+            )
+        }
+    }
 }
 
 
