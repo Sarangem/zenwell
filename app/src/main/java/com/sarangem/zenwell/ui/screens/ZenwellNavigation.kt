@@ -9,7 +9,6 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,9 +35,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.home.NewScheduleFAB
@@ -53,30 +54,31 @@ fun AppNavigationRail(
     NavigationRail(modifier.fillMaxHeight()) {
         NavigationRailItem(
             selected = last == HomePage || last == EditPage,
-            onClick = { backStack.add(HomePage) },
+            onClick = { HomePage.addToStack(backStack) },
             icon = { Icon(painterResource(R.drawable.filled_home), contentDescription = null) },
             label = { Text(stringResource(R.string.home)) }
         )
         NavigationRailItem(
             selected = last == StatsPage,
-            onClick = { backStack.add(StatsPage) },
+            onClick = { StatsPage.addToStack(backStack) },
             icon = { Icon(painterResource(R.drawable.outlined_bar_chart), contentDescription = null) },
             label = { Text(stringResource(R.string.stats)) }
         )
         NavigationRailItem(
             selected = last == SettingsPage || last == CustomActivityPage,
-            onClick = { backStack.add(SettingsPage) },
+            onClick = { SettingsPage.addToStack(backStack) },
             icon = { Icon(painterResource(R.drawable.outlined_settings), contentDescription = null) },
             label = { Text(stringResource(R.string.settings)) }
         )
     }
 }
 
+@Preview(showBackground = true)
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppNavigationFAB(
     modifier: Modifier = Modifier,
-    backStack: NavBackStack<NavKey>,
+    backStack: NavBackStack<NavKey> = rememberNavBackStack(HomePage),
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() }
 ){
     val last = backStack.last()
@@ -99,7 +101,7 @@ fun AppNavigationFAB(
                 backStack.last() == HomePage,
                 modifier = Modifier.align(Alignment.BottomEnd)
             ) {
-                NewScheduleFAB(addNewSchedule = addNewSchedule) { backStack.add(EditPage) }
+                NewScheduleFAB(addNewSchedule = addNewSchedule) { EditPage.addToStack(backStack) }
             }
         }
     }
@@ -116,10 +118,9 @@ fun BottomBarIcon(
     val isSelected = backStack.last() == navKey
     Row(
         modifier = Modifier
-            .animateContentSize()
             .clip(FloatingToolbarDefaults.ContainerShape)
             .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Unspecified)
-            .clickable { if (!isSelected) backStack.add(navKey) }
+            .clickable { if (!isSelected) navKey.addToStack(backStack) }
             .padding(MaterialTheme.sizing.medium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -139,4 +140,12 @@ fun BottomBarIcon(
             )
         }
     }
+}
+
+fun NavKey.addToStack(backStack : NavBackStack<NavKey>) {
+    backStack.removeAll {
+        if (this == HomePage) true
+        else it::class == this::class
+    }
+    backStack.add(this)
 }

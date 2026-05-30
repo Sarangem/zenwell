@@ -10,10 +10,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -77,23 +73,9 @@ fun ZenwellAppScreen() {
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface),
                 backStack = backStack,
-                sceneStrategies = listOf( rememberListDetailSceneStrategy()),
-                transitionSpec = {
-                    if (isExpanded)
-                        slideInVertically(initialOffsetY = { it }, animationSpec = tween()) togetherWith
-                                slideOutVertically(targetOffsetY = { -it }, animationSpec = tween())
-                    else
-                        slideInHorizontally(initialOffsetX = { it }, animationSpec = tween()) togetherWith
-                            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween())
-                },
-                popTransitionSpec = {
-                    if (isExpanded)
-                        slideInVertically(initialOffsetY = { -it }, animationSpec = tween()) togetherWith
-                            slideOutVertically(targetOffsetY = { it }, animationSpec = tween())
-                    else
-                        slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween()) togetherWith
-                                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween())
-                },
+                sceneStrategies = listOf(rememberListDetailSceneStrategy()),
+                transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
+                popTransitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
                 entryProvider = entryProvider {
                     entry<HomePage>(
                         metadata = ListDetailScene.listPane(true)
@@ -103,20 +85,15 @@ fun ZenwellAppScreen() {
                             viewModel = homeViewModel,
                             scheduleClicked = editViewModel.uiState.collectAsState().value.schedule.id,
                             openEditScreen = { schedules ->
-                                backStack.removeAll { it is EditPage }
+                                EditPage.addToStack(backStack)
                                 editViewModel.initialize(schedules)
-                                backStack.add(EditPage)
                             },
-                            openFocusScreen = { backStack.add(PomodoroPage(it)) }
+                            openFocusScreen = { PomodoroPage(it).addToStack(backStack) }
                         )
                     }
 
                     entry<EditPage>(
-                        metadata = ListDetailScene.detailPane(true) + NavDisplay.transitionSpec {
-                            fadeIn(tween()) togetherWith fadeOut(tween())
-                        } + NavDisplay.popTransitionSpec {
-                            fadeIn(tween()) togetherWith fadeOut(tween())
-                        }
+                        metadata = ListDetailScene.detailPane(true)
                     ) {
                         EditScreen(
                             modifier = Modifier.fillMaxSize(),
@@ -126,13 +103,7 @@ fun ZenwellAppScreen() {
                         )
                     }
 
-                    entry<PomodoroPage>(
-                        metadata = NavDisplay.transitionSpec {
-                            fadeIn(tween()) togetherWith fadeOut(tween())
-                        } + NavDisplay.popTransitionSpec {
-                            fadeIn(tween()) togetherWith fadeOut(tween())
-                        }
-                    ) { key ->
+                    entry<PomodoroPage> { key ->
                         FocusScreen(
                             modifier = Modifier.fillMaxSize(),
                             schedule = key.schedule,
@@ -140,25 +111,26 @@ fun ZenwellAppScreen() {
                         )
                     }
 
+                    entry<StatsPage>(
+                        metadata = ListDetailScene.listPane(false) +
+                                NavDisplay.predictivePopTransitionSpec { fadeIn(tween()) togetherWith fadeOut(tween()) }
+                    ) { StatsScreen(Modifier.fillMaxSize()) }
+
                     entry<SettingsPage>(
-                        metadata = ListDetailScene.listPane(false)
+                        metadata = ListDetailScene.listPane(false) +
+                                NavDisplay.predictivePopTransitionSpec { fadeIn(tween()) togetherWith fadeOut(tween()) }
                     ) {
                         SettingsScreen(
                             modifier = Modifier.fillMaxSize(),
                             openCustomActivityScreen = {
-                                backStack.removeAll { it is CustomActivityPage }
+                                CustomActivityPage.addToStack(backStack)
                                 customActivityViewModel.initialize()
-                                backStack.add(CustomActivityPage)
                             }
                         )
                     }
 
                     entry<CustomActivityPage>(
-                        metadata = ListDetailScene.detailPane(false) + NavDisplay.transitionSpec {
-                            fadeIn(tween()) togetherWith fadeOut(tween())
-                        } + NavDisplay.popTransitionSpec {
-                            fadeIn(tween()) togetherWith fadeOut(tween())
-                        }
+                        metadata = ListDetailScene.detailPane(false)
                     ) {
                         CustomActivityScreen(
                             modifier = Modifier.fillMaxSize(),
@@ -167,8 +139,6 @@ fun ZenwellAppScreen() {
                             goBack = { backStack.removeLastOrNull() }
                         )
                     }
-
-                    entry<StatsPage> { StatsScreen(Modifier.fillMaxSize()) }
                 }
             )
         }
