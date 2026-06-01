@@ -129,7 +129,7 @@ fun MotivationalCardText(
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if(isPositive) "\uD83D\uDC7C" else "\uD83E\uDDDF",
+            text = ( if(isPositive) "\uD83D\uDC7C" else "\uD83E\uDDDF" ) + "\u200B",
             fontSize = 25.sp
         )
         Text(
@@ -143,6 +143,7 @@ fun MotivationalCardText(
                     append((savedTimeInMinutes.absoluteValue / 60).toString())
                 }
                 append(stringResource(R.string.hour_abbreviation))
+                append("\u200B")
                 withStyle(
                     SpanStyle(
                         fontSize = if (isPositive) 30.sp else 25.sp,
