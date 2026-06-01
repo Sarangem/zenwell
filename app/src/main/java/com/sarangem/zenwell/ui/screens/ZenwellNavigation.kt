@@ -79,7 +79,8 @@ fun AppNavigationRail(
 fun AppNavigationFAB(
     modifier: Modifier = Modifier,
     backStack: NavBackStack<NavKey> = rememberNavBackStack(HomePage),
-    addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() }
+    addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
+    openEditScreen: (Schedules) -> Unit = {}
 ){
     val last = backStack.last()
     AnimatedVisibility(
@@ -101,7 +102,7 @@ fun AppNavigationFAB(
                 backStack.last() == HomePage,
                 modifier = Modifier.align(Alignment.BottomEnd)
             ) {
-                NewScheduleFAB(addNewSchedule = addNewSchedule) { EditPage.addToStack(backStack) }
+                NewScheduleFAB(addNewSchedule = addNewSchedule, openEditScreen = openEditScreen)
             }
         }
     }

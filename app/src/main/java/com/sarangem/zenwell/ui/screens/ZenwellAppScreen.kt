@@ -63,7 +63,14 @@ fun ZenwellAppScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
-            if(!isExpanded) AppNavigationFAB(backStack = backStack, addNewSchedule = homeViewModel::addNewSchedule)
+            if(!isExpanded) AppNavigationFAB(
+                backStack = backStack,
+                addNewSchedule = homeViewModel::addNewSchedule,
+                openEditScreen = { schedules ->
+                    EditPage.addToStack(backStack)
+                    editViewModel.initialize(schedules)
+                }
+            )
         }
     ) { padding -> padding
         Row(Modifier.fillMaxSize()) {
