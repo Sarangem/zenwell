@@ -11,6 +11,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -47,6 +48,7 @@ import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
+import androidx.core.content.edit
 
 @Composable
 fun HomeScreen(
@@ -57,6 +59,7 @@ fun HomeScreen(
     openFocusScreen: (Schedules) -> Unit = {}
 ) {
     val context = LocalContext.current
+    val activity = LocalActivity.current
     val homeUiState by viewModel.uiState.collectAsState()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.recheckPermission(context) }
     LaunchedEffect(homeUiState.schedulesList) { viewModel.recheckPermission(context) }
@@ -64,7 +67,11 @@ fun HomeScreen(
         ActivityResultContracts.RequestPermission()
     ) { viewModel.recheckPermission(context) }
     val grantNotificationPermission = {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val showRationale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && (activity?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ?: false)
+        val sharedPrefs = context.getSharedPreferences("permissions_prefs", Context.MODE_PRIVATE)
+        val hasRequested = sharedPrefs.getBoolean("has_requested_notification", false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && (showRationale || !hasRequested)) {
+            sharedPrefs.edit { putBoolean("has_requested_notification", true) }
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
             val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
