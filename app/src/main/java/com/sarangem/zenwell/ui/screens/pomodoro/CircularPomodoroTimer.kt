@@ -47,11 +47,11 @@ fun CircularPomodoroTimer(
             modifier = Modifier.fillMaxSize(),
             progress = { progress },
             stroke = Stroke(
-                width = with(LocalDensity.current) { MaterialTheme.sizing.medium.toPx() },
+                width = with(LocalDensity.current) { 20.dp.toPx() },
                 cap = StrokeCap.Round
             ),
             trackStroke = Stroke(
-                width = with(LocalDensity.current) { MaterialTheme.sizing.medium.toPx() },
+                width = with(LocalDensity.current) { 16.dp.toPx() },
                 cap = StrokeCap.Round
             ),
             amplitude = { progress ->

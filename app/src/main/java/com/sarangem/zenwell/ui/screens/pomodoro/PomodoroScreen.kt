@@ -205,7 +205,7 @@ fun FocusScreenPreview() {
                 formattedTime = "15:00",
                 isServiceRunning = true,
                 sessionsLeft = 4,
-                schedule = Schedules(title = "Schedule 1")
+                schedule = Schedules(title = "Study pomodoro")
             )
         )
     }
