@@ -49,14 +49,15 @@ class HomeViewModel @Inject constructor(
         _uiState.update { uiState }
     }
 
-    fun recheckNotificationPermission(context: Context){
+    fun recheckPermission(context: Context){
         val isEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
         val needsPermission = _uiState.value.schedulesList.any { schedule ->
             (schedule.unlockMethod != UnlockMethod.StrictBlock && schedule.notificationTimeInMinutes > 0) || schedule.isPomodoro
         }
         _uiState.update {
             it.copy(
-                showNotificationPermissionRationale = needsPermission && !isEnabled
+                showNotificationPermissionRationale = needsPermission && !isEnabled,
+                showAccessibilityPermissionRationale = AppBlockerService.instance == null
             )
         }
     }
@@ -79,6 +80,7 @@ class HomeViewModel @Inject constructor(
             title = title,
             isPomodoro = isPomodoro
         )
+        AppBlockerService.instance?.initializeRepository()
         return newSchedule
     }
 }

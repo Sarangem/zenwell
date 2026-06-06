@@ -38,6 +38,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
@@ -56,14 +58,11 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val homeUiState by viewModel.uiState.collectAsState()
-    LaunchedEffect(homeUiState.schedulesList) {
-        viewModel.recheckNotificationPermission(context)
-    }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.recheckPermission(context) }
+    LaunchedEffect(homeUiState.schedulesList) { viewModel.recheckPermission(context) }
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) {
-        viewModel.recheckNotificationPermission(context)
-    }
+    ) { viewModel.recheckPermission(context) }
     val grantNotificationPermission = {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -82,13 +81,7 @@ fun HomeScreen(
     }
     val accessibilityPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) {
-        viewModel.updateUiState(
-            homeUiState.copy(
-                showAccessibilityPermissionRationale = AppBlockerService.instance == null
-            )
-        )
-    }
+    ) { viewModel.recheckPermission(context) }
     val grantAccessibilityPermission = { accessibilityPermissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
 
     HomeScreen(

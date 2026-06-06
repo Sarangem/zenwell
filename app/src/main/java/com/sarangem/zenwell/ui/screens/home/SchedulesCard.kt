@@ -65,8 +65,7 @@ fun SchedulesCard(
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
 ) {
-    val tint =
-        if (schedule.isActive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
+    val tint = if (schedule.isActive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
     val cardColor = if (isClicked) {
         CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.25f),
@@ -175,9 +174,7 @@ fun PomodoroStartButton(
         }
     } else if (schedule.isPomodoro) {
         Text(
-            text = schedule.pomodoroWorkTimeInMinutes.toString() + " + " + schedule.pomodoroRestTimeInMinutes.toString() + " " + stringResource(
-                R.string.minutes
-            ),
+            text = schedule.pomodoroWorkTimeInMinutes.toString() + " + " + schedule.pomodoroRestTimeInMinutes.toString() + " " + stringResource(R.string.minutes),
             style = MaterialTheme.typography.labelLarge,
             color = tint,
             fontWeight = FontWeight.Bold,
