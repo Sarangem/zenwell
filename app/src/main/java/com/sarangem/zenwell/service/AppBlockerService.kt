@@ -104,17 +104,11 @@ class AppBlockerService : AccessibilityService() {
     var lastCheckedTime: Long = 0L
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
-        // only continue if major content change
+        // prevent repeated window content changed events
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                val isPaneChange =
-                    (event.contentChangeTypes and AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED != 0) ||
-                            (event.contentChangeTypes and AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED != 0)
-                if (!isPaneChange) return
-            } else {
-                val time = System.currentTimeMillis()
-                if (time < lastCheckedTime) return else lastCheckedTime = time + 2000L
-            }
+            if (event.contentChangeTypes != AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE) return
+            val time = System.currentTimeMillis()
+            if (time < lastCheckedTime) return else lastCheckedTime = time + 2000L
         }
 
         ServiceLogger.d { "There are ${windows.size} and they are $windows" }
