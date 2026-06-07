@@ -41,6 +41,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.screens.home.PermissionRequestCard
@@ -68,8 +70,8 @@ fun StatsScreen(modifier: Modifier = Modifier) {
             list.sortBy { it.appName.lowercase() }
             installedAppList = list
         }
-        viewModel.getStats(context)
     }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.getStats(context) }
 
     StatsScreen(
         modifier = modifier,
