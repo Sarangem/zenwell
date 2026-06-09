@@ -8,6 +8,7 @@ package com.sarangem.zenwell.database.repository
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.model.BackupData
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.UserPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface SchedulesRepository {
@@ -16,7 +17,9 @@ interface SchedulesRepository {
     fun getSchedulesCount(): Flow<Int>
     fun getAppNamesById(id: Int): Flow<List<AppNames>>
     fun getAllApps(): Flow<List<AppNames>>
+    fun getUserPreferences(): Flow<UserPreferences>
     fun upsertApp(appName: AppNames)
+    fun upsertUserPreferences(userPreferences: UserPreferences)
     fun deleteApp(appName: AppNames)
     suspend fun deleteSchedule(schedule: Schedules)
     suspend fun addNewSchedule(schedule: Schedules): Int

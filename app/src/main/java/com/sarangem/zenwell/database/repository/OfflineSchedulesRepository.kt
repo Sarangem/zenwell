@@ -9,10 +9,12 @@ import com.sarangem.zenwell.database.ScheduleDao
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.BlockedApps
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.UserPreferences
 import com.sarangem.zenwell.model.BackupData
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 
 class OfflineSchedulesRepository @Inject constructor(
     private val scheduleDao: ScheduleDao
@@ -23,7 +25,9 @@ class OfflineSchedulesRepository @Inject constructor(
     override fun getSchedulesCount()= scheduleDao.getSchedulesCount()
     override fun getAppNamesById(id: Int)= scheduleDao.getAppNamesById(id)
     override fun getAllApps()= scheduleDao.getAllApps()
+    override fun getUserPreferences()= scheduleDao.getUserPreferences().map { it ?: UserPreferences() }
     override fun upsertApp(appName: AppNames)= scheduleDao.upsertAppNames(appName)
+    override fun upsertUserPreferences(userPreferences: UserPreferences)= scheduleDao.upsertUserPreferences(userPreferences)
     override fun deleteApp(appName: AppNames)= scheduleDao.deleteAppNames(appName)
     override suspend fun addNewSchedule(schedule: Schedules)= scheduleDao.insertSchedule(schedule).toInt()
     override suspend fun updateSchedule(schedule: Schedules)= scheduleDao.updateSchedule(schedule)

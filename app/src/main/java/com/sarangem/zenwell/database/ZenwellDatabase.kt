@@ -16,6 +16,7 @@ import com.sarangem.zenwell.YOUTUBE_SHORTS_VIEW_ID
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.BlockedApps
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.UserPreferences
 import com.sarangem.zenwell.database.typeconverters.OperatorListConverter
 import com.sarangem.zenwell.database.typeconverters.WeekdaysListConverter
 import kotlinx.coroutines.CoroutineScope
@@ -23,11 +24,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [Schedules::class, AppNames::class, BlockedApps::class],
-    version = 16,
+    entities = [
+        Schedules::class,
+        AppNames::class,
+        BlockedApps::class,
+        UserPreferences::class
+    ],
+    version = 17,
     exportSchema = false
 )
-@TypeConverters(OperatorListConverter::class, WeekdaysListConverter::class)
+@TypeConverters(
+    OperatorListConverter::class,
+    WeekdaysListConverter::class
+)
 abstract class ZenwellDatabase : RoomDatabase() {
 
     abstract fun scheduleDao(): ScheduleDao
@@ -43,18 +52,17 @@ abstract class ZenwellDatabase : RoomDatabase() {
                     ZenwellDatabase::class.java,
                     "zenwell_database"
                 )
-                    .addCallback(ZenwellDatabaseCallback(CoroutineScope(Dispatchers.IO)))
+                    .addCallback(ZenwellDatabaseCallback())
                     .fallbackToDestructiveMigration(false)
                     .build()
                     .also { Instance = it }
             }
         }
 
-        private class ZenwellDatabaseCallback(
-            private val scope: CoroutineScope
-        ) : Callback() {
+        private class ZenwellDatabaseCallback() : Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
+                val scope = CoroutineScope(Dispatchers.IO)
                 Instance?.let { database ->
                     scope.launch {
                         database.scheduleDao().upsertAppNames(

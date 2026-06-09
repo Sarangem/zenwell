@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.UserPreferences
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.service.AppBlockerService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,10 +44,23 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(
+                userPreferences = schedulesRepository.getUserPreferences().first()
+            ) }
+        }
     }
 
-    fun updateUiState(uiState: HomeUiState){
-        _uiState.update { uiState }
+    fun updateUiState(uiState: HomeUiState) { _uiState.update { uiState } }
+
+    fun updateUserPreferences(userPreferences: UserPreferences) {
+        _uiState.update { it.copy(
+            userPreferences = userPreferences,
+            showNotificationPermissionRationale =
+                if (!userPreferences.showNotificationPermissionCard) false
+                else it.showNotificationPermissionRationale
+        ) }
+        viewModelScope.launch(Dispatchers.IO) { schedulesRepository.upsertUserPreferences(userPreferences) }
     }
 
     fun recheckPermission(context: Context){
@@ -56,7 +70,8 @@ class HomeViewModel @Inject constructor(
         }
         _uiState.update {
             it.copy(
-                showNotificationPermissionRationale = needsPermission && !isEnabled,
+                showNotificationPermissionRationale = needsPermission && !isEnabled &&
+                        _uiState.value.userPreferences.showNotificationPermissionCard,
                 showAccessibilityPermissionRationale = AppBlockerService.instance == null
             )
         }
@@ -89,5 +104,6 @@ data class HomeUiState(
     val schedulesList: List<Schedules> = listOf(),
     val showAccessibilityPermissionRationale: Boolean = false,
     val showNotificationPermissionRationale: Boolean = false,
-    val currentFilter: SchedulesFilter = SchedulesFilter.All
+    val currentFilter: SchedulesFilter = SchedulesFilter.All,
+    val userPreferences: UserPreferences = UserPreferences(1, false, null)
 )

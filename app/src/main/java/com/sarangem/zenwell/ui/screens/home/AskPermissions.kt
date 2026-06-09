@@ -43,7 +43,8 @@ fun AccessibilityPermissionCard(
 @Composable
 fun NotificationPermissionCard(
     modifier: Modifier = Modifier,
-    onGrantClick: () -> Unit = {}
+    onGrantClick: () -> Unit = {},
+    onDeny: () -> Unit = {}
 ){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         PermissionRequestCard(
@@ -51,7 +52,22 @@ fun NotificationPermissionCard(
             name = R.string.notification_permission,
             cardColor = if (isSystemInDarkTheme()) Color(0xFF7C5900) else Color(0xFFF9DEBB),
             onGrantClick = onGrantClick
-        )
+        ) {
+            Button(
+                onClick = onDeny,
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error.copy(alpha = 0.05f)),
+                modifier = Modifier
+                    .padding(vertical = MaterialTheme.sizing.small)
+                    .padding(start = MaterialTheme.sizing.small)
+            ) {
+                Text(
+                    text = stringResource(R.string.dont_ask_again),
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+            }
+        }
     }
 }
 
@@ -61,7 +77,8 @@ fun PermissionRequestCard(
     onGrantClick: () -> Unit = {},
     @StringRes name: Int,
     cardColor: Color = MaterialTheme.colorScheme.errorContainer,
-    textColor: Color = MaterialTheme.colorScheme.onErrorContainer
+    textColor: Color = MaterialTheme.colorScheme.onErrorContainer,
+    extraContent: @Composable () -> Unit = {}
 ) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.sizing.tiny),
@@ -76,6 +93,7 @@ fun PermissionRequestCard(
         )
         Row {
             Spacer(Modifier.weight(1f))
+            extraContent()
             Button(
                 onClick = onGrantClick,
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error.copy(alpha = 0.1f)),

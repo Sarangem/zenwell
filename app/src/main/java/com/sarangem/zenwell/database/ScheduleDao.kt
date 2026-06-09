@@ -15,6 +15,7 @@ import androidx.room.Upsert
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.BlockedApps
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.database.tables.UserPreferences
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -50,8 +51,14 @@ interface ScheduleDao {
     @Query("SELECT * FROM blocked_apps WHERE schedule_id=:scheduleId")
     fun getAppRelationByScheduleId(scheduleId: Int): Flow<List<BlockedApps>>
 
+    @Query("SELECT * FROM user_prefs")
+    fun getUserPreferences(): Flow<UserPreferences?>
+
     @Upsert
     fun upsertAppNames(appNames: AppNames)
+
+    @Upsert
+    fun upsertUserPreferences(userPreferences: UserPreferences)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAppRelation(blockedApps: BlockedApps)

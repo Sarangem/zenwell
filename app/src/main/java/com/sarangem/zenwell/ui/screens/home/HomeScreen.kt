@@ -49,6 +49,7 @@ import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import androidx.core.content.edit
+import com.sarangem.zenwell.database.tables.UserPreferences
 
 @Composable
 fun HomeScreen(
@@ -97,6 +98,7 @@ fun HomeScreen(
         scheduleClicked,
         viewModel::addNewSchedule,
         viewModel::updateUiState,
+        viewModel::updateUserPreferences,
         grantAccessibilityPermission,
         grantNotificationPermission,
         openEditScreen,
@@ -113,6 +115,7 @@ fun HomeScreen(
     scheduleClicked: Int = 0,
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _, _ -> Schedules() },
     updateUiState: (HomeUiState) -> Unit = {},
+    updateUserPreferences: (UserPreferences) -> Unit = {},
     grantAccessibilityPermission: () -> Unit = {},
     grantNotificationPermission: () -> Unit = {},
     openEditScreen: (Schedules) -> Unit = {},
@@ -148,16 +151,21 @@ fun HomeScreen(
         ) {
             item {
                 AnimatedVisibility(uiState.showAccessibilityPermissionRationale) {
-                    AccessibilityPermissionCard {
-                        grantAccessibilityPermission()
-                    }
+                    AccessibilityPermissionCard { grantAccessibilityPermission() }
                 }
             }
             item {
                 AnimatedVisibility(uiState.showNotificationPermissionRationale) {
-                    NotificationPermissionCard {
-                        grantNotificationPermission()
-                    }
+                    NotificationPermissionCard(
+                        onGrantClick = grantNotificationPermission,
+                        onDeny = {
+                            updateUserPreferences(
+                                uiState.userPreferences.copy(
+                                    showNotificationPermissionCard = false
+                                )
+                            )
+                        }
+                    )
                 }
             }
             item {
