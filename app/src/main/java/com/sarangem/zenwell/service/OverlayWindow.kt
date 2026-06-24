@@ -8,7 +8,9 @@ package com.sarangem.zenwell.service
 import android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_HOME
 import android.content.Context
 import android.graphics.PixelFormat
+import android.hardware.display.DisplayManager
 import android.os.Build
+import android.view.Display.DEFAULT_DISPLAY
 import android.view.Gravity
 import android.view.WindowManager
 import android.view.WindowInsets
@@ -32,6 +34,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.minutes
 
 class OverlayWindow(
     val packageName: String, // only for use in AppBlockerService
@@ -45,16 +48,21 @@ class OverlayWindow(
     private val notificationId = schedule.id + appName.hashCode()
 
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    private val composeView = ComposeView(service)
+    var composeView: ComposeView? = null
     var isAppOpened = schedule.isPomodoro // true if pomodoro to prevent open() else false
-    var isAttachedToWindow = false
 
     fun open() {
-        ServiceLogger.d { "Attached to window: ${composeView.isAttachedToWindow} and app opened: $isAppOpened" }
-        if (isAttachedToWindow || isAppOpened) return
+        if (composeView != null || isAppOpened) return
 
         try {
-            isAttachedToWindow = true
+            val windowContext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val displayManager = service.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+                val display = displayManager.getDisplay(DEFAULT_DISPLAY)
+                service.createWindowContext(display, WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY, null)
+            } else {
+                service
+            }
+            composeView = ComposeView(windowContext)
             val viewModelStore = ViewModelStore()
             val viewModelStoreOwner = object : ViewModelStoreOwner {
                 override val viewModelStore = viewModelStore
@@ -62,7 +70,7 @@ class OverlayWindow(
             val lifecycleOwner = OverlayWindowLifecycleOwner()
             lifecycleOwner.performRestore(null)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-            composeView.apply {
+            composeView?.apply {
                 setViewTreeLifecycleOwner(lifecycleOwner)
                 setViewTreeSavedStateRegistryOwner(lifecycleOwner)
                 setViewTreeViewModelStoreOwner(viewModelStoreOwner)
@@ -101,15 +109,14 @@ class OverlayWindow(
             ServiceLogger.d { "Successfully added composeView" }
 
         } catch (e: Exception) {
-            isAttachedToWindow = false
+            composeView = null
             ServiceLogger.e({ "Error adding ComposeView" }, e)
         }
 
     }
 
     fun close() {
-        if (!isAttachedToWindow) return
-        isAttachedToWindow = false
+        if (composeView == null) return
         try {
             windowManager.removeView(composeView)
             service.openedWindows.remove(this)
@@ -117,7 +124,8 @@ class OverlayWindow(
         } catch (e: Exception) {
             ServiceLogger.e({ "Error removing ComposeView" }, e)
         } finally {
-            composeView.disposeComposition()
+            composeView?.disposeComposition()
+            composeView = null
         }
     }
 
@@ -132,7 +140,7 @@ class OverlayWindow(
             // send notification
             val delayTime = schedule.usageSessionDurationInMinutes - schedule.notificationTimeInMinutes
             if (delayTime < 0) return@launch
-            delay(delayTime * 60 * 1000L)
+            delay(delayTime.minutes)
             if (schedule.notificationTimeInMinutes > 0) {
                 createBlockNotification(
                     id = notificationId,
@@ -141,7 +149,7 @@ class OverlayWindow(
                 )
             }
 
-            delay(schedule.notificationTimeInMinutes * 60 * 1000L)
+            delay(schedule.notificationTimeInMinutes.minutes)
             deleteNotificationById(
                 id = notificationId,
                 context = service
