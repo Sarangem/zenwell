@@ -30,8 +30,8 @@ import kotlinx.coroutines.launch
         BlockedApps::class,
         UserPreferences::class
     ],
-    version = 17,
-    exportSchema = false
+    version = 18,
+    exportSchema = true
 )
 @TypeConverters(
     OperatorListConverter::class,

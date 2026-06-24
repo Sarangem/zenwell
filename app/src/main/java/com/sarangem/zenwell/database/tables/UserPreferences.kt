@@ -14,7 +14,7 @@ data class UserPreferences(
     val showNotificationPermissionCard: Boolean = true,
 
     // null: old user
-    // true: first entry to app
-    // false: second entry to app
-    val firstEntry: Boolean? = true
+    // 1: first entry to app
+    // 2: second entry to app
+    val firstEntry: Int? = null
 )

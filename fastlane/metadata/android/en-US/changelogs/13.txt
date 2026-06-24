@@ -1,0 +1,2 @@
+- Fix a bug where app did not work on Android 15+
+- Fix a bug where youtube shorts was not blocked.

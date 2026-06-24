@@ -13,6 +13,10 @@ kotlin {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "${projectDir}/schemas")
+}
+
 android {
     namespace = "com.sarangem.zenwell"
     compileSdk = 36
@@ -21,8 +25,8 @@ android {
         applicationId = "com.sarangem.zenwell"
         minSdk = 23
         targetSdk = 36
-        versionCode = 12
-        versionName = "1.2"
+        versionCode = 13
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

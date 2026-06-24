@@ -1,0 +1,378 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 18,
+    "identityHash": "128e9664725e2d97a9dd54680faf5f81",
+    "entities": [
+      {
+        "tableName": "schedules",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `message` TEXT NOT NULL, `is_active` INTEGER NOT NULL, `unlock_method` TEXT NOT NULL, `start_time` INTEGER NOT NULL, `end_time` INTEGER NOT NULL, `timer_duration` INTEGER NOT NULL, `require_manual_unlock` INTEGER NOT NULL, `usage_session_duration` INTEGER NOT NULL, `breathing_cycle_duration` INTEGER NOT NULL, `breathing_cycle_number` INTEGER NOT NULL, `notification_time` INTEGER NOT NULL, `math_equation_num_operands` INTEGER NOT NULL, `math_equation_min_number` INTEGER NOT NULL, `math_equation_max_number` INTEGER NOT NULL, `math_equation_min_number_in_multiplication` INTEGER NOT NULL, `math_equation_max_number_in_multiplication` INTEGER NOT NULL, `allowed_math_operators` TEXT NOT NULL, `math_equation_show_parentheses` INTEGER NOT NULL, `math_equation_allow_negatives` INTEGER NOT NULL, `multiplication_min_num` INTEGER NOT NULL, `multiplication_max_num` INTEGER NOT NULL, `multiplier_min_num` INTEGER NOT NULL, `multiplier_max_num` INTEGER NOT NULL, `is_pomodoro` INTEGER NOT NULL, `pomodoro_work_time` INTEGER NOT NULL, `pomodoro_rest_time` INTEGER NOT NULL, `pomodoro_session_number` INTEGER NOT NULL, `show_pause_in_work_time` INTEGER NOT NULL, `show_skip_in_work_time` INTEGER NOT NULL, `show_pause_in_rest_time` INTEGER NOT NULL, `show_skip_in_rest_time` INTEGER NOT NULL, `show_exit` INTEGER NOT NULL, `weekDays` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "message",
+            "columnName": "message",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unlockMethod",
+            "columnName": "unlock_method",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTimeInMinutes",
+            "columnName": "start_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endTimeInMinutes",
+            "columnName": "end_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timerDurationInSeconds",
+            "columnName": "timer_duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "requireManualUnlock",
+            "columnName": "require_manual_unlock",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usageSessionDurationInMinutes",
+            "columnName": "usage_session_duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "breathingCycleDurationInSeconds",
+            "columnName": "breathing_cycle_duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "breathingCycleNumber",
+            "columnName": "breathing_cycle_number",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notificationTimeInMinutes",
+            "columnName": "notification_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mathEquationNumOperands",
+            "columnName": "math_equation_num_operands",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mathEquationMinNumber",
+            "columnName": "math_equation_min_number",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mathEquationMaxNumber",
+            "columnName": "math_equation_max_number",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mathEquationMinNumberInMultiplication",
+            "columnName": "math_equation_min_number_in_multiplication",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mathEquationMaxNumberInMultiplication",
+            "columnName": "math_equation_max_number_in_multiplication",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "allowedMathOperators",
+            "columnName": "allowed_math_operators",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mathEquationShowParentheses",
+            "columnName": "math_equation_show_parentheses",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mathEquationAllowNegatives",
+            "columnName": "math_equation_allow_negatives",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "multiplicationMinNum",
+            "columnName": "multiplication_min_num",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "multiplicationMaxNum",
+            "columnName": "multiplication_max_num",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "multiplierMinNum",
+            "columnName": "multiplier_min_num",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "multiplierMaxNum",
+            "columnName": "multiplier_max_num",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPomodoro",
+            "columnName": "is_pomodoro",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pomodoroWorkTimeInMinutes",
+            "columnName": "pomodoro_work_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pomodoroRestTimeInMinutes",
+            "columnName": "pomodoro_rest_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pomodoroSessionNumber",
+            "columnName": "pomodoro_session_number",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showPauseInWorkTime",
+            "columnName": "show_pause_in_work_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showSkipInWorkTime",
+            "columnName": "show_skip_in_work_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showPauseInRestTime",
+            "columnName": "show_pause_in_rest_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showSkipInRestTime",
+            "columnName": "show_skip_in_rest_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showExit",
+            "columnName": "show_exit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weekDays",
+            "columnName": "weekDays",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "app_names",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `view_title` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "viewTitle",
+            "columnName": "view_title",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_app_names_title",
+            "unique": true,
+            "columnNames": [
+              "title"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_app_names_title` ON `${TABLE_NAME}` (`title`)"
+          }
+        ]
+      },
+      {
+        "tableName": "blocked_apps",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `schedule_id` INTEGER NOT NULL, `app_id` INTEGER NOT NULL, FOREIGN KEY(`schedule_id`) REFERENCES `schedules`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`app_id`) REFERENCES `app_names`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduleId",
+            "columnName": "schedule_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appId",
+            "columnName": "app_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_blocked_apps_schedule_id",
+            "unique": false,
+            "columnNames": [
+              "schedule_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_blocked_apps_schedule_id` ON `${TABLE_NAME}` (`schedule_id`)"
+          },
+          {
+            "name": "index_blocked_apps_app_id",
+            "unique": false,
+            "columnNames": [
+              "app_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_blocked_apps_app_id` ON `${TABLE_NAME}` (`app_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "schedules",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "schedule_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "app_names",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "app_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "user_prefs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `showNotificationPermissionCard` INTEGER NOT NULL, `firstEntry` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showNotificationPermissionCard",
+            "columnName": "showNotificationPermissionCard",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstEntry",
+            "columnName": "firstEntry",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '128e9664725e2d97a9dd54680faf5f81')"
+    ]
+  }
+}
