@@ -227,9 +227,9 @@ fun ShowBottomSheetPreview() {
     ZenwellTheme {
         BottomSheetContents(
             installedAppList = listOf(
-                MyPackageInfo(appName = "Calendar", icon = icon, packageName = "calendar"),
-                MyPackageInfo(appName = "Messages", icon = icon, packageName = "messages"),
-                MyPackageInfo(appName = "Youtube", icon = icon, packageName = "youtube")
+                MyPackageInfo(appName = "Calendar", icon = icon, packageName = "c"),
+                MyPackageInfo(appName = "Messages", icon = icon, packageName = "m"),
+                MyPackageInfo(appName = "YouTube", icon = icon, packageName = "y")
             )
         )
     }

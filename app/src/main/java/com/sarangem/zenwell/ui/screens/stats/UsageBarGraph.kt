@@ -58,12 +58,17 @@ import com.sarangem.zenwell.utils.MyPackageInfo
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import kotlin.math.absoluteValue
 import kotlin.math.ceil
 
 val iconColors = listOf(
-    Color(0xFF3F51B5), Color(0xFF9C27B0), Color(0xFFE91E63), Color(0xFFFF5722),
-    Color(0xFFFF9800), Color(0xFF8BC34A), Color(0xFF009688), Color(0xFF03A9F4)
+    Color(0xFF3F51B5),
+    Color(0xFF9C27B0),
+    Color(0xFFE91E63),
+    Color(0xFFFF5722),
+    Color(0xFFFF9800),
+    Color(0xFF8BC34A),
+    Color(0xFF009688),
+    Color(0xFF03A9F4)
 )
 
 @Composable
@@ -92,7 +97,7 @@ fun UsageBarGraph(
                     it.copy(
                         appName = packageInfo?.appName,
                         icon = packageInfo?.icon,
-                        iconColor = iconColors[packageInfo?.packageName.hashCode().absoluteValue % iconColors.size]
+                        iconColor = iconColors[packageInfo?.packageName.hashCode().mod(iconColors.size)]
                     )
                 }
             val sum = data.sumOf { it.timeInMinutes }

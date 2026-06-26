@@ -147,7 +147,7 @@
     <string name="minute_abbreviation">m</string>
     <string name="hour_minute_abbr">%1$dh %2$dmin</string>
     <string name="positive_motivation">reclaimed yesterday than past week. That\'s a huge win!</string>
-    <string name="negative_motivation">wasted being distracted yesterday!! Today is a new chance to unplug early.</string>
+    <string name="negative_motivation">wasted being distracted yesterday?? Today is a new chance to unplug early.</string>
     <string name="all_apps">All apps</string>
     <string name="blocked_apps_only">Blocked apps only</string>
     <string name="bar_graph_for">"Bar graph for "</string>
