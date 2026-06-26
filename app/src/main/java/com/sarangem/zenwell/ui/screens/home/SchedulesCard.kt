@@ -55,6 +55,7 @@ import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.minutesToString
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun SchedulesCard(
@@ -208,7 +209,7 @@ fun PomodoroTimerControls(
     var isPaused by remember { mutableStateOf(pomodoroWindow.isPaused) }
     LaunchedEffect(Unit) {
         while (pomodoroWindow.isActive || pomodoroWindow.isPaused) {
-            delay(500L)
+            delay(0.5.seconds)
             isWorkTime = pomodoroWindow.isWorkTime
             formattedTime = pomodoroWindow.getFormattedTime()
         }

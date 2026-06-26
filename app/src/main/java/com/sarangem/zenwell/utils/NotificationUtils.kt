@@ -21,7 +21,7 @@ const val PomodoroNotification = "PomodoroNotification"
 
 fun createNotificationChannel(context: Context) {
     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) return
-    val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
+    val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager? ?: return
 
     manager.createNotificationChannel(
         NotificationChannel(
@@ -48,7 +48,7 @@ fun createPomodoroNotification(
     isWork: Boolean,
     context: Context,
 ) {
-    val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
+    val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager? ?: return
     val intent = PendingIntent.getActivity(
         /* context = */ context,
         /* requestCode = */ 0,
@@ -79,7 +79,7 @@ fun createBlockNotification(
     id: Int,
     context: Context,
 ) {
-    val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
+    val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager? ?: return
     val builder = NotificationCompat.Builder(context, BlockNotification)
         .setSmallIcon(R.drawable.ic_notification_icon)
         .setContentTitle(message)
@@ -94,13 +94,13 @@ fun deleteNotificationById(
     id: Int,
     context: Context
 ) {
-    val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
+    val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager? ?: return
     manager.cancel(id)
     ServiceLogger.v { "Notification with ID $id cancelled." }
 }
 fun deleteAllNotificationChannel(context: Context){
     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) return
-    val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager? ?: return
+    val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager? ?: return
     manager.deleteNotificationChannel(BlockNotification)
     manager.deleteNotificationChannel(PomodoroNotification)
 }

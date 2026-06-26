@@ -49,6 +49,7 @@ import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun BreathingScreen(
@@ -103,10 +104,10 @@ fun BreathingCard(
     var inhale by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        val halfDuration = breathingCycleDuration * 500L
+        val halfDuration = breathingCycleDuration / 2
         repeat(breathingCycleNumber * 2) {
             inhale = !inhale
-            delay(halfDuration)
+            delay(halfDuration.seconds)
         }
         if (!requireManualUnlock) onTimerEnd()
         showOpenButton()

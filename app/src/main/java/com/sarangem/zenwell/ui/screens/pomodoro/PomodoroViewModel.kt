@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class PomodoroViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(PomodoroUiState())
@@ -43,7 +44,7 @@ class PomodoroViewModel : ViewModel() {
                         isCompleted = false
                     )
                 }
-                delay(500L)
+                delay(0.5.seconds)
             }
             _uiState.update { it.copy(isCompleted = true) }
         }

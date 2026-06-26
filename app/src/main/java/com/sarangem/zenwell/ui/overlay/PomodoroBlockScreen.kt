@@ -36,6 +36,7 @@ import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -52,7 +53,7 @@ fun PomodoroBlockScreen(
     var formattedTime by rememberSaveable { mutableStateOf(getFormattedTime()) }
     LaunchedEffect(Unit) {
         while (true) {
-            delay(500L)
+            delay(0.5.seconds)
             elapsedTime = getElapsedTimeInSeconds().toFloat()
             formattedTime = getFormattedTime()
         }
@@ -103,7 +104,7 @@ fun PomodoroBlockScreenPreview() {
     var time by remember { mutableLongStateOf(60L) }
     LaunchedEffect(Unit) {
         while (true) {
-            delay(1000L)
+            delay(1.seconds)
             time--
         }
     }

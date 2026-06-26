@@ -34,6 +34,7 @@ import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -50,7 +51,7 @@ fun TimerScreen(
     var time by remember { mutableIntStateOf(timerDurationInSeconds) }
     LaunchedEffect(time) {
         if (time > 0) {
-            delay(1000L)
+            delay(1.seconds)
             time--
         } else {
             if(!requireManualUnlock) onTimerEnd()
