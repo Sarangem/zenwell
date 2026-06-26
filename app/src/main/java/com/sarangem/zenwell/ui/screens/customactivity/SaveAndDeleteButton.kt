@@ -5,7 +5,6 @@
 
 package com.sarangem.zenwell.ui.screens.customactivity
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,21 +74,13 @@ fun SaveAndDeleteButton(
             onClick = { showDeleteDialog = true },
             shape = CircleShape,
             colors = IconButtonDefaults.iconButtonColors(
-                containerColor = if(isSystemInDarkTheme()){
-                    MaterialTheme.colorScheme.errorContainer
-                } else {
-                    MaterialTheme.colorScheme.error
-                }
+                containerColor = darkColorScheme().errorContainer
             )
         ) {
             Icon(
                 painterResource(R.drawable.filled_delete),
                 contentDescription = stringResource(R.string.delete),
-                tint = if(isSystemInDarkTheme()){
-                    MaterialTheme.colorScheme.onErrorContainer
-                } else {
-                    MaterialTheme.colorScheme.onError
-                }
+                tint = darkColorScheme().errorContainer
             )
         }
     }

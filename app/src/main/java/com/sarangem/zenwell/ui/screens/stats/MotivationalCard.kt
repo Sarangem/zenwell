@@ -6,7 +6,6 @@
 package com.sarangem.zenwell.ui.screens.stats
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -20,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -64,8 +64,7 @@ fun MotivationalCard(
     savedTimeInMinutes: Int
 ) {
     val isPositive = savedTimeInMinutes >= 0
-    val color = if (isPositive) Green500 else
-        if (isSystemInDarkTheme()) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.error
+    val color = if (isPositive) Green500 else darkColorScheme().errorContainer
     if (currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)){
         Column(
             modifier = modifier
@@ -154,7 +153,8 @@ fun MotivationalCardText(
                 }
                 append(stringResource(R.string.minute_abbreviation))
             },
-            fontFamily = if (isPositive) FontFamily.Monospace else FontFamily.Serif
+            fontFamily = if (isPositive) FontFamily.Monospace else FontFamily.Serif,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
     Text(

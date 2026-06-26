@@ -5,6 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens.edit.fields
 
+import android.os.Build
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -41,6 +45,14 @@ fun SaveAndDeleteButton(
     onDelete: () -> Unit = {},
     goBack: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val colorScheme = remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            dynamicDarkColorScheme(context)
+        } else {
+            darkColorScheme()
+        }
+    }
     var checkedSave by remember { mutableStateOf(false) }
     var checkedDelete by remember { mutableStateOf(false) }
 
@@ -68,10 +80,10 @@ fun SaveAndDeleteButton(
                 )
             } else {
                 ToggleButtonDefaults.toggleButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    checkedContainerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = colorScheme.primaryContainer,
+                    checkedContainerColor = colorScheme.primary,
+                    contentColor = colorScheme.onPrimaryContainer,
+                    checkedContentColor = colorScheme.onPrimary
                 )
             },
             modifier = Modifier.weight(1.5f),
@@ -103,16 +115,15 @@ fun SaveAndDeleteButton(
             shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
             modifier = Modifier.weight(0.5f),
             colors = ToggleButtonDefaults.toggleButtonColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                checkedContainerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                checkedContentColor = MaterialTheme.colorScheme.onError
+                containerColor = colorScheme.errorContainer,
+                checkedContainerColor = colorScheme.error,
+                contentColor = colorScheme.onErrorContainer,
+                checkedContentColor = colorScheme.onError
             )
         ) {
             Icon(
                 painter = painterResource(R.drawable.filled_delete),
                 contentDescription = stringResource(R.string.delete),
-                tint = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier.padding(4.dp)
             )
         }

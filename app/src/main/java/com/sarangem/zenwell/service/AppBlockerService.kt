@@ -8,7 +8,6 @@ package com.sarangem.zenwell.service
 import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import com.sarangem.zenwell.CRASH_LOG_FILE

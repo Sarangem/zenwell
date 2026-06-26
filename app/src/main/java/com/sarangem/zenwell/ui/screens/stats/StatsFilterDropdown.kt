@@ -58,7 +58,7 @@ fun StatsFilterDropdown(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
     ) {
-        Text(stringResource(R.string.bar_graph_for),)
+        Text(stringResource(R.string.bar_graph_for))
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = it }
