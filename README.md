@@ -2,16 +2,18 @@
 
 **Zenwell** is a privacy-first Android utility designed to help break the cycle of mindless scrolling. Select which apps you want to block(Eg: Instagram, Youtube Shorts) and Zenwell would not allow you open the app, unless you solve some hard math problems or practice breathing.
 
+<div align="center">
+    <a href="https://f-droid.org/packages/com.sarangem.zenwell">
+        <img src="https://f-droid.org/badge/get-it-on.svg" alt="Get it on F-Droid" height="80">
+    </a>
+</div>
+
 <img src="fastlane/metadata/android/en-US/images/featureGraphic.png" width="100%">
 <div align="center">
     <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="30%" align="middle">
     <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" width="30%" align="middle">
     <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/7.png" width="30%" align="middle">
 </div>
-
-[**Download Latest APK**](../../releases)
-
----
 
 ## 🚀 Key Features
 
