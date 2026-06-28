@@ -145,6 +145,9 @@ data class Schedules(
     @ColumnInfo(name = "show_exit")
     val showExit: Boolean = true,
 
+    @ColumnInfo(name = "play_media", defaultValue = "1")
+    val playBackgroundMedia: Boolean = true,
+
     // Check if it will work on following week days
     val weekDays: List<Int> = listOf(
         Calendar.SUNDAY,

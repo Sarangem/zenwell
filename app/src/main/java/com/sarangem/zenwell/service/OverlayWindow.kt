@@ -9,6 +9,9 @@ import android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_HOME
 import android.content.Context
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.AudioManager
 import android.os.Build
 import android.view.Display.DEFAULT_DISPLAY
 import android.view.Gravity
@@ -47,6 +50,20 @@ class OverlayWindow(
     private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisorJob)
     private val notificationId = schedule.id + appName.hashCode()
 
+    private val audioManager = service.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val focusChangeListener = AudioManager.OnAudioFocusChangeListener {}
+    private val focusRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).apply {
+            setAudioAttributes(AudioAttributes.Builder().run {
+                setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
+                setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                build()
+            })
+            setAcceptsDelayedFocusGain(true)
+            setOnAudioFocusChangeListener(focusChangeListener)
+        }.build()
+    } else null
+
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     var composeView: ComposeView? = null
     var isAppOpened = schedule.isPomodoro // true if pomodoro to prevent open() else false
@@ -83,33 +100,41 @@ class OverlayWindow(
                     }
                 }
             }
-            val layoutParams = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                WindowManager.LayoutParams().apply {
-                    type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-                    format = PixelFormat.TRANSPARENT
-                    flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                    gravity = Gravity.TOP or Gravity.START
-                    height = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        val navBar = windowManager.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.navigationBars()).bottom
-                        windowManager.currentWindowMetrics.bounds.height() - navBar
-                    } else {
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-                    }
-                    width = WindowManager.LayoutParams.MATCH_PARENT
+            val layoutParams = WindowManager.LayoutParams().apply {
+                type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+                format = PixelFormat.TRANSPARENT
+                flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                gravity = Gravity.TOP or Gravity.START
+                height = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val navBar = windowManager.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.navigationBars()).bottom
+                    windowManager.currentWindowMetrics.bounds.height() - navBar
+                } else {
+                    WindowManager.LayoutParams.MATCH_PARENT
                 }
-            } else null
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                }
+                width = WindowManager.LayoutParams.MATCH_PARENT
+            }
             ServiceLogger.d { "Added layoutParams $layoutParams" }
             windowManager.addView(composeView, layoutParams)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
             service.openedWindows.add(this)
+            if (!schedule.playBackgroundMedia && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                focusRequest?.let { audioManager.requestAudioFocus(it) }
+            } else if (!schedule.playBackgroundMedia) {
+                @Suppress("DEPRECATION")
+                audioManager.requestAudioFocus(
+                    focusChangeListener,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN
+                )
+            }
             ServiceLogger.d { "Successfully added composeView" }
 
         } catch (e: Exception) {
-            composeView = null
+            close()
             ServiceLogger.e({ "Error adding ComposeView" }, e)
         }
 
@@ -119,11 +144,17 @@ class OverlayWindow(
         if (composeView == null) return
         try {
             windowManager.removeView(composeView)
-            service.openedWindows.remove(this)
+            if (!schedule.playBackgroundMedia && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                focusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
+            } else if (!schedule.playBackgroundMedia) {
+                @Suppress("DEPRECATION")
+                audioManager.abandonAudioFocus(focusChangeListener)
+            }
             ServiceLogger.d { "Successfully removed compose view" }
         } catch (e: Exception) {
             ServiceLogger.e({ "Error removing ComposeView" }, e)
         } finally {
+            service.openedWindows.remove(this)
             composeView?.disposeComposition()
             composeView = null
         }

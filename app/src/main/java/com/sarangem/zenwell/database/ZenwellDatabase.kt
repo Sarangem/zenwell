@@ -6,6 +6,7 @@
 package com.sarangem.zenwell.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -30,7 +31,10 @@ import kotlinx.coroutines.launch
         BlockedApps::class,
         UserPreferences::class
     ],
-    version = 18,
+    version = 19,
+    autoMigrations = [
+        AutoMigration(from = 18, to = 19)
+    ],
     exportSchema = true
 )
 @TypeConverters(

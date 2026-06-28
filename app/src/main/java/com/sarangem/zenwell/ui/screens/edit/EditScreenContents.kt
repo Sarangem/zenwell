@@ -200,6 +200,10 @@ fun EditScreenContents(
                                     showExit
                                 ) { updateSchedule(copy(showExit = it)) },
                                 LabelState(
+                                    R.string.play_background_media,
+                                    playBackgroundMedia
+                                ) { updateSchedule(copy(playBackgroundMedia = it)) },
+                                LabelState(
                                     R.string.require_manual_unlock,
                                     requireManualUnlock,
                                     unlockMethod != UnlockMethod.StrictBlock
@@ -281,6 +285,19 @@ fun EditScreenContents(
                                     R.string.skip,
                                     showSkipInRestTime,
                                 ) { updateSchedule(copy(showSkipInRestTime = it)) }
+                            )
+                        )
+                        LabelDetailsCard(
+                            mainText = R.string.additional_options,
+                            labelList = listOf(
+                                LabelState(
+                                    R.string.show_exit_button,
+                                    showExit
+                                ) { updateSchedule(copy(showExit = it)) },
+                                LabelState(
+                                    R.string.play_background_media,
+                                    playBackgroundMedia
+                                ) { updateSchedule(copy(playBackgroundMedia = it)) }
                             )
                         )
                     }
