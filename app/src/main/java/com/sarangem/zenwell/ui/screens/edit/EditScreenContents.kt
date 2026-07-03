@@ -194,6 +194,7 @@ fun EditScreenContents(
                         }
                         LabelDetailsCard(
                             mainText = R.string.additional_options,
+                            showExpandedButton = true,
                             labelList = listOf(
                                 LabelState(
                                     R.string.show_exit_button,
@@ -213,7 +214,7 @@ fun EditScreenContents(
                                     mathEquationShowParentheses,
                                     unlockMethod == UnlockMethod.MathProblem
                                             && allowedMathOperators.contains(MathOperators.MULTIPLICATION)
-                                            && allowedMathOperators.size >= 2
+                                            && allowedMathOperators.size > 2
                                 ) { updateSchedule(copy(mathEquationShowParentheses = it)) },
                                 LabelState(
                                     R.string.allow_negative_answers,
@@ -298,7 +299,8 @@ fun EditScreenContents(
                                     R.string.play_background_media,
                                     playBackgroundMedia
                                 ) { updateSchedule(copy(playBackgroundMedia = it)) }
-                            )
+                            ),
+                            showExpandedButton = true
                         )
                     }
                 }
