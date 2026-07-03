@@ -6,6 +6,9 @@
 package com.sarangem.zenwell.ui.screens.settings
 
 import android.content.ClipData
+import android.content.Context
+import android.os.Build
+import android.os.PowerManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -62,7 +65,7 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
     LaunchedEffect(Unit) {
         val log = withContext(Dispatchers.IO) {
             val file = File(context.filesDir, CRASH_LOG_FILE)
-            if (file.exists()) file.readText().take(1000) else null
+            if (file.exists()) file.readText() else null
         }
         crashLogText = log
     }
@@ -100,8 +103,14 @@ fun CrashLogDialog(onDismiss: () -> Unit) {
                                 "App Crash Report",
                                 StandardCharsets.UTF_8.toString()
                             )
+                            val log = """
+                                [SYS] OS: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT}) | OEM: ${Build.BRAND} | Model: ${Build.MODEL}
+                                [BUILD] ID: ${Build.ID} | Fingerprint: ${Build.FINGERPRINT}
+                                [STATE] Batt. Opt. Ignored: ${(context.getSystemService(Context.POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(context.packageName)}
+                                $crashLogText
+                            """.trimIndent().take(1000)
                             val body = URLEncoder.encode(
-                                "### Crash Log\n```\n${crashLogText ?: "No logs found"}\n```",
+                                "### Crash Log\n```\n$log\n```",
                                 StandardCharsets.UTF_8.toString()
                             )
                             uriHandler.openUri("$GITHUB_REPO_ISSUES_URL?title=$title&body=$body")
