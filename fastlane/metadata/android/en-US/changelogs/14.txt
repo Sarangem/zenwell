@@ -1,0 +1,1 @@
+- Add an option to pause background media
