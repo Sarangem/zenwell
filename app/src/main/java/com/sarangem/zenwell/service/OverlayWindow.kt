@@ -51,7 +51,22 @@ class OverlayWindow(
     private val notificationId = schedule.id + appName.hashCode()
 
     private val audioManager = service.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-    private val focusChangeListener = AudioManager.OnAudioFocusChangeListener {}
+    private val focusChangeListener: AudioManager.OnAudioFocusChangeListener = object: AudioManager.OnAudioFocusChangeListener {
+        override fun onAudioFocusChange(focusChange: Int) {
+            if (schedule.playBackgroundMedia) return
+            if (focusChange == AudioManager.AUDIOFOCUS_GAIN) return
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                focusRequest?.let { audioManager.requestAudioFocus(it) }
+            } else {
+                @Suppress("DEPRECATION")
+                audioManager.requestAudioFocus(
+                    focusChangeListener,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN
+                )
+            }
+        }
+    }
     private val focusRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).apply {
             setAudioAttributes(AudioAttributes.Builder().run {
@@ -63,6 +78,7 @@ class OverlayWindow(
             setOnAudioFocusChangeListener(focusChangeListener)
         }.build()
     } else null
+    private val vmStore = ViewModelStore()
 
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     var composeView: ComposeView? = null
@@ -80,9 +96,8 @@ class OverlayWindow(
                 service
             }
             composeView = ComposeView(windowContext)
-            val viewModelStore = ViewModelStore()
-            val viewModelStoreOwner = object : ViewModelStoreOwner {
-                override val viewModelStore = viewModelStore
+            val vmStoreOwner = object : ViewModelStoreOwner {
+                override val viewModelStore = vmStore
             }
             val lifecycleOwner = OverlayWindowLifecycleOwner()
             lifecycleOwner.performRestore(null)
@@ -90,7 +105,7 @@ class OverlayWindow(
             composeView?.apply {
                 setViewTreeLifecycleOwner(lifecycleOwner)
                 setViewTreeSavedStateRegistryOwner(lifecycleOwner)
-                setViewTreeViewModelStoreOwner(viewModelStoreOwner)
+                setViewTreeViewModelStoreOwner(vmStoreOwner)
                 setContent {
                     ZenwellTheme {
                         content(
@@ -150,12 +165,13 @@ class OverlayWindow(
                 @Suppress("DEPRECATION")
                 audioManager.abandonAudioFocus(focusChangeListener)
             }
+            vmStore.clear()
+            composeView?.disposeComposition()
             ServiceLogger.d { "Successfully removed compose view" }
         } catch (e: Exception) {
             ServiceLogger.e({ "Error removing ComposeView" }, e)
         } finally {
             service.openedWindows.remove(this)
-            composeView?.disposeComposition()
             composeView = null
         }
     }
