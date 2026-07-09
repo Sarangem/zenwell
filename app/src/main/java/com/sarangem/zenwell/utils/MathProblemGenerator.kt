@@ -61,11 +61,11 @@ fun generateMathProblem(
             MathOperators.MULTIPLICATION -> {
                 answer *= num
                 if (previousOperator != MathOperators.MULTIPLICATION && showParentheses) {
-                    shortQuestion = "($shortQuestion) * $num"
+                    shortQuestion = "($shortQuestion) × $num"
                 } else {
-                    shortQuestion += " * $num"
+                    shortQuestion += " × $num"
                 }
-                longQuestion += "\n* $num"
+                longQuestion += "\n× $num"
             }
         }
         previousOperator = operator

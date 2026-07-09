@@ -1,0 +1,9 @@
+<!--
+  ~ Copyright (c) 2026 Proneel Pal <palproneel@gmail.com>
+  ~ Licensed under the GNU General Public License v3.0 or later.
+  -->
+
+<resources>
+    <string name="math_problem">Maths Problem</string>
+    <string name="show_parentheses">Show brackets</string>
+</resources>
