@@ -306,7 +306,7 @@ fun EditScreenContents(
                 }
 
                 DetailsCardColumn {
-                    ChooseActiveSwitch(isActive) { updateSchedule(copy(isActive = it)) }
+                    if (!isPomodoro) ChooseActiveSwitch(isActive) { updateSchedule(copy(isActive = it)) }
                     AnimatedVisibility(
                         visible = isActive && !isPomodoro,
                         enter = expandVertically() + fadeIn(),
