@@ -119,6 +119,11 @@ class AppBlockerService : AccessibilityService() {
 
         for (windowInfo in windows) {
 
+            if (
+                windowInfo.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD &&
+                event?.windowId == windowInfo.id
+            ) return // probably a keyboard typing
+
             // only if application window
             if (windowInfo.type != AccessibilityWindowInfo.TYPE_APPLICATION) continue
 
