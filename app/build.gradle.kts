@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -8,8 +10,8 @@ plugins {
 }
 
 kotlin {
-    compilerOptions{
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("11")
+    compilerOptions {
+        jvmTarget = JvmTarget.fromTarget("11")
     }
 }
 
@@ -19,12 +21,12 @@ ksp {
 
 android {
     namespace = "com.sarangem.zenwell"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.sarangem.zenwell"
         minSdk = 23
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 14
         versionName = "1.4"
 
