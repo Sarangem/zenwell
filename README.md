@@ -1,10 +1,13 @@
 # <img src="app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" width="40"> Zenwell
 
-**Zenwell** is a privacy-first Android utility designed to help break the cycle of mindless scrolling. Select which apps you want to block(Eg: Instagram, Youtube Shorts) and Zenwell would not allow you open the app, unless you solve some hard math problems or practice breathing.
+**Zenwell** is a privacy-first Android utility designed to help break the cycle of mindless scrolling. Select which apps you want to block (Eg: Instagram, YouTube Shorts) and Zenwell would not allow you open the app, unless you solve some hard math problems or practice breathing.
 
 <div align="center">
     <a href="https://f-droid.org/packages/com.sarangem.zenwell">
         <img src="https://f-droid.org/badge/get-it-on.svg" alt="Get it on F-Droid" height="80">
+    </a>
+    <a href="../../releases">
+      <img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80">
     </a>
 </div>
 
@@ -20,10 +23,10 @@
 * **Customizable Schedules:** Select specific apps to block and set active windows (e.g., 9:00 AM – 5:00 PM) and specific weekdays.
 * **Dynamic Unlock Methods:** Choose your level of friction to regain focus:
     * **Strict Block:** No entry allowed during restricted hours.
-    * **Timer:** Wait for a set countdown before the app opens.
-    * **Breathing Timer:** A guided pause to calm the "scroll reflex."
+    * **Timer:** Wait for a set time like 10 seconds before the app opens.
+    * **Breathing Timer:** A guided pause to calm the scroll reflex.
     * **Math Problems:** Solve math equations or multiplication tables.
-    * **Intentional Typing:** Type a custom message to proceed.
+    * **Intentional Typing:** Type a custom message like "I am wasting my time" to proceed.
 * **Pomodoro Mode:** Integrated focus sessions to balance work and rest.
 * **Privacy First:** **No Internet permission.** Your data stays on your device. Only Accessibility Service is required to function.
 

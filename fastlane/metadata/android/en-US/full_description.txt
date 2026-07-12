@@ -11,7 +11,7 @@ Zenwell helps you break the cycle of mindless doomscrolling and reduce screentim
 • <B>Pomodoro Mode:</B> Integrated focus sessions to balance work and rest.
 • <B>Privacy First:</B> No Internet permission. Your data stays on your device.
 
-This project is in active development and various bugs are expected. Please report any issues at <a href="https://github.com/sarangem/zenwell/issues">GitHub</a>.
+This project is in active development and various bugs are expected. Please report any issues at GitHub.
 
 <B> Permissions Required</B>
 • <B>Accessibility Service:</B> To run in background and check for distracting apps to block them.

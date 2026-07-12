@@ -1,0 +1,2 @@
+- Support Android 17
+- Fix a bug where accented letters cannot be typed in "Typing" unlock method
