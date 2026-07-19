@@ -151,12 +151,13 @@ fun HomeScreen(
         ) {
             item {
                 AnimatedVisibility(uiState.showAccessibilityPermissionRationale) {
-                    AccessibilityPermissionCard { grantAccessibilityPermission() }
+                    AccessibilityPermissionCard(Modifier.animateItem()) { grantAccessibilityPermission() }
                 }
             }
             item {
                 AnimatedVisibility(uiState.showNotificationPermissionRationale) {
                     NotificationPermissionCard(
+                        modifier = Modifier.animateItem(),
                         onGrantClick = grantNotificationPermission,
                         onDeny = {
                             updateUserPreferences(

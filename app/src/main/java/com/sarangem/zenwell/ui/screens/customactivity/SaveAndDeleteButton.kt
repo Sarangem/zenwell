@@ -73,14 +73,12 @@ fun SaveAndDeleteButton(
         IconButton(
             onClick = { showDeleteDialog = true },
             shape = CircleShape,
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = darkColorScheme().errorContainer
-            )
+            colors = IconButtonDefaults.iconButtonColors(darkColorScheme().errorContainer)
         ) {
             Icon(
                 painterResource(R.drawable.filled_delete),
                 contentDescription = stringResource(R.string.delete),
-                tint = darkColorScheme().errorContainer
+                tint = darkColorScheme().onErrorContainer
             )
         }
     }
