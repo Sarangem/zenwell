@@ -27,7 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -109,7 +109,7 @@ fun SettingsScreen(
                 .padding(innerPadding)
                 .padding(horizontal = MaterialTheme.sizing.small)
                 .padding(bottom = MaterialTheme.sizing.medium)
-                .padding(bottom = if (!currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) MaterialTheme.sizing.floatingBar else 0.dp),
+                .padding(bottom = if (!currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) MaterialTheme.sizing.floatingBar else 0.dp),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.medium)
         ) {
             Column {
