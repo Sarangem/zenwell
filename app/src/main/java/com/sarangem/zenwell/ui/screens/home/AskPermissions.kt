@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,8 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
+import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
+import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
 
 @Composable
 fun AccessibilityPermissionCard(
@@ -34,7 +37,7 @@ fun AccessibilityPermissionCard(
     recheckPermission: () -> Unit = {}
 ){
     PermissionRequestCard(
-        modifier = modifier.padding(MaterialTheme.sizing.small),
+        modifier = modifier,
         name = R.string.accessibility_service_permission,
         onGrantClick = recheckPermission
     )
@@ -107,5 +110,22 @@ fun PermissionRequestCard(
                 )
             }
         }
+    }
+}
+
+val showcase0Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+    Modifier.sequenceShowcaseTarget(
+        index = 0,
+        shape = MaterialTheme.shapes.medium,
+        shapeMargin = 0.dp,
+        backgroundAlpha = 0.9f,
+        fixedContent = { SkipGuideButton(skip) }
+    ) {
+        Text(
+            text = stringResource(R.string.showcase_0),
+            style = MaterialTheme.typography.headlineMedium,
+            color = darkColorScheme().onSurface,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }

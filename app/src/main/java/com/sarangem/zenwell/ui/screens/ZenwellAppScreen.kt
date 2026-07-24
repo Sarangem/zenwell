@@ -47,9 +47,11 @@ import com.sarangem.zenwell.ui.screens.edit.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.screens.edit.EditViewModel
 import com.sarangem.zenwell.ui.screens.home.HomeScreen
 import com.sarangem.zenwell.ui.screens.home.HomeViewModel
+import com.sarangem.zenwell.ui.screens.home.showcase1Modifier
 import com.sarangem.zenwell.ui.screens.pomodoro.FocusScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
 import com.sarangem.zenwell.ui.screens.stats.StatsScreen
+import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcase
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -60,94 +62,102 @@ fun ZenwellAppScreen() {
     val customActivityViewModel: CustomActivityViewModel = hiltViewModel()
 
     val isExpanded = currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        floatingActionButton = {
-            if(!isExpanded) AppNavigationFAB(
-                backStack = backStack,
-                addNewSchedule = homeViewModel::addNewSchedule,
-                openEditScreen = { schedules ->
-                    EditPage.addToStack(backStack)
-                    editViewModel.initialize(schedules)
-                }
-            )
-        }
-    ) { padding -> padding
-        Row(Modifier.fillMaxSize()) {
-            if(isExpanded) AppNavigationRail(backStack = backStack)
-            NavDisplay(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface),
-                backStack = backStack,
-                sceneStrategies = listOf(rememberListDetailSceneStrategy()),
-                transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
-                popTransitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
-                entryProvider = entryProvider {
-                    entry<HomePage>(
-                        metadata = ListDetailScene.listPane(true)
-                    ) {
-                        HomeScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            viewModel = homeViewModel,
-                            scheduleClicked = editViewModel.uiState.collectAsState().value.schedule.id,
-                            openEditScreen = { schedules ->
-                                EditPage.addToStack(backStack)
-                                editViewModel.initialize(schedules)
-                            },
-                            openFocusScreen = { PomodoroPage(it).addToStack(backStack) }
-                        )
-                    }
+    val firstEntry = homeViewModel.uiState.collectAsState().value.userPreferences.firstEntry
+    SequenceShowcase {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            floatingActionButton = {
+                if(!isExpanded) AppNavigationFAB(
+                    modifier = showcase1Modifier { homeViewModel.updateUserEntry(null) },
+                    backStack = backStack,
+                    addNewSchedule = homeViewModel::addNewSchedule,
+                    openEditScreen = { schedules ->
+                        EditPage.addToStack(backStack)
+                        editViewModel.initialize(schedules)
+                    },
+                    firstEntry = firstEntry,
+                    dismissShowcase = { showcaseState.dismiss() }
+                )
+            }
+        ) { padding -> padding
+            Row(Modifier.fillMaxSize()) {
+                if(isExpanded) AppNavigationRail(backStack = backStack)
+                NavDisplay(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surface),
+                    backStack = backStack,
+                    sceneStrategies = listOf(rememberListDetailSceneStrategy()),
+                    transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
+                    popTransitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
+                    entryProvider = entryProvider {
+                        entry<HomePage>(
+                            metadata = ListDetailScene.listPane(true)
+                        ) {
+                            HomeScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                viewModel = homeViewModel,
+                                scheduleClicked = editViewModel.uiState.collectAsState().value.schedule.id,
+                                openEditScreen = { schedules ->
+                                    EditPage.addToStack(backStack)
+                                    editViewModel.initialize(schedules)
+                                },
+                                openFocusScreen = { PomodoroPage(it).addToStack(backStack) }
+                            )
+                        }
 
-                    entry<EditPage>(
-                        metadata = ListDetailScene.detailPane(true)
-                    ) {
-                        EditScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            viewModel = editViewModel,
-                            showTopAppBar = LocalBackButtonVisibility.current,
-                            goBack = { backStack.removeLastOrNull() }
-                        )
-                    }
+                        entry<EditPage>(
+                            metadata = ListDetailScene.detailPane(true)
+                        ) {
+                            EditScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                viewModel = editViewModel,
+                                showTopAppBar = LocalBackButtonVisibility.current,
+                                goBack = { backStack.removeLastOrNull() },
+                                updateUserEntry = { homeViewModel.updateUserEntry(it) },
+                                firstEntry = firstEntry
+                            )
+                        }
 
-                    entry<PomodoroPage> { key ->
-                        FocusScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            schedule = key.schedule,
-                            goBack = { backStack.removeLastOrNull() }
-                        )
-                    }
+                        entry<PomodoroPage> { key ->
+                            FocusScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                schedule = key.schedule,
+                                goBack = { backStack.removeLastOrNull() }
+                            )
+                        }
 
-                    entry<StatsPage>(
-                        metadata = ListDetailScene.listPane(false) +
-                                NavDisplay.predictivePopTransitionSpec { fadeIn(tween()) togetherWith fadeOut(tween()) }
-                    ) { StatsScreen(Modifier.fillMaxSize()) }
+                        entry<StatsPage>(
+                            metadata = ListDetailScene.listPane(false) +
+                                    NavDisplay.predictivePopTransitionSpec { fadeIn(tween()) togetherWith fadeOut(tween()) }
+                        ) { StatsScreen(Modifier.fillMaxSize()) }
 
-                    entry<SettingsPage>(
-                        metadata = ListDetailScene.listPane(false) +
-                                NavDisplay.predictivePopTransitionSpec { fadeIn(tween()) togetherWith fadeOut(tween()) }
-                    ) {
-                        SettingsScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            openCustomActivityScreen = {
-                                CustomActivityPage.addToStack(backStack)
-                                customActivityViewModel.initialize()
-                            }
-                        )
-                    }
+                        entry<SettingsPage>(
+                            metadata = ListDetailScene.listPane(false) +
+                                    NavDisplay.predictivePopTransitionSpec { fadeIn(tween()) togetherWith fadeOut(tween()) }
+                        ) {
+                            SettingsScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                openCustomActivityScreen = {
+                                    CustomActivityPage.addToStack(backStack)
+                                    customActivityViewModel.initialize()
+                                }
+                            )
+                        }
 
-                    entry<CustomActivityPage>(
-                        metadata = ListDetailScene.detailPane(false)
-                    ) {
-                        CustomActivityScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            viewModel = customActivityViewModel,
-                            showTopAppBar = LocalBackButtonVisibility.current,
-                            goBack = { backStack.removeLastOrNull() }
-                        )
+                        entry<CustomActivityPage>(
+                            metadata = ListDetailScene.detailPane(false)
+                        ) {
+                            CustomActivityScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                viewModel = customActivityViewModel,
+                                showTopAppBar = LocalBackButtonVisibility.current,
+                                goBack = { backStack.removeLastOrNull() }
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

@@ -49,26 +49,29 @@ import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import androidx.core.content.edit
-import com.sarangem.zenwell.database.tables.UserPreferences
+import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
 
 @Composable
-fun HomeScreen(
+fun SequenceShowcaseScope.HomeScreen(
     modifier: Modifier = Modifier,
     scheduleClicked: Int = 0,
     viewModel: HomeViewModel = hiltViewModel(),
     openEditScreen: (Schedules) -> Unit = {},
-    openFocusScreen: (Schedules) -> Unit = {}
+    openFocusScreen: (Schedules) -> Unit = {},
 ) {
+    val homeUiState by viewModel.uiState.collectAsState()
+
+    // check permissions properly
     val context = LocalContext.current
     val activity = LocalActivity.current
-    val homeUiState by viewModel.uiState.collectAsState()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.recheckPermission(context) }
     LaunchedEffect(homeUiState.schedulesList) { viewModel.recheckPermission(context) }
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { viewModel.recheckPermission(context) }
     val grantNotificationPermission = {
-        val showRationale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && (activity?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ?: false)
+        val showRationale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                (activity?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ?: false)
         val sharedPrefs = context.getSharedPreferences("permissions_prefs", Context.MODE_PRIVATE)
         val hasRequested = sharedPrefs.getBoolean("has_requested_notification", false)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && (showRationale || !hasRequested)) {
@@ -92,18 +95,35 @@ fun HomeScreen(
     ) { viewModel.recheckPermission(context) }
     val grantAccessibilityPermission = { accessibilityPermissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
 
+    // start intro showcase
+    LaunchedEffect(homeUiState.userPreferences.firstEntry, homeUiState.showAccessibilityPermissionRationale) {
+        showcaseState.dismiss()
+        when (homeUiState.userPreferences.firstEntry) {
+            1-> if (homeUiState.showAccessibilityPermissionRationale) {
+                showcaseState.start(0)
+            } else {
+                showcaseState.start(1)
+            }
+        }
+    }
+
     HomeScreen(
         modifier,
         homeUiState,
         scheduleClicked,
         viewModel::addNewSchedule,
         viewModel::updateUiState,
-        viewModel::updateUserPreferences,
+        viewModel::hideNotificationCard,
         grantAccessibilityPermission,
         grantNotificationPermission,
         openEditScreen,
-        openFocusScreen
-    ) { AppBlockerService.instance?.getPomodoroWindow(it) }
+        openFocusScreen,
+        dismissShowcase = { showcaseState.next() },
+        showcase0Modifier = showcase0Modifier { viewModel.updateUserEntry(null) },
+        showcase1Modifier = showcase1Modifier { viewModel.updateUserEntry(null) },
+        userScrollEnabled = !showcaseState.showCaseVisible,
+        getPomodoroWindow = { AppBlockerService.instance?.getPomodoroWindow(it) }
+    )
 }
 
 
@@ -115,11 +135,15 @@ fun HomeScreen(
     scheduleClicked: Int = 0,
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _, _ -> Schedules() },
     updateUiState: (HomeUiState) -> Unit = {},
-    updateUserPreferences: (UserPreferences) -> Unit = {},
+    hideNotificationCard: () -> Unit = {},
     grantAccessibilityPermission: () -> Unit = {},
     grantNotificationPermission: () -> Unit = {},
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
+    dismissShowcase: () -> Unit = {},
+    showcase0Modifier: Modifier = Modifier,
+    showcase1Modifier: Modifier = Modifier,
+    userScrollEnabled: Boolean = true,
     getPomodoroWindow: (Int) -> PomodoroWindow? = { null }
 ) {
     Scaffold(
@@ -137,8 +161,11 @@ fun HomeScreen(
         floatingActionButton = {
             if(currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND))
                 NewScheduleFAB(
-                    addNewSchedule = addNewSchedule,
-                    openEditScreen = openEditScreen
+                    showcase1Modifier,
+                    uiState.userPreferences.firstEntry,
+                    dismissShowcase,
+                    addNewSchedule,
+                    openEditScreen
                 )
         }
     ) { innerPadding ->
@@ -147,10 +174,14 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(bottom = MaterialTheme.sizing.floatingBar)
+            contentPadding = PaddingValues(bottom = MaterialTheme.sizing.floatingBar),
+            userScrollEnabled = userScrollEnabled
         ) {
             item {
-                AnimatedVisibility(uiState.showAccessibilityPermissionRationale) {
+                AnimatedVisibility(
+                    uiState.showAccessibilityPermissionRationale,
+                    modifier = Modifier.padding(MaterialTheme.sizing.small).then(showcase0Modifier)
+                ) {
                     AccessibilityPermissionCard(Modifier.animateItem()) { grantAccessibilityPermission() }
                 }
             }
@@ -159,13 +190,7 @@ fun HomeScreen(
                     NotificationPermissionCard(
                         modifier = Modifier.animateItem(),
                         onGrantClick = grantNotificationPermission,
-                        onDeny = {
-                            updateUserPreferences(
-                                uiState.userPreferences.copy(
-                                    showNotificationPermissionCard = false
-                                )
-                            )
-                        }
+                        onDeny = hideNotificationCard
                     )
                 }
             }

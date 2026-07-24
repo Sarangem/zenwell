@@ -28,8 +28,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -45,11 +47,15 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.AppNames
+import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
+import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.MyPackageInfo
@@ -60,9 +66,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseAppList(
+    modifier: Modifier = Modifier,
     appNames: List<String>?,
     viewsList: List<AppNames>,
     updateValue: (List<String>) -> Unit = {},
+    onShowcaseClick: () -> Unit = {},
+    onShowcaseDismiss: () -> Unit = {}
 ) {
     val context = LocalContext.current
     var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }
@@ -96,7 +105,10 @@ fun ChooseAppList(
     var expanded by remember { mutableStateOf(false) }
 
     DetailsCardColumn {
-        DetailsCard(Modifier.clickable { expanded = true }) {
+        DetailsCard(modifier.clickable {
+            expanded = true
+            onShowcaseClick()
+        }) {
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
@@ -123,8 +135,11 @@ fun ChooseAppList(
 
     if (expanded) {
         ModalBottomSheet(
-            onDismissRequest = { expanded = false },
-            sheetState = rememberModalBottomSheetState()
+            onDismissRequest = {
+                expanded = false
+                onShowcaseDismiss()
+            },
+            sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
         ) {
             BottomSheetContents(
                 installedAppList = installedAppList,
@@ -215,6 +230,23 @@ fun AppCard(
             checked = checkedValue,
             onCheckedChange = onCheckedChange,
             modifier = Modifier.padding(MaterialTheme.sizing.small)
+        )
+    }
+}
+
+val showcase2Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+    Modifier.sequenceShowcaseTarget(
+        index = 2,
+        shape = MaterialTheme.shapes.medium,
+        shapeMargin = 0.dp,
+        backgroundAlpha = 0.9f,
+        fixedContent = { SkipGuideButton(skip) }
+    ) {
+        Text(
+            text = stringResource(R.string.showcase_2),
+            style = MaterialTheme.typography.headlineMedium,
+            color = darkColorScheme().onSurface,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }

@@ -31,9 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
+import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
 import com.sarangem.zenwell.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -43,7 +46,8 @@ fun SaveAndDeleteButton(
     isError: Boolean = false,
     onSave: () -> Unit = {},
     onDelete: () -> Unit = {},
-    goBack: () -> Unit = {}
+    goBack: () -> Unit = {},
+    onShowcaseClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val colorScheme = remember {
@@ -58,7 +62,7 @@ fun SaveAndDeleteButton(
 
     HorizontalFloatingToolbar(
         expanded = true,
-        modifier = modifier.padding(horizontal = MaterialTheme.sizing.small)
+        modifier = Modifier.padding(horizontal = MaterialTheme.sizing.small)
     ) {
 
         // SAVE BUTTON
@@ -67,6 +71,7 @@ fun SaveAndDeleteButton(
             onCheckedChange = {
                 if(!isError){
                     checkedSave = false
+                    onShowcaseClick()
                     onSave()
                     goBack()
                     checkedSave = true
@@ -86,7 +91,7 @@ fun SaveAndDeleteButton(
                     checkedContentColor = colorScheme.onPrimary
                 )
             },
-            modifier = Modifier.weight(1.5f),
+            modifier = modifier.weight(1.5f),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -127,18 +132,37 @@ fun SaveAndDeleteButton(
                 modifier = Modifier.padding(4.dp)
             )
         }
-        if (checkedDelete) {
-            ShowConfirmDialog(
-                icon = R.drawable.filled_delete,
-                title = stringResource(R.string.delete),
-                description = stringResource(R.string.delete_confirmation),
-                onDismiss = { checkedDelete = false },
-                onConfirm = {
-                    checkedDelete = false
-                    onDelete()
-                    goBack()
-                }
-            )
-        }
+    }
+
+    if (checkedDelete) {
+        ShowConfirmDialog(
+            icon = R.drawable.filled_delete,
+            title = stringResource(R.string.delete),
+            description = stringResource(R.string.delete_confirmation),
+            onDismiss = { checkedDelete = false },
+            onConfirm = {
+                checkedDelete = false
+                onDelete()
+                goBack()
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+val showcase3Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+    Modifier.sequenceShowcaseTarget(
+        index = 3,
+        shape = ButtonGroupDefaults.connectedLeadingButtonShapes().shape,
+        shapeMargin = 0.dp,
+        backgroundAlpha = 0.9f,
+        fixedContent = { SkipGuideButton(skip) }
+    ) {
+        Text(
+            text = stringResource(R.string.showcase_3),
+            style = MaterialTheme.typography.headlineMedium,
+            color = darkColorScheme().onSurface,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }

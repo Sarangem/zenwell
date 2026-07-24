@@ -3,7 +3,7 @@
   ~ Licensed under the GNU General Public License v3.0 or later.
   -->
 
-<resources>
+<resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Zenwell</string>
     <string name="strict_block">"Strict Block"</string>
     <string name="timer">Timer</string>
@@ -154,4 +154,10 @@
     <string name="stats">Stats</string>
     <string name="dont_ask_again">Don\'t ask again</string>
     <string name="play_background_media">Play background media</string>
+    <string name="skip_guide">Skip guide</string>
+    <string name="showcase_0">Enable permissions to unlock your focus</string>
+    <string name="showcase_1">Tap + to carve out dedicated focus time</string>
+    <string name="showcase_2">Pick the apps that interrupt your flow</string>
+    <string name="showcase_3">Save and enter your focus zone</string>
+    <string name="showcase_4">Add mindful friction like breathing exercises or math challenges</string>
 </resources>

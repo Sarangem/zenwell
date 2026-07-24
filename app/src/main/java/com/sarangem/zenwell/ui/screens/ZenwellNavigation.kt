@@ -80,7 +80,9 @@ fun AppNavigationFAB(
     modifier: Modifier = Modifier,
     backStack: NavBackStack<NavKey> = rememberNavBackStack(HomePage),
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
-    openEditScreen: (Schedules) -> Unit = {}
+    openEditScreen: (Schedules) -> Unit = {},
+    firstEntry: Int? = null,
+    dismissShowcase: () -> Unit = {}
 ){
     val last = backStack.last()
     AnimatedVisibility(
@@ -89,7 +91,7 @@ fun AppNavigationFAB(
         Box(modifier = Modifier.fillMaxWidth()) {
             HorizontalFloatingToolbar(
                 expanded = true,
-                modifier = modifier
+                modifier = Modifier
                     .padding(MaterialTheme.sizing.small)
                     .padding(end = if(last == HomePage) MaterialTheme.sizing.floatingBar else 0.dp)
                     .align(Alignment.BottomCenter)
@@ -102,7 +104,13 @@ fun AppNavigationFAB(
                 backStack.last() == HomePage,
                 modifier = Modifier.align(Alignment.BottomEnd)
             ) {
-                NewScheduleFAB(addNewSchedule = addNewSchedule, openEditScreen = openEditScreen)
+                NewScheduleFAB(
+                    modifier,
+                    firstEntry,
+                    dismissShowcase,
+                    addNewSchedule,
+                    openEditScreen
+                )
             }
         }
     }

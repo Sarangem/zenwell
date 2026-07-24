@@ -53,14 +53,24 @@ class HomeViewModel @Inject constructor(
 
     fun updateUiState(uiState: HomeUiState) { _uiState.update { uiState } }
 
-    fun updateUserPreferences(userPreferences: UserPreferences) {
+    fun hideNotificationCard() {
+        val userPrefs = _uiState.value.userPreferences.copy(showNotificationPermissionCard = false)
         _uiState.update { it.copy(
-            userPreferences = userPreferences,
-            showNotificationPermissionRationale =
-                if (!userPreferences.showNotificationPermissionCard) false
-                else it.showNotificationPermissionRationale
-        ) }
-        viewModelScope.launch(Dispatchers.IO) { schedulesRepository.upsertUserPreferences(userPreferences) }
+            userPreferences = userPrefs,
+            showNotificationPermissionRationale = false
+        )}
+        viewModelScope.launch(Dispatchers.IO) { schedulesRepository.upsertUserPreferences(userPrefs) }
+    }
+
+    fun updateUserEntry(entry: Int?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            schedulesRepository.upsertUserPreferences(
+                _uiState.value.userPreferences.copy(firstEntry = entry)
+            )
+        }
+
+        // entry is only updated on app start, not mid-session
+        _uiState.update { it.copy(userPreferences = _uiState.value.userPreferences.copy(firstEntry = null)) }
     }
 
     fun recheckPermission(context: Context){
@@ -70,8 +80,7 @@ class HomeViewModel @Inject constructor(
         }
         _uiState.update {
             it.copy(
-                showNotificationPermissionRationale = needsPermission && !isEnabled &&
-                        _uiState.value.userPreferences.showNotificationPermissionCard,
+                showNotificationPermissionRationale = needsPermission && !isEnabled && _uiState.value.userPreferences.showNotificationPermissionCard,
                 showAccessibilityPermissionRationale = AppBlockerService.instance == null
             )
         }

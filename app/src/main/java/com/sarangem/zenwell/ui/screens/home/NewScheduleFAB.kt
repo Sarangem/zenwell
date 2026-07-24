@@ -7,14 +7,26 @@ package com.sarangem.zenwell.ui.screens.home
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleFloatingActionButton
 import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
 import androidx.compose.material3.animateFloatingActionButton
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -31,15 +43,42 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.traversalIndex
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
+import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun NewScheduleFAB(
+    modifier: Modifier = Modifier,
+    firstEntry: Int? = null,
+    nextShowcase: () -> Unit = {},
+    addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
+    openEditScreen: (Schedules) -> Unit = {},
+) {
+    AnimatedContent (
+        modifier = modifier,
+        targetState = firstEntry
+    ) {
+        if(it == 1) FirstEntryScheduleFAB(
+            addNewSchedule = addNewSchedule,
+            openEditScreen = openEditScreen,
+            nextShowcase = nextShowcase
+        ) else RegularEntryScheduleFAB(
+            addNewSchedule = addNewSchedule,
+            openEditScreen = openEditScreen
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun RegularEntryScheduleFAB(
     modifier: Modifier = Modifier,
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
@@ -126,5 +165,71 @@ fun NewScheduleFAB(
                 Text(text = stringResource(R.string.pomodoro_schedule))
             },
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun FirstEntryScheduleFAB(
+    modifier: Modifier = Modifier,
+    addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
+    openEditScreen: (Schedules) -> Unit = {},
+    nextShowcase: () -> Unit = {}
+){
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    LargeFloatingActionButton(
+        onClick = {
+            nextShowcase()
+            scope.launch(Dispatchers.IO) {
+                val newSchedule = addNewSchedule(context, false)
+                withContext(Dispatchers.Main) {
+                    openEditScreen(newSchedule)
+                }
+            }
+        },
+        modifier = modifier
+    ) { Icon(painterResource(R.drawable.filled_add), contentDescription = null) }
+}
+
+val showcase1Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+    Modifier.sequenceShowcaseTarget(
+        index = 1,
+        shape = RoundedCornerShape(32.dp),
+        shapeMargin = 0.dp,
+        backgroundAlpha = 0.9f,
+        fixedContent = { SkipGuideButton(skip) }
+    ) {
+        Text(
+            text = stringResource(R.string.showcase_1),
+            style = MaterialTheme.typography.headlineMedium,
+            color = darkColorScheme().onSurface,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+@Composable
+fun SequenceShowcaseScope.SkipGuideButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopEnd
+    ) {
+        Button(
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(MaterialTheme.sizing.small),
+            onClick = {
+                showcaseState.dismiss()
+                onClick()
+            },
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondaryContainer),
+            contentPadding = PaddingValues(horizontal = MaterialTheme.sizing.extraSmall)
+        ) {
+            Text(
+                stringResource(R.string.skip_guide),
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+        }
     }
 }
