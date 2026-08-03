@@ -12,10 +12,8 @@ import androidx.room.PrimaryKey
 data class UserPreferences(
 
     @PrimaryKey val id: Int = 1,
+
     val showNotificationPermissionCard: Boolean = true,
 
-    // null: old user
-    // 1: first entry to app
-    // 2: second entry to app
-    val firstEntry: Int? = 1
+    val firstEntry: Boolean = true
 )

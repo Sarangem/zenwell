@@ -56,7 +56,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun NewScheduleFAB(
     modifier: Modifier = Modifier,
-    firstEntry: Int? = null,
+    firstEntry: Boolean = false,
     nextShowcase: () -> Unit = {},
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
@@ -65,7 +65,7 @@ fun NewScheduleFAB(
         modifier = modifier,
         targetState = firstEntry
     ) {
-        if(it == 1) FirstEntryScheduleFAB(
+        if(it) FirstEntryScheduleFAB(
             addNewSchedule = addNewSchedule,
             openEditScreen = openEditScreen,
             nextShowcase = nextShowcase

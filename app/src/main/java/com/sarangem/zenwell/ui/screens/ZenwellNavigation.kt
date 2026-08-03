@@ -81,7 +81,7 @@ fun AppNavigationFAB(
     backStack: NavBackStack<NavKey> = rememberNavBackStack(HomePage),
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
-    firstEntry: Int? = null,
+    firstEntry: Boolean = false,
     dismissShowcase: () -> Unit = {}
 ){
     val last = backStack.last()

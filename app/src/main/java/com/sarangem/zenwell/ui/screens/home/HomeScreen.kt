@@ -97,13 +97,12 @@ fun SequenceShowcaseScope.HomeScreen(
 
     // start intro showcase
     LaunchedEffect(homeUiState.userPreferences.firstEntry, homeUiState.showAccessibilityPermissionRationale) {
+        if (!homeUiState.userPreferences.firstEntry) return@LaunchedEffect
         showcaseState.dismiss()
-        when (homeUiState.userPreferences.firstEntry) {
-            1-> if (homeUiState.showAccessibilityPermissionRationale) {
-                showcaseState.start(0)
-            } else {
-                showcaseState.start(1)
-            }
+        if (homeUiState.showAccessibilityPermissionRationale) {
+            showcaseState.start(0)
+        } else {
+            showcaseState.start(1)
         }
     }
 
@@ -119,8 +118,8 @@ fun SequenceShowcaseScope.HomeScreen(
         openEditScreen,
         openFocusScreen,
         dismissShowcase = { showcaseState.next() },
-        showcase0Modifier = showcase0Modifier { viewModel.updateUserEntry(null) },
-        showcase1Modifier = showcase1Modifier { viewModel.updateUserEntry(null) },
+        showcase0Modifier = showcase0Modifier(viewModel::setAsExistingUser),
+        showcase1Modifier = showcase1Modifier(viewModel::setAsExistingUser),
         userScrollEnabled = !showcaseState.showCaseVisible,
         getPomodoroWindow = { AppBlockerService.instance?.getPomodoroWindow(it) }
     )

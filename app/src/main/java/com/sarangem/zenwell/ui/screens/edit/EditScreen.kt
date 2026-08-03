@@ -25,14 +25,12 @@ fun SequenceShowcaseScope.EditScreen(
     modifier: Modifier = Modifier,
     viewModel: EditViewModel,
     showTopAppBar: Boolean = true,
-    updateUserEntry: (Int?) -> Unit = {},
-    firstEntry: Int? = null,
+    setAsExistingUser: () -> Unit = {},
+    firstEntry: Boolean = false,
     goBack: () -> Unit = {}
 ) {
     LaunchedEffect(firstEntry) {
-        when(firstEntry){
-            1 -> showcaseState.start(2)
-        }
+        if (firstEntry) showcaseState.start(2)
     }
     val uiState by viewModel.uiState.collectAsState()
     EditScreenContents(
@@ -43,13 +41,13 @@ fun SequenceShowcaseScope.EditScreen(
         showTopAppBar = showTopAppBar,
         saveToDatabase = viewModel::saveToDatabase,
         deleteSchedule = viewModel::deleteSchedule,
-        showcase2Modifier = showcase2Modifier { updateUserEntry(null) },
+        showcase2Modifier = showcase2Modifier(setAsExistingUser),
         showcase2onClick = { showcaseState.dismiss() },
-        showcase2onDismiss = { if (firstEntry == 1) showcaseState.start(3) },
-        showcase3Modifier = showcase3Modifier { updateUserEntry(null) },
+        showcase2onDismiss = { if (firstEntry) showcaseState.start(3) },
+        showcase3Modifier = showcase3Modifier(setAsExistingUser),
         showcase3onClick = { showcaseState.next() },
-        showcase4Modifier = showcase4Modifier { updateUserEntry(null) },
-        showcase4onClick = { if (firstEntry == 1) updateUserEntry(null) },
+        showcase4Modifier = showcase4Modifier(setAsExistingUser),
+        showcase4onClick = { if (firstEntry) setAsExistingUser() },
         userScrollEnabled = !showcaseState.showCaseVisible,
         goBack = goBack
     )

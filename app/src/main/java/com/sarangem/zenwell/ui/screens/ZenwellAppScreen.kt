@@ -68,7 +68,7 @@ fun ZenwellAppScreen() {
             modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
                 if(!isExpanded) AppNavigationFAB(
-                    modifier = showcase1Modifier { homeViewModel.updateUserEntry(null) },
+                    modifier = showcase1Modifier { homeViewModel.setAsExistingUser() },
                     backStack = backStack,
                     addNewSchedule = homeViewModel::addNewSchedule,
                     openEditScreen = { schedules ->
@@ -114,7 +114,7 @@ fun ZenwellAppScreen() {
                                 viewModel = editViewModel,
                                 showTopAppBar = LocalBackButtonVisibility.current,
                                 goBack = { backStack.removeLastOrNull() },
-                                updateUserEntry = { homeViewModel.updateUserEntry(it) },
+                                setAsExistingUser = { homeViewModel.setAsExistingUser() },
                                 firstEntry = firstEntry
                             )
                         }

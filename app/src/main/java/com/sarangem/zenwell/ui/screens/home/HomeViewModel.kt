@@ -62,15 +62,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) { schedulesRepository.upsertUserPreferences(userPrefs) }
     }
 
-    fun updateUserEntry(entry: Int?) {
+    fun setAsExistingUser() {
         viewModelScope.launch(Dispatchers.IO) {
             schedulesRepository.upsertUserPreferences(
-                _uiState.value.userPreferences.copy(firstEntry = entry)
+                _uiState.value.userPreferences.copy(firstEntry = false)
             )
         }
-
-        // entry is only updated on app start, not mid-session
-        _uiState.update { it.copy(userPreferences = _uiState.value.userPreferences.copy(firstEntry = null)) }
+        _uiState.update { it.copy(userPreferences = _uiState.value.userPreferences.copy(firstEntry = false)) }
     }
 
     fun recheckPermission(context: Context){
@@ -114,5 +112,5 @@ data class HomeUiState(
     val showAccessibilityPermissionRationale: Boolean = false,
     val showNotificationPermissionRationale: Boolean = false,
     val currentFilter: SchedulesFilter = SchedulesFilter.All,
-    val userPreferences: UserPreferences = UserPreferences(1, false, null)
+    val userPreferences: UserPreferences = UserPreferences(1, false, false)
 )

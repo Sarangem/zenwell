@@ -14,6 +14,7 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.sarangem.zenwell.YOUTUBE_SHORTS_NAME
 import com.sarangem.zenwell.YOUTUBE_SHORTS_VIEW_ID
+import com.sarangem.zenwell.database.migrations.MIGRATION_19_20
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.BlockedApps
 import com.sarangem.zenwell.database.tables.Schedules
@@ -31,7 +32,7 @@ import kotlinx.coroutines.launch
         BlockedApps::class,
         UserPreferences::class
     ],
-    version = 19,
+    version = 20,
     autoMigrations = [
         AutoMigration(from = 18, to = 19)
     ],
@@ -57,6 +58,7 @@ abstract class ZenwellDatabase : RoomDatabase() {
                     "zenwell_database"
                 )
                     .addCallback(ZenwellDatabaseCallback())
+                    .addMigrations(MIGRATION_19_20)
                     .fallbackToDestructiveMigration(false)
                     .build()
                     .also { Instance = it }
