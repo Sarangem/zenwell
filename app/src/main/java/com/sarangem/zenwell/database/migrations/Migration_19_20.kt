@@ -10,6 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 val MIGRATION_19_20 = object : Migration(19, 20) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("UPDATE user_prefs SET firstEntry = 1")
+        db.execSQL("DROP TABLE user_prefs")
+        db.execSQL("CREATE TABLE IF NOT EXISTS `user_prefs` (`id` INTEGER NOT NULL, `showNotificationPermissionCard` INTEGER NOT NULL, `firstEntry` INTEGER NOT NULL, PRIMARY KEY(`id`))")
     }
 }
