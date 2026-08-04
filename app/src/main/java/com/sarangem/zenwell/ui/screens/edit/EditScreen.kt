@@ -14,14 +14,11 @@ import com.sarangem.zenwell.database.tables.Schedules
 import androidx.compose.ui.tooling.preview.Preview
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
-import com.sarangem.zenwell.ui.screens.edit.fields.showcase2Modifier
-import com.sarangem.zenwell.ui.screens.edit.fields.showcase3Modifier
-import com.sarangem.zenwell.ui.screens.edit.fields.showcase4Modifier
-import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
+import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @Composable
-fun SequenceShowcaseScope.EditScreen(
+fun EditScreen(
     modifier: Modifier = Modifier,
     viewModel: EditViewModel,
     showTopAppBar: Boolean = true,
@@ -29,6 +26,7 @@ fun SequenceShowcaseScope.EditScreen(
     firstEntry: Boolean = false,
     goBack: () -> Unit = {}
 ) {
+    val showcaseState = LocalSequenceShowcaseState.current
     LaunchedEffect(firstEntry) {
         if (firstEntry) showcaseState.start(2)
     }
@@ -41,17 +39,8 @@ fun SequenceShowcaseScope.EditScreen(
         showTopAppBar = showTopAppBar,
         saveToDatabase = viewModel::saveToDatabase,
         deleteSchedule = viewModel::deleteSchedule,
-        showcase2Modifier = showcase2Modifier(setAsExistingUser),
-        showcase2onClick = { showcaseState.dismiss() },
-        showcase2onDismiss = { if (firstEntry) showcaseState.start(3) },
-        showcase3Modifier = showcase3Modifier(setAsExistingUser),
-        showcase3onClick = { showcaseState.dismiss() },
-        showcase3onDismiss = { if (firstEntry) showcaseState.start(4) },
-        showcase4Modifier = showcase4Modifier(setAsExistingUser),
-        showcase4onClick = {
-            showcaseState.dismiss()
-            if (firstEntry) setAsExistingUser()
-        },
+        firstEntry = firstEntry,
+        setAsExistingUser = setAsExistingUser,
         userScrollEnabled = !showcaseState.showCaseVisible,
         goBack = goBack
     )

@@ -29,19 +29,20 @@ import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
-import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
+import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseUnlockMethod(
-    modifier: Modifier = Modifier,
     unlockMethod: UnlockMethod,
     updateValue: (UnlockMethod) -> Unit = {},
-    onShowcaseClick: () -> Unit = {},
-    onShowcaseDismiss: () -> Unit = {}
+    firstEntry: Boolean = false,
+    setAsExistingUser: () -> Unit = {}
 ) {
+    val showcaseState = LocalSequenceShowcaseState.current
     var expanded by remember { mutableStateOf(false) }
-    DetailsCard(modifier) {
+    DetailsCard(showcase3Modifier(setAsExistingUser)) {
         Column(Modifier.weight(1f)) {
             Text(
                 text = stringResource(R.string.unlock_method),
@@ -52,7 +53,7 @@ fun ChooseUnlockMethod(
             modifier = Modifier.weight(2f),
             expanded = expanded,
             onExpandedChange = {
-                onShowcaseClick()
+                showcaseState.dismiss()
                 expanded = !expanded
             },
         ) {
@@ -71,7 +72,7 @@ fun ChooseUnlockMethod(
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = {
-                    onShowcaseDismiss()
+                    if (firstEntry) showcaseState.start(4)
                     expanded = !expanded
                 },
                 shape = MaterialTheme.shapes.large
@@ -86,7 +87,7 @@ fun ChooseUnlockMethod(
                         },
                         onClick = {
                             updateValue(it)
-                            onShowcaseDismiss()
+                            if (firstEntry) showcaseState.start(4)
                             expanded = !expanded
                         }
                     )
@@ -96,7 +97,7 @@ fun ChooseUnlockMethod(
     }
 }
 
-val showcase3Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+val showcase3Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip ->
     Modifier.sequenceShowcaseTarget(
         index = 3,
         shape = MaterialTheme.shapes.medium,

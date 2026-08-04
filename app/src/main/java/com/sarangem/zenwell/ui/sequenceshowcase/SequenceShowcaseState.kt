@@ -28,21 +28,18 @@
 package com.sarangem.zenwell.ui.sequenceshowcase
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.Dp
 
-@Composable
-fun rememberSequenceShowcaseState(): SequenceShowcaseState {
-    return remember { SequenceShowcaseState() }
-}
+val LocalSequenceShowcaseState = compositionLocalOf { SequenceShowcaseState() }
 
 /**
  * Manages the targets of the showcase and the current target index.

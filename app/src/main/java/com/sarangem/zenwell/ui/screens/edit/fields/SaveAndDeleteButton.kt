@@ -36,7 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
-import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
+import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -47,8 +48,10 @@ fun SaveAndDeleteButton(
     onSave: () -> Unit = {},
     onDelete: () -> Unit = {},
     goBack: () -> Unit = {},
-    onShowcaseClick: () -> Unit = {}
+    firstEntry: Boolean = false,
+    setAsExistingUser: () -> Unit = {}
 ) {
+    val showcaseState = LocalSequenceShowcaseState.current
     val context = LocalContext.current
     val colorScheme = remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -71,7 +74,8 @@ fun SaveAndDeleteButton(
             onCheckedChange = {
                 if(!isError){
                     checkedSave = false
-                    onShowcaseClick()
+                    showcaseState.dismiss()
+                    if (firstEntry) setAsExistingUser()
                     onSave()
                     goBack()
                     checkedSave = true
@@ -91,7 +95,9 @@ fun SaveAndDeleteButton(
                     checkedContentColor = colorScheme.onPrimary
                 )
             },
-            modifier = modifier.weight(1.5f),
+            modifier = modifier
+                .weight(1.5f)
+                .then(showcase4Modifier(setAsExistingUser)),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -150,7 +156,7 @@ fun SaveAndDeleteButton(
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-val showcase4Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+val showcase4Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip ->
     Modifier.sequenceShowcaseTarget(
         index = 4,
         shape = ButtonGroupDefaults.connectedLeadingButtonShapes().shape,

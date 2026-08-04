@@ -77,12 +77,11 @@ fun AppNavigationRail(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppNavigationFAB(
-    modifier: Modifier = Modifier,
     backStack: NavBackStack<NavKey> = rememberNavBackStack(HomePage),
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
     firstEntry: Boolean = false,
-    dismissShowcase: () -> Unit = {}
+    setAsExistingUser: () -> Unit = {}
 ){
     val last = backStack.last()
     AnimatedVisibility(
@@ -104,13 +103,7 @@ fun AppNavigationFAB(
                 backStack.last() == HomePage,
                 modifier = Modifier.align(Alignment.BottomEnd)
             ) {
-                NewScheduleFAB(
-                    modifier,
-                    firstEntry,
-                    dismissShowcase,
-                    addNewSchedule,
-                    openEditScreen
-                )
+                NewScheduleFAB(firstEntry, addNewSchedule, openEditScreen, setAsExistingUser)
             }
         }
     }

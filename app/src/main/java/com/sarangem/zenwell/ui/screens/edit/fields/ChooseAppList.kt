@@ -55,7 +55,8 @@ import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
-import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
+import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.MyPackageInfo
@@ -66,13 +67,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseAppList(
-    modifier: Modifier = Modifier,
     appNames: List<String>?,
     viewsList: List<AppNames>,
     updateValue: (List<String>) -> Unit = {},
-    onShowcaseClick: () -> Unit = {},
-    onShowcaseDismiss: () -> Unit = {}
+    firstEntry: Boolean = false,
+    setAsExistingUser: () -> Unit = {}
 ) {
+    val showcaseState = LocalSequenceShowcaseState.current
     val context = LocalContext.current
     var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {
@@ -105,10 +106,13 @@ fun ChooseAppList(
     var expanded by remember { mutableStateOf(false) }
 
     DetailsCardColumn {
-        DetailsCard(modifier.clickable {
-            expanded = true
-            onShowcaseClick()
-        }) {
+        DetailsCard(
+            showcase2Modifier(setAsExistingUser)
+                .clickable {
+                    expanded = true
+                    showcaseState.dismiss()
+                }
+        ) {
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
@@ -137,7 +141,7 @@ fun ChooseAppList(
         ModalBottomSheet(
             onDismissRequest = {
                 expanded = false
-                onShowcaseDismiss()
+                if (firstEntry) showcaseState.start(3)
             },
             sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
         ) {
@@ -234,7 +238,7 @@ fun AppCard(
     }
 }
 
-val showcase2Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+val showcase2Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip ->
     Modifier.sequenceShowcaseTarget(
         index = 2,
         shape = MaterialTheme.shapes.medium,

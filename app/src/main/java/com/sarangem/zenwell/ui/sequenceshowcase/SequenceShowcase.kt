@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.Dp
@@ -41,80 +42,74 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SequenceShowcase(
-    state: SequenceShowcaseState = rememberSequenceShowcaseState(),
-    content: @Composable SequenceShowcaseScope.() -> Unit
+    state: SequenceShowcaseState = remember { SequenceShowcaseState() },
+    content: @Composable () -> Unit
 ) {
-    val scope = remember(state) { SequenceShowcaseScope(state) }
-
-    Box(modifier = Modifier.fillMaxWidth()) {
-        scope.content()
-
-        state.currentTarget?.let { target ->
-            ShowcaseView(
-                visible = state.showCaseVisible,
-                targetCoordinates = target.coordinates,
-                position = target.position,
-                alignment = target.alignment,
-                animationDuration = target.duration,
-                hasAppeared = { appeared ->
-                    if (appeared) {
-                        state.onShowcaseViewAppear()
-                    } else {
-                        state.onShowcaseViewDisappear()
-                    }
-                },
-                shape = target.shape,
-                shapeMargin = target.shapeMargin,
-                backgroundAlpha = target.backgroundAlpha,
-                fixedContent = target.fixedContent
-            ) { targetRect ->
-                target.dialog(targetRect)
+    CompositionLocalProvider(LocalSequenceShowcaseState provides state) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            content()
+            state.currentTarget?.let { target ->
+                ShowcaseView(
+                    visible = state.showCaseVisible,
+                    targetCoordinates = target.coordinates,
+                    position = target.position,
+                    alignment = target.alignment,
+                    animationDuration = target.duration,
+                    hasAppeared = { appeared ->
+                        if (appeared) {
+                            state.onShowcaseViewAppear()
+                        } else {
+                            state.onShowcaseViewDisappear()
+                        }
+                    },
+                    shape = target.shape,
+                    shapeMargin = target.shapeMargin,
+                    backgroundAlpha = target.backgroundAlpha,
+                    fixedContent = target.fixedContent
+                ) { targetRect ->
+                    target.dialog(targetRect)
+                }
             }
         }
     }
 }
 
 /**
- * Provides a function to create a Modifier that marks a Composable as a target for the SequenceShowcase.
+ * Creates a Modifier that marks a Composable as a target for the SequenceShowcase.
+ *
+ * @param index The index of the target in the sequence.
+ * @param position The position of the dialog relative to the target element.
+ * @param alignment The alignment of the dialog relative to the target element respectively.
+ * @param shape The shape of highlight around the target element.
+ * @param shapeMargin the margin or padding between highlighted shape and target element.
+ * @param animationDuration The duration of the fade enter and exit animation.
+ * @param backgroundAlpha The alpha value of the background overlay.
+ * @param fixedContent The content displayed at a fixed position on the screen regardless of target element
+ * @param dialog The content of the dialog.
  */
-class SequenceShowcaseScope(
-    val showcaseState: SequenceShowcaseState,
-) {
-    /**
-     * Creates a Modifier that marks a Composable as a target for the SequenceShowcase.
-     *
-     * @param index The index of the target in the sequence.
-     * @param position The position of the dialog relative to the target element.
-     * @param alignment The alignment of the dialog relative to the target element respectively.
-     * @param shape The shape of highlight around the target element.
-     * @param shapeMargin the margin or padding between highlighted shape and target element.
-     * @param animationDuration The duration of the fade enter and exit animation.
-     * @param backgroundAlpha The alpha value of the background overlay.
-     * @param fixedContent The content displayed at a fixed position on the screen regardless of target element
-     * @param dialog The content of the dialog.
-     */
-    fun Modifier.sequenceShowcaseTarget(
-        index: Int,
-        position: ShowcasePosition = ShowcasePosition.Default,
-        alignment: ShowcaseAlignment = ShowcaseAlignment.Default,
-        shape: Shape = CircleShape,
-        shapeMargin: Dp = 8.dp,
-        animationDuration: Pair<Int, Int> = 700 to 700,
-        backgroundAlpha: Float = 0.6f,
-        fixedContent: @Composable () -> Unit = {},
-        dialog: @Composable (Rect) -> Unit,
-    ): Modifier = onGloballyPositioned { coordinates ->
-        showcaseState.targets[index] = SequenceShowcaseTarget(
-            index = index,
-            coordinates = coordinates,
-            position = position,
-            alignment = alignment,
-            shape = shape,
-            shapeMargin = shapeMargin,
-            duration = animationDuration,
-            backgroundAlpha = backgroundAlpha,
-            fixedContent = fixedContent,
-            dialog = dialog
-        )
-    }
+@Composable
+fun Modifier.sequenceShowcaseTarget(
+    index: Int,
+    showcaseState: SequenceShowcaseState = LocalSequenceShowcaseState.current,
+    position: ShowcasePosition = ShowcasePosition.Default,
+    alignment: ShowcaseAlignment = ShowcaseAlignment.Default,
+    shape: Shape = CircleShape,
+    shapeMargin: Dp = 8.dp,
+    animationDuration: Pair<Int, Int> = 700 to 700,
+    backgroundAlpha: Float = 0.6f,
+    fixedContent: @Composable () -> Unit = {},
+    dialog: @Composable (Rect) -> Unit,
+): Modifier = onGloballyPositioned { coordinates ->
+    showcaseState.targets[index] = SequenceShowcaseTarget(
+        index = index,
+        coordinates = coordinates,
+        position = position,
+        alignment = alignment,
+        shape = shape,
+        shapeMargin = shapeMargin,
+        duration = animationDuration,
+        backgroundAlpha = backgroundAlpha,
+        fixedContent = fixedContent,
+        dialog = dialog
+    )
 }

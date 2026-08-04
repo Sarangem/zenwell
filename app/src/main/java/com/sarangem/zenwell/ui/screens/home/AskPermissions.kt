@@ -7,11 +7,13 @@ package com.sarangem.zenwell.ui.screens.home
 
 import android.os.Build
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -29,18 +31,27 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
+import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
 
 @Composable
-fun AccessibilityPermissionCard(
-    modifier: Modifier = Modifier,
-    recheckPermission: () -> Unit = {}
+fun LazyItemScope.AccessibilityPermissionCard(
+    recheckPermission: () -> Unit = {},
+    showCard: Boolean = false,
+    setAsExistingUser: () -> Unit = {}
 ){
-    PermissionRequestCard(
-        modifier = modifier,
-        name = R.string.accessibility_service_permission,
-        onGrantClick = recheckPermission
-    )
+    AnimatedVisibility(
+        showCard,
+        modifier = Modifier.padding(MaterialTheme.sizing.small)
+    ) {
+        PermissionRequestCard(
+            modifier = Modifier
+                .animateItem()
+                .then(showcase0Modifier(setAsExistingUser)),
+            name = R.string.accessibility_service_permission,
+            onGrantClick = recheckPermission
+        )
+    }
+
 }
 
 @Composable
@@ -113,7 +124,7 @@ fun PermissionRequestCard(
     }
 }
 
-val showcase0Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+val showcase0Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip ->
     Modifier.sequenceShowcaseTarget(
         index = 0,
         shape = MaterialTheme.shapes.medium,

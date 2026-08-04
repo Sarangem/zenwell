@@ -47,7 +47,6 @@ import com.sarangem.zenwell.ui.screens.edit.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.screens.edit.EditViewModel
 import com.sarangem.zenwell.ui.screens.home.HomeScreen
 import com.sarangem.zenwell.ui.screens.home.HomeViewModel
-import com.sarangem.zenwell.ui.screens.home.showcase1Modifier
 import com.sarangem.zenwell.ui.screens.pomodoro.FocusScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
 import com.sarangem.zenwell.ui.screens.stats.StatsScreen
@@ -68,7 +67,6 @@ fun ZenwellAppScreen() {
             modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
                 if(!isExpanded) AppNavigationFAB(
-                    modifier = showcase1Modifier { homeViewModel.setAsExistingUser() },
                     backStack = backStack,
                     addNewSchedule = homeViewModel::addNewSchedule,
                     openEditScreen = { schedules ->
@@ -76,7 +74,7 @@ fun ZenwellAppScreen() {
                         editViewModel.initialize(schedules)
                     },
                     firstEntry = firstEntry,
-                    dismissShowcase = { showcaseState.dismiss() }
+                    setAsExistingUser = homeViewModel::setAsExistingUser
                 )
             }
         ) { padding -> padding

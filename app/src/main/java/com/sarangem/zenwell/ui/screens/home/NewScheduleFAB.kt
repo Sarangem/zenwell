@@ -47,7 +47,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
+import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,20 +56,18 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun NewScheduleFAB(
-    modifier: Modifier = Modifier,
     firstEntry: Boolean = false,
-    nextShowcase: () -> Unit = {},
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
     openEditScreen: (Schedules) -> Unit = {},
+    setAsExistingUser: () -> Unit = {}
 ) {
     AnimatedContent (
-        modifier = modifier,
+        modifier = showcase1Modifier(setAsExistingUser),
         targetState = firstEntry
     ) {
         if(it) FirstEntryScheduleFAB(
             addNewSchedule = addNewSchedule,
-            openEditScreen = openEditScreen,
-            nextShowcase = nextShowcase
+            openEditScreen = openEditScreen
         ) else RegularEntryScheduleFAB(
             addNewSchedule = addNewSchedule,
             openEditScreen = openEditScreen
@@ -173,14 +172,14 @@ fun RegularEntryScheduleFAB(
 fun FirstEntryScheduleFAB(
     modifier: Modifier = Modifier,
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _,_ -> Schedules() },
-    openEditScreen: (Schedules) -> Unit = {},
-    nextShowcase: () -> Unit = {}
+    openEditScreen: (Schedules) -> Unit = {}
 ){
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val showcaseState = LocalSequenceShowcaseState.current
     LargeFloatingActionButton(
         onClick = {
-            nextShowcase()
+            showcaseState.dismiss()
             scope.launch(Dispatchers.IO) {
                 val newSchedule = addNewSchedule(context, false)
                 withContext(Dispatchers.Main) {
@@ -192,7 +191,7 @@ fun FirstEntryScheduleFAB(
     ) { Icon(painterResource(R.drawable.filled_add), contentDescription = null) }
 }
 
-val showcase1Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+val showcase1Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip ->
     Modifier.sequenceShowcaseTarget(
         index = 1,
         shape = RoundedCornerShape(32.dp),
@@ -210,7 +209,8 @@ val showcase1Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit)
 }
 
 @Composable
-fun SequenceShowcaseScope.SkipGuideButton(onClick: () -> Unit) {
+fun SkipGuideButton(onClick: () -> Unit) {
+    val showcaseState = LocalSequenceShowcaseState.current
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopEnd

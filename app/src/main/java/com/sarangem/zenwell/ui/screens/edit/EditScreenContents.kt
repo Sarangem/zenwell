@@ -41,14 +41,8 @@ fun EditScreenContents(
     showTopAppBar: Boolean = true,
     saveToDatabase: () -> Unit = {},
     deleteSchedule: () -> Unit = {},
-    showcase2Modifier: Modifier = Modifier,
-    showcase2onClick: () -> Unit = {},
-    showcase2onDismiss: () -> Unit = {},
-    showcase3Modifier: Modifier = Modifier,
-    showcase3onClick: () -> Unit = {},
-    showcase3onDismiss: () -> Unit = {},
-    showcase4Modifier: Modifier = Modifier,
-    showcase4onClick: () -> Unit = {},
+    firstEntry: Boolean = false,
+    setAsExistingUser: () -> Unit = {},
     userScrollEnabled: Boolean = true,
     goBack: () -> Unit = {},
 ) {
@@ -59,12 +53,12 @@ fun EditScreenContents(
         },
         floatingActionButton = {
             SaveAndDeleteButton(
-                modifier = showcase4Modifier,
                 onSave = saveToDatabase,
                 onDelete = deleteSchedule,
                 goBack = goBack,
                 isError = uiState.validationErrors.isNotEmpty(),
-                onShowcaseClick = showcase4onClick
+                firstEntry = firstEntry,
+                setAsExistingUser = setAsExistingUser
             )
         },
         floatingActionButtonPosition = FabPosition.Center
@@ -82,17 +76,16 @@ fun EditScreenContents(
                     DetailsCardWithTextField(R.string.schedule_title, title) { updateSchedule(copy(title = it)) }
                     DetailsCardWithTextField(R.string.message, message, singleLine = false) { updateSchedule(copy(message = it)) }
                 }
-                ChooseAppList(showcase2Modifier, uiState.appNames, uiState.viewsList, updateAppNames, showcase2onClick, showcase2onDismiss)
+                ChooseAppList(uiState.appNames, uiState.viewsList, updateAppNames, firstEntry, setAsExistingUser)
 
                 if (!isPomodoro) {
                     DetailsCardColumn {
-                        ChooseUnlockMethod(
-                            modifier = showcase3Modifier,
-                            unlockMethod = unlockMethod,
-                            updateValue = { updateSchedule(copy(unlockMethod = it)) },
-                            onShowcaseClick = showcase3onClick,
-                            onShowcaseDismiss = showcase3onDismiss
-                        )
+                            ChooseUnlockMethod(
+                                unlockMethod = unlockMethod,
+                                updateValue = { updateSchedule(copy(unlockMethod = it)) },
+                                firstEntry = firstEntry,
+                                setAsExistingUser = setAsExistingUser
+                            )
 
                         AnimatedContent(
                             targetState = unlockMethod,

@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.edit
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -48,17 +49,17 @@ import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
-import androidx.core.content.edit
-import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcaseScope
+import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
 
 @Composable
-fun SequenceShowcaseScope.HomeScreen(
+fun HomeScreen(
     modifier: Modifier = Modifier,
     scheduleClicked: Int = 0,
     viewModel: HomeViewModel = hiltViewModel(),
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
 ) {
+    val showcaseState = LocalSequenceShowcaseState.current
     val homeUiState by viewModel.uiState.collectAsState()
 
     // check permissions properly
@@ -96,7 +97,10 @@ fun SequenceShowcaseScope.HomeScreen(
     val grantAccessibilityPermission = { accessibilityPermissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
 
     // start intro showcase
-    LaunchedEffect(homeUiState.userPreferences.firstEntry, homeUiState.showAccessibilityPermissionRationale) {
+    LaunchedEffect(
+        homeUiState.userPreferences.firstEntry,
+        homeUiState.showAccessibilityPermissionRationale
+    ) {
         if (!homeUiState.userPreferences.firstEntry) return@LaunchedEffect
         showcaseState.dismiss()
         if (homeUiState.showAccessibilityPermissionRationale) {
@@ -116,10 +120,8 @@ fun SequenceShowcaseScope.HomeScreen(
         grantAccessibilityPermission,
         grantNotificationPermission,
         openEditScreen,
-        openFocusScreen,
-        dismissShowcase = { showcaseState.next() },
-        showcase0Modifier = showcase0Modifier(viewModel::setAsExistingUser),
-        showcase1Modifier = showcase1Modifier(viewModel::setAsExistingUser),
+        openFocusScreen = openFocusScreen,
+        setAsExistingUser = viewModel::setAsExistingUser,
         userScrollEnabled = !showcaseState.showCaseVisible,
         getPomodoroWindow = { AppBlockerService.instance?.getPomodoroWindow(it) }
     )
@@ -139,9 +141,7 @@ fun HomeScreen(
     grantNotificationPermission: () -> Unit = {},
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
-    dismissShowcase: () -> Unit = {},
-    showcase0Modifier: Modifier = Modifier,
-    showcase1Modifier: Modifier = Modifier,
+    setAsExistingUser: () -> Unit = {},
     userScrollEnabled: Boolean = true,
     getPomodoroWindow: (Int) -> PomodoroWindow? = { null }
 ) {
@@ -160,11 +160,10 @@ fun HomeScreen(
         floatingActionButton = {
             if(currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND))
                 NewScheduleFAB(
-                    showcase1Modifier,
                     uiState.userPreferences.firstEntry,
-                    dismissShowcase,
                     addNewSchedule,
-                    openEditScreen
+                    openEditScreen,
+                    setAsExistingUser
                 )
         }
     ) { innerPadding ->
@@ -177,12 +176,11 @@ fun HomeScreen(
             userScrollEnabled = userScrollEnabled
         ) {
             item {
-                AnimatedVisibility(
-                    uiState.showAccessibilityPermissionRationale,
-                    modifier = Modifier.padding(MaterialTheme.sizing.small).then(showcase0Modifier)
-                ) {
-                    AccessibilityPermissionCard(Modifier.animateItem()) { grantAccessibilityPermission() }
-                }
+                AccessibilityPermissionCard(
+                    recheckPermission = grantAccessibilityPermission,
+                    showCard = uiState.showAccessibilityPermissionRationale,
+                    setAsExistingUser = setAsExistingUser
+                )
             }
             item {
                 AnimatedVisibility(uiState.showNotificationPermissionRationale) {
