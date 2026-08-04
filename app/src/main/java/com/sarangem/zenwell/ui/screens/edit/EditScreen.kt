@@ -45,9 +45,13 @@ fun SequenceShowcaseScope.EditScreen(
         showcase2onClick = { showcaseState.dismiss() },
         showcase2onDismiss = { if (firstEntry) showcaseState.start(3) },
         showcase3Modifier = showcase3Modifier(setAsExistingUser),
-        showcase3onClick = { showcaseState.next() },
+        showcase3onClick = { showcaseState.dismiss() },
+        showcase3onDismiss = { if (firstEntry) showcaseState.start(4) },
         showcase4Modifier = showcase4Modifier(setAsExistingUser),
-        showcase4onClick = { if (firstEntry) setAsExistingUser() },
+        showcase4onClick = {
+            showcaseState.dismiss()
+            if (firstEntry) setAsExistingUser()
+        },
         userScrollEnabled = !showcaseState.showCaseVisible,
         goBack = goBack
     )

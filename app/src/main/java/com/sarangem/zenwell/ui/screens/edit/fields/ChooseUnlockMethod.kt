@@ -37,7 +37,8 @@ fun ChooseUnlockMethod(
     modifier: Modifier = Modifier,
     unlockMethod: UnlockMethod,
     updateValue: (UnlockMethod) -> Unit = {},
-    onShowcaseClick: () -> Unit = {}
+    onShowcaseClick: () -> Unit = {},
+    onShowcaseDismiss: () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
     DetailsCard(modifier) {
@@ -69,7 +70,10 @@ fun ChooseUnlockMethod(
             )
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = !expanded },
+                onDismissRequest = {
+                    onShowcaseDismiss()
+                    expanded = !expanded
+                },
                 shape = MaterialTheme.shapes.large
             ) {
                 UnlockMethod.entries.forEach {
@@ -82,6 +86,7 @@ fun ChooseUnlockMethod(
                         },
                         onClick = {
                             updateValue(it)
+                            onShowcaseDismiss()
                             expanded = !expanded
                         }
                     )
@@ -91,16 +96,16 @@ fun ChooseUnlockMethod(
     }
 }
 
-val showcase4Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+val showcase3Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
     Modifier.sequenceShowcaseTarget(
-        index = 4,
+        index = 3,
         shape = MaterialTheme.shapes.medium,
         shapeMargin = 0.dp,
         backgroundAlpha = 0.9f,
         fixedContent = { SkipGuideButton(skip) }
     ) {
         Text(
-            text = stringResource(R.string.showcase_4),
+            text = stringResource(R.string.showcase_3),
             style = MaterialTheme.typography.headlineMedium,
             color = darkColorScheme().onSurface,
             fontWeight = FontWeight.SemiBold

@@ -46,6 +46,7 @@ fun EditScreenContents(
     showcase2onDismiss: () -> Unit = {},
     showcase3Modifier: Modifier = Modifier,
     showcase3onClick: () -> Unit = {},
+    showcase3onDismiss: () -> Unit = {},
     showcase4Modifier: Modifier = Modifier,
     showcase4onClick: () -> Unit = {},
     userScrollEnabled: Boolean = true,
@@ -58,12 +59,12 @@ fun EditScreenContents(
         },
         floatingActionButton = {
             SaveAndDeleteButton(
-                modifier = showcase3Modifier,
+                modifier = showcase4Modifier,
                 onSave = saveToDatabase,
                 onDelete = deleteSchedule,
                 goBack = goBack,
                 isError = uiState.validationErrors.isNotEmpty(),
-                onShowcaseClick = showcase3onClick
+                onShowcaseClick = showcase4onClick
             )
         },
         floatingActionButtonPosition = FabPosition.Center
@@ -86,10 +87,11 @@ fun EditScreenContents(
                 if (!isPomodoro) {
                     DetailsCardColumn {
                         ChooseUnlockMethod(
-                            modifier = showcase4Modifier,
+                            modifier = showcase3Modifier,
                             unlockMethod = unlockMethod,
                             updateValue = { updateSchedule(copy(unlockMethod = it)) },
-                            onShowcaseClick = showcase4onClick
+                            onShowcaseClick = showcase3onClick,
+                            onShowcaseDismiss = showcase3onDismiss
                         )
 
                         AnimatedContent(

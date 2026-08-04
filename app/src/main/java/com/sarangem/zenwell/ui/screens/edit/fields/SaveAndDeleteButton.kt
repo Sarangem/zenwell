@@ -150,16 +150,16 @@ fun SaveAndDeleteButton(
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-val showcase3Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
+val showcase4Modifier: @Composable SequenceShowcaseScope.(skipGuide: () -> Unit) -> Modifier = { skip ->
     Modifier.sequenceShowcaseTarget(
-        index = 3,
+        index = 4,
         shape = ButtonGroupDefaults.connectedLeadingButtonShapes().shape,
         shapeMargin = 0.dp,
         backgroundAlpha = 0.9f,
         fixedContent = { SkipGuideButton(skip) }
     ) {
         Text(
-            text = stringResource(R.string.showcase_3),
+            text = stringResource(R.string.showcase_4),
             style = MaterialTheme.typography.headlineMedium,
             color = darkColorScheme().onSurface,
             fontWeight = FontWeight.SemiBold
