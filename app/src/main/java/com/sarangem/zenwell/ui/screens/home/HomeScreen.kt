@@ -5,15 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens.home
 
-import android.Manifest
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.provider.Settings
-import androidx.activity.compose.LocalActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.edit
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -47,6 +38,8 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.PomodoroWindow
+import com.sarangem.zenwell.ui.screens.home.permission.AccessibilityPermissionCard
+import com.sarangem.zenwell.ui.screens.home.permission.NotificationPermissionCard
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
@@ -61,40 +54,11 @@ fun HomeScreen(
 ) {
     val showcaseState = LocalSequenceShowcaseState.current
     val homeUiState by viewModel.uiState.collectAsState()
-
-    // check permissions properly
     val context = LocalContext.current
-    val activity = LocalActivity.current
+
+    // permission checks
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.recheckPermission(context) }
     LaunchedEffect(homeUiState.schedulesList) { viewModel.recheckPermission(context) }
-    val notificationPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { viewModel.recheckPermission(context) }
-    val grantNotificationPermission = {
-        val showRationale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                (activity?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ?: false)
-        val sharedPrefs = context.getSharedPreferences("permissions_prefs", Context.MODE_PRIVATE)
-        val hasRequested = sharedPrefs.getBoolean("has_requested_notification", false)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && (showRationale || !hasRequested)) {
-            sharedPrefs.edit { putBoolean("has_requested_notification", true) }
-            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        } else {
-            val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                    putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                }
-            } else {
-                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", context.packageName, null)
-                }
-            }
-            context.startActivity(intent)
-        }
-    }
-    val accessibilityPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { viewModel.recheckPermission(context) }
-    val grantAccessibilityPermission = { accessibilityPermissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
 
     // start intro showcase
     LaunchedEffect(
@@ -117,9 +81,8 @@ fun HomeScreen(
         viewModel::addNewSchedule,
         viewModel::updateUiState,
         viewModel::hideNotificationCard,
-        grantAccessibilityPermission,
-        grantNotificationPermission,
-        openEditScreen,
+        recheckPermission = { viewModel.recheckPermission(context) },
+        openEditScreen = openEditScreen,
         openFocusScreen = openFocusScreen,
         setAsExistingUser = viewModel::setAsExistingUser,
         userScrollEnabled = !showcaseState.showCaseVisible,
@@ -137,8 +100,7 @@ fun HomeScreen(
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _, _ -> Schedules() },
     updateUiState: (HomeUiState) -> Unit = {},
     hideNotificationCard: () -> Unit = {},
-    grantAccessibilityPermission: () -> Unit = {},
-    grantNotificationPermission: () -> Unit = {},
+    recheckPermission: () -> Unit = {},
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
     setAsExistingUser: () -> Unit = {},
@@ -177,7 +139,7 @@ fun HomeScreen(
         ) {
             item {
                 AccessibilityPermissionCard(
-                    recheckPermission = grantAccessibilityPermission,
+                    recheckPermission = recheckPermission,
                     showCard = uiState.showAccessibilityPermissionRationale,
                     setAsExistingUser = setAsExistingUser
                 )
@@ -186,8 +148,8 @@ fun HomeScreen(
                 AnimatedVisibility(uiState.showNotificationPermissionRationale) {
                     NotificationPermissionCard(
                         modifier = Modifier.animateItem(),
-                        onGrantClick = grantNotificationPermission,
-                        onDeny = hideNotificationCard
+                        onDeny = hideNotificationCard,
+                        recheckPermission = recheckPermission
                     )
                 }
             }

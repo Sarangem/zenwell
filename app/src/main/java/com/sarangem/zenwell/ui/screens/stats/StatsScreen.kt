@@ -45,7 +45,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.screens.home.PermissionRequestCard
+import com.sarangem.zenwell.ui.screens.home.permission.PermissionRequestCard
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.MyPackageInfo
