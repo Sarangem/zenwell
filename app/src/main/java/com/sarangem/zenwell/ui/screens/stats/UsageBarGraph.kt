@@ -6,8 +6,8 @@
 package com.sarangem.zenwell.ui.screens.stats
 
 import android.graphics.drawable.Drawable
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -54,72 +53,21 @@ import androidx.compose.ui.unit.times
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.MyPackageInfo
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
 import kotlin.math.ceil
-
-val iconColors = listOf(
-    Color(0xFF5C6BC0),
-    Color(0xFFAB47BC),
-    Color(0xFFEC407A),
-    Color(0xFFFF7043),
-    Color(0xFFFFA726),
-    Color(0xFF9CCC65),
-    Color(0xFF26A69A),
-    Color(0xFF29B6F6)
-)
 
 @Composable
 fun UsageBarGraph(
     modifier: Modifier = Modifier,
-    dailyUsage: List<DailyAppUsageData>,
-    installedAppList: List<MyPackageInfo> = listOf(),
-    blockedApps: List<String>? = null,
+    filteredDailyUsage: List<DailyAppUsageData>,
     statsFilter: StatsFilter = StatsFilter.AllApps
 ) {
-    val locale = LocalLocale.current.platformLocale
-    val summedUsageData = remember(dailyUsage, installedAppList, blockedApps, statsFilter) {
-        val cal = Calendar.getInstance()
-        val dateFormat = SimpleDateFormat("E", locale)
-        dailyUsage.map { usageData ->
-            cal.apply { set(Calendar.DAY_OF_WEEK, usageData.weekDay) }
-            val data = usageData.data.filter {
-                    when(statsFilter){
-                        is StatsFilter.Custom -> it.packageName == statsFilter.packageName
-                        StatsFilter.BlockedApps -> blockedApps?.contains(it.packageName) == true
-                        else -> true
-                    }
-                }
-                .map {
-                    val packageInfo = installedAppList.find { info -> info.packageName == it.packageName }
-                    it.copy(
-                        appName = packageInfo?.appName,
-                        icon = packageInfo?.icon,
-                        iconColor = iconColors[packageInfo?.packageName.hashCode().mod(iconColors.size)]
-                    )
-                }
-            val sum = data.sumOf { it.timeInMinutes }
-            DailyAppUsageData(
-                weekDay = usageData.weekDay,
-                weekDayName = dateFormat.format(cal.time),
-                totalTimeInMinutes = sum,
-                data = data
-                    .filter { it.timeInMinutes >= 5 && (it.timeInMinutes.toFloat() / sum) >= 0.1 }
-                    .sortedBy { it.timeInMinutes }
-            )
-        }
-    }
     BoxWithConstraints(modifier) {
-        AnimatedContent(statsFilter) {
-            UsageBarGraph(
-                summedUsageData,
-                maxOf(maxWidth, 350.dp),
-                statsFilter is StatsFilter.Custom
-            )
-            it
-        }
+        UsageBarGraph(
+            filteredDailyUsage,
+            maxOf(maxWidth, 350.dp),
+            statsFilter is StatsFilter.Custom
+        )
     }
 }
 
@@ -164,6 +112,7 @@ fun UsageBarGraph(
             itemsIndexed(dailyUsageList) { index, usageData ->
                 Column(
                     Modifier
+                        .animateContentSize()
                         .width(block)
                         .fillMaxHeight()
                         .background(
@@ -187,6 +136,7 @@ fun UsageBarGraph(
                     LazyColumn(
                         Modifier
                             .fillMaxWidth()
+                            .animateContentSize()
                             .height(usageData.totalTimeInMinutes / 60f * block)
                             .padding(horizontal = MaterialTheme.sizing.tiny)
                             .clip(MaterialTheme.shapes.medium)

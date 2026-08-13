@@ -28,7 +28,9 @@ class StatsViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(StatsUiState())
     val uiState: StateFlow<StatsUiState> = _uiState.asStateFlow()
-    fun updateUiState(uiState: StatsUiState) { _uiState.update { uiState } }
+    fun updateUiState(uiState: StatsUiState) {
+        _uiState.update { uiState }
+    }
 
     fun getStats(context: Context) {
         val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
@@ -42,13 +44,16 @@ class StatsViewModel @Inject constructor(
         if(isGranted){
             viewModelScope.launch(Dispatchers.IO) {
                 _uiState.update { state ->
+                    val dailyUsage = getDailyAppUsage(context, _uiState)
+                    val blockedApps = schedulesRepository.getAllApps()
+                        .firstOrNull()
+                        ?.map { it.title.substringBefore(":id/") }
+                        ?.distinct() ?: listOf()
                     state.copy(
-                        dailyUsage = getDailyAppUsage(context),
+                        dailyUsage = dailyUsage,
                         weeklyAverageInMinutes = getWeeklyAppUsageAverageInMinutes(context),
-                        blockedApps = schedulesRepository.getAllApps()
-                            .firstOrNull()
-                            ?.map { it.title.substringBefore(":id/") }
-                            ?.distinct() ?: listOf(),
+                        blockedApps = blockedApps,
+                        filteredDailyUsage = filterDailyUsage(dailyUsage, blockedApps, state.statsFilter),
                         isLoading = false
                     )
                 }

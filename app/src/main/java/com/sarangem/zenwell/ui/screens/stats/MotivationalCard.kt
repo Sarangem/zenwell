@@ -52,7 +52,7 @@ fun MotivationalCard(
     modifier: Modifier = Modifier
 ){
     val savedTimeInMinutes = remember(dailyUsage, weeklyAverageInMinutes) {
-        val yesterday = dailyUsage[dailyUsage.size - 2].data.sumOf { it.timeInMinutes }
+        val yesterday = dailyUsage[dailyUsage.size - 2].totalTimeInMinutes
         weeklyAverageInMinutes - yesterday
     }
     MotivationalCard(modifier, savedTimeInMinutes)

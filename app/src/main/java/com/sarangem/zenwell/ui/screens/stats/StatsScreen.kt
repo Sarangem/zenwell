@@ -30,9 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -48,7 +45,6 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.screens.home.permission.PermissionRequestCard
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.MyPackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,19 +59,19 @@ fun StatsScreen(modifier: Modifier = Modifier) {
         contract = ActivityResultContracts.StartActivityForResult()
     ) { viewModel.getStats(context) }
 
-    var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
-            val list = getInstalledApps(context).toMutableList()
-            list.sortBy { it.appName.lowercase() }
-            installedAppList = list
+            viewModel.updateUiState(
+                uiState.copy(
+                    installedApps = getInstalledApps(context).sortedBy { it.appName.lowercase() }
+                )
+            )
         }
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.getStats(context) }
 
     StatsScreen(
         modifier = modifier,
-        installedAppList = installedAppList,
         uiState = uiState,
         updateUiState = { viewModel.updateUiState(it) },
         requestPermission = { settingsLauncher.launch(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)) }
@@ -86,7 +82,6 @@ fun StatsScreen(modifier: Modifier = Modifier) {
 @Composable
 fun StatsScreen(
     modifier: Modifier = Modifier,
-    installedAppList: List<MyPackageInfo> = listOf(),
     uiState: StatsUiState,
     updateUiState: (StatsUiState) -> Unit = {},
     requestPermission: () -> Unit = {}
@@ -129,7 +124,6 @@ fun StatsScreen(
                     )
                 } else {
                     GraphicalUsageStats(
-                        installedAppList = installedAppList,
                         uiState = uiState,
                         updateUiState = updateUiState
                     )
@@ -142,7 +136,6 @@ fun StatsScreen(
 @Composable
 fun GraphicalUsageStats(
     modifier: Modifier = Modifier,
-    installedAppList: List<MyPackageInfo> = listOf(),
     uiState: StatsUiState,
     updateUiState: (StatsUiState) -> Unit = {}
 ){
@@ -152,9 +145,7 @@ fun GraphicalUsageStats(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             UsageBarGraph(
-                dailyUsage = uiState.dailyUsage,
-                installedAppList = installedAppList,
-                blockedApps = uiState.blockedApps,
+                filteredDailyUsage = uiState.filteredDailyUsage,
                 statsFilter = uiState.statsFilter,
                 modifier = Modifier.fillMaxSize()
             )
@@ -163,11 +154,12 @@ fun GraphicalUsageStats(
                 onFilterSelected = {
                     updateUiState(
                         uiState.copy(
-                            statsFilter = it
+                            statsFilter = it,
+                            filteredDailyUsage = filterDailyUsage(uiState.dailyUsage, uiState.blockedApps, it)
                         )
                     )
                 },
-                installedAppList = installedAppList
+                installedAppList = uiState.installedApps
             )
         }
     }
