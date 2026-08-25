@@ -37,6 +37,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -211,9 +212,11 @@ private fun ShowcaseDialog(
     val screenWidth = with(density) { container.width.toPx() }
 
     val verticalSpacerPx = with(density) { 16.dp.toPx() }
+    val horizontalSpacerPx = with(density) { 16.dp.toPx() }
 
     Box(
         modifier = Modifier
+            .widthIn(max = container.width - 32.dp)
             .offset{ IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
             .onGloballyPositioned {
                 val dialogHeight = it.size.height
@@ -231,7 +234,7 @@ private fun ShowcaseDialog(
                             highlightBounds.left
                         }
                     }
-                }
+                }.coerceIn(horizontalSpacerPx, screenWidth - horizontalSpacerPx - dialogWidth)
 
                 offsetY = when (position) {
                     ShowcasePosition.Top -> highlightBounds.top - verticalSpacerPx - dialogHeight

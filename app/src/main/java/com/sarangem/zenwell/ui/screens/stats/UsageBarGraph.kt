@@ -92,6 +92,7 @@ fun UsageBarGraph(
     ) {
         Column(
             Modifier
+                .animateContentSize()
                 .width(labelSize)
                 .fillMaxSize(),
         ) {

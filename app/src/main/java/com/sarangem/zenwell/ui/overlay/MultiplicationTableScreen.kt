@@ -28,13 +28,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -98,15 +97,9 @@ fun MultiplicationTableCard(
     onAllCorrect: () -> Unit = {}
 ) {
     val number = remember { (multiplicationMinNum..multiplicationMaxNum).random() }
-    val answers = remember {
-        mutableStateMapOf<Int, TextFieldState>().apply {
-            (multiplierMinNum..multiplierMaxNum).forEach {
-                put(it, TextFieldState())
-            }
-        }
-    }
+    val answers = remember { (multiplierMinNum..multiplierMaxNum).associateWith { TextFieldState() } }
+    var checkedMultipliers by remember { mutableStateOf(setOf<Int>()) }
     val focusManager = LocalFocusManager.current
-
 
     Column(
         modifier = modifier,
@@ -130,6 +123,8 @@ fun MultiplicationTableCard(
                     .padding(vertical = MaterialTheme.sizing.small)
             ) {
                 answers.forEach { (multiplier, state) ->
+                    val expectedAnswer = remember(number, multiplier) { number * multiplier }
+                    val currentInput = state.text.toString().trim().toIntOrNull()
 
                     Row(
                         modifier = Modifier
@@ -138,6 +133,7 @@ fun MultiplicationTableCard(
                                 vertical = MaterialTheme.sizing.extraSmall,
                                 horizontal = MaterialTheme.sizing.small
                             ),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = "$number",
@@ -181,17 +177,22 @@ fun MultiplicationTableCard(
                             textStyle = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.End),
                             lineLimits = TextFieldLineLimits.SingleLine,
                             colors = OutlinedTextFieldDefaults.colors(
-                                errorBorderColor = when (state.text.toString().toIntOrNull()) {
-                                    null -> Color.Unspecified
-                                    multiplier * number -> Green500
-                                    else -> MaterialTheme.colorScheme.error
-                                },
+                                errorBorderColor = when {
+                                    currentInput == expectedAnswer -> Green500
+                                    multiplier in checkedMultipliers -> MaterialTheme.colorScheme.error
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
                             ),
+                            isError = true,
+                            label = if (currentInput != null && currentInput != expectedAnswer && multiplier in checkedMultipliers) {
+                                @Composable { Text(stringResource(R.string.wrong_answer)) }
+                            } else null,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Number,
                                 imeAction = if (answers.keys.last() == multiplier) ImeAction.Done else ImeAction.Next
                             ),
                             onKeyboardAction = {
+                                checkedMultipliers = checkedMultipliers + multiplier
                                 if (answers.keys.last() != multiplier) {
                                     focusManager.moveFocus(FocusDirection.Next)
                                 }
@@ -220,7 +221,7 @@ fun MultiplicationTableScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             schedule = Schedules(
                 message = APP_BLOCKED,
-                multiplierMaxNum = 20
+                multiplierMaxNum = 10
             )
         )
     }
