@@ -145,8 +145,9 @@ class AppBlockerService : AccessibilityService() {
             // open the window
             for (scheduleInfo in scheduleInfoList) {
                 if (todayDay !in scheduleInfo.schedule.weekDays) continue
-                if (currentTime !in scheduleInfo.schedule.startTimeInMinutes..scheduleInfo.schedule.endTimeInMinutes) continue
-                if (currentVisibleApps.any { it in scheduleInfo.appSet }) {
+                val (start, end) = scheduleInfo.schedule.startTimeInMinutes to scheduleInfo.schedule.endTimeInMinutes
+                if (if (start <= end) currentTime !in start..end else (currentTime in (end + 1)..<start)) continue
+                if (scheduleInfo.appSet.any { it in currentVisibleApps }) {
                     val blockingWindow =
                         scheduleInfo.overlayWindowList.firstOrNull {
                             it.packageName in currentVisibleApps

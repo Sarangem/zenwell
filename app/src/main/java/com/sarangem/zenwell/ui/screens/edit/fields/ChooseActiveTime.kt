@@ -7,6 +7,7 @@ package com.sarangem.zenwell.ui.screens.edit.fields
 
 import android.content.Context
 import android.text.format.DateFormat
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -56,7 +57,6 @@ fun ChooseActiveTime(
     updateStartTime: (Int) -> Unit = {},
     endTimeInMinutes: Int,
     updateEndTime: (Int) -> Unit = {},
-    isError: Boolean
 ) {
     val isExpandedWidth = currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
     DetailsCard {
@@ -67,14 +67,6 @@ fun ChooseActiveTime(
         )
 
         Column(Modifier.weight(2f)) {
-            if (isError) {
-                Text(
-                    text = stringResource(R.string.active_time_is_invalid),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(MaterialTheme.sizing.small)
-                )
-            }
             if(isExpandedWidth){
                 Row(Modifier.fillMaxSize()){
                     ClockRange(Modifier.weight(1f), Modifier.align(Alignment.CenterVertically), startTimeInMinutes, updateStartTime, endTimeInMinutes, updateEndTime)
@@ -83,6 +75,12 @@ fun ChooseActiveTime(
                 Column(Modifier.fillMaxSize()) {
                     ClockRange(Modifier.fillMaxWidth(), Modifier.align(Alignment.CenterHorizontally), startTimeInMinutes, updateStartTime, endTimeInMinutes, updateEndTime)
                 }
+            }
+            AnimatedVisibility(
+                startTimeInMinutes > endTimeInMinutes,
+                Modifier.fillMaxWidth()
+            ) {
+                OvernightScheduleNotice(startTimeInMinutes, endTimeInMinutes)
             }
         }
     }
@@ -218,6 +216,29 @@ fun AdvancedTimePickerDialog(
             }
         }
     }
+}
+
+@Composable
+fun OvernightScheduleNotice(
+    startTimeInMinutes: Int,
+    endTimeInMinutes: Int,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    Text(
+        text = stringResource(
+            R.string.overnight_schedule_description,
+            minutesToString(0, context),
+            minutesToString(endTimeInMinutes, context),
+            minutesToString(startTimeInMinutes, context),
+            minutesToString(23*60+59, context)
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        textAlign = TextAlign.Center,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = MaterialTheme.sizing.small)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

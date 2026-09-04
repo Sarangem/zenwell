@@ -316,20 +316,32 @@ fun EditScreenContents(
                 }
 
                 DetailsCardColumn {
-                    if (!isPomodoro) ChooseActiveSwitch(isActive) { updateSchedule(copy(isActive = it)) }
+                    if (!isPomodoro) DetailsSwitchCard(R.string.active, isActive) { updateSchedule(copy(isActive = it)) }
                     AnimatedVisibility(
                         visible = isActive && !isPomodoro,
                         enter = expandVertically() + fadeIn(),
                         exit = shrinkVertically() + fadeOut()
                     ) {
                         Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)) {
-                            ChooseActiveTime(
-                                startTimeInMinutes,
-                                { updateSchedule(copy(startTimeInMinutes = it)) },
-                                endTimeInMinutes,
-                                { updateSchedule(copy(endTimeInMinutes = it)) },
-                                ValidationError.ActiveTime in uiState.validationErrors,
+                            DetailsSwitchCard(
+                                title = R.string.run_all_day,
+                                isChecked = startTimeInMinutes == 0 && endTimeInMinutes == 23*60+59,
+                                updateValue = {
+                                    if(it) {
+                                        updateSchedule(copy(startTimeInMinutes = 0, endTimeInMinutes = 23*60+59))
+                                    } else {
+                                        updateSchedule(copy(startTimeInMinutes = 6*60, endTimeInMinutes = 18*60))
+                                    }
+                                }
                             )
+                            AnimatedVisibility(startTimeInMinutes != 0 || endTimeInMinutes != 23*60+59) {
+                                ChooseActiveTime(
+                                    startTimeInMinutes,
+                                    { updateSchedule(copy(startTimeInMinutes = it)) },
+                                    endTimeInMinutes,
+                                    { updateSchedule(copy(endTimeInMinutes = it)) }
+                                )
+                            }
                             SelectWeekDays(weekDays) { updateSchedule(copy(weekDays = it)) }
                         }
                     }

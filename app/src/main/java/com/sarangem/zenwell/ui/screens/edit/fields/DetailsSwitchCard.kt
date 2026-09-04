@@ -5,6 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens.edit.fields
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -13,22 +14,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
-fun ChooseActiveSwitch(
-    isActive: Boolean,
+fun DetailsSwitchCard(
+    @StringRes title: Int,
+    isChecked: Boolean,
     updateValue: (Boolean) -> Unit = {}
 ) {
     DetailsCard {
         Text(
-            text = stringResource(R.string.active),
+            text = stringResource(title),
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(Modifier.weight(1f))
         Switch(
-            checked = isActive,
+            checked = isChecked,
             onCheckedChange = updateValue,
             modifier = Modifier.padding(end = MaterialTheme.sizing.small)
         )

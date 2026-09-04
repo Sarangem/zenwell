@@ -11,7 +11,6 @@ import com.sarangem.zenwell.model.UnlockMethod
 
 enum class ValidationError {
     Default,
-    ActiveTime,
     NotificationTime,
     MathEquationNumOperands,
 }
@@ -23,7 +22,6 @@ fun validateSchedule(s: Schedules): Set<ValidationError> = with(s) {
         } else emptySet()
     }
     val errors: MutableSet<ValidationError> = mutableSetOf()
-    if (isActive && startTimeInMinutes >= endTimeInMinutes) errors.add(ValidationError.ActiveTime)
     if (unlockMethod != UnlockMethod.StrictBlock) {
         if (usageSessionDurationInMinutes == 0) errors.add(ValidationError.Default)
         if (usageSessionDurationInMinutes <= notificationTimeInMinutes) errors.add(ValidationError.NotificationTime)

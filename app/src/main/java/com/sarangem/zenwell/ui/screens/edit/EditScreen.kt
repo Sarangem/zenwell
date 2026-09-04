@@ -60,10 +60,7 @@ fun EditScreenPreview() {
                     startTimeInMinutes = 179,
                     endTimeInMinutes = 1079,
                 ),
-                validationErrors = setOf(
-                    ValidationError.ActiveTime,
-                    ValidationError.NotificationTime
-                )
+                validationErrors = setOf(ValidationError.NotificationTime)
             )
         )
     }
