@@ -43,17 +43,19 @@ class StatsViewModel @Inject constructor(
 
         if(isGranted){
             viewModelScope.launch(Dispatchers.IO) {
+                val dailyUsage = getDailyAppUsage(context, _uiState)
+                val blockedApps = schedulesRepository.getAllApps()
+                    .firstOrNull()
+                    ?.map { it.title.substringBefore(":id/") }
+                    ?.distinct() ?: listOf()
+                val weeklyAverageInMinutes = getWeeklyAppUsageAverageInMinutes(context)
+                val filteredDailyUsage = filterDailyUsage(dailyUsage, blockedApps, _uiState.value.statsFilter)
                 _uiState.update { state ->
-                    val dailyUsage = getDailyAppUsage(context, _uiState)
-                    val blockedApps = schedulesRepository.getAllApps()
-                        .firstOrNull()
-                        ?.map { it.title.substringBefore(":id/") }
-                        ?.distinct() ?: listOf()
                     state.copy(
                         dailyUsage = dailyUsage,
-                        weeklyAverageInMinutes = getWeeklyAppUsageAverageInMinutes(context),
+                        weeklyAverageInMinutes = weeklyAverageInMinutes,
                         blockedApps = blockedApps,
-                        filteredDailyUsage = filterDailyUsage(dailyUsage, blockedApps, state.statsFilter),
+                        filteredDailyUsage = filteredDailyUsage,
                         isLoading = false
                     )
                 }
