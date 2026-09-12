@@ -85,6 +85,7 @@ fun HomeScreen(
         openEditScreen = openEditScreen,
         openFocusScreen = openFocusScreen,
         setAsExistingUser = viewModel::setAsExistingUser,
+        enableAllSchedules = viewModel::enableAllSchedules,
         userScrollEnabled = !showcaseState.showCaseVisible,
         getPomodoroWindow = { AppBlockerService.instance?.getPomodoroWindow(it) }
     )
@@ -104,6 +105,7 @@ fun HomeScreen(
     openEditScreen: (Schedules) -> Unit = {},
     openFocusScreen: (Schedules) -> Unit = {},
     setAsExistingUser: () -> Unit = {},
+    enableAllSchedules: () -> Unit = {},
     userScrollEnabled: Boolean = true,
     getPomodoroWindow: (Int) -> PomodoroWindow? = { null }
 ) {
@@ -153,6 +155,7 @@ fun HomeScreen(
                     )
                 }
             }
+            item { EnableAllSchedulesCard(uiState.schedulesList, enableAllSchedules) }
             item {
                 AnimatedVisibility(uiState.schedulesList.isNotEmpty()) {
                     SchedulesFilterChips(

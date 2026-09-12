@@ -161,4 +161,6 @@
     <string name="showcase_4">Save and enter your focus zone</string>
     <string name="run_all_day">Run all day</string>
     <string name="overnight_schedule_description">Runs overnight: %1$s to %2$s, and %3$s to %4$s</string>
+    <string name="schedules_inactive">%1$d/%2$d schedules inactive</string>
+    <string name="enable_all">Enable all</string>
 </resources>

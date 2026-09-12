@@ -105,6 +105,17 @@ class HomeViewModel @Inject constructor(
         AppBlockerService.instance?.initializeRepository()
         return newSchedule
     }
+
+    fun enableAllSchedules() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.value.schedulesList
+                .filter { !it.isActive }
+                .forEach {
+                    schedulesRepository.updateSchedule(it.copy(isActive = true))
+                }
+            AppBlockerService.instance?.initializeRepository()
+        }
+    }
 }
 
 data class HomeUiState(
