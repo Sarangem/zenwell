@@ -27,8 +27,8 @@ android {
         applicationId = "com.sarangem.zenwell"
         minSdk = 23
         targetSdk = 37
-        versionCode = 15
-        versionName = "1.5"
+        versionCode = 16
+        versionName = "1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -1,0 +1,2 @@
+- Add a guide for new users
+- Minor bug fixes and feature improvements

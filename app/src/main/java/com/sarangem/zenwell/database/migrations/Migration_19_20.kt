@@ -12,5 +12,6 @@ val MIGRATION_19_20 = object : Migration(19, 20) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("DROP TABLE user_prefs")
         db.execSQL("CREATE TABLE IF NOT EXISTS `user_prefs` (`id` INTEGER NOT NULL, `showNotificationPermissionCard` INTEGER NOT NULL, `firstEntry` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+        db.execSQL("INSERT INTO `user_prefs` (`id`, `showNotificationPermissionCard`, `firstEntry`) VALUES (1, 1, 0)")
     }
 }
