@@ -52,6 +52,7 @@ data class Schedules(
     val requireManualUnlock: Boolean = false,
 
     // how long would the app be opened before again showing block message
+    // if set to zero, new block message would not be shown until next day
     @ColumnInfo(name = "usage_session_duration")
     val usageSessionDurationInMinutes: Int = 10,
 
@@ -63,6 +64,7 @@ data class Schedules(
     @ColumnInfo(name = "breathing_cycle_number")
     val breathingCycleNumber: Int = 2,
 
+    // don't notify if zero
     @ColumnInfo(name = "notification_time")
     val notificationTimeInMinutes: Int = 2,
 
@@ -74,16 +76,12 @@ data class Schedules(
     // mathEquationMinNumber..mathEquationMaxNumber
     @ColumnInfo(name = "math_equation_min_number")
     val mathEquationMinNumber: Int = 10,
-
-    // range of operands for generating multiplication equation
     @ColumnInfo(name = "math_equation_max_number")
     val mathEquationMaxNumber: Int = 99,
 
     // maximum number of digit in operands for multiplication
     @ColumnInfo(name = "math_equation_min_number_in_multiplication")
     val mathEquationMinNumberInMultiplication: Int = 1,
-
-    // maximum number of digit in operands for multiplication
     @ColumnInfo(name = "math_equation_max_number_in_multiplication")
     val mathEquationMaxNumberInMultiplication: Int = 9,
 
@@ -157,6 +155,9 @@ data class Schedules(
         Calendar.THURSDAY,
         Calendar.FRIDAY,
         Calendar.SATURDAY,
-    )
+    ),
+
+    // list of tasks to complete it unlockMethod.Tasks, separated by newline
+    val tasks: String = ""
 
 ) : Parcelable

@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.model.MathOperators
@@ -191,14 +192,15 @@ fun EditScreenContents(
                                     R.string.usage_session_duration,
                                     usageSessionDurationInMinutes,
                                     R.string.minutes,
-                                    canBeZero = false
+                                    placeholder = stringResource(R.string.till_next_day)
                                 ) { updateSchedule(copy(usageSessionDurationInMinutes = it)) }
                                 DetailsCardWithNumberField(
                                     R.string.notify_before_closing,
                                     notificationTimeInMinutes,
                                     R.string.minutes,
                                     ValidationError.NotificationTime in uiState.validationErrors,
-                                    R.string.notification_time_invalid
+                                    R.string.notification_time_invalid,
+                                    placeholder = stringResource(R.string.never)
                                 ) { updateSchedule(copy(notificationTimeInMinutes = it)) }
                             }
                         }

@@ -22,3 +22,16 @@ fun minutesToString(num: Int, context: Context): String {
     }
     return DateFormat.getTimeFormat(context).format(calendar.time)
 }
+
+fun getMinutesUntilTomorrow(): Int {
+    val now = Calendar.getInstance()
+    val midnight = Calendar.getInstance().apply {
+        add(Calendar.DAY_OF_YEAR, 1)
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+    val millis = (midnight.timeInMillis - now.timeInMillis).coerceAtLeast(0L)
+    return (millis / 1000 / 60).toInt()
+}

@@ -163,4 +163,7 @@
     <string name="overnight_schedule_description">Runs overnight: %1$s to %2$s, and %3$s to %4$s</string>
     <string name="schedules_inactive">%1$d/%2$d schedules inactive</string>
     <string name="enable_all">Enable all</string>
+    <string name="complete_tasks">Complete tasks</string>
+    <string name="never">Never</string>
+    <string name="till_next_day">Till next day</string>
 </resources>

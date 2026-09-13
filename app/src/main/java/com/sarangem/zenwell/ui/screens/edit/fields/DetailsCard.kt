@@ -81,7 +81,7 @@ fun DetailsCardWithTextField(
     isError: Boolean = false,
     @StringRes errorMessage: Int? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
-    showPlaceholder: Boolean = false,
+    placeholder: String? = null,
     singleLine: Boolean = true,
     onValueChange: (String) -> Unit = {},
 ) {
@@ -115,7 +115,7 @@ fun DetailsCardWithTextField(
                     )
                 }
             },
-            visualTransformation = if (showPlaceholder) ZeroPlaceholder else VisualTransformation.None
+            visualTransformation = placeholder?.let { PlaceholderTransformation(it) } ?: VisualTransformation.None
         )
     }
 }
@@ -128,6 +128,7 @@ fun DetailsCardWithNumberField(
     isError: Boolean = false,
     @StringRes errorMessage: Int? = null,
     canBeZero: Boolean = true,
+    placeholder: String = "0",
     updateSchedule: (Int) -> Unit = {},
 ) {
     val illegalValue = remember(canBeZero, textFieldValue) {
@@ -147,10 +148,10 @@ fun DetailsCardWithNumberField(
             }
         },
         keyboardType = KeyboardType.Number,
-        suffixText = suffixText,
+        suffixText = if (placeholder != "0") suffixText else null,
         isError = isError || illegalValue,
         errorMessage = if (illegalValue) R.string.no_zero else errorMessage,
-        showPlaceholder = true
+        placeholder = placeholder
     )
 }
 
@@ -174,6 +175,7 @@ fun DetailsCardWithRangeNumberField(
             )
         }
     }
+    val zeroPlaceholder = remember { PlaceholderTransformation("0") }
     DetailsCard {
         Text(
             text = stringResource(mainText),
@@ -202,7 +204,7 @@ fun DetailsCardWithRangeNumberField(
                 suffix = { Text(suffixText) },
                 isError = illegalValue,
                 label = errorLabel,
-                visualTransformation = ZeroPlaceholder
+                visualTransformation = zeroPlaceholder
             )
             Text(
                 text = stringResource(R.string.to),
@@ -232,19 +234,19 @@ fun DetailsCardWithRangeNumberField(
                 suffix = { Text(suffixText) },
                 isError = illegalValue,
                 label = errorLabel,
-                visualTransformation = ZeroPlaceholder
+                visualTransformation = zeroPlaceholder
             )
         }
     }
 }
 
-object ZeroPlaceholder : VisualTransformation {
+class PlaceholderTransformation(private val placeholder: String) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         return if (text.isNotEmpty()) {
             TransformedText(text, OffsetMapping.Identity)
         } else {
             TransformedText(
-                AnnotatedString("0"),
+                AnnotatedString(placeholder),
                 object : OffsetMapping {
                     override fun originalToTransformed(offset: Int) = 0
                     override fun transformedToOriginal(offset: Int) = 0

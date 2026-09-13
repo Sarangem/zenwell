@@ -31,6 +31,7 @@ import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createBlockNotification
 import com.sarangem.zenwell.utils.deleteNotificationById
+import com.sarangem.zenwell.utils.getMinutesUntilTomorrow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -185,8 +186,8 @@ class OverlayWindow(
         coroutineScope.launch {
 
             // send notification
-            val delayTime = schedule.usageSessionDurationInMinutes - schedule.notificationTimeInMinutes
-            if (delayTime < 0) return@launch
+            val usageSessionDuration = if (schedule.usageSessionDurationInMinutes == 0) getMinutesUntilTomorrow() else schedule.usageSessionDurationInMinutes
+            val delayTime = usageSessionDuration - schedule.notificationTimeInMinutes
             delay(delayTime.minutes)
             if (schedule.notificationTimeInMinutes > 0) {
                 createBlockNotification(

@@ -15,4 +15,5 @@ enum class UnlockMethod(@get:StringRes val title: Int) {
     MathProblem(R.string.math_problem),
     MultiplicationTable(R.string.multiplication_table),
     Typing(R.string.typing),
+    Tasks(R.string.complete_tasks)
 }
