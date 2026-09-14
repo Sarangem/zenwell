@@ -166,4 +166,6 @@
     <string name="complete_tasks">Complete tasks</string>
     <string name="never">Never</string>
     <string name="till_next_day">Till next day</string>
+    <string name="tasks_list">Tasks list</string>
+    <string name="task_completed">Task completed</string>
 </resources>

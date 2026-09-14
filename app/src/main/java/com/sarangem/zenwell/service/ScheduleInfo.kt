@@ -16,6 +16,8 @@ import com.sarangem.zenwell.ui.overlay.TimerScreen
 import com.sarangem.zenwell.ui.overlay.MathProblemScreen
 import com.sarangem.zenwell.ui.overlay.MultiplicationTableScreen
 import com.sarangem.zenwell.ui.overlay.PomodoroBlockScreen
+import com.sarangem.zenwell.ui.overlay.TaskItem
+import com.sarangem.zenwell.ui.overlay.TasksScreen
 import com.sarangem.zenwell.ui.overlay.TypingScreen
 import com.sarangem.zenwell.utils.getAppNameFromPackageName
 import kotlinx.coroutines.Job
@@ -109,6 +111,17 @@ data class ScheduleInfo(
                             onExit
                         )
 
+                        UnlockMethod.Tasks -> TasksScreen(
+                            Modifier.fillMaxSize(),
+                            schedule.message,
+                            tasksList,
+                            { tasksList = it },
+                            schedule.requireManualUnlock,
+                            onTimerEnd,
+                            schedule.showExit,
+                            onExit
+                        )
+
                     }
                 }
             }
@@ -123,7 +136,10 @@ data class ScheduleInfo(
             supervisorJob = supervisorJob,
             recheckApp = { service.onAccessibilityEvent(null) },
         )
-    } else {
-        null
-    }
+    } else null
+
+    // only used for UnlockMethod.Tasks
+    var tasksList = schedule.tasks.lines()
+        .filter { it.isNotBlank() }
+        .mapIndexed { index, line -> TaskItem(id = index, text = line.trim()) }
 }

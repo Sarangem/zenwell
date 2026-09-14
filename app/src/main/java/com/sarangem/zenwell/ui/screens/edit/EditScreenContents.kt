@@ -178,6 +178,10 @@ fun EditScreenContents(
                                         )
                                     }
 
+                                    UnlockMethod.Tasks -> {
+                                        ChooseTasks(tasks) { updateSchedule(copy(tasks = it))}
+                                    }
+
                                     else -> {}
                                 }
                             }
