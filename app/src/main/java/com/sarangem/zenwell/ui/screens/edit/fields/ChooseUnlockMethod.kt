@@ -5,6 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens.edit.fields
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
@@ -36,13 +37,14 @@ import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
 @Composable
 fun ChooseUnlockMethod(
     unlockMethod: UnlockMethod,
-    updateValue: (UnlockMethod) -> Unit = {},
+    scrollState: ScrollState? = null,
     firstEntry: Boolean = false,
-    setAsExistingUser: () -> Unit = {}
+    setAsExistingUser: () -> Unit = {},
+    updateValue: (UnlockMethod) -> Unit = {}
 ) {
     val showcaseState = LocalSequenceShowcaseState.current
     var expanded by remember { mutableStateOf(false) }
-    DetailsCard(showcase3Modifier(setAsExistingUser)) {
+    DetailsCard(showcase3Modifier(scrollState, setAsExistingUser)) {
         Column(Modifier.weight(1f)) {
             Text(
                 text = stringResource(R.string.unlock_method),
@@ -97,12 +99,16 @@ fun ChooseUnlockMethod(
     }
 }
 
-val showcase3Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip ->
+val showcase3Modifier: @Composable (
+    scrollState: ScrollState?,
+    skipGuide: () -> Unit
+) -> Modifier = { state, skip ->
     Modifier.sequenceShowcaseTarget(
         index = 3,
         shape = MaterialTheme.shapes.medium,
         shapeMargin = 0.dp,
         backgroundAlpha = 0.9f,
+        scrollState = state,
         fixedContent = { SkipGuideButton(skip) }
     ) {
         Text(

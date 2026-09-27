@@ -27,6 +27,7 @@
 
 package com.sarangem.zenwell.ui.sequenceshowcase
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
@@ -65,6 +66,7 @@ fun SequenceShowcase(
                     shape = target.shape,
                     shapeMargin = target.shapeMargin,
                     backgroundAlpha = target.backgroundAlpha,
+                    scrollState = target.scrollState,
                     fixedContent = target.fixedContent
                 ) { targetRect ->
                     target.dialog(targetRect)
@@ -84,6 +86,7 @@ fun SequenceShowcase(
  * @param shapeMargin the margin or padding between highlighted shape and target element.
  * @param animationDuration The duration of the fade enter and exit animation.
  * @param backgroundAlpha The alpha value of the background overlay.
+ * @param scrollState the vertical scroll state to automatically scroll to required item.
  * @param fixedContent The content displayed at a fixed position on the screen regardless of target element
  * @param dialog The content of the dialog.
  */
@@ -97,6 +100,7 @@ fun Modifier.sequenceShowcaseTarget(
     shapeMargin: Dp = 8.dp,
     animationDuration: Pair<Int, Int> = 700 to 700,
     backgroundAlpha: Float = 0.6f,
+    scrollState: ScrollState? = null,
     fixedContent: @Composable () -> Unit = {},
     dialog: @Composable (Rect) -> Unit,
 ): Modifier = onGloballyPositioned { coordinates ->
@@ -109,6 +113,7 @@ fun Modifier.sequenceShowcaseTarget(
         shapeMargin = shapeMargin,
         duration = animationDuration,
         backgroundAlpha = backgroundAlpha,
+        scrollState = scrollState,
         fixedContent = fixedContent,
         dialog = dialog
     )

@@ -27,6 +27,7 @@ import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun LazyItemScope.AccessibilityPermissionCard(
+    modifier: Modifier = Modifier,
     recheckPermission: () -> Unit = {},
     showCard: Boolean = false,
     setAsExistingUser: () -> Unit = {}
@@ -43,6 +44,7 @@ fun LazyItemScope.AccessibilityPermissionCard(
             modifier = Modifier
                 .animateItem()
                 .then(showcase0Modifier(setAsExistingUser)),
+            buttonModifier = modifier,
             name = R.string.accessibility_service_permission,
             onGrantClick = { permissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
         )

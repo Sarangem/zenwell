@@ -27,6 +27,7 @@
 
 package com.sarangem.zenwell.ui.sequenceshowcase
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -107,6 +108,7 @@ data class SequenceShowcaseTarget(
     val shape: Shape,
     val shapeMargin: Dp,
     val backgroundAlpha: Float,
-    val fixedContent: @Composable () -> Unit = {},
+    val scrollState: ScrollState?,
+    val fixedContent: @Composable () -> Unit,
     val dialog: @Composable (Rect) -> Unit
 )

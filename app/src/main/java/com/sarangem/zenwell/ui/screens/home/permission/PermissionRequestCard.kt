@@ -30,6 +30,7 @@ import com.sarangem.zenwell.R
 @Composable
 fun PermissionRequestCard(
     modifier: Modifier = Modifier,
+    buttonModifier: Modifier = Modifier,
     onGrantClick: () -> Unit = {},
     @StringRes name: Int,
     cardColor: Color = MaterialTheme.colorScheme.errorContainer,
@@ -53,7 +54,7 @@ fun PermissionRequestCard(
             Button(
                 onClick = onGrantClick,
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error.copy(alpha = 0.1f)),
-                modifier = Modifier.padding(MaterialTheme.sizing.small)
+                modifier = buttonModifier.padding(MaterialTheme.sizing.small)
             ) {
                 Text(
                     text = stringResource(R.string.grant_permission),

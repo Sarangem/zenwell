@@ -47,6 +47,7 @@ fun EditScreenContents(
     userScrollEnabled: Boolean = true,
     goBack: () -> Unit = {},
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -71,22 +72,49 @@ fun EditScreenContents(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState(), enabled = userScrollEnabled)
+                    .verticalScroll(scrollState, enabled = userScrollEnabled)
             ) {
                 DetailsCardColumn {
                     DetailsCardWithTextField(R.string.schedule_title, title) { updateSchedule(copy(title = it)) }
                     DetailsCardWithTextField(R.string.message, message, singleLine = false) { updateSchedule(copy(message = it)) }
                 }
-                ChooseAppList(uiState.appNames, uiState.viewsList, updateAppNames, firstEntry, setAsExistingUser)
+                ChooseAppList(uiState.appNames, uiState.viewsList, updateAppNames, scrollState, firstEntry, setAsExistingUser)
 
                 if (!isPomodoro) {
                     DetailsCardColumn {
-                            ChooseUnlockMethod(
-                                unlockMethod = unlockMethod,
-                                updateValue = { updateSchedule(copy(unlockMethod = it)) },
-                                firstEntry = firstEntry,
-                                setAsExistingUser = setAsExistingUser
-                            )
+                        DetailsSwitchCard(R.string.active, isActive) { updateSchedule(copy(isActive = it)) }
+                        AnimatedVisibility(
+                            visible = isActive,
+                            enter = expandVertically() + fadeIn(),
+                            exit = shrinkVertically() + fadeOut()
+                        ) {
+                            Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)) {
+                                DetailsSwitchCard(
+                                    title = R.string.run_all_day,
+                                    isChecked = startTimeInMinutes == 0 && endTimeInMinutes == 23*60+59,
+                                    updateValue = {
+                                        if(it) {
+                                            updateSchedule(copy(startTimeInMinutes = 0, endTimeInMinutes = 23*60+59))
+                                        } else {
+                                            updateSchedule(copy(startTimeInMinutes = 6*60, endTimeInMinutes = 18*60))
+                                        }
+                                    }
+                                )
+                                AnimatedVisibility(startTimeInMinutes != 0 || endTimeInMinutes != 23*60+59) {
+                                    ChooseActiveTime(
+                                        startTimeInMinutes,
+                                        { updateSchedule(copy(startTimeInMinutes = it)) },
+                                        endTimeInMinutes,
+                                        { updateSchedule(copy(endTimeInMinutes = it)) }
+                                    )
+                                }
+                                SelectWeekDays(weekDays) { updateSchedule(copy(weekDays = it)) }
+                            }
+                        }
+                    }
+
+                    DetailsCardColumn {
+                        ChooseUnlockMethod(unlockMethod, scrollState, firstEntry, setAsExistingUser) { updateSchedule(copy(unlockMethod = it)) }
 
                         AnimatedContent(
                             targetState = unlockMethod,
@@ -210,7 +238,6 @@ fun EditScreenContents(
                         }
                         LabelDetailsCard(
                             mainText = R.string.additional_options,
-                            showExpandedButton = true,
                             labelList = listOf(
                                 LabelState(
                                     R.string.show_exit_button,
@@ -315,41 +342,8 @@ fun EditScreenContents(
                                     R.string.play_background_media,
                                     playBackgroundMedia
                                 ) { updateSchedule(copy(playBackgroundMedia = it)) }
-                            ),
-                            showExpandedButton = true
-                        )
-                    }
-                }
-
-                DetailsCardColumn {
-                    if (!isPomodoro) DetailsSwitchCard(R.string.active, isActive) { updateSchedule(copy(isActive = it)) }
-                    AnimatedVisibility(
-                        visible = isActive && !isPomodoro,
-                        enter = expandVertically() + fadeIn(),
-                        exit = shrinkVertically() + fadeOut()
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)) {
-                            DetailsSwitchCard(
-                                title = R.string.run_all_day,
-                                isChecked = startTimeInMinutes == 0 && endTimeInMinutes == 23*60+59,
-                                updateValue = {
-                                    if(it) {
-                                        updateSchedule(copy(startTimeInMinutes = 0, endTimeInMinutes = 23*60+59))
-                                    } else {
-                                        updateSchedule(copy(startTimeInMinutes = 6*60, endTimeInMinutes = 18*60))
-                                    }
-                                }
                             )
-                            AnimatedVisibility(startTimeInMinutes != 0 || endTimeInMinutes != 23*60+59) {
-                                ChooseActiveTime(
-                                    startTimeInMinutes,
-                                    { updateSchedule(copy(startTimeInMinutes = it)) },
-                                    endTimeInMinutes,
-                                    { updateSchedule(copy(endTimeInMinutes = it)) }
-                                )
-                            }
-                            SelectWeekDays(weekDays) { updateSchedule(copy(weekDays = it)) }
-                        }
+                        )
                     }
                 }
 

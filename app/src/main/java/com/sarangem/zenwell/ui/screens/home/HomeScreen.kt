@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -61,6 +64,7 @@ fun HomeScreen(
     LaunchedEffect(homeUiState.schedulesList) { viewModel.recheckPermission(context) }
 
     // start intro showcase
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
     LaunchedEffect(
         homeUiState.userPreferences.firstEntry,
         homeUiState.showAccessibilityPermissionRationale
@@ -68,6 +72,7 @@ fun HomeScreen(
         if (!homeUiState.userPreferences.firstEntry) return@LaunchedEffect
         showcaseState.dismiss()
         if (homeUiState.showAccessibilityPermissionRationale) {
+            bringIntoViewRequester.bringIntoView()
             showcaseState.start(0)
         } else {
             showcaseState.start(1)
@@ -76,6 +81,7 @@ fun HomeScreen(
 
     HomeScreen(
         modifier,
+        accessibilityCardModifier = Modifier.bringIntoViewRequester(bringIntoViewRequester),
         homeUiState,
         scheduleClicked,
         viewModel::addNewSchedule,
@@ -96,6 +102,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    accessibilityCardModifier: Modifier = Modifier,
     uiState: HomeUiState,
     scheduleClicked: Int = 0,
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _, _ -> Schedules() },
@@ -141,6 +148,7 @@ fun HomeScreen(
         ) {
             item {
                 AccessibilityPermissionCard(
+                    modifier = accessibilityCardModifier,
                     recheckPermission = recheckPermission,
                     showCard = uiState.showAccessibilityPermissionRationale,
                     setAsExistingUser = setAsExistingUser

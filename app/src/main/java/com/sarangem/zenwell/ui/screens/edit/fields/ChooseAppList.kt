@@ -7,6 +7,7 @@ package com.sarangem.zenwell.ui.screens.edit.fields
 
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -70,6 +71,7 @@ fun ChooseAppList(
     appNames: List<String>?,
     viewsList: List<AppNames>,
     updateValue: (List<String>) -> Unit = {},
+    scrollState: ScrollState? = null,
     firstEntry: Boolean = false,
     setAsExistingUser: () -> Unit = {}
 ) {
@@ -107,7 +109,7 @@ fun ChooseAppList(
 
     DetailsCardColumn {
         DetailsCard(
-            showcase2Modifier(setAsExistingUser)
+            showcase2Modifier(scrollState, setAsExistingUser)
                 .clickable {
                     expanded = true
                     showcaseState.dismiss()
@@ -238,12 +240,16 @@ fun AppCard(
     }
 }
 
-val showcase2Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip ->
+val showcase2Modifier: @Composable (
+    scrollState: ScrollState?,
+    skipGuide: () -> Unit
+) -> Modifier = { state, skip ->
     Modifier.sequenceShowcaseTarget(
         index = 2,
         shape = MaterialTheme.shapes.medium,
         shapeMargin = 0.dp,
         backgroundAlpha = 0.9f,
+        scrollState = state,
         fixedContent = { SkipGuideButton(skip) }
     ) {
         Text(

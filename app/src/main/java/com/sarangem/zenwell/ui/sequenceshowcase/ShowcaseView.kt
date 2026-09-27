@@ -34,6 +34,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -58,6 +60,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
@@ -77,6 +80,7 @@ import kotlin.math.roundToInt
  * @param shape the shape of highlight around the target element.
  * @param shapeMargin the margin or padding between highlighted shape and target element.
  * @param backgroundAlpha the alpha value of the background overlay.
+ * @param scrollState the vertical scroll state to automatically scroll to required item
  * @param fixedContent the content displayed at a fixed position on the screen regardless of target element
  * @param dialog the content of the dialog.
  */
@@ -91,6 +95,7 @@ fun ShowcaseView(
     shape: Shape = CircleShape,
     shapeMargin: Dp,
     backgroundAlpha: Float = 0.6f,
+    scrollState: ScrollState? = null,
     fixedContent: @Composable () -> Unit = {},
     dialog: @Composable (Rect) -> Unit
 ) {
@@ -151,6 +156,7 @@ fun ShowcaseView(
         }
     }
     LaunchedEffect(visible) {
+        scrollState?.animateScrollBy(targetCoordinates.positionInRoot().y)
         transition.targetState = visible
     }
     LaunchedEffect(transition.isIdle) {
