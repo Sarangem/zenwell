@@ -148,7 +148,7 @@ fun DetailsCardWithNumberField(
             }
         },
         keyboardType = KeyboardType.Number,
-        suffixText = if (placeholder != "0") suffixText else null,
+        suffixText = if (placeholder != "0" && textFieldValue == 0) null else suffixText,
         isError = isError || illegalValue,
         errorMessage = if (illegalValue) R.string.no_zero else errorMessage,
         placeholder = placeholder

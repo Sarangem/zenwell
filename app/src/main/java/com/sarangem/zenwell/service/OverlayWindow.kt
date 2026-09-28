@@ -192,7 +192,7 @@ class OverlayWindow(
             if (schedule.notificationTimeInMinutes > 0) {
                 createBlockNotification(
                     id = notificationId,
-                    message = schedule.title + service.getString(R.string.block_notification_message) + appName,
+                    message = service.getString(R.string.block_notification_message, schedule.title, appName),
                     context = service,
                 )
             }

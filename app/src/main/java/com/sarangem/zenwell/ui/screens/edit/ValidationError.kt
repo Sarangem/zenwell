@@ -24,7 +24,9 @@ fun validateSchedule(s: Schedules): Set<ValidationError> = with(s) {
     val errors: MutableSet<ValidationError> = mutableSetOf()
     if (unlockMethod != UnlockMethod.StrictBlock) {
         if (usageSessionDurationInMinutes == 0) errors.add(ValidationError.Default)
-        if (usageSessionDurationInMinutes <= notificationTimeInMinutes) errors.add(ValidationError.NotificationTime)
+        if (usageSessionDurationInMinutes != 0 &&
+            usageSessionDurationInMinutes <= notificationTimeInMinutes
+        ) errors.add(ValidationError.NotificationTime)
     }
     when (unlockMethod) {
         UnlockMethod.Timer -> if (timerDurationInSeconds == 0) errors.add(ValidationError.Default)

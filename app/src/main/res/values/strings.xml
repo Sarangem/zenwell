@@ -5,7 +5,7 @@
 
 <resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Zenwell</string>
-    <string name="strict_block">"Strict Block"</string>
+    <string name="strict_block">"Strict Lock"</string>
     <string name="timer">Timer</string>
     <string name="breathing">Breathing</string>
     <string name="math_problem">"Math Problem"</string>
@@ -13,8 +13,8 @@
     <string name="edit_this_schedule">"Edit this schedule"</string>
     <string name="schedule_title">"Schedule Title"</string>
     <string name="unlock_method">"Unlock method"</string>
-    <string name="choose_apps">"Apps to Block"</string>
-    <string name="show_apps_to_block">"Show apps to block"</string>
+    <string name="choose_apps">"Apps to Lock"</string>
+    <string name="show_apps_to_block">"Show apps to lock"</string>
     <string name="go_back">"Go back"</string>
     <string name="to">" to "</string>
     <string name="edit">Edit</string>
@@ -32,25 +32,24 @@
     <string name="timer_duration">"Timer duration"</string>
     <string name="seconds">seconds</string>
     <string name="minutes">minutes</string>
-    <string name="usage_session_duration">Usage session duration</string>
+    <string name="usage_session_duration">Lock app again after</string>
     <string name="message">Message</string>
     <string name="open">Open</string>
-    <string name="require_manual_unlock">Require manual unlock</string>
+    <string name="require_manual_unlock">Tap \"Open\" to unlock</string>
     <string name="inhale">Inhale</string>
     <string name="exhale">Exhale</string>
     <string name="number_of_breathing_cycles">Number of breathing cycles</string>
     <string name="breathing_cycle_duration">Breathing cycle duration</string>
     <string name="choose_week_days">Active Weekdays</string>
-    <string name="notify_before_closing">"Notify before blocking again"</string>
-    <string name="block_notification_description">"Send a notification before blocking the app again."</string>
-    <string name="block_notification_message">" would soon block "</string>
+    <string name="notify_before_closing">"Notify before locking again"</string>
+    <string name="block_notification_description">"Send a notification before locking the app again."</string>
+    <string name="block_notification_message">%1$s would soon lock %2$s</string>
     <string name="notification_permission">&lt;b&gt;Notifications for Zenwell&lt;/b&gt; not enabled. Some features may not work.</string>
-    <string name="notification_time_invalid">Must be less than usage session duration</string>
+    <string name="notification_time_invalid">Notification should be sent before app is m,kj locked</string>
     <string name="all">All</string>
     <string name="regular">Regular</string>
     <string name="pomodoro">Pomodoro</string>
     <string name="end">End</string>
-    <string name="start">Start</string>
     <string name="work_time">Work Time</string>
     <string name="rest_time">Rest Time</string>
     <string name="expanded">Expanded</string>
@@ -115,7 +114,7 @@
     <string name="typing">Typing</string>
     <string name="check">Check</string>
     <string name="additional_options">Additional Options</string>
-    <string name="home_screen_description">Create schedules to block distracting apps. Tap \'+\' to begin.</string>
+    <string name="home_screen_description">Create schedules to lock distracting apps. Tap \'+\' to begin.</string>
     <string name="example">"Eg: "</string>
     <string name="edit_custom_views">Edit custom views</string>
     <string name="add_new_custom_view">Add new Custom View</string>
@@ -148,7 +147,7 @@
     <string name="positive_motivation">reclaimed yesterday than the past week. That\'s a huge win!</string>
     <string name="negative_motivation">wasted being distracted yesterday?? Today is a new chance to unplug early.</string>
     <string name="all_apps">All apps</string>
-    <string name="blocked_apps_only">Blocked apps only</string>
+    <string name="blocked_apps_only">Locked apps only</string>
     <string name="bar_graph_for">"Bar graph for "</string>
     <string name="stats">Stats</string>
     <string name="dont_ask_again">Don\'t ask again</string>
@@ -168,4 +167,5 @@
     <string name="till_next_day">Till next day</string>
     <string name="tasks_list">Tasks list</string>
     <string name="task_completed">Task completed</string>
+    <string name="start_pomodoro_time">Start (%1$d + %2$d minutes)</string>
 </resources>

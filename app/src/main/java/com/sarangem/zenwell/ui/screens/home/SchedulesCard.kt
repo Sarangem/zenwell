@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -159,16 +158,12 @@ fun PomodoroStartButton(
                         .align(Alignment.CenterVertically)
                 )
                 Text(
-                    text = stringResource(R.string.start),
+                    text = stringResource(
+                        R.string.start_pomodoro_time,
+                        schedule.pomodoroWorkTimeInMinutes,
+                        schedule.pomodoroRestTimeInMinutes
+                    ),
                     style = MaterialTheme.typography.labelLargeEmphasized,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-                Spacer(Modifier.width(MaterialTheme.sizing.small))
-                Text(
-                    text = "(" + schedule.pomodoroWorkTimeInMinutes.toString() + " + " + schedule.pomodoroRestTimeInMinutes.toString() + " " + stringResource(
-                        R.string.minutes
-                    ) + ")",
-                    style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
             }
