@@ -21,11 +21,15 @@ ksp {
 
 android {
     namespace = "com.sarangem.zenwell"
-    compileSdk = 37
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     defaultConfig {
         applicationId = "com.sarangem.zenwell"
-        minSdk = 23
+        minSdk = 28
         targetSdk = 37
         versionCode = 16
         versionName = "1.6"
