@@ -32,9 +32,10 @@ import kotlinx.coroutines.launch
         BlockedApps::class,
         UserPreferences::class
     ],
-    version = 20,
+    version = 21,
     autoMigrations = [
-        AutoMigration(from = 18, to = 19)
+        AutoMigration(from = 18, to = 19),
+        AutoMigration(from = 20, to = 21)
     ],
     exportSchema = true
 )

@@ -158,6 +158,7 @@ data class Schedules(
     ),
 
     // list of tasks to complete it unlockMethod.Tasks, separated by newline
+    @ColumnInfo(defaultValue = "''")
     val tasks: String = ""
 
 ) : Parcelable

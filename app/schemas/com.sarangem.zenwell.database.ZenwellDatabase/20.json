@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 20,
-    "identityHash": "cad68143e9cb9b8de875304030491f88",
+    "identityHash": "7a29a2f664de472b3d2ea9b421bf8c9d",
     "entities": [
       {
         "tableName": "schedules",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `message` TEXT NOT NULL, `is_active` INTEGER NOT NULL, `unlock_method` TEXT NOT NULL, `start_time` INTEGER NOT NULL, `end_time` INTEGER NOT NULL, `timer_duration` INTEGER NOT NULL, `require_manual_unlock` INTEGER NOT NULL, `usage_session_duration` INTEGER NOT NULL, `breathing_cycle_duration` INTEGER NOT NULL, `breathing_cycle_number` INTEGER NOT NULL, `notification_time` INTEGER NOT NULL, `math_equation_num_operands` INTEGER NOT NULL, `math_equation_min_number` INTEGER NOT NULL, `math_equation_max_number` INTEGER NOT NULL, `math_equation_min_number_in_multiplication` INTEGER NOT NULL, `math_equation_max_number_in_multiplication` INTEGER NOT NULL, `allowed_math_operators` TEXT NOT NULL, `math_equation_show_parentheses` INTEGER NOT NULL, `math_equation_allow_negatives` INTEGER NOT NULL, `multiplication_min_num` INTEGER NOT NULL, `multiplication_max_num` INTEGER NOT NULL, `multiplier_min_num` INTEGER NOT NULL, `multiplier_max_num` INTEGER NOT NULL, `is_pomodoro` INTEGER NOT NULL, `pomodoro_work_time` INTEGER NOT NULL, `pomodoro_rest_time` INTEGER NOT NULL, `pomodoro_session_number` INTEGER NOT NULL, `show_pause_in_work_time` INTEGER NOT NULL, `show_skip_in_work_time` INTEGER NOT NULL, `show_pause_in_rest_time` INTEGER NOT NULL, `show_skip_in_rest_time` INTEGER NOT NULL, `show_exit` INTEGER NOT NULL, `play_media` INTEGER NOT NULL DEFAULT 1, `weekDays` TEXT NOT NULL, `tasks` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `message` TEXT NOT NULL, `is_active` INTEGER NOT NULL, `unlock_method` TEXT NOT NULL, `start_time` INTEGER NOT NULL, `end_time` INTEGER NOT NULL, `timer_duration` INTEGER NOT NULL, `require_manual_unlock` INTEGER NOT NULL, `usage_session_duration` INTEGER NOT NULL, `breathing_cycle_duration` INTEGER NOT NULL, `breathing_cycle_number` INTEGER NOT NULL, `notification_time` INTEGER NOT NULL, `math_equation_num_operands` INTEGER NOT NULL, `math_equation_min_number` INTEGER NOT NULL, `math_equation_max_number` INTEGER NOT NULL, `math_equation_min_number_in_multiplication` INTEGER NOT NULL, `math_equation_max_number_in_multiplication` INTEGER NOT NULL, `allowed_math_operators` TEXT NOT NULL, `math_equation_show_parentheses` INTEGER NOT NULL, `math_equation_allow_negatives` INTEGER NOT NULL, `multiplication_min_num` INTEGER NOT NULL, `multiplication_max_num` INTEGER NOT NULL, `multiplier_min_num` INTEGER NOT NULL, `multiplier_max_num` INTEGER NOT NULL, `is_pomodoro` INTEGER NOT NULL, `pomodoro_work_time` INTEGER NOT NULL, `pomodoro_rest_time` INTEGER NOT NULL, `pomodoro_session_number` INTEGER NOT NULL, `show_pause_in_work_time` INTEGER NOT NULL, `show_skip_in_work_time` INTEGER NOT NULL, `show_pause_in_rest_time` INTEGER NOT NULL, `show_skip_in_rest_time` INTEGER NOT NULL, `show_exit` INTEGER NOT NULL, `play_media` INTEGER NOT NULL DEFAULT 1, `weekDays` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -224,12 +224,6 @@
             "columnName": "weekDays",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "tasks",
-            "columnName": "tasks",
-            "affinity": "TEXT",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -386,7 +380,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cad68143e9cb9b8de875304030491f88')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7a29a2f664de472b3d2ea9b421bf8c9d')"
     ]
   }
 }
