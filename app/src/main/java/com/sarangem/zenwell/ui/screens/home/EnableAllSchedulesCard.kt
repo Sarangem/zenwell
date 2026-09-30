@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.sarangem.zenwell.R
@@ -42,7 +43,11 @@ fun EnableAllSchedulesCard(
                 .background(darkColorScheme().error)
         ) {
             Text(
-                stringResource(R.string.schedules_inactive, schedulesInactive, schedulesList.size),
+                text = pluralStringResource(
+                    id = R.plurals.schedules_inactive,
+                    count = schedulesInactive,
+                    schedulesInactive, schedulesList.size
+                ),
                 color = darkColorScheme().onError,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier

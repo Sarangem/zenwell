@@ -11,7 +11,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.sarangem.zenwell.MainActivity
 import com.sarangem.zenwell.R
@@ -20,7 +19,6 @@ const val BlockNotification = "BlockNotification"
 const val PomodoroNotification = "PomodoroNotification"
 
 fun createNotificationChannel(context: Context) {
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) return
     val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager? ?: return
 
     manager.createNotificationChannel(
@@ -99,7 +97,6 @@ fun deleteNotificationById(
     ServiceLogger.v { "Notification with ID $id cancelled." }
 }
 fun deleteAllNotificationChannel(context: Context){
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) return
     val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager? ?: return
     manager.deleteNotificationChannel(BlockNotification)
     manager.deleteNotificationChannel(PomodoroNotification)

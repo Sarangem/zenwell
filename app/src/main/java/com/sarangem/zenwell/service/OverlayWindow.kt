@@ -56,19 +56,10 @@ class OverlayWindow(
         override fun onAudioFocusChange(focusChange: Int) {
             if (schedule.playBackgroundMedia) return
             if (focusChange == AudioManager.AUDIOFOCUS_GAIN) return
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                focusRequest?.let { audioManager.requestAudioFocus(it) }
-            } else {
-                @Suppress("DEPRECATION")
-                audioManager.requestAudioFocus(
-                    focusChangeListener,
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN
-                )
-            }
+            focusRequest?.let { audioManager.requestAudioFocus(it) }
         }
     }
-    private val focusRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    private val focusRequest =
         AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).apply {
             setAudioAttributes(AudioAttributes.Builder().run {
                 setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
@@ -78,7 +69,6 @@ class OverlayWindow(
             setAcceptsDelayedFocusGain(true)
             setOnAudioFocusChangeListener(focusChangeListener)
         }.build()
-    } else null
     private val vmStore = ViewModelStore()
 
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -127,9 +117,7 @@ class OverlayWindow(
                 } else {
                     WindowManager.LayoutParams.MATCH_PARENT
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-                }
+                layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
                 width = WindowManager.LayoutParams.MATCH_PARENT
             }
             ServiceLogger.d { "Added layoutParams $layoutParams" }
@@ -137,15 +125,8 @@ class OverlayWindow(
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
             service.openedWindows.add(this)
-            if (!schedule.playBackgroundMedia && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!schedule.playBackgroundMedia) {
                 focusRequest?.let { audioManager.requestAudioFocus(it) }
-            } else if (!schedule.playBackgroundMedia) {
-                @Suppress("DEPRECATION")
-                audioManager.requestAudioFocus(
-                    focusChangeListener,
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN
-                )
             }
             ServiceLogger.d { "Successfully added composeView" }
 
@@ -160,11 +141,8 @@ class OverlayWindow(
         if (composeView == null) return
         try {
             windowManager.removeView(composeView)
-            if (!schedule.playBackgroundMedia && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!schedule.playBackgroundMedia) {
                 focusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
-            } else if (!schedule.playBackgroundMedia) {
-                @Suppress("DEPRECATION")
-                audioManager.abandonAudioFocus(focusChangeListener)
             }
             vmStore.clear()
             composeView?.disposeComposition()

@@ -83,12 +83,12 @@ fun SaveAndDeleteButton(
             },
             shapes = ButtonGroupDefaults.connectedLeadingButtonShapes(),
             colors = if(isError){
-                ToggleButtonDefaults.toggleButtonColors(
+                ToggleButtonDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.surfaceDim,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 )
             } else {
-                ToggleButtonDefaults.toggleButtonColors(
+                ToggleButtonDefaults.colors(
                     containerColor = colorScheme.primaryContainer,
                     checkedContainerColor = colorScheme.primary,
                     contentColor = colorScheme.onPrimaryContainer,
@@ -125,7 +125,7 @@ fun SaveAndDeleteButton(
             onCheckedChange = { checkedDelete = true },
             shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
             modifier = Modifier.weight(0.5f),
-            colors = ToggleButtonDefaults.toggleButtonColors(
+            colors = ToggleButtonDefaults.colors(
                 containerColor = colorScheme.errorContainer,
                 checkedContainerColor = colorScheme.error,
                 contentColor = colorScheme.onErrorContainer,

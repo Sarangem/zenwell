@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RichTooltip
@@ -169,6 +170,7 @@ fun UsageBarGraph(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolboxIconButton(
     icon: Drawable?,

@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.ToggleButtonShapes
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -105,12 +106,12 @@ fun WeekDayButtonGroup(
                         updateValue(weekDays - day)
                     }
                 },
-                shapes = ToggleButtonDefaults.shapes(
+                shapes = ToggleButtonShapes(
                     shape = shape,
                     checkedShape = shape,
                     pressedShape = shape
                 ),
-                colors = ToggleButtonDefaults.toggleButtonColors(
+                colors = ToggleButtonDefaults.colors(
                     disabledContainerColor = MaterialTheme.colorScheme.surfaceDim,
                     disabledContentColor = MaterialTheme.colorScheme.onSurface,
                     checkedContainerColor = MaterialTheme.colorScheme.primary,

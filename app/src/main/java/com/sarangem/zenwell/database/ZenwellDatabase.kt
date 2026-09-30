@@ -66,7 +66,7 @@ abstract class ZenwellDatabase : RoomDatabase() {
             }
         }
 
-        private class ZenwellDatabaseCallback() : Callback() {
+        private class ZenwellDatabaseCallback : Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 val scope = CoroutineScope(Dispatchers.IO)

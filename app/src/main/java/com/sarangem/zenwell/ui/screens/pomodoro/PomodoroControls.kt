@@ -86,7 +86,7 @@ fun PomodoroControls(
                 modifier = Modifier.weight(1f, false),
                 checked = isPaused,
                 onCheckedChange = { onPauseOrResume() },
-                colors = ToggleButtonDefaults.toggleButtonColors(
+                colors = ToggleButtonDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                     checkedContainerColor = MaterialTheme.colorScheme.tertiary,
@@ -116,7 +116,7 @@ fun PomodoroControls(
                 !showPause && showSkip -> ButtonGroupDefaults.connectedLeadingButtonShapes()
                 else -> ButtonGroupDefaults.connectedMiddleButtonShapes(MaterialTheme.shapes.extraLargeIncreased)
             },
-            colors = ToggleButtonDefaults.toggleButtonColors(
+            colors = ToggleButtonDefaults.colors(
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
                 checkedContainerColor = MaterialTheme.colorScheme.error,
@@ -138,7 +138,7 @@ fun PomodoroControls(
                 modifier = Modifier.weight(1f, false),
                 checked = isSkipChecked,
                 onCheckedChange = { isSkipChecked = !isSkipChecked },
-                colors = ToggleButtonDefaults.toggleButtonColors(
+                colors = ToggleButtonDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                     checkedContainerColor = MaterialTheme.colorScheme.tertiary,
