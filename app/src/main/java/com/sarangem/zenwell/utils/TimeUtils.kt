@@ -5,22 +5,20 @@
 
 package com.sarangem.zenwell.utils
 
-import android.content.Context
-import android.text.format.DateFormat
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Calendar
+import java.util.Locale
 
-fun getCurrentTimeInMinutes(calendar: Calendar = Calendar.getInstance()): Int {
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
-    return (hour * 60) + minute
-}
-
-fun minutesToString(num: Int, context: Context): String {
-    val calendar = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, num / 60)
-        set(Calendar.MINUTE, num % 60)
-    }
-    return DateFormat.getTimeFormat(context).format(calendar.time)
+fun minutesToString(minutes: Int): String {
+    return LocalTime
+        .ofSecondOfDay(minutes * 60L)
+        .format(
+            DateTimeFormatter
+                .ofLocalizedTime(FormatStyle.SHORT)
+                .withLocale(Locale.getDefault())
+        )
 }
 
 fun getMinutesUntilTomorrow(): Int {

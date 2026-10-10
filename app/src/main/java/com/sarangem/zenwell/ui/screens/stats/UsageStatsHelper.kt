@@ -7,12 +7,16 @@ package com.sarangem.zenwell.ui.screens.stats
 
 import android.app.usage.UsageStatsManager
 import android.content.Context
-import androidx.compose.ui.graphics.Color
 import android.graphics.drawable.Drawable
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.time.temporal.TemporalAdjusters
+import java.time.temporal.WeekFields
 import java.util.Locale
 
 data class AppUsageData(
@@ -46,13 +50,10 @@ suspend fun getDailyAppUsage(
     uiState: StateFlow<StatsUiState>
 ): List<DailyAppUsageData> {
     val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-
-    val dateFormat = SimpleDateFormat("E", Locale.getDefault())
-    val cal = Calendar.getInstance().apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0) }
-    cal.add(Calendar.DAY_OF_YEAR, 1)
-    val endTimeMs = cal.timeInMillis
-    cal.add(Calendar.DAY_OF_YEAR, -8)
-    val startTimeMs = cal.timeInMillis
+    val zoneId = ZoneId.systemDefault()
+    val today = LocalDate.now(zoneId)
+    val endTimeMs = today.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
+    val startTimeMs = today.minusDays(8).atStartOfDay(zoneId).toInstant().toEpochMilli()
 
     val statsList = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTimeMs, endTimeMs)
 
@@ -60,7 +61,7 @@ suspend fun getDailyAppUsage(
 
     val usageByDay = statsList
         ?.filter { it.totalTimeInForeground > 0 }
-        ?.groupBy { Calendar.getInstance().apply { timeInMillis = it.firstTimeStamp }.get(Calendar.DAY_OF_YEAR) }
+        ?.groupBy { Instant.ofEpochMilli(it.firstTimeStamp).atZone(zoneId).toLocalDate().dayOfYear }
         ?.mapValues { (_, stats) ->
             stats.groupBy { it.packageName }
                 .map { (pkgName, appStats) ->
@@ -76,12 +77,12 @@ suspend fun getDailyAppUsage(
         } ?: emptyMap()
 
     return (0..7).map { daysIntoPast ->
-        val targetCal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -daysIntoPast) }
-        val data = usageByDay[targetCal.get(Calendar.DAY_OF_YEAR)] ?: emptyList()
+        val targetDate = today.minusDays(daysIntoPast.toLong())
+        val data = usageByDay[targetDate.dayOfYear] ?: emptyList()
         val sum = data.sumOf { it.timeInMinutes }
         DailyAppUsageData(
-            weekDay = targetCal.get(Calendar.DAY_OF_WEEK),
-            weekDayName = dateFormat.format(targetCal.time),
+            weekDay = targetDate.dayOfWeek.value,
+            weekDayName = targetDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
             data = data,
             totalTimeInMinutes = sum
         )
@@ -90,12 +91,12 @@ suspend fun getDailyAppUsage(
 
 fun getWeeklyAppUsageAverageInMinutes(context: Context): Int {
     val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-
-    val cal = Calendar.getInstance().apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0) }
-    cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
-    val endTimeMs = cal.timeInMillis
-    cal.add(Calendar.DAY_OF_YEAR, -7)
-    val startTimeMs = cal.timeInMillis
+    val zoneId = ZoneId.systemDefault()
+    val today = LocalDate.now(zoneId)
+    val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
+    val startOfWeek = today.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
+    val endTimeMs = startOfWeek.atStartOfDay(zoneId).toInstant().toEpochMilli()
+    val startTimeMs = startOfWeek.minusWeeks(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
 
     val statsList = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_WEEKLY, startTimeMs, endTimeMs)
     return (statsList.sumOf { it.totalTimeInForeground } / 7 / 1000 / 60).toInt()

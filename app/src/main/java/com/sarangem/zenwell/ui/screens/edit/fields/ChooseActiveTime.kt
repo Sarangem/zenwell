@@ -139,7 +139,7 @@ fun ClockButton(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = minutesToString(time, context),
+                text = minutesToString(time),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
@@ -224,14 +224,13 @@ fun OvernightScheduleNotice(
     endTimeInMinutes: Int,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     Text(
         text = stringResource(
             R.string.overnight_schedule_description,
-            minutesToString(0, context),
-            minutesToString(endTimeInMinutes, context),
-            minutesToString(startTimeInMinutes, context),
-            minutesToString(23*60+59, context)
+            minutesToString(0),
+            minutesToString(endTimeInMinutes),
+            minutesToString(startTimeInMinutes),
+            minutesToString(23*60+59)
         ),
         style = MaterialTheme.typography.bodySmall,
         textAlign = TextAlign.Center,

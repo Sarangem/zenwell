@@ -137,7 +137,6 @@ fun PomodoroStartButton(
     pomodoroWindow: PomodoroWindow? = null,
     updatePomodoroActivity: (Boolean) -> Unit = {},
 ) {
-    val context = LocalContext.current
     if (schedule.isActive && schedule.isPomodoro && pomodoroWindow != null && !isPomodoroActive) {
         Box(
             modifier = modifier
@@ -179,11 +178,9 @@ fun PomodoroStartButton(
         Text(
             modifier = modifier,
             text = minutesToString(
-                schedule.startTimeInMinutes,
-                context
+                schedule.startTimeInMinutes
             ) + " " + stringResource(R.string.to) + " " + minutesToString(
-                schedule.endTimeInMinutes,
-                context
+                schedule.endTimeInMinutes
             ),
             style = MaterialTheme.typography.labelLarge,
             color = tint,

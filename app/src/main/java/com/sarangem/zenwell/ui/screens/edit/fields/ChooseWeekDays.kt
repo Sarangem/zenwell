@@ -26,8 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
-import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.time.format.TextStyle
+import java.time.temporal.WeekFields
 
 @Composable
 fun SelectWeekDays(
@@ -35,14 +35,12 @@ fun SelectWeekDays(
     updateValue: (List<Int>) -> Unit = {}
 ) {
     val locale = LocalLocale.current.platformLocale
-    val daysList = remember {
-        val calendar = Calendar.getInstance(locale)
-        val firstDay = calendar.firstDayOfWeek
-        val dateFormat = SimpleDateFormat("EEEEE", locale)
+    val daysList = remember(locale) {
+        val firstDayOfWeek = WeekFields.of(locale).firstDayOfWeek
         List(7) { index ->
-            val dayOfWeek = ((firstDay - 1 + index) % 7) + 1
-            calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek)
-            dayOfWeek to dateFormat.format(calendar.time)
+            val day = firstDayOfWeek.plus(index.toLong())
+            val abbr = day.getDisplayName(TextStyle.NARROW, locale)
+            day.value to abbr
         }
     }
     val isExpandedWidth = currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)

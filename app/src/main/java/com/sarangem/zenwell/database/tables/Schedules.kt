@@ -13,7 +13,6 @@ import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.model.MathOperators
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
-import java.util.Calendar
 
 @Parcelize
 @Serializable
@@ -147,15 +146,7 @@ data class Schedules(
     val playBackgroundMedia: Boolean = true,
 
     // Check if it will work on following week days
-    val weekDays: List<Int> = listOf(
-        Calendar.SUNDAY,
-        Calendar.MONDAY,
-        Calendar.TUESDAY,
-        Calendar.WEDNESDAY,
-        Calendar.THURSDAY,
-        Calendar.FRIDAY,
-        Calendar.SATURDAY,
-    ),
+    val weekDays: List<Int> = listOf(1,2,3,4,5,6,7),
 
     // list of tasks to complete it unlockMethod.Tasks, separated by newline
     @ColumnInfo(defaultValue = "''")

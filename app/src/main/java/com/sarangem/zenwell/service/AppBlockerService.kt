@@ -14,7 +14,6 @@ import com.sarangem.zenwell.CRASH_LOG_FILE
 import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.deleteAllNotificationChannel
-import com.sarangem.zenwell.utils.getCurrentTimeInMinutes
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +24,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
 import java.util.Locale
 
@@ -113,9 +113,8 @@ class AppBlockerService : AccessibilityService() {
         ServiceLogger.d { "There are ${windows.size} and they are $windows" }
         val currentVisibleApps = mutableListOf<CharSequence>()
 
-        val calendar = Calendar.getInstance(Locale.getDefault())
-        val currentTime = getCurrentTimeInMinutes(calendar)
-        val todayDay = calendar.get(Calendar.DAY_OF_WEEK)
+        val currentTime = LocalTime.now().toSecondOfDay()
+        val todayDay = LocalDate.now().dayOfWeek.value
 
         for (windowInfo in windows) {
 
