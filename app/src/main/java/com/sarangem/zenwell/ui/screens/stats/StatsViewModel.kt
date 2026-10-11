@@ -46,7 +46,7 @@ class StatsViewModel @Inject constructor(
                 val dailyUsage = getDailyAppUsage(context, _uiState)
                 val blockedApps = schedulesRepository.getAllApps()
                     .firstOrNull()
-                    ?.map { it.title.substringBefore(":id/") }
+                    ?.map { it.packageName }
                     ?.distinct() ?: listOf()
                 val weeklyAverageInMinutes = getWeeklyAppUsageAverageInMinutes(context)
                 val filteredDailyUsage = filterDailyUsage(dailyUsage, blockedApps, _uiState.value.statsFilter)

@@ -26,6 +26,7 @@ import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
@@ -38,18 +39,18 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.minutes
 
 class OverlayWindow(
-    val packageName: String, // only for use in AppBlockerService
-    val appName: String,
+    val targetApp: AppNames,
     val schedule: Schedules,
     var content: @Composable (() -> Unit, () -> Unit) -> Unit,
     private val service: AppBlockerService,
     supervisorJob: Job,
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisorJob)
-    private val notificationId = schedule.id + appName.hashCode()
+    private val notificationId = "${schedule.id}${targetApp.packageName}${targetApp.viewId}".hashCode().absoluteValue
 
     private val audioManager = service.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val focusChangeListener: AudioManager.OnAudioFocusChangeListener = object: AudioManager.OnAudioFocusChangeListener {
@@ -170,7 +171,7 @@ class OverlayWindow(
             if (schedule.notificationTimeInMinutes > 0) {
                 createBlockNotification(
                     id = notificationId,
-                    message = service.getString(R.string.block_notification_message, schedule.title, appName),
+                    message = service.getString(R.string.block_notification_message, schedule.title, targetApp.viewTitle),
                     context = service,
                 )
             }

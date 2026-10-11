@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 data class EditUiState(
     val schedule: Schedules = Schedules(),
-    val appNames: List<String>? = null,
+    val appNames: List<AppNames>? = null,
     val viewsList: List<AppNames> = listOf(),
     val validationErrors: Set<ValidationError> = emptySet(),
 )
@@ -34,7 +34,7 @@ class EditViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(EditUiState())
     val uiState = _uiState.asStateFlow()
-    var pastAppList: List<String>? = null
+    var pastAppList: List<AppNames>? = null
 
     fun updateSchedule(schedule: Schedules) {
         _uiState.update {
@@ -44,12 +44,8 @@ class EditViewModel @Inject constructor(
             )
         }
     }
-    fun updateAppNames(appNames: List<String>) {
-        _uiState.update {
-            _uiState.value.copy(
-                appNames = appNames
-            )
-        }
+    fun updateAppNames(appNames: List<AppNames>) {
+        _uiState.update { _uiState.value.copy(appNames = appNames) }
     }
 
     fun initialize(schedule: Schedules) {
@@ -59,11 +55,11 @@ class EditViewModel @Inject constructor(
             _uiState.update {
                 _uiState.value.copy(
                     schedule = schedule,
-                    appNames = appNames.map { it.title },
+                    appNames = appNames,
                     viewsList = viewsList
                 )
             }
-            pastAppList = appNames.map { it.title }
+            pastAppList = appNames
         }
     }
 

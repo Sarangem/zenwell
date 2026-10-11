@@ -39,7 +39,7 @@ class OfflineSchedulesRepository @Inject constructor(
             data.add(
                 BackupData(
                     schedule = schedule,
-                    appNamesList = getAppNamesById(schedule.id).first().map { it.title to it.viewTitle }
+                    appNamesList = getAppNamesById(schedule.id).first()
                 )
             )
         }
@@ -48,13 +48,11 @@ class OfflineSchedulesRepository @Inject constructor(
 
     override suspend fun restoreAllData(list: List<BackupData>) {
         list.forEach { data ->
-            data.appNamesList.forEach { app -> // add all views with names
-                app.second?.let { upsertApp(AppNames(0, app.first, it)) }
-            }
+            data.appNamesList.forEach { upsertApp(it.copy(id = 0)) }
             val id = addNewSchedule(data.schedule.copy(id = 0))
             saveToDatabase(
                 schedule = data.schedule.copy(id = id),
-                appNames = data.appNamesList.map { it.first },
+                appNames = data.appNamesList,
                 pastAppList = listOf()
             )
         }
@@ -62,8 +60,8 @@ class OfflineSchedulesRepository @Inject constructor(
 
     override suspend fun saveToDatabase(
         schedule: Schedules,
-        appNames: List<String>?,
-        pastAppList: List<String>?
+        appNames: List<AppNames>?,
+        pastAppList: List<AppNames>?
     ) {
         // first update the schedule table
         scheduleDao.updateSchedule(schedules = schedule)
@@ -77,16 +75,16 @@ class OfflineSchedulesRepository @Inject constructor(
             if (app !in pastAppSet) {
 
                 // insert new app name
-                val appId = scheduleDao.getAppId(app).firstOrNull()
+                val appId = scheduleDao.getAppId(app.packageName, app.viewId).firstOrNull()
                 if (appId == null || appId == 0) { // it does not exist in table
-                    upsertApp(AppNames(title = app))
+                    upsertApp(app.copy(id = 0))
                 }
 
                 // insert app to schedule relation
                 scheduleDao.insertAppRelation(
                     BlockedApps(
                         scheduleId = schedule.id,
-                        appId = scheduleDao.getAppId(app).firstOrNull() ?: 0
+                        appId = scheduleDao.getAppId(app.packageName, app.viewId).firstOrNull() ?: 0
                     )
                 )
 
@@ -99,7 +97,7 @@ class OfflineSchedulesRepository @Inject constructor(
         for (app in pastAppSet) {
             scheduleDao.deleteAppRelation(
                 scheduleId = schedule.id,
-                appId = scheduleDao.getAppId(app).firstOrNull() ?: 0
+                appId = scheduleDao.getAppId(app.packageName, app.viewId).firstOrNull() ?: 0
             )
         }
 

@@ -26,8 +26,8 @@ interface SchedulesRepository {
     suspend fun updateSchedule(schedule: Schedules)
     suspend fun saveToDatabase(
         schedule: Schedules,
-        appNames: List<String>?,
-        pastAppList: List<String>?
+        appNames: List<AppNames>?,
+        pastAppList: List<AppNames>?
     )
     suspend fun getAllData(): List<BackupData>
     suspend fun restoreAllData(list: List<BackupData>)

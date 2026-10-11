@@ -5,7 +5,9 @@
 
 package com.sarangem.zenwell
 
+const val YOUTUBE_PACKAGE_NAME = "com.google.android.youtube"
 const val YOUTUBE_SHORTS_VIEW_ID = "com.google.android.youtube:id/reel_watch_fragment_root"
 const val YOUTUBE_SHORTS_NAME = "YouTube Shorts"
+
 const val CRASH_LOG_FILE = "crash_log.txt"
 const val GITHUB_REPO_ISSUES_URL = "https://github.com/sarangem/zenwell/issues/new"

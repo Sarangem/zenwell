@@ -12,6 +12,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import com.sarangem.zenwell.CRASH_LOG_FILE
 import com.sarangem.zenwell.database.repository.SchedulesRepository
+import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.deleteAllNotificationChannel
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,14 +87,15 @@ class AppBlockerService : AccessibilityService() {
         val info = serviceInfo
         info.eventTypes = when {
             scheduleInfoList.isEmpty() -> 0
-            scheduleInfoList.any { it.viewsMap.isNotEmpty() } -> {
+            scheduleInfoList.any { scheduleInfo ->
+                scheduleInfo.appNamesList.any { appRule -> appRule.viewId != null }
+            } -> {
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
             }
             else -> AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
         }
         serviceInfo = info
         ServiceLogger.i { "Service fully initiated with $serviceInfo" }
-        ServiceLogger.i { "Apps to block are: ${scheduleInfoList.map { it.appSet }}"}
 
         onAccessibilityEvent(null) // open overlay window if required
     }
@@ -111,10 +113,16 @@ class AppBlockerService : AccessibilityService() {
         }
 
         ServiceLogger.d { "There are ${windows.size} and they are $windows" }
-        val currentVisibleApps = mutableListOf<CharSequence>()
+        val currentVisibleTargets = mutableListOf<AppNames>()
 
-        val currentTime = LocalTime.now().toSecondOfDay()
+        val currentTime = LocalTime.now().toSecondOfDay() / 60
         val todayDay = LocalDate.now().dayOfWeek.value
+
+        val currentlyActiveSchedules = scheduleInfoList.filter { scheduleInfo ->
+            if (todayDay !in scheduleInfo.schedule.weekDays) return@filter false
+            val (start, end) = scheduleInfo.schedule.startTimeInMinutes to scheduleInfo.schedule.endTimeInMinutes
+            if (start <= end) currentTime in start..end else (currentTime !in (end + 1)..<start)
+        }
 
         for (windowInfo in windows) {
 
@@ -128,43 +136,30 @@ class AppBlockerService : AccessibilityService() {
 
             // get current root and package name && terminate if null
             val root = windowInfo.root ?: continue
-            val currentApp = root.packageName ?: continue
-            if (currentApp == packageName && root.className == "android.view.ViewGroup") continue
-            ServiceLogger.d { "Processing app $currentApp (${root.className})" }
-            currentVisibleApps.add(currentApp)
-            scheduleInfoList.forEach { scheduleInfo ->
-                scheduleInfo.viewsMap[currentApp]?.forEach {
-                    if (root.findAccessibilityNodeInfosByViewId(it).isNotEmpty()) {
-                        currentVisibleApps.add(it)
-                        ServiceLogger.d { "Processing view id: $it" }
-                    }
-                }
-            }
+            val currentPackage = root.packageName ?: continue
+            if (currentPackage == packageName && root.className == "android.view.ViewGroup") continue
 
-            // open the window
-            for (scheduleInfo in scheduleInfoList) {
-                if (todayDay !in scheduleInfo.schedule.weekDays) continue
-                val (start, end) = scheduleInfo.schedule.startTimeInMinutes to scheduleInfo.schedule.endTimeInMinutes
-                if (if (start <= end) currentTime !in start..end else (currentTime in (end + 1)..<start)) continue
-                if (scheduleInfo.appSet.any { it in currentVisibleApps }) {
-                    val blockingWindow =
-                        scheduleInfo.overlayWindowList.firstOrNull {
-                            it.packageName in currentVisibleApps
-                        } ?: continue
-                    ServiceLogger.i { "Opening window for schedule ${scheduleInfo.schedule.id} and ${blockingWindow.appName}" }
+            // open window to block
+            currentlyActiveSchedules.forEach { scheduleInfo ->
+                scheduleInfo.appsByPackage[currentPackage]?.forEach { appRule ->
+                    if (
+                        appRule.viewId != null &&
+                        root.findAccessibilityNodeInfosByViewId(appRule.viewId).isEmpty()
+                    ) return@forEach
+                    currentVisibleTargets.add(appRule)
+                    val blockingWindow = scheduleInfo.overlayWindowList.firstOrNull { it.targetApp == appRule } ?: return@forEach
+                    ServiceLogger.i { "Opening window for schedule ${scheduleInfo.schedule.id} and ${blockingWindow.targetApp}" }
                     blockingWindow.open()
                 }
             }
+
             windowInfo.recycle()
         }
 
         // close the window
         openedWindows
-            .filter { it.packageName !in currentVisibleApps } // create a copy to avoid modification exceptions
-            .forEach { overlayWindow ->
-                ServiceLogger.i { "Closing window for ${overlayWindow.packageName} for schedule ${overlayWindow.schedule.id}." }
-                overlayWindow.close()
-            }
+            .filter { it.targetApp !in currentVisibleTargets }
+            .forEach { it.close() }
         ServiceLogger.d { "Accessibility Event completed." }
     }
 

@@ -28,20 +28,15 @@ data class ScheduleInfo(
     val appNamesList: List<AppNames>,
     val supervisorJob: Job
 ) {
-    val appSet = appNamesList
-        .map { it.title }
-        .toSet()
-    val viewsMap: Map<String, List<String>> = appNamesList
-        .filter { it.viewTitle != null }
-        .map { it.title }
-        .groupBy { it.substringBefore(":id/") }
+    val appsByPackage: Map<String, List<AppNames>> = appNamesList.groupBy { it.packageName }
 
     val overlayWindowList: List<OverlayWindow> = appNamesList.map { app ->
         OverlayWindow(
             service = service,
             schedule = schedule,
-            packageName = app.title,
-            appName = app.viewTitle ?: getAppNameFromPackageName(service, app.title) ?: app.title,
+            targetApp = app.copy(
+                viewTitle = app.viewTitle ?: getAppNameFromPackageName(service, app.packageName) ?: app.packageName
+            ),
             supervisorJob = supervisorJob,
             content = { onTimerEnd, onExit ->
 

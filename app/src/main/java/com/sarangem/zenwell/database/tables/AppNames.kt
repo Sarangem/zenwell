@@ -5,7 +5,6 @@
 
 package com.sarangem.zenwell.database.tables
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -14,17 +13,23 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Entity(
     tableName = "app_names",
-    indices = [ Index(value = ["title"], unique = true) ]
+    indices = [ Index(value = ["packageName", "viewId"], unique = true) ]
 )
 data class AppNames (
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    // contains packageName or viewID
-    @ColumnInfo(name = "title")
-    val title: String,
+    // eg: "com.android.chrome"
+    val packageName: String,
 
-    @ColumnInfo(name = "view_title")
+    // if empty, meaning the whole app is blocked, not the specific screen
+    // eg: "com.android.chrome:id/url_bar"
+    val viewId: String? = null,
+
+    // eg: to block youtube on chrome "youtube.com"
+    val viewKeyword: String? = null,
+
+    // display name for app UI only
     val viewTitle: String? = null
 )

@@ -30,14 +30,14 @@ interface ScheduleDao {
     @Query("SELECT COUNT(*) FROM schedules")
     fun getSchedulesCount(): Flow<Int>
 
-    @Query("SELECT * FROM app_names ORDER BY title")
+    @Query("SELECT * FROM app_names")
     fun getAllApps(): Flow<List<AppNames>>
 
     @Query("SELECT * FROM blocked_apps")
     fun getAllAppRelations(): Flow<List<BlockedApps>>
 
-    @Query("SELECT id FROM app_names WHERE title=:appName")
-    fun getAppId(appName: String): Flow<Int>
+    @Query("SELECT id FROM app_names WHERE packageName=:packageName AND viewId=:viewId")
+    fun getAppId(packageName: String, viewId: String?): Flow<Int>
 
     @Query("""
         SELECT * FROM app_names WHERE id IN (

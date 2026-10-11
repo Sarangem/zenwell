@@ -14,7 +14,8 @@ import android.os.Build
 data class MyPackageInfo(
     val packageName: String = "",
     val appName: String = "",
-    val icon: Drawable? = null
+    val icon: Drawable? = null,
+    val viewId: String? = null
 )
 
 fun getInstalledApps(context: Context): List<MyPackageInfo> {

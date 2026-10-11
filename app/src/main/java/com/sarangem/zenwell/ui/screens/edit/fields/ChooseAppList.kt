@@ -68,9 +68,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseAppList(
-    appNames: List<String>?,
+    appNames: List<AppNames>?,
     viewsList: List<AppNames>,
-    updateValue: (List<String>) -> Unit = {},
+    updateValue: (List<AppNames>) -> Unit = {},
     scrollState: ScrollState? = null,
     firstEntry: Boolean = false,
     setAsExistingUser: () -> Unit = {}
@@ -78,17 +78,21 @@ fun ChooseAppList(
     val showcaseState = LocalSequenceShowcaseState.current
     val context = LocalContext.current
     var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }
+
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
-            val list = getInstalledApps(context).toMutableList()
+            val systemApps = getInstalledApps(context)
+            val list = mutableListOf<MyPackageInfo>()
+            list.addAll(systemApps)
             viewsList.forEach { view ->
-                val element = list.firstOrNull { it.packageName == view.title.substringBefore(":id/") }
+                val element = systemApps.firstOrNull { it.packageName == view.packageName }
                 element?.let {
                     list.add(
                         MyPackageInfo(
-                            packageName = view.title,
-                            appName = view.viewTitle ?: "",
-                            icon = element.icon
+                            packageName = view.packageName,
+                            appName = view.viewTitle ?: view.packageName,
+                            icon = it.icon,
+                            viewId = view.viewId
                         )
                     )
                 }
@@ -97,10 +101,11 @@ fun ChooseAppList(
             installedAppList = list
         }
     }
+
     val selectedAppsText by remember(installedAppList, appNames) {
         derivedStateOf {
             installedAppList
-                .filter { appNames?.contains(it.packageName) == true }
+                .filter { item -> appNames?.any { it.packageName == item.packageName && it.viewId == item.viewId } == true }
                 .joinToString(", ") { it.appName }
                 .ifEmpty { null }
         }
@@ -150,20 +155,19 @@ fun ChooseAppList(
             BottomSheetContents(
                 installedAppList = installedAppList,
                 checkedAppList = appNames,
-                addAppToList = {
+                addAppToList = { appRule ->
                     if (appNames != null) {
-                        updateValue(appNames + it)
+                        updateValue(appNames + appRule)
                     }
                 },
-                removeAppFromList = {
+                removeAppFromList = { appRule ->
                     if (appNames != null) {
-                        updateValue(appNames - it)
+                        updateValue(appNames.filterNot { it.packageName == appRule.packageName && it.viewId == appRule.viewId })
                     }
                 }
             )
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -171,9 +175,9 @@ fun ChooseAppList(
 fun BottomSheetContents(
     modifier: Modifier = Modifier,
     installedAppList: List<MyPackageInfo>,
-    checkedAppList: List<String>? = listOf(),
-    addAppToList: (String) -> Unit = {},
-    removeAppFromList: (String) -> Unit = {}
+    checkedAppList: List<AppNames>? = listOf(),
+    addAppToList: (AppNames) -> Unit = {},
+    removeAppFromList: (AppNames) -> Unit = {}
 ) {
     if (installedAppList.isEmpty() || checkedAppList == null) {
         LoadingIndicator(
@@ -188,14 +192,15 @@ fun BottomSheetContents(
                 .clip(RoundedCornerShape(MaterialTheme.sizing.large)),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
         ) {
-            items(installedAppList) { app ->
+            items(installedAppList) { item ->
                 AppCard(
-                    label = app.appName,
-                    icon = app.icon,
-                    checkedValue = app.packageName in checkedAppList,
+                    label = item.appName,
+                    icon = item.icon,
+                    checkedValue = checkedAppList.any { it.packageName == item.packageName && it.viewId == item.viewId },
                     onCheckedChange = { value ->
-                        if (value) addAppToList(app.packageName)
-                        else removeAppFromList(app.packageName)
+                        val appRule = AppNames(packageName = item.packageName, viewId = item.viewId)
+                        if (value) addAppToList(appRule)
+                        else removeAppFromList(appRule)
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -269,9 +274,9 @@ fun ShowBottomSheetPreview() {
     ZenwellTheme {
         BottomSheetContents(
             installedAppList = listOf(
-                MyPackageInfo(appName = "Calendar", icon = icon, packageName = "c"),
-                MyPackageInfo(appName = "Messages", icon = icon, packageName = "m"),
-                MyPackageInfo(appName = "YouTube", icon = icon, packageName = "y")
+                MyPackageInfo(packageName = "c", icon = icon, appName = "Calendar"),
+                MyPackageInfo(packageName = "m", icon = icon, appName = "Messages"),
+                MyPackageInfo(packageName = "y", icon = icon, appName = "YouTube")
             )
         )
     }

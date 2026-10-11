@@ -12,9 +12,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.sarangem.zenwell.YOUTUBE_PACKAGE_NAME
 import com.sarangem.zenwell.YOUTUBE_SHORTS_NAME
 import com.sarangem.zenwell.YOUTUBE_SHORTS_VIEW_ID
 import com.sarangem.zenwell.database.migrations.MIGRATION_19_20
+import com.sarangem.zenwell.database.migrations.MIGRATION_21_22
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.BlockedApps
 import com.sarangem.zenwell.database.tables.Schedules
@@ -32,7 +34,7 @@ import kotlinx.coroutines.launch
         BlockedApps::class,
         UserPreferences::class
     ],
-    version = 21,
+    version = 22,
     autoMigrations = [
         AutoMigration(from = 18, to = 19),
         AutoMigration(from = 20, to = 21)
@@ -59,7 +61,7 @@ abstract class ZenwellDatabase : RoomDatabase() {
                     "zenwell_database"
                 )
                     .addCallback(ZenwellDatabaseCallback())
-                    .addMigrations(MIGRATION_19_20)
+                    .addMigrations(MIGRATION_19_20, MIGRATION_21_22)
                     .fallbackToDestructiveMigration(false)
                     .build()
                     .also { Instance = it }
@@ -73,7 +75,7 @@ abstract class ZenwellDatabase : RoomDatabase() {
                 Instance?.let { database ->
                     scope.launch {
                         database.scheduleDao().upsertAppNames(
-                            AppNames(1, YOUTUBE_SHORTS_VIEW_ID, YOUTUBE_SHORTS_NAME)
+                            AppNames(1, YOUTUBE_PACKAGE_NAME, YOUTUBE_SHORTS_VIEW_ID, YOUTUBE_SHORTS_NAME)
                         )
                     }
                 }
