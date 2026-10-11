@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 22,
-    "identityHash": "9d020174dd3a6e5f93e0bdaa9a2615d4",
+    "identityHash": "1ffd56709d5832a9bb4e71ce41f4aa36",
     "entities": [
       {
         "tableName": "schedules",
@@ -242,7 +242,7 @@
       },
       {
         "tableName": "app_names",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `package_name` TEXT NOT NULL, `view_id` TEXT, `view_title` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageName` TEXT NOT NULL, `viewId` TEXT, `viewKeyword` TEXT, `viewTitle` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -252,18 +252,23 @@
           },
           {
             "fieldPath": "packageName",
-            "columnName": "package_name",
+            "columnName": "packageName",
             "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "viewId",
-            "columnName": "view_id",
+            "columnName": "viewId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "viewKeyword",
+            "columnName": "viewKeyword",
             "affinity": "TEXT"
           },
           {
             "fieldPath": "viewTitle",
-            "columnName": "view_title",
+            "columnName": "viewTitle",
             "affinity": "TEXT"
           }
         ],
@@ -275,14 +280,15 @@
         },
         "indices": [
           {
-            "name": "index_app_names_package_name_view_id",
+            "name": "index_app_names_packageName_viewId_viewKeyword",
             "unique": true,
             "columnNames": [
-              "package_name",
-              "view_id"
+              "packageName",
+              "viewId",
+              "viewKeyword"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_app_names_package_name_view_id` ON `${TABLE_NAME}` (`package_name`, `view_id`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_app_names_packageName_viewId_viewKeyword` ON `${TABLE_NAME}` (`packageName`, `viewId`, `viewKeyword`)"
           }
         ]
       },
@@ -393,7 +399,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9d020174dd3a6e5f93e0bdaa9a2615d4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1ffd56709d5832a9bb4e71ce41f4aa36')"
     ]
   }
 }

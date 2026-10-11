@@ -7,6 +7,7 @@ package com.sarangem.zenwell.ui.screens.customactivity
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sarangem.zenwell.YOUTUBE_PACKAGE_NAME
 import com.sarangem.zenwell.YOUTUBE_SHORTS_NAME
 import com.sarangem.zenwell.YOUTUBE_SHORTS_VIEW_ID
 import com.sarangem.zenwell.database.repository.SchedulesRepository
@@ -21,91 +22,105 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class CustomActivityUiState(
+    val appName: AppNames = AppNames(),
+    val isSaved: Boolean = true
+)
+
 @HiltViewModel
 class CustomActivityViewModel @Inject constructor(
     private val schedulesRepository: SchedulesRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<Map<Int, CustomActivityUiState>>(emptyMap())
+    private val _uiState = MutableStateFlow<List<CustomActivityUiState>>(emptyList())
     val uiState = _uiState.asStateFlow()
 
+    private var isInitialized = false
+
     fun initialize() {
+        if (isInitialized) return
+        isInitialized = true
         viewModelScope.launch {
-            schedulesRepository.getAllApps()
+            schedulesRepository.getCustomApps()
                 .flowOn(Dispatchers.IO)
-                .collect { apps ->
-                    val viewsMap = apps.filter { it.viewTitle != null }
-                        .associateBy(
-                            { it.id },
-                            { CustomActivityUiState(
-                                packageName = it.title.substringBefore(":id/"),
-                                viewId = it.title.substringAfter(":id/"),
-                                viewTitle = it.viewTitle ?: ""
-                            ) }
-                        )
-                    _uiState.update { viewsMap }
+                .collect { customApps ->
+                    _uiState.update { currentList ->
+                        val unsavedNewItems = currentList.filter { it.appName.id == 0 && !it.isSaved }
+                        customApps.map { CustomActivityUiState(appName = it, isSaved = true) } + unsavedNewItems
+                    }
                 }
         }
     }
 
-    fun updateUiState(
-        id: Int,
-        customActivityUiState: CustomActivityUiState
-    ) {
-        _uiState.update {
-            it + (id to customActivityUiState.copy(isSaved = false))
+    fun onAddNew() {
+        _uiState.update { current ->
+            current + CustomActivityUiState(
+                appName = AppNames(),
+                isSaved = false
+            )
         }
     }
 
-    fun onSave(
-        id: Int,
-        customActivityUiState: CustomActivityUiState
-    ){
+    fun updateUiState(index: Int, state: CustomActivityUiState) {
+        _uiState.update { current ->
+            current.toMutableList().apply {
+                if (index in indices) {
+                    this[index] = state.copy(isSaved = false)
+                }
+            }
+        }
+    }
+
+    fun onSave(state: CustomActivityUiState) {
+        val app = state.appName.copy(
+            viewId = state.appName.viewId?.ifBlank { null },
+            viewKeyword = state.appName.viewKeyword?.ifBlank { null },
+            viewTitle = state.appName.viewTitle?.ifBlank { null }
+        )
+        _uiState.update { current ->
+            current.map { item ->
+                if (item === state || (item.appName.id != 0 && item.appName.id == state.appName.id)) {
+                    item.copy(appName = app, isSaved = true)
+                } else {
+                    item
+                }
+            }
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
+            schedulesRepository.upsertApp(app)
+            AppBlockerService.instance?.initializeRepository()
+        }
+    }
+
+    fun onDelete(state: CustomActivityUiState) {
+        if (state.appName.id != 0) {
+            viewModelScope.launch(Dispatchers.IO) {
+                schedulesRepository.deleteApp(state.appName)
+                AppBlockerService.instance?.initializeRepository()
+            }
+        } else {
+            _uiState.update { current -> current.filter { it !== state } }
+        }
+    }
+
+    fun onReset() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.value.forEach { item ->
+                if (item.appName.id != 0) {
+                    schedulesRepository.deleteApp(item.appName)
+                }
+            }
             schedulesRepository.upsertApp(
                 AppNames(
-                    id,
-                    customActivityUiState.packageName + ":id/" + customActivityUiState.viewId,
-                    customActivityUiState.viewTitle
+                    id = 0,
+                    packageName = YOUTUBE_PACKAGE_NAME,
+                    viewId = YOUTUBE_SHORTS_VIEW_ID,
+                    viewKeyword = null,
+                    viewTitle = YOUTUBE_SHORTS_NAME
                 )
             )
             AppBlockerService.instance?.initializeRepository()
-            initialize()
         }
     }
-
-    fun onDelete(
-        id: Int,
-        customActivityUiState: CustomActivityUiState
-    ){
-        viewModelScope.launch(Dispatchers.IO) {
-            schedulesRepository.deleteApp(
-                AppNames(
-                    id,
-                    customActivityUiState.packageName + ":id/" + customActivityUiState.viewId,
-                    customActivityUiState.viewTitle
-                )
-            )
-            AppBlockerService.instance?.initializeRepository()
-            _uiState.update { it - id }
-        }
-    }
-
-    fun onReset(){
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.value.forEach { onDelete(it.key, it.value) }
-            schedulesRepository.upsertApp(
-                AppNames(0, YOUTUBE_SHORTS_VIEW_ID, YOUTUBE_SHORTS_NAME)
-            )
-            initialize()
-        }
-    }
-
 }
-
-data class CustomActivityUiState(
-    val packageName: String = "",
-    val viewId: String = "",
-    val viewTitle: String = "",
-    val isSaved: Boolean = true
-)

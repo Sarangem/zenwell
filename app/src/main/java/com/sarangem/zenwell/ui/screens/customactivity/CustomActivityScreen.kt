@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
@@ -63,21 +65,23 @@ fun CustomActivityScreen(
     val context = LocalContext.current
     var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {
-        launch(Dispatchers.IO){
+        viewModel.initialize()
+        launch(Dispatchers.IO) {
             installedAppList = getInstalledApps(context).sortedBy { it.appName.lowercase() }
         }
     }
 
     CustomActivityScreen(
-        modifier,
-        goBack,
-        showTopAppBar,
-        installedAppList,
-        uiState,
-        viewModel::updateUiState,
-        viewModel::onSave,
-        viewModel::onDelete,
-        viewModel::onReset
+        modifier = modifier,
+        goBack = goBack,
+        showTopAppBar = showTopAppBar,
+        installedAppList = installedAppList,
+        uiState = uiState,
+        onAddNew = viewModel::onAddNew,
+        onUpdate = viewModel::updateUiState,
+        onSave = viewModel::onSave,
+        onDelete = viewModel::onDelete,
+        onReset = viewModel::onReset
     )
 }
 
@@ -88,10 +92,11 @@ fun CustomActivityScreen(
     goBack: () -> Unit = {},
     showTopAppBar: Boolean = true,
     installedAppList: List<MyPackageInfo> = listOf(),
-    uiState: Map<Int, CustomActivityUiState>,
-    updateUiState: (Int, CustomActivityUiState) -> Unit = {_, _ ->},
-    onSave: (Int, CustomActivityUiState) -> Unit = {_, _ ->},
-    onDelete: (Int, CustomActivityUiState) -> Unit = {_, _ ->},
+    uiState: List<CustomActivityUiState>,
+    onAddNew: () -> Unit = {},
+    onUpdate: (Int, CustomActivityUiState) -> Unit = { _, _ -> },
+    onSave: (CustomActivityUiState) -> Unit = {},
+    onDelete: (CustomActivityUiState) -> Unit = {},
     onReset: () -> Unit = {}
 ) {
     var showResetDialog by remember { mutableStateOf(false) }
@@ -111,7 +116,7 @@ fun CustomActivityScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            if(showTopAppBar){
+            if (showTopAppBar) {
                 TopAppBar(
                     title = { Text(stringResource(R.string.edit_custom_views)) },
                     navigationIcon = {
@@ -135,23 +140,25 @@ fun CustomActivityScreen(
         },
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End) {
-                if (!showTopAppBar) SmallFloatingActionButton(
-                    onClick = { showResetDialog = true },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                ) {
-                    Row(
-                        modifier = Modifier.padding(MaterialTheme.sizing.small),
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
+                if (!showTopAppBar) {
+                    SmallFloatingActionButton(
+                        onClick = { showResetDialog = true },
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
                     ) {
-                        Icon(
-                            painterResource(R.drawable.filled_history),
-                            contentDescription = null
-                        )
-                        Text(stringResource(R.string.restore_custom_views))
+                        Row(
+                            modifier = Modifier.padding(MaterialTheme.sizing.small),
+                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.filled_history),
+                                contentDescription = null
+                            )
+                            Text(stringResource(R.string.restore_custom_views))
+                        }
                     }
                 }
-                SmallExtendedFloatingActionButton (
-                    onClick = { updateUiState(0, CustomActivityUiState()) }
+                SmallExtendedFloatingActionButton(
+                    onClick = onAddNew
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)) {
                         Icon(
@@ -171,27 +178,28 @@ fun CustomActivityScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
         ) {
-            uiState.entries.forEachIndexed { index, (id, appName) ->
-                item(key = id){
-                    val isFirst = index == 0
-                    val isLast = index == uiState.size - 1
-                    val cardShape = RoundedCornerShape(
-                        topStart = if (isFirst) MaterialTheme.shapes.medium.topStart else CornerSize(0.dp),
-                        topEnd = if (isFirst) MaterialTheme.shapes.medium.topEnd else CornerSize(0.dp),
-                        bottomStart = if (isLast) MaterialTheme.shapes.medium.bottomStart else CornerSize(0.dp),
-                        bottomEnd = if (isLast) MaterialTheme.shapes.medium.bottomEnd else CornerSize(0.dp)
-                    )
-                    CustomActivityCard(
-                        appName = appName,
-                        installedAppsList = installedAppList,
-                        updateAppNames = { updateUiState(id, it) },
-                        onSave = { onSave(id, appName) },
-                        onDelete = { onDelete(id, appName) },
-                        modifier = Modifier.clip(cardShape)
-                    )
-                }
+            itemsIndexed(
+                items = uiState,
+                key = { index, item -> if (item.appName.id != 0) item.appName.id else "draft_$index" }
+            ) { index, item ->
+                val isFirst = index == 0
+                val isLast = index == uiState.size - 1
+                val cardShape = RoundedCornerShape(
+                    topStart = if (isFirst) MaterialTheme.shapes.medium.topStart else CornerSize(0.dp),
+                    topEnd = if (isFirst) MaterialTheme.shapes.medium.topEnd else CornerSize(0.dp),
+                    bottomStart = if (isLast) MaterialTheme.shapes.medium.bottomStart else CornerSize(0.dp),
+                    bottomEnd = if (isLast) MaterialTheme.shapes.medium.bottomEnd else CornerSize(0.dp)
+                )
+                CustomActivityCard(
+                    item = item,
+                    installedAppsList = installedAppList,
+                    updateCustomActivity = { onUpdate(index, it) },
+                    onSave = { onSave(item) },
+                    onDelete = { onDelete(item) },
+                    modifier = Modifier.clip(cardShape)
+                )
             }
-            item{
+            item {
                 Spacer(Modifier.height(MaterialTheme.sizing.floatingBar))
             }
         }
@@ -203,9 +211,15 @@ fun CustomActivityScreen(
 fun CustomActivityScreenPreview() {
     ZenwellTheme {
         CustomActivityScreen(
-            uiState = mapOf(
-                1 to CustomActivityUiState("youtube", "shorts", "Youtube Shorts"),
-                2 to CustomActivityUiState("insta", "reels", "Instagram Reels")
+            uiState = listOf(
+                CustomActivityUiState(
+                    appName = AppNames(id = 1, packageName = "youtube", viewId = "shorts", viewTitle = "Youtube Shorts"),
+                    isSaved = true
+                ),
+                CustomActivityUiState(
+                    appName = AppNames(id = 2, packageName = "insta", viewId = "reels", viewTitle = "Instagram Reels"),
+                    isSaved = true
+                )
             ),
             installedAppList = listOf(
                 MyPackageInfo("youtube", "youtube", Color.Red.toArgb().toDrawable())

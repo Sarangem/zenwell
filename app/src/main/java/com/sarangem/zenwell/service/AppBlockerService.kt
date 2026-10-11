@@ -9,6 +9,7 @@ import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityWindowInfo
 import com.sarangem.zenwell.CRASH_LOG_FILE
 import com.sarangem.zenwell.database.repository.SchedulesRepository
@@ -43,7 +44,6 @@ class AppBlockerService : AccessibilityService() {
         super.onServiceConnected()
         instance = this
 
-        // set error logging to file
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
@@ -63,12 +63,9 @@ class AppBlockerService : AccessibilityService() {
         }
     }
 
-
     suspend fun initializeRepository() {
+        supervisorJob.cancelChildren()
 
-        supervisorJob.cancelChildren() // close all windows to prevent crashes
-
-        // load ACTIVE schedules WITH APPS into scheduleInfoList
         val schedulesList = schedulesRepository.getAllSchedules().first().filter { it.isActive && it.weekDays.isNotEmpty() }
         scheduleInfoList.clear()
         schedulesList.forEach { schedule ->
@@ -83,12 +80,11 @@ class AppBlockerService : AccessibilityService() {
         }
         scheduleInfoList.removeAll { !it.schedule.isPomodoro && it.appNamesList.isEmpty() }
 
-        // Change service info and log
         val info = serviceInfo
         info.eventTypes = when {
             scheduleInfoList.isEmpty() -> 0
             scheduleInfoList.any { scheduleInfo ->
-                scheduleInfo.appNamesList.any { appRule -> appRule.viewId != null }
+                scheduleInfo.appNamesList.any { appRule -> appRule.viewId != null || appRule.viewKeyword != null }
             } -> {
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
             }
@@ -97,17 +93,20 @@ class AppBlockerService : AccessibilityService() {
         serviceInfo = info
         ServiceLogger.i { "Service fully initiated with $serviceInfo" }
 
-        onAccessibilityEvent(null) // open overlay window if required
+        onAccessibilityEvent(null)
     }
-
 
     val openedWindows = mutableListOf<OverlayWindow>()
     var lastCheckedTime: Long = 0L
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
-        // prevent repeated window content changed events
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-            if (event.contentChangeTypes != AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE) return
+            val isRelevant = (event.contentChangeTypes and (
+                AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE or
+                AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT or
+                AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION
+            )) != 0
+            if (!isRelevant) return
             val time = System.currentTimeMillis()
             if (time < lastCheckedTime) return else lastCheckedTime = time + 2000L
         }
@@ -125,29 +124,18 @@ class AppBlockerService : AccessibilityService() {
         }
 
         for (windowInfo in windows) {
-
-            if (
-                windowInfo.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD &&
-                event?.windowId == windowInfo.id
-            ) return // probably a keyboard typing
-
-            // only if application window
+            if (windowInfo.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD && event?.windowId == windowInfo.id) return
             if (windowInfo.type != AccessibilityWindowInfo.TYPE_APPLICATION) continue
 
-            // get current root and package name && terminate if null
             val root = windowInfo.root ?: continue
             val currentPackage = root.packageName ?: continue
             if (currentPackage == packageName && root.className == "android.view.ViewGroup") continue
 
-            // open window to block
             currentlyActiveSchedules.forEach { scheduleInfo ->
                 scheduleInfo.appsByPackage[currentPackage]?.forEach { appRule ->
-                    if (
-                        appRule.viewId != null &&
-                        root.findAccessibilityNodeInfosByViewId(appRule.viewId).isEmpty()
-                    ) return@forEach
-                    currentVisibleTargets.add(appRule)
-                    val blockingWindow = scheduleInfo.overlayWindowList.firstOrNull { it.targetApp == appRule } ?: return@forEach
+                    if (!root.matches(appRule)) return@forEach
+                    val blockingWindow = scheduleInfo.overlayWindowList.firstOrNull { it.targetApp.id == appRule.id } ?: return@forEach
+                    currentVisibleTargets.add(blockingWindow.targetApp)
                     ServiceLogger.i { "Opening window for schedule ${scheduleInfo.schedule.id} and ${blockingWindow.targetApp}" }
                     blockingWindow.open()
                 }
@@ -156,16 +144,24 @@ class AppBlockerService : AccessibilityService() {
             windowInfo.recycle()
         }
 
-        // close the window
         openedWindows
             .filter { it.targetApp !in currentVisibleTargets }
             .forEach { it.close() }
         ServiceLogger.d { "Accessibility Event completed." }
     }
 
+    private fun AccessibilityNodeInfo.matches(rule: AppNames): Boolean {
+        val nodes = rule.viewId?.let(::findAccessibilityNodeInfosByViewId) ?: listOf(this)
+        if (nodes.isEmpty()) return false
+        val keyword = rule.viewKeyword ?: return true
+        return nodes.any { node ->
+            node.text?.contains(keyword, ignoreCase = true) == true ||
+                node.contentDescription?.contains(keyword, ignoreCase = true) == true ||
+                node.findAccessibilityNodeInfosByText(keyword).isNotEmpty()
+        }
+    }
 
     fun getPomodoroWindow(scheduleId: Int) = scheduleInfoList.firstOrNull { it.schedule.id == scheduleId }?.pomodoroWindow
-
 
     override fun onInterrupt() {
         scheduleInfoList.forEach { scheduleInfo ->
@@ -176,7 +172,6 @@ class AppBlockerService : AccessibilityService() {
         deleteAllNotificationChannel(this)
         supervisorJob.cancel()
     }
-
 
     override fun onUnbind(intent: Intent?): Boolean {
         instance = null

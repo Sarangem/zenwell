@@ -26,6 +26,7 @@ class OfflineSchedulesRepository @Inject constructor(
     override fun getAppNamesById(id: Int)= scheduleDao.getAppNamesById(id)
     override fun getAllApps()= scheduleDao.getAllApps()
     override fun getUserPreferences()= scheduleDao.getUserPreferences().map { it ?: UserPreferences() }
+    override fun getCustomApps() = scheduleDao.getCustomApps()
     override fun upsertApp(appName: AppNames)= scheduleDao.upsertAppNames(appName)
     override fun upsertUserPreferences(userPreferences: UserPreferences)= scheduleDao.upsertUserPreferences(userPreferences)
     override fun deleteApp(appName: AppNames)= scheduleDao.deleteAppNames(appName)
@@ -71,33 +72,27 @@ class OfflineSchedulesRepository @Inject constructor(
 
         val pastAppSet = pastAppList.toMutableSet()
         for (app in appNames) {
-
             if (app !in pastAppSet) {
-
-                // insert new app name
-                val appId = scheduleDao.getAppId(app.packageName, app.viewId).firstOrNull()
-                if (appId == null || appId == 0) { // it does not exist in table
+                val appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword).firstOrNull()
+                if (appId == null || appId == 0) {
                     upsertApp(app.copy(id = 0))
                 }
 
-                // insert app to schedule relation
                 scheduleDao.insertAppRelation(
                     BlockedApps(
                         scheduleId = schedule.id,
-                        appId = scheduleDao.getAppId(app.packageName, app.viewId).firstOrNull() ?: 0
+                        appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword).firstOrNull() ?: 0
                     )
                 )
-
             } else {
                 pastAppSet.remove(app)
             }
-
         }
 
         for (app in pastAppSet) {
             scheduleDao.deleteAppRelation(
                 scheduleId = schedule.id,
-                appId = scheduleDao.getAppId(app.packageName, app.viewId).firstOrNull() ?: 0
+                appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword).firstOrNull() ?: 0
             )
         }
 

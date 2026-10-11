@@ -50,7 +50,7 @@ class OverlayWindow(
     supervisorJob: Job,
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisorJob)
-    private val notificationId = "${schedule.id}${targetApp.packageName}${targetApp.viewId}".hashCode().absoluteValue
+    private val notificationId = "${schedule.id}$targetApp".hashCode().absoluteValue
 
     private val audioManager = service.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val focusChangeListener: AudioManager.OnAudioFocusChangeListener = object: AudioManager.OnAudioFocusChangeListener {

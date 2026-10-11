@@ -27,20 +27,21 @@ import com.sarangem.zenwell.utils.MyPackageInfo
 
 @Composable
 fun CustomActivityCard(
-    modifier: Modifier,
-    appName: CustomActivityUiState,
+    modifier: Modifier = Modifier,
+    item: CustomActivityUiState,
     installedAppsList: List<MyPackageInfo>,
-    updateAppNames: (CustomActivityUiState) -> Unit,
+    updateCustomActivity: (CustomActivityUiState) -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit
 ) {
     val isExpandedWidth = currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
+    val app = item.appName
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(0.dp)
     ) {
-
-        if(isExpandedWidth){
+        if (isExpandedWidth) {
             Row(
                 modifier = Modifier
                     .padding(MaterialTheme.sizing.small)
@@ -52,20 +53,27 @@ fun CustomActivityCard(
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
                 ) {
                     AppListDropdownCard(
-                        currentApp = appName.packageName,
+                        currentApp = app.packageName,
                         onCurrentAppChange = {
-                            updateAppNames(appName.copy(packageName = it))
+                            updateCustomActivity(item.copy(appName = app.copy(packageName = it)))
                         },
                         installedAppsList = installedAppsList
                     )
-                    SaveAndDeleteButton(appName.isSaved, onSave, onDelete)
+                    SaveAndDeleteButton(item.isSaved, onSave, onDelete)
                 }
                 Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
                 ) {
-                    ViewTitleField(appName.viewTitle) { updateAppNames(appName.copy(viewTitle = it)) }
-                    ViewIdField(appName.viewId) { updateAppNames(appName.copy(viewId = it)) }
+                    ViewTitleField(app.viewTitle ?: "") {
+                        updateCustomActivity(item.copy(appName = app.copy(viewTitle = it)))
+                    }
+                    ViewIdField(app.viewId ?: "") {
+                        updateCustomActivity(item.copy(appName = app.copy(viewId = it)))
+                    }
+                    ViewKeywordField(app.viewKeyword ?: "") {
+                        updateCustomActivity(item.copy(appName = app.copy(viewKeyword = it)))
+                    }
                 }
             }
         } else {
@@ -74,20 +82,26 @@ fun CustomActivityCard(
                     .padding(MaterialTheme.sizing.small)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
-            ){
+            ) {
                 AppListDropdownCard(
-                    currentApp = appName.packageName,
+                    currentApp = app.packageName,
                     onCurrentAppChange = {
-                        updateAppNames(appName.copy(packageName = it))
+                        updateCustomActivity(item.copy(appName = app.copy(packageName = it)))
                     },
                     installedAppsList = installedAppsList
                 )
-                ViewTitleField(appName.viewTitle) { updateAppNames(appName.copy(viewTitle = it)) }
-                ViewIdField(appName.viewId) { updateAppNames(appName.copy(viewId = it)) }
-                SaveAndDeleteButton(appName.isSaved, onSave, onDelete)
+                ViewTitleField(app.viewTitle ?: "") {
+                    updateCustomActivity(item.copy(appName = app.copy(viewTitle = it)))
+                }
+                ViewIdField(app.viewId ?: "") {
+                    updateCustomActivity(item.copy(appName = app.copy(viewId = it)))
+                }
+                ViewKeywordField(app.viewKeyword ?: "") {
+                    updateCustomActivity(item.copy(appName = app.copy(viewKeyword = it)))
+                }
+                SaveAndDeleteButton(item.isSaved, onSave, onDelete)
             }
         }
-
     }
 }
 
@@ -95,7 +109,7 @@ fun CustomActivityCard(
 fun ViewTitleField(
     value: String,
     onValueChange: (String) -> Unit = {}
-){
+) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -109,11 +123,25 @@ fun ViewTitleField(
 fun ViewIdField(
     value: String,
     onValueChange: (String) -> Unit = {}
-){
+) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         placeholder = { Text(stringResource(R.string.view_id)) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
+}
+
+@Composable
+fun ViewKeywordField(
+    value: String,
+    onValueChange: (String) -> Unit = {}
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = { Text(stringResource(R.string.view_keyword)) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true
     )

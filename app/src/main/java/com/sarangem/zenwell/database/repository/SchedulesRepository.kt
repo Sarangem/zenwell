@@ -21,6 +21,7 @@ interface SchedulesRepository {
     fun upsertApp(appName: AppNames)
     fun upsertUserPreferences(userPreferences: UserPreferences)
     fun deleteApp(appName: AppNames)
+    fun getCustomApps(): Flow<List<AppNames>>
     suspend fun deleteSchedule(schedule: Schedules)
     suspend fun addNewSchedule(schedule: Schedules): Int
     suspend fun updateSchedule(schedule: Schedules)

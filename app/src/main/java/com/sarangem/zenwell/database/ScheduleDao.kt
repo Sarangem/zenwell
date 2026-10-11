@@ -36,8 +36,8 @@ interface ScheduleDao {
     @Query("SELECT * FROM blocked_apps")
     fun getAllAppRelations(): Flow<List<BlockedApps>>
 
-    @Query("SELECT id FROM app_names WHERE packageName=:packageName AND viewId=:viewId")
-    fun getAppId(packageName: String, viewId: String?): Flow<Int>
+    @Query("SELECT id FROM app_names WHERE packageName = :packageName AND viewId IS :viewId AND viewKeyword IS :viewKeyword")
+    fun getAppId(packageName: String, viewId: String?, viewKeyword: String?): Flow<Int>
 
     @Query("""
         SELECT * FROM app_names WHERE id IN (
@@ -53,6 +53,9 @@ interface ScheduleDao {
 
     @Query("SELECT * FROM user_prefs")
     fun getUserPreferences(): Flow<UserPreferences?>
+
+    @Query("SELECT * FROM app_names WHERE viewTitle IS NOT NULL")
+    fun getCustomApps(): Flow<List<AppNames>>
 
     @Upsert
     fun upsertAppNames(appNames: AppNames)

@@ -15,7 +15,8 @@ data class MyPackageInfo(
     val packageName: String = "",
     val appName: String = "",
     val icon: Drawable? = null,
-    val viewId: String? = null
+    val viewId: String? = null,
+    val viewKeyword: String? = null
 )
 
 fun getInstalledApps(context: Context): List<MyPackageInfo> {

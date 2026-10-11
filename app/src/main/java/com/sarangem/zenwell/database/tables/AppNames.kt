@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Entity(
     tableName = "app_names",
-    indices = [ Index(value = ["packageName", "viewId"], unique = true) ]
+    indices = [ Index(value = ["packageName", "viewId", "viewKeyword"], unique = true) ]
 )
 data class AppNames (
 
@@ -21,7 +21,7 @@ data class AppNames (
     val id: Int = 0,
 
     // eg: "com.android.chrome"
-    val packageName: String,
+    val packageName: String = "",
 
     // if empty, meaning the whole app is blocked, not the specific screen
     // eg: "com.android.chrome:id/url_bar"

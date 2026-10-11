@@ -75,7 +75,13 @@ abstract class ZenwellDatabase : RoomDatabase() {
                 Instance?.let { database ->
                     scope.launch {
                         database.scheduleDao().upsertAppNames(
-                            AppNames(1, YOUTUBE_PACKAGE_NAME, YOUTUBE_SHORTS_VIEW_ID, YOUTUBE_SHORTS_NAME)
+                            AppNames(
+                                id = 1,
+                                packageName = YOUTUBE_PACKAGE_NAME,
+                                viewId = YOUTUBE_SHORTS_VIEW_ID,
+                                viewKeyword = null,
+                                viewTitle = YOUTUBE_SHORTS_NAME
+                            )
                         )
                     }
                 }

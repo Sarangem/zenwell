@@ -45,6 +45,6 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
         db.execSQL("DROP TABLE `app_names`")
         db.execSQL("ALTER TABLE `app_names_new` RENAME TO `app_names`")
 
-        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_app_names_packageName_viewId` ON `app_names` (`packageName`, `viewId`)")
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_app_names_packageName_viewId_viewKeyword` ON `app_names` (`packageName`, `viewId`, `viewKeyword`)")
     }
 }

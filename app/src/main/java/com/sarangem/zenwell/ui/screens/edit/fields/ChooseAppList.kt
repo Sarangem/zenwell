@@ -43,22 +43,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toDrawable
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
 import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
 import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
-import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.MyPackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps
@@ -79,11 +74,13 @@ fun ChooseAppList(
     val context = LocalContext.current
     var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewsList) {
         launch(Dispatchers.IO) {
             val systemApps = getInstalledApps(context)
             val list = mutableListOf<MyPackageInfo>()
             list.addAll(systemApps)
+
+            // Map custom views and pass viewKeyword along
             viewsList.forEach { view ->
                 val element = systemApps.firstOrNull { it.packageName == view.packageName }
                 element?.let {
@@ -92,7 +89,8 @@ fun ChooseAppList(
                             packageName = view.packageName,
                             appName = view.viewTitle ?: view.packageName,
                             icon = it.icon,
-                            viewId = view.viewId
+                            viewId = view.viewId,
+                            viewKeyword = view.viewKeyword
                         )
                     )
                 }
@@ -105,7 +103,13 @@ fun ChooseAppList(
     val selectedAppsText by remember(installedAppList, appNames) {
         derivedStateOf {
             installedAppList
-                .filter { item -> appNames?.any { it.packageName == item.packageName && it.viewId == item.viewId } == true }
+                .filter { item ->
+                    appNames?.any {
+                        it.packageName == item.packageName &&
+                                it.viewId == item.viewId &&
+                                it.viewKeyword == item.viewKeyword
+                    } == true
+                }
                 .joinToString(", ") { it.appName }
                 .ifEmpty { null }
         }
@@ -123,12 +127,12 @@ fun ChooseAppList(
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
-            ){
+            ) {
                 Text(
                     text = stringResource(R.string.choose_apps),
                     style = MaterialTheme.typography.bodyLarge
                 )
-                AnimatedVisibility(installedAppList.isNotEmpty() || appNames?.isEmpty() == true){
+                AnimatedVisibility(installedAppList.isNotEmpty() || appNames?.isEmpty() == true) {
                     Text(
                         text = selectedAppsText ?: stringResource(R.string.none_selected_yet),
                         style = MaterialTheme.typography.labelMedium,
@@ -162,7 +166,14 @@ fun ChooseAppList(
                 },
                 removeAppFromList = { appRule ->
                     if (appNames != null) {
-                        updateValue(appNames.filterNot { it.packageName == appRule.packageName && it.viewId == appRule.viewId })
+                        // Accurately filter out by packageName, viewId, AND viewKeyword
+                        updateValue(
+                            appNames.filterNot {
+                                it.packageName == appRule.packageName &&
+                                        it.viewId == appRule.viewId &&
+                                        it.viewKeyword == appRule.viewKeyword
+                            }
+                        )
                     }
                 }
             )
@@ -193,12 +204,21 @@ fun BottomSheetContents(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
         ) {
             items(installedAppList) { item ->
+                val isChecked = checkedAppList.any {
+                    it.packageName == item.packageName &&
+                            it.viewId == item.viewId &&
+                            it.viewKeyword == item.viewKeyword
+                }
                 AppCard(
                     label = item.appName,
                     icon = item.icon,
-                    checkedValue = checkedAppList.any { it.packageName == item.packageName && it.viewId == item.viewId },
+                    checkedValue = isChecked,
                     onCheckedChange = { value ->
-                        val appRule = AppNames(packageName = item.packageName, viewId = item.viewId)
+                        val appRule = AppNames(
+                            packageName = item.packageName,
+                            viewId = item.viewId,
+                            viewKeyword = item.viewKeyword
+                        )
                         if (value) addAppToList(appRule)
                         else removeAppFromList(appRule)
                     },
@@ -262,22 +282,6 @@ val showcase2Modifier: @Composable (
             style = MaterialTheme.typography.headlineMedium,
             color = darkColorScheme().onSurface,
             fontWeight = FontWeight.SemiBold
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Preview(showBackground = true)
-@Composable
-fun ShowBottomSheetPreview() {
-    val icon = Color.Red.toArgb().toDrawable()
-    ZenwellTheme {
-        BottomSheetContents(
-            installedAppList = listOf(
-                MyPackageInfo(packageName = "c", icon = icon, appName = "Calendar"),
-                MyPackageInfo(packageName = "m", icon = icon, appName = "Messages"),
-                MyPackageInfo(packageName = "y", icon = icon, appName = "YouTube")
-            )
         )
     }
 }
