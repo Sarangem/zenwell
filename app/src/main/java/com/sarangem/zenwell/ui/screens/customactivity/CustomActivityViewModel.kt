@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class CustomActivityUiState(
@@ -49,6 +50,12 @@ class CustomActivityViewModel @Inject constructor(
                         customApps.map { CustomActivityUiState(appName = it, isSaved = true) } + unsavedNewItems
                     }
                 }
+        }
+    }
+    
+    private suspend fun updateAccessibilityService() {
+        withContext(Dispatchers.IO) {
+            AppBlockerService.instance?.initializeRepository()
         }
     }
 
@@ -89,7 +96,7 @@ class CustomActivityViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             schedulesRepository.upsertApp(app)
-            AppBlockerService.instance?.initializeRepository()
+            updateAccessibilityService()
         }
     }
 
@@ -97,7 +104,7 @@ class CustomActivityViewModel @Inject constructor(
         if (state.appName.id != 0) {
             viewModelScope.launch(Dispatchers.IO) {
                 schedulesRepository.deleteApp(state.appName)
-                AppBlockerService.instance?.initializeRepository()
+                updateAccessibilityService()
             }
         } else {
             _uiState.update { current -> current.filter { it !== state } }
@@ -120,7 +127,7 @@ class CustomActivityViewModel @Inject constructor(
                     viewTitle = YOUTUBE_SHORTS_NAME
                 )
             )
-            AppBlockerService.instance?.initializeRepository()
+            updateAccessibilityService()
         }
     }
 }

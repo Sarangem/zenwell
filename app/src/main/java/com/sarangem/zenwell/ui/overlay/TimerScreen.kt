@@ -49,26 +49,30 @@ fun TimerScreen(
 ) {
     var showOpen by remember { mutableStateOf(false) }
     var time by remember { mutableIntStateOf(timerDurationInSeconds) }
-    LaunchedEffect(time) {
-        if (time > 0) {
+    LaunchedEffect(Unit) {
+        while (time > 0) {
             delay(1.seconds)
             time--
-        } else {
-            if(!requireManualUnlock) onTimerEnd()
-            showOpen = true
         }
+        if(!requireManualUnlock) onTimerEnd()
+        showOpen = true
     }
+    val animatedProgress by animateFloatAsState(
+        targetValue = time / timerDurationInSeconds.toFloat(),
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+    )
 
     OverlayScaffold(
-        mainPane = { modifier ->
+        mainPaneRowWeight = 0.6f,
+        message = message,
+        modifier = modifier.fillMaxSize(),
+        mainPane = { paneModifier ->
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = modifier.aspectRatio(1f).fillMaxSize()
+                modifier = paneModifier
+                    .aspectRatio(1f)
+                    .fillMaxSize()
             ) {
-                val animatedProgress by animateFloatAsState(
-                    targetValue = time / timerDurationInSeconds.toFloat(),
-                    animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
-                )
                 CircularProgressIndicator(
                     modifier = Modifier.fillMaxSize(),
                     progress = { animatedProgress },
@@ -90,13 +94,10 @@ fun TimerScreen(
                 }
             }
         },
-        mainPaneRowWeight = 0.6f,
         showOpen = showOpen,
-        message = message,
         onTimerEnd = onTimerEnd,
         showExit = showExit,
-        onExit = onExit,
-        modifier = modifier.fillMaxSize()
+        onExit = onExit
     )
 }
 

@@ -12,6 +12,7 @@ import android.hardware.display.DisplayManager
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.os.SystemClock
 import android.os.Build
 import android.view.Display.DEFAULT_DISPLAY
 import android.view.Gravity
@@ -28,11 +29,13 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.service.pomodoro.PomodoroManager
+import com.sarangem.zenwell.service.pomodoro.PomodoroStatus
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.utils.ServiceLogger
 import com.sarangem.zenwell.utils.createBlockNotification
 import com.sarangem.zenwell.utils.deleteNotificationById
-import com.sarangem.zenwell.utils.getMinutesUntilTomorrow
+import com.sarangem.zenwell.utils.getElapsedRealtimeUntilTomorrow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -40,7 +43,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.absoluteValue
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class OverlayWindow(
     val targetApp: AppNames,
@@ -53,12 +56,13 @@ class OverlayWindow(
     private val notificationId = "${schedule.id}$targetApp".hashCode().absoluteValue
 
     private val audioManager = service.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-    private val focusChangeListener: AudioManager.OnAudioFocusChangeListener = object: AudioManager.OnAudioFocusChangeListener {
-        override fun onAudioFocusChange(focusChange: Int) {
-            if (schedule.playBackgroundMedia) return
-            if (focusChange == AudioManager.AUDIOFOCUS_GAIN) return
-            focusRequest?.let { audioManager.requestAudioFocus(it) }
-        }
+    private val focusChangeListener: AudioManager.OnAudioFocusChangeListener =
+        object: AudioManager.OnAudioFocusChangeListener {
+            override fun onAudioFocusChange(focusChange: Int) {
+                if (schedule.playBackgroundMedia) return
+                if (focusChange == AudioManager.AUDIOFOCUS_GAIN) return
+                focusRequest?.let { audioManager.requestAudioFocus(it) }
+            }
     }
     private val focusRequest =
         AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).apply {
@@ -73,17 +77,34 @@ class OverlayWindow(
     private val vmStore = ViewModelStore()
 
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    var composeView: ComposeView? = null
-    var isAppOpened = schedule.isPomodoro // true if pomodoro to prevent open() else false
+    private var composeView: ComposeView? = null
+    
+    private var notifyAfterTime = 0L
+    private var lockAfterTime = 0L
 
-    fun open() {
-        if (composeView != null || isAppOpened) return
+    fun open(pomodoroManager: PomodoroManager) {
+        if (composeView != null) return
+        if (schedule.isPomodoro) {
+            val state = pomodoroManager.state.value
+            ServiceLogger.d { "Current pomodoro session: $state"}
+            if (
+                state.schedule.id != schedule.id ||
+                state.status != PomodoroStatus.RUNNING ||
+                !state.isWorkTime
+            ) return
+        } else {
+            if (SystemClock.elapsedRealtime() < lockAfterTime) return
+        }
 
         try {
             val windowContext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val displayManager = service.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
                 val display = displayManager.getDisplay(DEFAULT_DISPLAY)
-                service.createWindowContext(display, WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY, null)
+                service.createWindowContext(
+                    /* display = */ display,
+                    /* type = */ WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                    /* options = */ null
+                )
             } else {
                 service
             }
@@ -113,7 +134,11 @@ class OverlayWindow(
                 flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 gravity = Gravity.TOP or Gravity.START
                 height = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    val navBar = windowManager.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.navigationBars()).bottom
+                    val navBar = windowManager
+                        .currentWindowMetrics
+                        .windowInsets
+                        .getInsets(WindowInsets.Type.navigationBars())
+                        .bottom
                     windowManager.currentWindowMetrics.bounds.height() - navBar
                 } else {
                     WindowManager.LayoutParams.MATCH_PARENT
@@ -158,37 +183,33 @@ class OverlayWindow(
 
     private fun onTimerEnd() {
 
-        close() // close the window
+        close()
         ServiceLogger.i { "Closing the window" }
-        isAppOpened = true // add to opened apps
-
+        lockAfterTime = if (schedule.usageSessionDurationInMinutes == 0) {
+            getElapsedRealtimeUntilTomorrow()
+        } else {
+            SystemClock.elapsedRealtime() + schedule.usageSessionDurationInMinutes * 60 * 1000L
+        }
+        notifyAfterTime = lockAfterTime - schedule.notificationTimeInMinutes * 60 * 1000L
+        
         coroutineScope.launch {
-
-            // send notification
-            val usageSessionDuration = if (schedule.usageSessionDurationInMinutes == 0) getMinutesUntilTomorrow() else schedule.usageSessionDurationInMinutes
-            val delayTime = usageSessionDuration - schedule.notificationTimeInMinutes
-            delay(delayTime.minutes)
-            if (schedule.notificationTimeInMinutes > 0) {
+            if (schedule.notificationTimeInMinutes != 0) {
+                while (SystemClock.elapsedRealtime() < notifyAfterTime) delay(2.seconds)
                 createBlockNotification(
                     id = notificationId,
-                    message = service.getString(R.string.block_notification_message, schedule.title, targetApp.viewTitle),
+                    message = schedule.title + service.getString(R.string.block_notification_message) + (targetApp.viewTitle ?: targetApp.packageName),
                     context = service,
                 )
             }
-
-            delay(schedule.notificationTimeInMinutes.minutes)
+            while (SystemClock.elapsedRealtime() < lockAfterTime) delay(2.seconds)
             deleteNotificationById(
                 id = notificationId,
                 context = service
             )
-
-            // re-trigger opening window
             ServiceLogger.d { "Rechecking the app." }
-            isAppOpened = false
             withContext(Dispatchers.Main) {
                 service.onAccessibilityEvent(null)
             }
-
         }
     }
 

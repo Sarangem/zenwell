@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 data class EditUiState(
     val schedule: Schedules = Schedules(),
-    val appNames: List<AppNames>? = null,
+    val selectedAppsList: List<AppNames>? = null,
     val viewsList: List<AppNames> = listOf(),
     val validationErrors: Set<ValidationError> = emptySet(),
 )
@@ -44,33 +44,33 @@ class EditViewModel @Inject constructor(
             )
         }
     }
-    fun updateAppNames(appNames: List<AppNames>) {
-        _uiState.update { _uiState.value.copy(appNames = appNames) }
+    fun updateSelectedAppsList(selectedAppsList: List<AppNames>) {
+        _uiState.update { _uiState.value.copy(selectedAppsList = selectedAppsList) }
     }
 
     fun initialize(schedule: Schedules) {
         viewModelScope.launch(Dispatchers.IO) {
-            val appNames = schedulesRepository.getAppNamesById(schedule.id).first()
+            val selectedAppsList = schedulesRepository.getAppNamesById(schedule.id).first()
             val viewsList = schedulesRepository.getAllApps().first().filter { it.viewTitle != null }
             _uiState.update {
                 _uiState.value.copy(
                     schedule = schedule,
-                    appNames = appNames,
+                    selectedAppsList = selectedAppsList,
                     viewsList = viewsList
                 )
             }
-            pastAppList = appNames
+            pastAppList = selectedAppsList
         }
     }
 
     fun saveToDatabase() {
         val schedule = _uiState.value.schedule
-        val appNames = _uiState.value.appNames
+        val selectedAppsList = _uiState.value.selectedAppsList
         val pastApps = pastAppList
         viewModelScope.launch(Dispatchers.IO) {
             schedulesRepository.saveToDatabase(
                 schedule = schedule,
-                appNames = appNames,
+                selectedAppsList = selectedAppsList,
                 pastAppList = pastApps
             )
             AppBlockerService.instance?.initializeRepository()

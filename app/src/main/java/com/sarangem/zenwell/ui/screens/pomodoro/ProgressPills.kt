@@ -28,7 +28,7 @@ import com.sarangem.zenwell.ui.theme.sizing
 @Composable
 fun ProgressPills(
     totalSessions: Int,
-    sessionsLeft: Int,
+    sessionsCompleted: Int,
     modifier: Modifier = Modifier
 ) {
     val pillDescription = stringResource(R.string.pomodoro_sessions_left)
@@ -36,15 +36,14 @@ fun ProgressPills(
         modifier = modifier
             .padding(MaterialTheme.sizing.small)
             .semantics(mergeDescendants = true) {
-                contentDescription = pillDescription + sessionsLeft
+                contentDescription = pillDescription + (totalSessions - sessionsCompleted)
             },
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny),
         verticalAlignment = Alignment.CenterVertically
     ) {
         repeat(totalSessions) { index ->
-            val currentSessionIndex = totalSessions - sessionsLeft
-            val isCompleted = index < currentSessionIndex
-            val isCurrent = index == currentSessionIndex
+            val isCompleted = index < sessionsCompleted
+            val isCurrent = index == sessionsCompleted
             val width by animateDpAsState(if (isCurrent) MaterialTheme.sizing.large else MaterialTheme.sizing.medium)
             Box(
                 modifier = Modifier

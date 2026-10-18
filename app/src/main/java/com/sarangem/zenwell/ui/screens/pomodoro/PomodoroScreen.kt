@@ -5,20 +5,12 @@
 
 package com.sarangem.zenwell.ui.screens.pomodoro
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -27,64 +19,61 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.window.core.layout.WindowSizeClass.Companion.HEIGHT_DP_MEDIUM_LOWER_BOUND
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sarangem.zenwell.service.pomodoro.PomodoroState
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.service.pomodoro.PomodoroStatus
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
-fun FocusScreen(
+fun PomodoroScreen(
     modifier: Modifier = Modifier,
-    schedule: Schedules,
     goBack: () -> Unit = {}
 ) {
-    val viewModel: PomodoroViewModel = viewModel()
-    val uiState by viewModel.uiState.collectAsState()
-    LaunchedEffect(schedule.id) {
-        viewModel.startObserving(schedule)
+    val viewModel: PomodoroViewModel = hiltViewModel()
+    val manager = viewModel.pomodoroManager
+    val uiState by manager.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.status) {
+        if (uiState.status == PomodoroStatus.IDLE) {
+            goBack()
+        }
     }
-    FocusScreen(
-        modifier,
-        goBack,
-        uiState,
-        viewModel::onEnd,
-        viewModel::onPauseOrResume,
-        viewModel::onSkip
+    
+    PomodoroScreen(
+        modifier = modifier,
+        goBack = goBack,
+        uiState = uiState,
+        onEnd = manager::onPomodoroEnd,
+        onPause = manager::onSegmentPause,
+        onResume = manager::onSegmentResume,
+        onSkip = manager::onSegmentEnd
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FocusScreen(
+fun PomodoroScreen(
     modifier: Modifier = Modifier,
     goBack: () -> Unit = {},
-    uiState: PomodoroUiState,
+    uiState: PomodoroState,
     onEnd: () -> Unit = {},
-    onPauseOrResume: () -> Unit = {},
+    onPause: () -> Unit = {},
+    onResume: () -> Unit = {},
     onSkip: () -> Unit = {},
 ) {
-    val animatedProgress by key(uiState.isWorkTime){
-        animateFloatAsState(
-            targetValue = (uiState.segmentTime - uiState.elapsedTime).toFloat() / uiState.segmentTime,
-            animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
-        )
-    }
     Scaffold(
         modifier = modifier.background(MaterialTheme.colorScheme.surface),
         topBar = {
@@ -109,88 +98,38 @@ fun FocusScreen(
         },
         floatingActionButton = {
             PomodoroControls(
-                isPaused = uiState.isPaused,
+                isPaused = uiState.status == PomodoroStatus.PAUSED,
                 isWorkTime = uiState.isWorkTime,
                 showPauseInWorkTime = uiState.schedule.showPauseInWorkTime,
                 showSkipInWorkTime = uiState.schedule.showSkipInWorkTime,
                 showPauseInRestTime = uiState.schedule.showPauseInRestTime,
                 showSkipInRestTime = uiState.schedule.showSkipInRestTime,
-                onEnd = {
-                    onEnd()
-                    goBack()
-                },
-                onPauseOrResume = onPauseOrResume,
+                onEnd = onEnd,
+                onPause = onPause,
+                onResume = onResume,
                 onSkip = onSkip
             )
         },
         floatingActionButtonPosition = FabPosition.Center,
     ) { innerPadding ->
-        if (!uiState.isServiceRunning) {
-            Box(
-                Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ){
-                Text(
-                    text = "⚠\uFE0F⚠\uFE0F\n" + stringResource(R.string.accessibility_service_not_started) + "\n⚠\uFE0F⚠\uFE0F",
-                    style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center
-                )
-            }
-        } else {
-            AnimatedContent(
-                targetState = uiState.isCompleted,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                if (it) {
-                    Box(
-                        Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "\uD83C\uDF89\uD83C\uDF89\n" + stringResource(R.string.pomodoro_session_completed) + "\n\uD83C\uDF89\uD83C\uDF89",
-                            style = MaterialTheme.typography.headlineSmall,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                } else {
-                    val isCompactHeight = !currentWindowAdaptiveInfoV2().windowSizeClass.isHeightAtLeastBreakpoint(HEIGHT_DP_MEDIUM_LOWER_BOUND)
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(
-                                state = rememberScrollState(),
-                                enabled = isCompactHeight
-                            )
-                            .fillMaxSize()
-                            .padding(innerPadding),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        ProgressPills(
-                            totalSessions = uiState.schedule.pomodoroSessionNumber,
-                            sessionsLeft = uiState.sessionsLeft,
-                            modifier = Modifier
-                        )
-                        CircularPomodoroTimer(
-                            modifier = Modifier
-                                .padding(MaterialTheme.sizing.small)
-                                .then(
-                                    if (isCompactHeight) {
-                                        Modifier.size(500.dp)
-                                    } else {
-                                        Modifier.weight(1f)
-                                    }
-                                ),
-                            progress = animatedProgress,
-                            formattedTime = uiState.formattedTime,
-                            isWork = uiState.isWorkTime
-                        )
-                        Spacer(Modifier.height(MaterialTheme.sizing.floatingBar))
-                    }
-                }
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(MaterialTheme.sizing.medium),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ProgressPills(
+                totalSessions = uiState.schedule.pomodoroSessionNumber,
+                sessionsCompleted = uiState.sessionsCompleted
+            )
+            CircularPomodoroTimer(
+                progress = uiState.progress,
+                formattedTime = uiState.formattedTime,
+                isWork = uiState.isWorkTime,
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(Modifier.height(MaterialTheme.sizing.floatingBar))
         }
     }
 }
@@ -199,28 +138,12 @@ fun FocusScreen(
 @Composable
 fun FocusScreenPreview() {
     ZenwellTheme {
-        FocusScreen(
-            uiState = PomodoroUiState(
-                elapsedTime = 600,
+        PomodoroScreen(
+            uiState = PomodoroState(
+                remainingMillis = 15 * 60 * 1000L,
                 formattedTime = "15:00",
-                isServiceRunning = true,
-                sessionsLeft = 4,
+                sessionsCompleted = 3,
                 schedule = Schedules(title = "Study pomodoro")
-            )
-        )
-    }
-}
-
-@Preview
-@Composable
-fun FocusScreenRestPreview() {
-    ZenwellTheme(darkTheme = true) {
-        FocusScreen(
-            uiState = PomodoroUiState(
-                elapsedTime = 150,
-                formattedTime = "5:00",
-                isServiceRunning = true,
-                isCompleted = true
             )
         )
     }

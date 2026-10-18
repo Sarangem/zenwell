@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
@@ -61,7 +61,7 @@ fun CustomActivityScreen(
     showTopAppBar: Boolean = true,
     goBack: () -> Unit = {},
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }
     LaunchedEffect(Unit) {

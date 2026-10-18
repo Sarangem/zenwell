@@ -18,16 +18,16 @@ interface SchedulesRepository {
     fun getAppNamesById(id: Int): Flow<List<AppNames>>
     fun getAllApps(): Flow<List<AppNames>>
     fun getUserPreferences(): Flow<UserPreferences>
-    fun upsertApp(appName: AppNames)
-    fun upsertUserPreferences(userPreferences: UserPreferences)
-    fun deleteApp(appName: AppNames)
     fun getCustomApps(): Flow<List<AppNames>>
     suspend fun deleteSchedule(schedule: Schedules)
     suspend fun addNewSchedule(schedule: Schedules): Int
+    suspend fun upsertApp(appName: AppNames)
+    suspend fun upsertUserPreferences(userPreferences: UserPreferences)
+    suspend fun deleteApp(appName: AppNames)
     suspend fun updateSchedule(schedule: Schedules)
     suspend fun saveToDatabase(
         schedule: Schedules,
-        appNames: List<AppNames>?,
+        selectedAppsList: List<AppNames>?,
         pastAppList: List<AppNames>?
     )
     suspend fun getAllData(): List<BackupData>

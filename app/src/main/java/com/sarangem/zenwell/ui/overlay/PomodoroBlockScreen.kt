@@ -5,7 +5,7 @@
 
 package com.sarangem.zenwell.ui.overlay
 
-import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -14,65 +14,69 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sarangem.zenwell.service.pomodoro.PomodoroManager
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PomodoroBlockScreen(
     modifier: Modifier = Modifier,
     message: String,
-    getElapsedTimeInSeconds: () -> Long,
-    segmentTime: Int,
-    getFormattedTime: () -> String,
+    pomodoroManager: PomodoroManager,
     showExit: Boolean = true,
     onExit: () -> Unit = {}
 ) {
-    var elapsedTime by rememberSaveable { mutableFloatStateOf(getElapsedTimeInSeconds().toFloat()) }
-    var formattedTime by rememberSaveable { mutableStateOf(getFormattedTime()) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(0.5.seconds)
-            elapsedTime = getElapsedTimeInSeconds().toFloat()
-            formattedTime = getFormattedTime()
-        }
-    }
+    val uiState by pomodoroManager.state.collectAsStateWithLifecycle()
+    PomodoroBlockScreen(
+        modifier = modifier,
+        message = message,
+        progress = uiState.progress,
+        formattedTime = uiState.formattedTime,
+        showExit = showExit,
+        onExit = onExit
+    )
+}
 
+@Composable
+fun PomodoroBlockScreen(
+    modifier: Modifier = Modifier,
+    message: String,
+    progress: Float,
+    formattedTime: String,
+    showExit: Boolean = true,
+    onExit: () -> Unit = {}
+) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(
+            durationMillis = 200,
+            easing = LinearEasing
+        )
+    )
     OverlayScaffold(
         mainPaneRowWeight = 0.5f,
         mainPaneColumnWeight = 0.5f,
         message = message,
         modifier = modifier.fillMaxSize(),
-        mainPane = { modifier ->
+        mainPane = { paneModifier ->
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = modifier.aspectRatio(1f).fillMaxSize()
+                modifier = paneModifier
+                    .aspectRatio(1f)
+                    .fillMaxSize()
             ) {
-                val animatedProgress by animateFloatAsState(
-                    targetValue = (segmentTime - elapsedTime) / segmentTime,
-                    animationSpec = tween(durationMillis = 1000, easing = CubicBezierEasing(0.0f, 0.0f, 1.0f, 1.0f)),
-                )
                 CircularProgressIndicator(
                     modifier = Modifier.fillMaxSize(),
                     progress = { animatedProgress },
@@ -100,20 +104,12 @@ fun PomodoroBlockScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun PomodoroBlockScreenPreview() {
-    var time by remember { mutableLongStateOf(60L) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(1.seconds)
-            time--
-        }
-    }
+private fun PomodoroBlockScreenPreview() {
     ZenwellTheme(darkTheme = false) {
         PomodoroBlockScreen(
             message = APP_BLOCKED,
-            getElapsedTimeInSeconds = { time },
-            segmentTime = 60,
-            getFormattedTime = { "%02d:%02d".format(time / 60, time % 60) }
+            progress = 0.65f,
+            formattedTime = "18:45"
         )
     }
 }

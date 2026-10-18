@@ -6,7 +6,9 @@
 package com.sarangem.zenwell.ui.screens.home
 
 import android.content.Context
+import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.R
@@ -15,39 +17,46 @@ import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.database.tables.UserPreferences
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.service.pomodoro.PomodoroManager
+import com.sarangem.zenwell.service.pomodoro.PomodoroService
+import com.sarangem.zenwell.service.pomodoro.PomodoroServiceActions
+import com.sarangem.zenwell.service.pomodoro.PomodoroStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val schedulesRepository: SchedulesRepository
+    private val schedulesRepository: SchedulesRepository,
+    private val pomodoroManager: PomodoroManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
+    val pomodoroState = pomodoroManager.state
+    
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            schedulesRepository.getAllSchedules().collect { list ->
-                _uiState.update { uiState ->
-                    uiState.copy(
-                        schedulesList = list.sortedBy { it.title.lowercase() },
+        viewModelScope.launch {
+            combine(
+                schedulesRepository.getAllSchedules(),
+                schedulesRepository.getUserPreferences()
+            ) { schedules, prefs ->
+                _uiState.update { current ->
+                    current.copy(
+                        schedulesList = schedules.sortedBy { it.title.lowercase() },
+                        userPreferences = prefs,
                         showAccessibilityPermissionRationale = AppBlockerService.instance == null
                     )
                 }
-            }
-        }
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(
-                userPreferences = schedulesRepository.getUserPreferences().first()
-            ) }
+            }.collect()
         }
     }
 
@@ -116,6 +125,23 @@ class HomeViewModel @Inject constructor(
             AppBlockerService.instance?.initializeRepository()
         }
     }
+    
+    fun startPomodoro(
+        context: Context,
+        schedule: Schedules
+    ): Boolean {
+        if (pomodoroManager.state.value.status != PomodoroStatus.IDLE) return false
+        pomodoroManager.loadSchedule(schedule)
+        ContextCompat.startForegroundService(
+            /* context = */ context,
+            /* intent = */ Intent(context, PomodoroService::class.java).apply {
+                action = PomodoroServiceActions.FRESH_START.name
+            }
+        )
+        return true
+    }
+
+    fun endPomodoro() = pomodoroManager.onPomodoroEnd()
 }
 
 data class HomeUiState(

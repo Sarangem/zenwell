@@ -34,7 +34,8 @@ fun PomodoroControls(
     modifier: Modifier = Modifier,
     onEnd: () -> Unit,
     isPaused: Boolean,
-    onPauseOrResume: () -> Unit,
+    onPause: () -> Unit,
+    onResume: () -> Unit,
     onSkip: () -> Unit,
     isWorkTime: Boolean,
     showPauseInWorkTime: Boolean,
@@ -85,7 +86,7 @@ fun PomodoroControls(
             ToggleButton(
                 modifier = Modifier.weight(1f, false),
                 checked = isPaused,
-                onCheckedChange = { onPauseOrResume() },
+                onCheckedChange = { if(isPaused) onResume() else onPause() },
                 colors = ToggleButtonDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer,

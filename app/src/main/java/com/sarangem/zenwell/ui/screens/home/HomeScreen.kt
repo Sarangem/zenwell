@@ -25,7 +25,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,19 +32,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.service.AppBlockerService
-import com.sarangem.zenwell.service.PomodoroWindow
+import com.sarangem.zenwell.service.pomodoro.PomodoroState
 import com.sarangem.zenwell.ui.screens.home.permission.AccessibilityPermissionCard
 import com.sarangem.zenwell.ui.screens.home.permission.NotificationPermissionCard
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -53,12 +56,16 @@ fun HomeScreen(
     scheduleClicked: Int = 0,
     viewModel: HomeViewModel = hiltViewModel(),
     openEditScreen: (Schedules) -> Unit = {},
-    openFocusScreen: (Schedules) -> Unit = {},
+    openPomodoroScreen: (Schedules) -> Unit = {},
 ) {
     val showcaseState = LocalSequenceShowcaseState.current
-    val homeUiState by viewModel.uiState.collectAsState()
+    val homeUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val pomodoroState by viewModel.pomodoroState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val singlePomodoroSessionRes = stringResource(R.string.error_single_pomodoro)
+    
     // permission checks
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.recheckPermission(context) }
     LaunchedEffect(homeUiState.schedulesList) { viewModel.recheckPermission(context) }
@@ -89,11 +96,23 @@ fun HomeScreen(
         viewModel::hideNotificationCard,
         recheckPermission = { viewModel.recheckPermission(context) },
         openEditScreen = openEditScreen,
-        openFocusScreen = openFocusScreen,
+        openPomodoroScreen = openPomodoroScreen,
         setAsExistingUser = viewModel::setAsExistingUser,
         enableAllSchedules = viewModel::enableAllSchedules,
         userScrollEnabled = !showcaseState.showCaseVisible,
-        getPomodoroWindow = { AppBlockerService.instance?.getPomodoroWindow(it) }
+        startPomodoro = { schedule ->
+            val started = viewModel.startPomodoro(context, schedule)
+            if (!started) {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = singlePomodoroSessionRes
+                    )
+                }
+            }
+        },
+        endPomodoro = viewModel::endPomodoro,
+        pomodoroState = pomodoroState,
+        snackbarHostState = snackbarHostState
     )
 }
 
@@ -110,14 +129,18 @@ fun HomeScreen(
     hideNotificationCard: () -> Unit = {},
     recheckPermission: () -> Unit = {},
     openEditScreen: (Schedules) -> Unit = {},
-    openFocusScreen: (Schedules) -> Unit = {},
+    openPomodoroScreen: (Schedules) -> Unit = {},
     setAsExistingUser: () -> Unit = {},
     enableAllSchedules: () -> Unit = {},
     userScrollEnabled: Boolean = true,
-    getPomodoroWindow: (Int) -> PomodoroWindow? = { null }
+    startPomodoro: (Schedules) -> Unit = {},
+    endPomodoro: () -> Unit = {},
+    pomodoroState: PomodoroState = PomodoroState(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -129,13 +152,17 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            if(currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND))
+            if(currentWindowAdaptiveInfoV2()
+                .windowSizeClass
+                .isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
+            ){
                 NewScheduleFAB(
                     uiState.userPreferences.firstEntry,
                     addNewSchedule,
                     openEditScreen,
                     setAsExistingUser
                 )
+            }
         }
     ) { innerPadding ->
         LazyColumn(
@@ -213,8 +240,10 @@ fun HomeScreen(
                         schedule = schedule,
                         isClicked = schedule.id == scheduleClicked,
                         openEditScreen = openEditScreen,
-                        openFocusScreen = openFocusScreen,
-                        pomodoroWindow = getPomodoroWindow(schedule.id),
+                        openPomodoroScreen = openPomodoroScreen,
+                        startPomodoro = { startPomodoro(schedule) },
+                        endPomodoro = endPomodoro,
+                        pomodoroState = pomodoroState
                     )
                 }
             }

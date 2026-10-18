@@ -7,11 +7,11 @@ package com.sarangem.zenwell.ui.screens.edit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.sarangem.zenwell.database.tables.Schedules
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
@@ -30,12 +30,12 @@ fun EditScreen(
     LaunchedEffect(firstEntry) {
         if (firstEntry) showcaseState.start(2)
     }
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     EditScreenContents(
         modifier = modifier,
         uiState = uiState,
         updateSchedule = viewModel::updateSchedule,
-        updateAppNames = viewModel::updateAppNames,
+        updateAppNames = viewModel::updateSelectedAppsList,
         showTopAppBar = showTopAppBar,
         saveToDatabase = viewModel::saveToDatabase,
         deleteSchedule = viewModel::deleteSchedule,

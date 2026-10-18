@@ -63,7 +63,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseAppList(
-    appNames: List<AppNames>?,
+    selectedAppsList: List<AppNames>?,
     viewsList: List<AppNames>,
     updateValue: (List<AppNames>) -> Unit = {},
     scrollState: ScrollState? = null,
@@ -80,7 +80,6 @@ fun ChooseAppList(
             val list = mutableListOf<MyPackageInfo>()
             list.addAll(systemApps)
 
-            // Map custom views and pass viewKeyword along
             viewsList.forEach { view ->
                 val element = systemApps.firstOrNull { it.packageName == view.packageName }
                 element?.let {
@@ -100,11 +99,11 @@ fun ChooseAppList(
         }
     }
 
-    val selectedAppsText by remember(installedAppList, appNames) {
+    val selectedAppsText by remember(installedAppList, selectedAppsList) {
         derivedStateOf {
             installedAppList
                 .filter { item ->
-                    appNames?.any {
+                    selectedAppsList?.any {
                         it.packageName == item.packageName &&
                                 it.viewId == item.viewId &&
                                 it.viewKeyword == item.viewKeyword
@@ -132,7 +131,7 @@ fun ChooseAppList(
                     text = stringResource(R.string.choose_apps),
                     style = MaterialTheme.typography.bodyLarge
                 )
-                AnimatedVisibility(installedAppList.isNotEmpty() || appNames?.isEmpty() == true) {
+                AnimatedVisibility(installedAppList.isNotEmpty() || selectedAppsList?.isEmpty() == true) {
                     Text(
                         text = selectedAppsText ?: stringResource(R.string.none_selected_yet),
                         style = MaterialTheme.typography.labelMedium,
@@ -158,20 +157,19 @@ fun ChooseAppList(
         ) {
             BottomSheetContents(
                 installedAppList = installedAppList,
-                checkedAppList = appNames,
+                selectedAppsList = selectedAppsList,
                 addAppToList = { appRule ->
-                    if (appNames != null) {
-                        updateValue(appNames + appRule)
+                    if (selectedAppsList != null) {
+                        updateValue(selectedAppsList + appRule)
                     }
                 },
                 removeAppFromList = { appRule ->
-                    if (appNames != null) {
-                        // Accurately filter out by packageName, viewId, AND viewKeyword
+                    if (selectedAppsList != null) {
                         updateValue(
-                            appNames.filterNot {
+                            selectedAppsList.filterNot {
                                 it.packageName == appRule.packageName &&
-                                        it.viewId == appRule.viewId &&
-                                        it.viewKeyword == appRule.viewKeyword
+                                    it.viewId == appRule.viewId &&
+                                    it.viewKeyword == appRule.viewKeyword
                             }
                         )
                     }
@@ -186,11 +184,11 @@ fun ChooseAppList(
 fun BottomSheetContents(
     modifier: Modifier = Modifier,
     installedAppList: List<MyPackageInfo>,
-    checkedAppList: List<AppNames>? = listOf(),
+    selectedAppsList: List<AppNames>? = null,
     addAppToList: (AppNames) -> Unit = {},
     removeAppFromList: (AppNames) -> Unit = {}
 ) {
-    if (installedAppList.isEmpty() || checkedAppList == null) {
+    if (installedAppList.isEmpty() || selectedAppsList == null) {
         LoadingIndicator(
             Modifier
                 .fillMaxWidth()
@@ -204,15 +202,14 @@ fun BottomSheetContents(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)
         ) {
             items(installedAppList) { item ->
-                val isChecked = checkedAppList.any {
-                    it.packageName == item.packageName &&
-                            it.viewId == item.viewId &&
-                            it.viewKeyword == item.viewKeyword
-                }
                 AppCard(
                     label = item.appName,
                     icon = item.icon,
-                    checkedValue = isChecked,
+                    checkedValue = selectedAppsList.any {
+                        it.packageName == item.packageName &&
+                            it.viewId == item.viewId &&
+                            it.viewKeyword == item.viewKeyword
+                    },
                     onCheckedChange = { value ->
                         val appRule = AppNames(
                             packageName = item.packageName,

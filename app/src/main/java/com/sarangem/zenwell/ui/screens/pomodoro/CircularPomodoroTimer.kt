@@ -24,6 +24,11 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -39,13 +44,19 @@ fun CircularPomodoroTimer(
     formattedTime: String,
     isWork: Boolean
 ) {
+    val animatedProgress by key(isWork){
+        animateFloatAsState(
+            targetValue = progress,
+            animationSpec = tween(durationMillis = 200, easing = LinearEasing),
+        )
+    }
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.aspectRatio(1f, matchHeightConstraintsFirst = false)
+        modifier = modifier.aspectRatio(1f)
     ) {
         CircularWavyProgressIndicator(
             modifier = Modifier.fillMaxSize(),
-            progress = { progress },
+            progress = { animatedProgress },
             stroke = Stroke(
                 width = with(LocalDensity.current) { 20.dp.toPx() },
                 cap = StrokeCap.Round
@@ -56,11 +67,7 @@ fun CircularPomodoroTimer(
             ),
             amplitude = { progress ->
                 val lowProgress = progress <= 0.1f || progress >= 0.95f
-                if (isWork || lowProgress) {
-                    0f
-                } else {
-                    1f
-                }
+                if (isWork || lowProgress) 0f else 1f
             },
             color = if (isWork) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
             wavelength = 40.dp

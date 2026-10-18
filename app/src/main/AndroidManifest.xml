@@ -2,9 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- no internet permission, data stays on device -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="PackageVisibilityPolicy,QueryAllPackagesPermission" />  <!-- for UI only -->
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" /> <!-- to show your daily usage stats, optional -->
+
+    <!-- required for pomodoro sessions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:ignore="ForegroundServicesPolicy" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" /> <!-- to guarantee exact time -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" tools:ignore="ExactAlarmPolicy" />
 
     <application
         android:name =".database.hilt.ZenwellHiltApplication"
@@ -37,6 +44,12 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/app_blocker_service_config" />
+        </service>
+
+        <service
+            android:name=".service.pomodoro.PomodoroService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false">
         </service>
 
     </application>

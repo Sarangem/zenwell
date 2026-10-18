@@ -46,7 +46,7 @@ fun EditScreenContents(
     firstEntry: Boolean = false,
     setAsExistingUser: () -> Unit = {},
     userScrollEnabled: Boolean = true,
-    goBack: () -> Unit = {},
+    goBack: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -79,7 +79,7 @@ fun EditScreenContents(
                     DetailsCardWithTextField(R.string.schedule_title, title) { updateSchedule(copy(title = it)) }
                     DetailsCardWithTextField(R.string.message, message, singleLine = false) { updateSchedule(copy(message = it)) }
                 }
-                ChooseAppList(uiState.appNames, uiState.viewsList, updateAppNames, scrollState, firstEntry, setAsExistingUser)
+                ChooseAppList(uiState.selectedAppsList, uiState.viewsList, updateAppNames, scrollState, firstEntry, setAsExistingUser)
 
                 if (!isPomodoro) {
                     DetailsCardColumn {

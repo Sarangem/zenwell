@@ -39,7 +39,6 @@ import androidx.navigation3.scene.SceneStrategyScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
-import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityScreen
 import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityViewModel
 import com.sarangem.zenwell.ui.screens.edit.EditScreen
@@ -47,7 +46,7 @@ import com.sarangem.zenwell.ui.screens.edit.EditScreenPlaceholder
 import com.sarangem.zenwell.ui.screens.edit.EditViewModel
 import com.sarangem.zenwell.ui.screens.home.HomeScreen
 import com.sarangem.zenwell.ui.screens.home.HomeViewModel
-import com.sarangem.zenwell.ui.screens.pomodoro.FocusScreen
+import com.sarangem.zenwell.ui.screens.pomodoro.PomodoroScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
 import com.sarangem.zenwell.ui.screens.stats.StatsScreen
 import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcase
@@ -100,7 +99,7 @@ fun ZenwellAppScreen() {
                                     EditPage.addToStack(backStack)
                                     editViewModel.initialize(schedules)
                                 },
-                                openFocusScreen = { PomodoroPage(it).addToStack(backStack) }
+                                openPomodoroScreen = { PomodoroPage.addToStack(backStack) }
                             )
                         }
 
@@ -111,17 +110,16 @@ fun ZenwellAppScreen() {
                                 modifier = Modifier.fillMaxSize(),
                                 viewModel = editViewModel,
                                 showTopAppBar = LocalBackButtonVisibility.current,
-                                goBack = { backStack.removeLastOrNull() },
+                                goBack = { backStack.remove(EditPage) },
                                 setAsExistingUser = { homeViewModel.setAsExistingUser() },
                                 firstEntry = firstEntry
                             )
                         }
 
-                        entry<PomodoroPage> { key ->
-                            FocusScreen(
+                        entry<PomodoroPage> {
+                            PomodoroScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                schedule = key.schedule,
-                                goBack = { backStack.removeLastOrNull() }
+                                goBack = { backStack.remove(PomodoroPage) }
                             )
                         }
 
@@ -162,7 +160,7 @@ fun ZenwellAppScreen() {
 
 @Serializable data object HomePage : NavKey
 @Serializable data object EditPage : NavKey
-@Serializable data class PomodoroPage(val schedule: Schedules) : NavKey
+@Serializable data object PomodoroPage : NavKey
 @Serializable data object SettingsPage : NavKey
 @Serializable data object CustomActivityPage : NavKey
 @Serializable data object StatsPage: NavKey

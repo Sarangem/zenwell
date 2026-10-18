@@ -17,6 +17,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.maxLengthReject
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -62,7 +67,7 @@ fun TypingScreen(
     onExit: () -> Unit = {}
 ) {
     var showOpen by remember { mutableStateOf(false) }
-    var input by remember { mutableStateOf("") }
+    val textFieldState = rememberTextFieldState()
     val focusManager = LocalFocusManager.current
 
     OverlayScaffold(
@@ -75,7 +80,13 @@ fun TypingScreen(
             MediumExtendedFloatingActionButton(
                 onClick = {
                     focusManager.clearFocus()
-                    if (input == message) {
+                    if (
+                        textFieldState.text
+                            .contentEquals(
+                                message,
+                                ignoreCase = true
+                            )
+                    ) {
                         if (!requireManualUnlock) onTimerEnd()
                         showOpen = true
                     }
@@ -111,8 +122,7 @@ fun TypingScreen(
                 } else {
                     TypingTextField(
                         message = message,
-                        input = input,
-                        onInputChange = { input = it }
+                        state = textFieldState
                     )
                 }
             }
@@ -124,18 +134,16 @@ fun TypingScreen(
 fun TypingTextField(
     modifier: Modifier = Modifier,
     message: String,
-    input: String,
-    onInputChange: (String) -> Unit = {}
+    state: TextFieldState
 ) {
     BasicTextField(
-        value = input,
-        onValueChange = {
-            if (it.length <= message.length) onInputChange(it)
-        },
+        state = state,
+        inputTransformation = InputTransformation.maxLengthReject(message.length),
         cursorBrush = SolidColor(TextFieldDefaults.colors().cursorColor),
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
+        lineLimits = TextFieldLineLimits.MultiLine(),
         textStyle = MaterialTheme.typography.displaySmall.copy(
             color = Color.Transparent,
             fontWeight = FontWeight.SemiBold,
@@ -147,12 +155,12 @@ fun TypingTextField(
             imeAction = ImeAction.Default,
             keyboardType = KeyboardType.Text
         ),
-        decorationBox = {
+        decorator = { innerTextField ->
             Box {
                 Text(
                     text = buildAnnotatedString {
                         message.forEachIndexed { index, char ->
-                            val inputChar = if (index < input.length) input[index] else null
+                            val inputChar = if (index < state.text.length) state.text[index] else null
                             withStyle(
                                 style = SpanStyle(
                                     color = when (inputChar) {
@@ -167,7 +175,7 @@ fun TypingTextField(
                                     } else {
                                         Color.Unspecified
                                     },
-                                    fontWeight = if(char == '\n') FontWeight.Thin else null
+                                    fontWeight = if (char == '\n') FontWeight.Thin else null
                                 )
                             ) {
                                 if (char == '\n') append('↲')
@@ -179,11 +187,10 @@ fun TypingTextField(
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.Monospace
                 )
-                it()
+                innerTextField()
             }
         }
     )
-
 }
 
 @Preview(showBackground = true)

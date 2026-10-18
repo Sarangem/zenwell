@@ -7,10 +7,8 @@ package com.sarangem.zenwell.ui.screens.settings
 
 import android.content.Context
 import android.net.Uri
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.model.BackupData
 import com.sarangem.zenwell.service.AppBlockerService
@@ -36,38 +34,53 @@ class SettingsViewModel @Inject constructor(
         ignoreUnknownKeys = true
     }
 
-    fun createBackup(uri: Uri, context: Context) {
-        try {
-            viewModelScope.launch(Dispatchers.IO) {
-                val data = repository.getAllData()
-                val jsonString = json.encodeToString(data)
-                context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                    BufferedWriter(OutputStreamWriter(outputStream)).use { it.write(jsonString) }
-                }
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, R.string.backup_completed, Toast.LENGTH_SHORT).show()
-                }
+    fun createBackup(
+        uri: Uri,
+        context: Context,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            val success = withContext(Dispatchers.IO) {
+                runCatching {
+                    val data = repository.getAllData()
+                    val jsonString = json.encodeToString(data)
+                    context
+                        .contentResolver
+                        .openOutputStream(uri)
+                        ?.use { outputStream ->
+                            BufferedWriter(OutputStreamWriter(outputStream)).use {
+                                it.write(jsonString)
+                            }
+                        }
+                }.isSuccess
             }
-        } catch (_: Exception) {
-            Toast.makeText(context, R.string.backup_failed, Toast.LENGTH_SHORT).show()
+            onResult(success)
         }
     }
 
-    fun restoreBackup(uri: Uri, context: Context) {
-        try {
-            viewModelScope.launch(Dispatchers.IO) {
-                context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                    val jsonString = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
-                    val restoredData = json.decodeFromString<List<BackupData>>(jsonString)
-                    repository.restoreAllData(restoredData)
-                    AppBlockerService.instance?.initializeRepository()
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, R.string.data_restore_completed, Toast.LENGTH_SHORT).show()
-                    }
-                }
+
+    fun restoreBackup(
+        uri: Uri,
+        context: Context,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            val success = withContext(Dispatchers.IO) {
+                runCatching {
+                    context
+                        .contentResolver
+                        .openInputStream(uri)
+                        ?.use { inputStream ->
+                            val jsonString = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
+                            val restoredData = json.decodeFromString<List<BackupData>>(jsonString)
+                            repository.restoreAllData(restoredData)
+                            withContext(Dispatchers.IO) {
+                                AppBlockerService.instance?.initializeRepository()
+                            }
+                        }
+                }.isSuccess
             }
-        } catch (_: Exception) {
-            Toast.makeText(context, R.string.data_restore_failed, Toast.LENGTH_SHORT).show()
+            onResult(success)
         }
     }
 }

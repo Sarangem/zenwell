@@ -25,6 +25,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
@@ -32,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,29 +52,74 @@ import com.sarangem.zenwell.GITHUB_REPO_ISSUES_URL
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     openCustomActivityScreen: () -> Unit = {}
-){
+) {
     val viewModel: SettingsViewModel = hiltViewModel()
     val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    val reportIssueLabel = stringResource(R.string.report_issue)
+    val backupSuccessMsg = stringResource(R.string.backup_completed)
+    val backupFailureMsg = stringResource(R.string.backup_failed)
+    val restoreSuccessMsg = stringResource(R.string.data_restore_completed)
+    val restoreFailureMsg = stringResource(R.string.data_restore_failed)
+
+    val showResultSnackbar: (Boolean, String, String) -> Unit = { success, successMsg, failureMsg ->
+        scope.launch {
+            if (success) {
+                snackbarHostState.showSnackbar(
+                    message = successMsg
+                )
+            } else {
+                val result = snackbarHostState.showSnackbar(
+                    message = failureMsg,
+                    actionLabel = reportIssueLabel,
+                    withDismissAction = true
+                )
+                if (result == SnackbarResult.ActionPerformed) {
+                    uriHandler.openUri(GITHUB_REPO_ISSUES_URL)
+                }
+            }
+        }
+    }
 
     val createBackup = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
-        viewModel.createBackup(uri, context)
+        viewModel.createBackup(uri, context) { success ->
+            showResultSnackbar(
+                success,
+                backupSuccessMsg,
+                backupFailureMsg
+            )
+        }
     }
+
     val restoreBackup = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
-        viewModel.restoreBackup(uri, context)
+        viewModel.restoreBackup(uri, context) { success ->
+            showResultSnackbar(
+                success,
+                restoreSuccessMsg,
+                restoreFailureMsg
+            )
+        }
     }
 
-    SettingsScreen(modifier, openCustomActivityScreen,
+    SettingsScreen(
+        modifier = modifier,
+        snackbarHostState = snackbarHostState,
+        openCustomActivityScreen = openCustomActivityScreen,
         createBackup = { createBackup.launch("zenwell_backup.json") },
         restoreBackup = { restoreBackup.launch(arrayOf("application/json")) }
     )
@@ -81,15 +130,20 @@ fun SettingsScreen(
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     openCustomActivityScreen: () -> Unit = {},
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     createBackup: () -> Unit = {},
     restoreBackup: () -> Unit = {}
 ) {
+    val isExpanded = currentWindowAdaptiveInfoV2()
+        .windowSizeClass
+        .isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
     val uriHandler = LocalUriHandler.current
     var showCrashLog by remember { mutableStateOf(false) }
     if (showCrashLog) CrashLogDialog { showCrashLog = false }
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -109,7 +163,7 @@ fun SettingsScreen(
                 .padding(innerPadding)
                 .padding(horizontal = MaterialTheme.sizing.small)
                 .padding(bottom = MaterialTheme.sizing.medium)
-                .padding(bottom = if (!currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) MaterialTheme.sizing.floatingBar else 0.dp),
+                .padding(bottom = if (!isExpanded) MaterialTheme.sizing.floatingBar else 0.dp),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.medium)
         ) {
             Column {

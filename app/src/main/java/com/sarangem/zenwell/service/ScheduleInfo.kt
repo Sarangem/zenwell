@@ -40,14 +40,12 @@ data class ScheduleInfo(
             supervisorJob = supervisorJob,
             content = { onTimerEnd, onExit ->
 
-                if (pomodoroWindow?.isWorkTime == true) {
+                if (schedule.isPomodoro) {
 
                     PomodoroBlockScreen(
                         modifier = Modifier.fillMaxSize(),
                         message = schedule.message,
-                        getElapsedTimeInSeconds = { pomodoroWindow.getElapsedTimeInSeconds() },
-                        segmentTime = schedule.pomodoroWorkTimeInMinutes * 60,
-                        getFormattedTime = { pomodoroWindow.getFormattedTime() },
+                        pomodoroManager = service.pomodoroManager,
                         showExit = schedule.showExit,
                         onExit = onExit
                     )
@@ -122,17 +120,7 @@ data class ScheduleInfo(
             }
         )
     }
-
-    val pomodoroWindow = if (schedule.isPomodoro) {
-        PomodoroWindow(
-            schedule = schedule,
-            overlayWindowList = overlayWindowList,
-            context = service,
-            supervisorJob = supervisorJob,
-            recheckApp = { service.onAccessibilityEvent(null) },
-        )
-    } else null
-
+    
     // only used for UnlockMethod.Tasks
     var tasksList = schedule.tasks.lines()
         .filter { it.isNotBlank() }

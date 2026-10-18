@@ -27,14 +27,14 @@ class OfflineSchedulesRepository @Inject constructor(
     override fun getAllApps()= scheduleDao.getAllApps()
     override fun getUserPreferences()= scheduleDao.getUserPreferences().map { it ?: UserPreferences() }
     override fun getCustomApps() = scheduleDao.getCustomApps()
-    override fun upsertApp(appName: AppNames)= scheduleDao.upsertAppNames(appName)
-    override fun upsertUserPreferences(userPreferences: UserPreferences)= scheduleDao.upsertUserPreferences(userPreferences)
-    override fun deleteApp(appName: AppNames)= scheduleDao.deleteAppNames(appName)
+    override suspend fun upsertApp(appName: AppNames)= scheduleDao.upsertAppNames(appName)
+    override suspend fun upsertUserPreferences(userPreferences: UserPreferences)= scheduleDao.upsertUserPreferences(userPreferences)
+    override suspend fun deleteApp(appName: AppNames)= scheduleDao.deleteAppNames(appName)
     override suspend fun addNewSchedule(schedule: Schedules)= scheduleDao.insertSchedule(schedule).toInt()
     override suspend fun updateSchedule(schedule: Schedules)= scheduleDao.updateSchedule(schedule)
 
     override suspend fun getAllData(): List<BackupData> {
-        val schedulesList = scheduleDao.getAllSchedules().first()
+        val schedulesList = getAllSchedules().first()
         val data = mutableListOf<BackupData>()
         schedulesList.forEach { schedule ->
             data.add(
@@ -53,7 +53,7 @@ class OfflineSchedulesRepository @Inject constructor(
             val id = addNewSchedule(data.schedule.copy(id = 0))
             saveToDatabase(
                 schedule = data.schedule.copy(id = id),
-                appNames = data.appNamesList,
+                selectedAppsList = data.appNamesList,
                 pastAppList = listOf()
             )
         }
@@ -61,18 +61,20 @@ class OfflineSchedulesRepository @Inject constructor(
 
     override suspend fun saveToDatabase(
         schedule: Schedules,
-        appNames: List<AppNames>?,
+        selectedAppsList: List<AppNames>?,
         pastAppList: List<AppNames>?
     ) {
-        // first update the schedule table
         scheduleDao.updateSchedule(schedules = schedule)
-
-        // if appNames is null, apps are not loaded nor modified
-        if (appNames == null || pastAppList == null) return
+        if (selectedAppsList == null || pastAppList == null) return
 
         val pastAppSet = pastAppList.toMutableSet()
-        for (app in appNames) {
-            if (app !in pastAppSet) {
+        for (app in selectedAppsList) {
+            if (!pastAppSet.any {
+                it.packageName != app.packageName &&
+                    it.viewKeyword != app.viewKeyword &&
+                    it.viewId != app.viewId
+                }
+            ) {
                 val appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword).firstOrNull()
                 if (appId == null || appId == 0) {
                     upsertApp(app.copy(id = 0))
@@ -107,7 +109,7 @@ class OfflineSchedulesRepository @Inject constructor(
     private suspend fun removeAppNameIfUnused() {
         val appIds = scheduleDao.getAllApps().first()
         for (app in appIds) {
-            if (app.viewTitle != null) continue // do not remove custom views
+            if (app.viewId != null || app.viewKeyword != null) continue // do not remove custom views
             if (scheduleDao.getAppRelationByAppId(app.id).first().isNotEmpty()) continue // app is not referenced
             scheduleDao.deleteAppNames(app)
         }
