@@ -12,7 +12,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
-import android.media.RingtoneManager
 import androidx.core.app.NotificationCompat
 import com.sarangem.zenwell.MainActivity
 import com.sarangem.zenwell.R
@@ -38,7 +37,7 @@ fun createPomodoroNotification(
 ): Notification {
     val isPaused = state.status == PomodoroStatus.PAUSED
     val totalMillis = state.totalSegmentTime.toInt()
-    val elapsedMillis = (state.totalSegmentTime - state.remainingMillis).coerceAtLeast(0L).toInt()
+    val elapsedMillis = (state.totalSegmentTime - state.remainingMillis).toInt()
     val canPause = if (state.isWorkTime) state.schedule.showPauseInWorkTime else state.schedule.showPauseInRestTime
     val canSkip = if (state.isWorkTime) state.schedule.showSkipInWorkTime else state.schedule.showSkipInRestTime
 
@@ -51,12 +50,8 @@ fun createPomodoroNotification(
         .setContentText(state.formattedTime)
         .setProgress(totalMillis, elapsedMillis, false)
         .setWhen(System.currentTimeMillis() + state.remainingMillis)
-        .setUsesChronometer(!isPaused)
-        .setChronometerCountDown(true)
-        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
         .setOnlyAlertOnce(!playSound)
         .setOngoing(!playSound && !isPaused)
-        .setSilent(!playSound)
         .setCategory(NotificationCompat.CATEGORY_PROGRESS)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -74,7 +69,7 @@ fun createPomodoroNotification(
     if (canPause) {
         val toggleAction = if (isPaused) PomodoroServiceActions.RESUME else PomodoroServiceActions.PAUSE
         builder.addAction(
-            /* icon = */ 0,
+            /* icon = */ if (isPaused) R.drawable.filled_play_arrow else R.drawable.filled_pause,
             /* title = */ if (isPaused) context.getString(R.string.resume) else context.getString(R.string.pause),
             /* intent = */ PendingIntent.getService(
                 /* context = */ context,
@@ -86,17 +81,25 @@ fun createPomodoroNotification(
     }
 
     if (canSkip) {
-        val skipPendingIntent = PendingIntent.getService(
-            /* context = */ context,
-            /* requestCode = */ PomodoroServiceActions.SKIP.ordinal,
-            /* intent = */ Intent(context, PomodoroService::class.java).apply { action = PomodoroServiceActions.SKIP.name },
-            /* flags = */ PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        builder.addAction(
+            /* icon = */ R.drawable.filled_fast_forward,
+            /* title = */ context.getString(R.string.skip),
+            /* intent = */  PendingIntent.getService(
+                /* context = */ context,
+                /* requestCode = */ PomodoroServiceActions.SKIP.ordinal,
+                /* intent = */ Intent(context, PomodoroService::class.java).apply { action = PomodoroServiceActions.SKIP.name },
+                /* flags = */ PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
         )
-        builder.addAction(0, context.getString(R.string.skip), skipPendingIntent)
     }
 
     val notification = builder.build()
     val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager
     manager?.notify(POMODORO_NOTIFICATION_ID, notification)
     return notification
+}
+
+fun deletePomodoroNotification(context: Context) {
+    val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager ?: return
+    manager.cancel(POMODORO_NOTIFICATION_ID)
 }

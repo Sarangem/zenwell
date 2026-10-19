@@ -8,9 +8,12 @@ package com.sarangem.zenwell.ui.screens.home
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -136,11 +139,16 @@ fun HomeScreen(
     startPomodoro: (Schedules) -> Unit = {},
     endPomodoro: () -> Unit = {},
     pomodoroState: PomodoroState = PomodoroState(),
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
     Scaffold(
         modifier = modifier,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = {
+            Column {
+                SnackbarHost(snackbarHostState)
+                Spacer(Modifier.height(MaterialTheme.sizing.floatingBar))
+            }
+        },
         topBar = {
             TopAppBar(
                 title = {

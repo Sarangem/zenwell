@@ -13,7 +13,8 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -27,12 +28,18 @@ class PomodoroService : Service() {
         createPomodoroNotificationChannel(this)
 
         serviceScope.launch {
+            var hasStateChanged = false
             pomodoroManager.state
-                .distinctUntilChangedBy { it.formattedTime }
+                .filter { it.status != PomodoroStatus.IDLE }
+                .distinctUntilChanged { old, new ->
+                    hasStateChanged = old.status != new.status || old.isWorkTime != new.isWorkTime
+                    old.formattedTime == new.formattedTime
+                }
                 .collect {
                     createPomodoroNotification(
                         context = this@PomodoroService,
-                        state = it
+                        state = it,
+                        playSound = hasStateChanged
                     )
                 }
         }

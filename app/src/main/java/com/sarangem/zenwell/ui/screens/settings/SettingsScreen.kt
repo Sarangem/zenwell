@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -130,7 +131,7 @@ fun SettingsScreen(
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     openCustomActivityScreen: () -> Unit = {},
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    snackbarHostState: SnackbarHostState = SnackbarHostState(),
     createBackup: () -> Unit = {},
     restoreBackup: () -> Unit = {}
 ) {
@@ -143,7 +144,12 @@ fun SettingsScreen(
 
     Scaffold(
         modifier = modifier,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = {
+            Column {
+                SnackbarHost(snackbarHostState)
+                Spacer(Modifier.height(MaterialTheme.sizing.floatingBar))
+            }
+        },
         topBar = {
             TopAppBar(
                 title = {

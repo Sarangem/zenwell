@@ -7,7 +7,6 @@ package com.sarangem.zenwell.service.pomodoro
 
 import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
 import android.os.SystemClock
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.AppBlockerService
@@ -41,7 +40,7 @@ class PomodoroManager @Inject constructor(
     private var timeWhenPaused = 0L
     private var pausedFor = 0L
 
-    fun loadSchedule(schedule: Schedules) = _state.update { it.copy(schedule = schedule) }
+    fun loadSchedule(schedule: Schedules) = _state.update { PomodoroState(schedule = schedule) }
 
     fun onSegmentStart() {
         startTime = SystemClock.elapsedRealtime()
@@ -61,17 +60,7 @@ class PomodoroManager @Inject constructor(
                 } * 60 * 1000L
             )
         }
-        AppBlockerService.instance?.onAccessibilityEvent(null)
-        if(!_state.value.isWorkTime) AppBlockerService.instance
-            ?.openedWindows
-            ?.firstOrNull { it.schedule.id == _state.value.schedule.id }
-            ?.close()
-        scope.launch {
-            RingtoneManager.getRingtone(
-                /* context = */context,
-                /* ringtoneUri = */ RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            )?.play()
-        }
+        removeOverlayWindow()
         expiryAlarmScheduler.set(
             triggerAt = startTime + state.value.totalSegmentTime + pausedFor,
             sessionsCompletedTillThen = state.value.sessionsCompleted,
@@ -126,7 +115,7 @@ class PomodoroManager @Inject constructor(
                 formattedTime = millisToString(remaining)
             )
         }
-        AppBlockerService.instance?.onAccessibilityEvent(null)
+        removeOverlayWindow()
         expiryAlarmScheduler.delete()
     }
 
@@ -150,12 +139,20 @@ class PomodoroManager @Inject constructor(
         if (state.value.status == PomodoroStatus.IDLE) return
         timerJob?.cancel()
         timerJob = null
+        deletePomodoroNotification(context)
         _state.update { PomodoroState() }
-        AppBlockerService.instance?.onAccessibilityEvent(null)
-        startTime = 0L
+        removeOverlayWindow()
         timeWhenPaused = 0L
         pausedFor = 0L
         expiryAlarmScheduler.delete()
         context.stopService(Intent(context, PomodoroService::class.java))
+    }
+
+    private fun removeOverlayWindow() {
+        AppBlockerService.instance?.onAccessibilityEvent(null)
+        if(!_state.value.isWorkTime) AppBlockerService.instance
+            ?.openedWindows
+            ?.firstOrNull { it.schedule.id == _state.value.schedule.id }
+            ?.close()
     }
 }
