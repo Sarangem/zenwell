@@ -5,6 +5,9 @@
 
 package com.sarangem.zenwell.database.migrations
 
+import android.database.sqlite.SQLiteDatabase
+import androidx.core.content.contentValuesOf
+import androidx.core.database.getStringOrNull
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
@@ -23,24 +26,23 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
             """.trimIndent()
         )
 
-        db.execSQL(
-            """
-            INSERT INTO `app_names_new` (`id`, `packageName`, `viewId`, `viewKeyword`, `viewTitle`)
-            SELECT 
-                `id`,
-                CASE 
-                    WHEN instr(`title`, ':id/') > 0 THEN substr(`title`, 1, instr(`title`, ':id/') - 1)
-                    ELSE `title`
-                END,
-                CASE 
-                    WHEN instr(`title`, ':id/') > 0 THEN substr(`title`, instr(`title`, ':id/') + 4)
-                    ELSE NULL
-                END,
-                NULL,
-                `viewTitle`
-            FROM `app_names`
-            """.trimIndent()
-        )
+        val oldTableContents = db.query("SELECT `id`, `title`, `view_title` FROM `app_names`")
+        oldTableContents.use { row ->
+            while (row.moveToNext()) {
+                val title = row.getString(1)
+                db.insert(
+                    "app_names_new",
+                    SQLiteDatabase.CONFLICT_REPLACE,
+                    contentValuesOf(
+                        "id" to row.getInt(0),
+                        "packageName" to title.substringBefore(":id/"),
+                        "viewId" to title,
+                        "viewKeyword" to null,
+                        "viewTitle" to row.getStringOrNull(2)
+                    )
+                )
+            }
+        }
 
         db.execSQL("DROP TABLE `app_names`")
         db.execSQL("ALTER TABLE `app_names_new` RENAME TO `app_names`")
