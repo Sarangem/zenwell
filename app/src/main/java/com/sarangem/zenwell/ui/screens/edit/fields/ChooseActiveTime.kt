@@ -49,6 +49,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
+import com.sarangem.zenwell.utils.is24Hour
 import com.sarangem.zenwell.utils.minutesToString
 
 @Composable
@@ -56,9 +57,14 @@ fun ChooseActiveTime(
     startTimeInMinutes: Int,
     updateStartTime: (Int) -> Unit = {},
     endTimeInMinutes: Int,
-    updateEndTime: (Int) -> Unit = {},
+    updateEndTime: (Int) -> Unit = {}
 ) {
-    val isExpandedWidth = currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
+    val context = LocalContext.current
+    val is24Hour = remember { is24Hour(context) }
+    val isExpandedWidth = currentWindowAdaptiveInfoV2()
+        .windowSizeClass
+        .isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
+
     DetailsCard {
         Text(
             text = stringResource(R.string.choose_active_time),
@@ -69,18 +75,26 @@ fun ChooseActiveTime(
         Column(Modifier.weight(2f)) {
             if(isExpandedWidth){
                 Row(Modifier.fillMaxSize()){
-                    ClockRange(Modifier.weight(1f), Modifier.align(Alignment.CenterVertically), startTimeInMinutes, updateStartTime, endTimeInMinutes, updateEndTime)
+                    ClockRange(
+                        Modifier.weight(1f),
+                        Modifier.align(Alignment.CenterVertically),
+                        is24Hour, startTimeInMinutes, updateStartTime, endTimeInMinutes, updateEndTime
+                    )
                 }
             } else {
                 Column(Modifier.fillMaxSize()) {
-                    ClockRange(Modifier.fillMaxWidth(), Modifier.align(Alignment.CenterHorizontally), startTimeInMinutes, updateStartTime, endTimeInMinutes, updateEndTime)
+                    ClockRange(
+                        Modifier.fillMaxWidth(),
+                        Modifier.align(Alignment.CenterHorizontally),
+                        is24Hour, startTimeInMinutes, updateStartTime, endTimeInMinutes, updateEndTime
+                    )
                 }
             }
             AnimatedVisibility(
                 startTimeInMinutes > endTimeInMinutes,
                 Modifier.fillMaxWidth()
             ) {
-                OvernightScheduleNotice(startTimeInMinutes, endTimeInMinutes)
+                OvernightScheduleNotice(startTimeInMinutes, endTimeInMinutes, is24Hour)
             }
         }
     }
@@ -90,16 +104,18 @@ fun ChooseActiveTime(
 fun ClockRange(
     clockModifier: Modifier = Modifier,
     textModifier: Modifier = Modifier,
+    is24Hour: Boolean,
     startTimeInMinutes: Int,
     updateStartTime: (Int) -> Unit = {},
     endTimeInMinutes: Int,
-    updateEndTime: (Int) -> Unit = {},
-){
+    updateEndTime: (Int) -> Unit = {}
+) {
     ClockButton(
         modifier = clockModifier,
         time = startTimeInMinutes,
         timePickerTitle = stringResource(R.string.choose_start_time),
-        updateUiState = updateStartTime
+        updateUiState = updateStartTime,
+        is24Hour = is24Hour
     )
     Text(
         text = stringResource(R.string.to),
@@ -111,7 +127,8 @@ fun ClockRange(
         modifier = clockModifier,
         time = endTimeInMinutes,
         timePickerTitle = stringResource(R.string.choose_end_time),
-        updateUiState = updateEndTime
+        updateUiState = updateEndTime,
+        is24Hour = is24Hour
     )
 }
 
@@ -120,6 +137,7 @@ fun ClockButton(
     modifier: Modifier = Modifier,
     time: Int,
     timePickerTitle: String,
+    is24Hour: Boolean,
     updateUiState: (Int) -> Unit
 ) {
     val context = LocalContext.current
@@ -139,7 +157,7 @@ fun ClockButton(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = minutesToString(time),
+                text = minutesToString(time, is24Hour),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
@@ -222,15 +240,16 @@ fun AdvancedTimePickerDialog(
 fun OvernightScheduleNotice(
     startTimeInMinutes: Int,
     endTimeInMinutes: Int,
+    is24Hour: Boolean,
     modifier: Modifier = Modifier
 ) {
     Text(
         text = stringResource(
             R.string.overnight_schedule_description,
-            minutesToString(0),
-            minutesToString(endTimeInMinutes),
-            minutesToString(startTimeInMinutes),
-            minutesToString(23*60+59)
+            minutesToString(0, is24Hour),
+            minutesToString(endTimeInMinutes, is24Hour),
+            minutesToString(startTimeInMinutes, is24Hour),
+            minutesToString(23*60+59, is24Hour)
         ),
         style = MaterialTheme.typography.bodySmall,
         textAlign = TextAlign.Center,

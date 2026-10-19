@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -54,6 +55,7 @@ import com.sarangem.zenwell.service.pomodoro.PomodoroState
 import com.sarangem.zenwell.service.pomodoro.PomodoroStatus
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.sizing
+import com.sarangem.zenwell.utils.is24Hour
 import com.sarangem.zenwell.utils.minutesToString
 
 @Composable
@@ -126,12 +128,14 @@ fun PomodoroStartButton(
     startPomodoro: () -> Unit = {},
     isPomodoroRunning: Boolean = false,
 ) {
+    val context = LocalContext.current
+    val is24Hour = remember { is24Hour(context) }
     if (!schedule.isPomodoro) {
         Text(
             text = stringResource(
                 R.string.schedule_time,
-                minutesToString(schedule.startTimeInMinutes),
-                minutesToString(schedule.endTimeInMinutes)
+                minutesToString(schedule.startTimeInMinutes, is24Hour),
+                minutesToString(schedule.endTimeInMinutes, is24Hour)
             ),
             style = MaterialTheme.typography.labelLarge,
             color = tint,

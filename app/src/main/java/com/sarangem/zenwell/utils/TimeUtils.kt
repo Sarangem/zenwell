@@ -5,18 +5,31 @@
 
 package com.sarangem.zenwell.utils
 
+import android.content.Context
 import android.os.SystemClock
+import android.text.format.DateFormat
 import java.time.Duration
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.util.Locale
 
-fun minutesToString(minutes: Int): String =
-    LocalTime
+fun minutesToString(
+    minutes: Int,
+    is24Hour: Boolean
+): String {
+    return LocalTime
         .ofSecondOfDay(minutes * 60L)
-        .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.getDefault()))
+        .format(
+            DateTimeFormatter
+                .ofPattern(
+                    /* pattern = */ if (is24Hour) "HH:mm" else "h:mm a",
+                    /* locale = */ Locale.getDefault()
+                )
+            )
+}
+
+fun is24Hour(context: Context): Boolean = DateFormat.is24HourFormat(context)
 
 fun getElapsedRealtimeUntilTomorrow(): Long {
     val now = ZonedDateTime.now()
