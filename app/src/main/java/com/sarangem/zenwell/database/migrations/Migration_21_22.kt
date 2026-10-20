@@ -14,6 +14,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 val MIGRATION_21_22 = object : Migration(21, 22) {
     override fun migrate(db: SupportSQLiteDatabase) {
 
+        // migrate app_names table
+
         db.execSQL(
             """
             CREATE TABLE IF NOT EXISTS `app_names_new` (
@@ -47,6 +49,30 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
         db.execSQL("DROP TABLE `app_names`")
         db.execSQL("ALTER TABLE `app_names_new` RENAME TO `app_names`")
 
-        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_app_names_packageName_viewId_viewKeyword` ON `app_names` (`packageName`, `viewId`, `viewKeyword`)")
+        db.execSQL(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS `index_app_names_packageName_viewId_viewKeyword`
+                ON `app_names` (`packageName`, `viewId`, `viewKeyword`)
+            """.trimIndent()
+        )
+
+        // migrate user_preferences table
+
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `user_prefs_new` (
+                `id` INTEGER NOT NULL PRIMARY KEY,
+                `firstEntry` INTEGER NOT NULL
+            )
+            """.trimIndent()
+        )
+        db.execSQL(
+            """
+            INSERT INTO `user_prefs_new` (`id`, `firstEntry`)
+            SELECT `id`, `firstEntry` FROM `user_prefs`
+            """.trimIndent()
+        )
+        db.execSQL("DROP TABLE `user_prefs`")
+        db.execSQL("ALTER TABLE `user_prefs_new` RENAME TO `user_prefs`")
     }
 }

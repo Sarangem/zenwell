@@ -68,8 +68,7 @@ fun HomeScreen(
     val singlePomodoroSessionRes = stringResource(R.string.error_single_pomodoro)
     
     // permission checks
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.recheckPermission(context) }
-    LaunchedEffect(homeUiState.schedulesList) { viewModel.recheckPermission(context) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.recheckPermission() }
 
     // start intro showcase
     val lazyListState = rememberLazyListState()
@@ -94,7 +93,7 @@ fun HomeScreen(
         scheduleClicked,
         viewModel::addNewSchedule,
         viewModel::updateUiState,
-        recheckPermission = { viewModel.recheckPermission(context) },
+        recheckPermission = { viewModel.recheckPermission() },
         openEditScreen = openEditScreen,
         openPomodoroScreen = openPomodoroScreen,
         setAsExistingUser = viewModel::setAsExistingUser,
@@ -246,28 +245,14 @@ fun HomeScreen(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreviewLightMode() {
-    ZenwellTheme(darkTheme = false) {
+fun HomeScreenPreview() {
+    ZenwellTheme {
         HomeScreen(
             uiState = HomeUiState(
                 showAccessibilityPermissionRationale = true,
-                showNotificationPermissionRationale = true
-            )
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Preview
-@Composable
-fun HomeScreenPreviewDarkMode() {
-    ZenwellTheme(darkTheme = true) {
-        HomeScreen(
-            uiState = HomeUiState(
                 schedulesList = listOf(
                     Schedules(
                         id = 1,

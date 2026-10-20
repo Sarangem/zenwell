@@ -13,7 +13,5 @@ data class UserPreferences(
 
     @PrimaryKey val id: Int = 1,
 
-    val showNotificationPermissionCard: Boolean = true,
-
     val firstEntry: Boolean = true
 )

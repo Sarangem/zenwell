@@ -10,7 +10,6 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.common.PermissionRequestCard
 import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
-import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun LazyItemScope.AccessibilityPermissionCard(

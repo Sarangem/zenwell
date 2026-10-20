@@ -63,9 +63,9 @@ data class Schedules(
     @ColumnInfo(name = "breathing_cycle_number")
     val breathingCycleNumber: Int = 2,
 
-    // don't notify if zero
+    // don't notify if 0
     @ColumnInfo(name = "notification_time")
-    val notificationTimeInMinutes: Int = 2,
+    val notificationTimeInMinutes: Int = 0,
 
     // maximum number of operands in math equation
     @ColumnInfo(name = "math_equation_num_operands")

@@ -7,7 +7,6 @@ package com.sarangem.zenwell.ui.screens.home
 
 import android.content.Context
 import android.content.Intent
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +14,6 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.repository.SchedulesRepository
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.database.tables.UserPreferences
-import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.service.AppBlockerService
 import com.sarangem.zenwell.service.pomodoro.PomodoroManager
 import com.sarangem.zenwell.service.pomodoro.PomodoroService
@@ -71,14 +69,9 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(userPreferences = _uiState.value.userPreferences.copy(firstEntry = false)) }
     }
 
-    fun recheckPermission(context: Context){
-        val isEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
-        val needsPermission = _uiState.value.schedulesList.any { schedule ->
-            (schedule.unlockMethod != UnlockMethod.StrictBlock && schedule.notificationTimeInMinutes > 0) || schedule.isPomodoro
-        }
+    fun recheckPermission(){
         _uiState.update {
             it.copy(
-                showNotificationPermissionRationale = needsPermission && !isEnabled && _uiState.value.userPreferences.showNotificationPermissionCard,
                 showAccessibilityPermissionRationale = AppBlockerService.instance == null
             )
         }
@@ -138,7 +131,6 @@ class HomeViewModel @Inject constructor(
 data class HomeUiState(
     val schedulesList: List<Schedules> = listOf(),
     val showAccessibilityPermissionRationale: Boolean = false,
-    val showNotificationPermissionRationale: Boolean = false,
     val currentFilter: SchedulesFilter = SchedulesFilter.All,
-    val userPreferences: UserPreferences = UserPreferences(1, false, false)
+    val userPreferences: UserPreferences = UserPreferences(1, false)
 )

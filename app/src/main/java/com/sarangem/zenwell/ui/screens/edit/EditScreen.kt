@@ -5,6 +5,10 @@
 
 package com.sarangem.zenwell.ui.screens.edit
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,18 +30,31 @@ fun EditScreen(
     firstEntry: Boolean = false,
     goBack: () -> Unit = {}
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     val showcaseState = LocalSequenceShowcaseState.current
     LaunchedEffect(firstEntry) {
         if (firstEntry) showcaseState.start(2)
     }
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+
     EditScreenContents(
         modifier = modifier,
         uiState = uiState,
         updateSchedule = viewModel::updateSchedule,
         updateAppNames = viewModel::updateSelectedAppsList,
         showTopAppBar = showTopAppBar,
-        saveToDatabase = viewModel::saveToDatabase,
+        saveToDatabase = {
+            viewModel.saveToDatabase()
+            if (uiState.schedule.notificationTimeInMinutes != 0 &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            ) {
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        },
         deleteSchedule = viewModel::deleteSchedule,
         firstEntry = firstEntry,
         setAsExistingUser = setAsExistingUser,

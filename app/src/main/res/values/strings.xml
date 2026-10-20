@@ -44,7 +44,6 @@
     <string name="notify_before_closing">"Notify before locking again"</string>
     <string name="block_notification_description">"Send a notification before locking the app again."</string>
     <string name="block_notification_message">%1$s would soon lock %2$s</string>
-    <string name="notification_permission">&lt;b&gt;Notifications for Zenwell&lt;/b&gt; not enabled. Some features may not work.</string>
     <string name="notification_time_invalid">Notification should be sent before app is m,kj locked</string>
     <string name="all">All</string>
     <string name="regular">Regular</string>
@@ -60,8 +59,6 @@
     <string name="no_zero">Cannot be zero or less</string>
     <string name="invalid_range">Invalid range</string>
     <string name="pause">Pause</string>
-    <string name="pomodoro_session_completed">Pomodoro session completed!</string>
-    <string name="accessibility_service_not_started">Accessibility service not started</string>
     <string name="do_you_want_to_end_this_session">Do you want to end this session?</string>
     <string name="skip_to_next_session">Skip to next session</string>
     <string name="confirm">Confirm</string>
@@ -150,7 +147,6 @@
     <string name="blocked_apps_only">Locked apps only</string>
     <string name="bar_graph_for">"Bar graph for "</string>
     <string name="stats">Stats</string>
-    <string name="dont_ask_again">Don\'t ask again</string>
     <string name="play_background_media">Play background media</string>
     <string name="skip_guide">Skip guide</string>
     <string name="showcase_0">Enable permissions to unlock your focus</string>

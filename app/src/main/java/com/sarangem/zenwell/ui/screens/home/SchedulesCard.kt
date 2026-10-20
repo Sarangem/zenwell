@@ -5,6 +5,10 @@
 
 package com.sarangem.zenwell.ui.screens.home
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -78,6 +82,9 @@ fun SchedulesCard(
     } else CardDefaults.cardColors()
     val isPomodoroRunning = pomodoroState.schedule.id == schedule.id &&
         pomodoroState.status != PomodoroStatus.IDLE
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
 
     Card(
         colors = cardColor,
@@ -95,7 +102,17 @@ fun SchedulesCard(
                         fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.size(MaterialTheme.sizing.extraSmall))
-                    PomodoroStartButton(schedule, tint, startPomodoro, isPomodoroRunning)
+                    PomodoroStartButton(
+                        schedule = schedule,
+                        tint = tint,
+                        startPomodoro = {
+                            startPomodoro()
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        },
+                        isPomodoroRunning = isPomodoroRunning
+                    )
                 }
                 IconButton(
                     onClick = { openEditScreen(schedule) },

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 22,
-    "identityHash": "1ffd56709d5832a9bb4e71ce41f4aa36",
+    "identityHash": "9eb9f0c7e130c6256bd1c8cc672e90dc",
     "entities": [
       {
         "tableName": "schedules",
@@ -368,17 +368,11 @@
       },
       {
         "tableName": "user_prefs",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `showNotificationPermissionCard` INTEGER NOT NULL, `firstEntry` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `firstEntry` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showNotificationPermissionCard",
-            "columnName": "showNotificationPermissionCard",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -399,7 +393,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1ffd56709d5832a9bb4e71ce41f4aa36')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9eb9f0c7e130c6256bd1c8cc672e90dc')"
     ]
   }
 }
