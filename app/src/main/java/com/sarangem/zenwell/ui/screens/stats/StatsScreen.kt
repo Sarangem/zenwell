@@ -42,7 +42,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.screens.home.permission.PermissionRequestCard
+import com.sarangem.zenwell.ui.common.PermissionRequestCard
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.getInstalledApps
@@ -112,9 +112,9 @@ fun StatsScreen(
             AnimatedContent(!uiState.isPermissionGranted) {
                 if(it){
                     PermissionRequestCard(
-                        modifier = Modifier.padding(vertical = MaterialTheme.sizing.small),
-                        onGrantClick = requestPermission,
-                        name = R.string.usage_stats_permission
+                        text = stringResource(R.string.usage_stats_permission),
+                        buttonText = stringResource(R.string.grant_permission),
+                        onClick = requestPermission
                     )
                 } else if (uiState.isLoading) {
                     LoadingIndicator(

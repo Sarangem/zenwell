@@ -25,7 +25,7 @@
  * SOFTWARE.
  */
 
-package com.sarangem.zenwell.ui.sequenceshowcase
+package com.sarangem.zenwell.ui.common.sequenceshowcase
 
 /**
  * A sealed interface defines the alignment of the dialog relative to the target element in the Showcase.

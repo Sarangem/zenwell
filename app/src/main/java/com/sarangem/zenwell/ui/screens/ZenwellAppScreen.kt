@@ -49,7 +49,7 @@ import com.sarangem.zenwell.ui.screens.home.HomeViewModel
 import com.sarangem.zenwell.ui.screens.pomodoro.PomodoroScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
 import com.sarangem.zenwell.ui.screens.stats.StatsScreen
-import com.sarangem.zenwell.ui.sequenceshowcase.SequenceShowcase
+import com.sarangem.zenwell.ui.common.sequenceshowcase.SequenceShowcase
 import kotlinx.serialization.Serializable
 
 @Composable

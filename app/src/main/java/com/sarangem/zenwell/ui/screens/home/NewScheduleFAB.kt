@@ -47,8 +47,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
-import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
+import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

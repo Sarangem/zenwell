@@ -52,8 +52,8 @@ import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.AppNames
 import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
-import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
-import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
+import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.utils.MyPackageInfo
 import com.sarangem.zenwell.utils.getInstalledApps

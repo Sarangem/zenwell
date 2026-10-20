@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.screens.home.permission
+package com.sarangem.zenwell.ui.screens.home
 
 import android.content.Intent
 import android.provider.Settings
@@ -21,8 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
-import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
+import com.sarangem.zenwell.ui.common.PermissionRequestCard
+import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
@@ -36,20 +36,16 @@ fun LazyItemScope.AccessibilityPermissionCard(
         ActivityResultContracts.StartActivityForResult()
     ) { recheckPermission() }
 
-    AnimatedVisibility(
-        showCard,
-        modifier = Modifier.padding(MaterialTheme.sizing.small)
-    ) {
+    AnimatedVisibility(showCard) {
         PermissionRequestCard(
-            modifier = Modifier
+            modifier = modifier
                 .animateItem()
                 .then(showcase0Modifier(setAsExistingUser)),
-            buttonModifier = modifier,
-            name = R.string.accessibility_service_permission,
-            onGrantClick = { permissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+            text = stringResource(R.string.accessibility_service_permission),
+            buttonText = stringResource(R.string.grant_permission),
+            onClick = { permissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
         )
     }
-
 }
 
 val showcase0Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip ->

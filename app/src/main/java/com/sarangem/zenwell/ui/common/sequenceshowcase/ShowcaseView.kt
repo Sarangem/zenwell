@@ -25,7 +25,7 @@
  * SOFTWARE.
  */
 
-package com.sarangem.zenwell.ui.sequenceshowcase
+package com.sarangem.zenwell.ui.common.sequenceshowcase
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility

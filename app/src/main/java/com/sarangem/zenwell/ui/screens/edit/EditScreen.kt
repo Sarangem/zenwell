@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
-import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 
 @Composable

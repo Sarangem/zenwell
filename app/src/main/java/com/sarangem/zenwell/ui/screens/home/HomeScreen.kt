@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -46,11 +46,9 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.database.tables.Schedules
 import com.sarangem.zenwell.service.pomodoro.PomodoroState
-import com.sarangem.zenwell.ui.screens.home.permission.AccessibilityPermissionCard
-import com.sarangem.zenwell.ui.screens.home.permission.NotificationPermissionCard
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -74,7 +72,7 @@ fun HomeScreen(
     LaunchedEffect(homeUiState.schedulesList) { viewModel.recheckPermission(context) }
 
     // start intro showcase
-    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val lazyListState = rememberLazyListState()
     LaunchedEffect(
         homeUiState.userPreferences.firstEntry,
         homeUiState.showAccessibilityPermissionRationale
@@ -82,7 +80,7 @@ fun HomeScreen(
         if (!homeUiState.userPreferences.firstEntry) return@LaunchedEffect
         showcaseState.dismiss()
         if (homeUiState.showAccessibilityPermissionRationale) {
-            bringIntoViewRequester.bringIntoView()
+            lazyListState.animateScrollToItem(0)
             showcaseState.start(0)
         } else {
             showcaseState.start(1)
@@ -91,12 +89,11 @@ fun HomeScreen(
 
     HomeScreen(
         modifier,
-        accessibilityCardModifier = Modifier.bringIntoViewRequester(bringIntoViewRequester),
         homeUiState,
+        lazyListState,
         scheduleClicked,
         viewModel::addNewSchedule,
         viewModel::updateUiState,
-        viewModel::hideNotificationCard,
         recheckPermission = { viewModel.recheckPermission(context) },
         openEditScreen = openEditScreen,
         openPomodoroScreen = openPomodoroScreen,
@@ -124,12 +121,11 @@ fun HomeScreen(
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    accessibilityCardModifier: Modifier = Modifier,
     uiState: HomeUiState,
+    lazyListState: LazyListState = rememberLazyListState(),
     scheduleClicked: Int = 0,
     addNewSchedule: suspend (Context, Boolean) -> Schedules = { _, _ -> Schedules() },
     updateUiState: (HomeUiState) -> Unit = {},
-    hideNotificationCard: () -> Unit = {},
     recheckPermission: () -> Unit = {},
     openEditScreen: (Schedules) -> Unit = {},
     openPomodoroScreen: (Schedules) -> Unit = {},
@@ -177,26 +173,17 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
+            state = lazyListState,
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(bottom = MaterialTheme.sizing.floatingBar),
             userScrollEnabled = userScrollEnabled
         ) {
             item {
                 AccessibilityPermissionCard(
-                    modifier = accessibilityCardModifier,
                     recheckPermission = recheckPermission,
                     showCard = uiState.showAccessibilityPermissionRationale,
                     setAsExistingUser = setAsExistingUser
                 )
-            }
-            item {
-                AnimatedVisibility(uiState.showNotificationPermissionRationale) {
-                    NotificationPermissionCard(
-                        modifier = Modifier.animateItem(),
-                        onDeny = hideNotificationCard,
-                        recheckPermission = recheckPermission
-                    )
-                }
             }
             item { EnableAllSchedulesCard(uiState.schedulesList, enableAllSchedules) }
             item {

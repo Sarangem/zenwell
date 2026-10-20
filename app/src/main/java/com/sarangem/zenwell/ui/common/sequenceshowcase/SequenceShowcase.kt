@@ -25,7 +25,7 @@
  * SOFTWARE.
  */
 
-package com.sarangem.zenwell.ui.sequenceshowcase
+package com.sarangem.zenwell.ui.common.sequenceshowcase
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box

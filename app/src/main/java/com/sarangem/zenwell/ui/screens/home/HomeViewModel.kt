@@ -62,15 +62,6 @@ class HomeViewModel @Inject constructor(
 
     fun updateUiState(uiState: HomeUiState) { _uiState.update { uiState } }
 
-    fun hideNotificationCard() {
-        val userPrefs = _uiState.value.userPreferences.copy(showNotificationPermissionCard = false)
-        _uiState.update { it.copy(
-            userPreferences = userPrefs,
-            showNotificationPermissionRationale = false
-        )}
-        viewModelScope.launch(Dispatchers.IO) { schedulesRepository.upsertUserPreferences(userPrefs) }
-    }
-
     fun setAsExistingUser() {
         viewModelScope.launch(Dispatchers.IO) {
             schedulesRepository.upsertUserPreferences(

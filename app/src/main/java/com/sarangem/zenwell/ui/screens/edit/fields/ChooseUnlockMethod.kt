@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
-import com.sarangem.zenwell.ui.sequenceshowcase.LocalSequenceShowcaseState
-import com.sarangem.zenwell.ui.sequenceshowcase.sequenceShowcaseTarget
+import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
