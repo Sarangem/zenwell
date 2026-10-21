@@ -49,8 +49,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.is24Hour
-import com.sarangem.zenwell.utils.minutesToString
+import com.sarangem.zenwell.domain.time.is24Hour
+import com.sarangem.zenwell.domain.time.minutesToString
 
 @Composable
 fun ChooseActiveTime(

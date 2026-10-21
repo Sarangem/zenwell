@@ -44,8 +44,9 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.service.pomodoro.PomodoroState
+import com.sarangem.zenwell.ui.common.NewScheduleFAB
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState

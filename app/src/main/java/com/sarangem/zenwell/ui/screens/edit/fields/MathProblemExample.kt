@@ -20,9 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.generateMathProblem
+import com.sarangem.zenwell.domain.math.generateMathProblem
 
 @Composable
 fun MathProblemExample(schedule: Schedules) {

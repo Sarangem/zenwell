@@ -4,7 +4,7 @@
   -->
 
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
-    android:description="@string/app_blocker_service_description"
+    android:description="@string/app_locker_service_description"
     android:accessibilityEventTypes="typeWindowStateChanged"
     android:accessibilityFlags="flagRetrieveInteractiveWindows"
     android:canRetrieveWindowContent="true"

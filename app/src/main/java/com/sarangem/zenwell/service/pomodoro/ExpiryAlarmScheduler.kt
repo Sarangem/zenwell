@@ -10,10 +10,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import com.sarangem.zenwell.utils.ServiceLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
+import timber.log.Timber
 
 const val SESSIONS_COMPLETED_TILL_THEN = "SESSIONS_COMPLETED_TILL_THEN"
 const val IS_WORK_SEGMENT_TO_EXPIRE = "IS_WORK_SEGMENT_TO_EXPIRE"
@@ -66,8 +66,8 @@ class ExpiryAlarmScheduler @Inject constructor(
                     pi
                 )
             }
-        } catch (e: SecurityException) {
-            ServiceLogger.e({ "Exact alarm permission missing, falling back to inexact" }, e)
+        } catch (e: Exception) {
+            Timber.e(e,"Exact alarm permission missing, falling back to inexact")
         }
     }
 

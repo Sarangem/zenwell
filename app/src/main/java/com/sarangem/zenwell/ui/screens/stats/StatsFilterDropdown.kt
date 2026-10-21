@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.MyPackageInfo
+import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
 
 sealed interface StatsFilter {
     data object AllApps : StatsFilter
@@ -48,7 +48,7 @@ fun StatsFilterDropdown(
     var expanded by remember { mutableStateOf(false) }
     val selectedText = when (selectedFilter) {
         is StatsFilter.AllApps -> stringResource(R.string.all_apps)
-        is StatsFilter.BlockedApps -> stringResource(R.string.blocked_apps_only)
+        is StatsFilter.BlockedApps -> stringResource(R.string.locked_apps_only)
         is StatsFilter.Custom -> installedAppList
             .firstOrNull { it.packageName == selectedFilter.packageName}
             ?.appName ?: ""
@@ -94,7 +94,7 @@ fun StatsFilterDropdown(
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.blocked_apps_only)) },
+                    text = { Text(stringResource(R.string.locked_apps_only)) },
                     onClick = {
                         onFilterSelected(StatsFilter.BlockedApps)
                         expanded = false

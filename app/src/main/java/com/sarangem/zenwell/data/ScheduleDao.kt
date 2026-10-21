@@ -1,0 +1,84 @@
+/*
+ * Copyright (c) 2026 Proneel Pal <palproneel@gmail.com>
+ * Licensed under the GNU General Public License v3.0 or later.
+ */
+
+package com.sarangem.zenwell.data
+
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import androidx.room.Upsert
+import com.sarangem.zenwell.model.AppNames
+import com.sarangem.zenwell.model.BlockedApps
+import com.sarangem.zenwell.model.Schedules
+import com.sarangem.zenwell.model.UserPreferences
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface ScheduleDao {
+
+    @Query("SELECT * FROM schedules ORDER BY is_active DESC, start_time ASC")
+    fun getAllSchedules() : Flow<List<Schedules>>
+
+    @Query("SELECT * FROM schedules WHERE id=:id")
+    fun getScheduleInfoById(id: Int): Flow<Schedules>
+
+    @Query("SELECT COUNT(*) FROM schedules")
+    fun getSchedulesCount(): Flow<Int>
+
+    @Query("SELECT * FROM app_names")
+    fun getAllApps(): Flow<List<AppNames>>
+
+    @Query("SELECT * FROM blocked_apps")
+    fun getAllAppRelations(): Flow<List<BlockedApps>>
+
+    @Query("SELECT id FROM app_names WHERE packageName = :packageName AND viewId IS :viewId AND viewKeyword IS :viewKeyword")
+    fun getAppId(packageName: String, viewId: String?, viewKeyword: String?): Flow<Int>
+
+    @Query("""
+        SELECT * FROM app_names WHERE id IN (
+            SELECT app_id FROM blocked_apps WHERE schedule_id=:id
+        )""")
+    fun getAppNamesById(id: Int): Flow<List<AppNames>>
+
+    @Query("SELECT id FROM blocked_apps WHERE app_id=:appId")
+    fun getAppRelationByAppId(appId: Int): Flow<List<Int>>
+
+    @Query("SELECT * FROM blocked_apps WHERE schedule_id=:scheduleId")
+    fun getAppRelationByScheduleId(scheduleId: Int): Flow<List<BlockedApps>>
+
+    @Query("SELECT * FROM user_prefs")
+    fun getUserPreferences(): Flow<UserPreferences?>
+
+    @Query("SELECT * FROM app_names WHERE viewTitle IS NOT NULL")
+    fun getCustomApps(): Flow<List<AppNames>>
+
+    @Upsert
+    fun upsertAppNames(appNames: AppNames)
+
+    @Upsert
+    fun upsertUserPreferences(userPreferences: UserPreferences)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAppRelation(blockedApps: BlockedApps)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertSchedule(schedules: Schedules): Long
+
+    @Update
+    fun updateSchedule(schedules: Schedules)
+
+    @Delete
+    fun deleteSchedule(schedules: Schedules)
+
+    @Delete
+    fun deleteAppNames(appNames: AppNames)
+
+    @Query("DELETE from blocked_apps WHERE schedule_id=:scheduleId AND app_id=:appId")
+    fun deleteAppRelation(scheduleId: Int, appId: Int)
+
+}

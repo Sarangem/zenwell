@@ -7,9 +7,9 @@ package com.sarangem.zenwell.service
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.sarangem.zenwell.database.tables.AppNames
+import com.sarangem.zenwell.model.AppNames
 import com.sarangem.zenwell.model.UnlockMethod
-import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.ui.overlay.BreathingScreen
 import com.sarangem.zenwell.ui.overlay.FullBlockScreen
 import com.sarangem.zenwell.ui.overlay.TimerScreen
@@ -19,11 +19,12 @@ import com.sarangem.zenwell.ui.overlay.PomodoroBlockScreen
 import com.sarangem.zenwell.ui.overlay.TaskItem
 import com.sarangem.zenwell.ui.overlay.TasksScreen
 import com.sarangem.zenwell.ui.overlay.TypingScreen
-import com.sarangem.zenwell.utils.getAppNameFromPackageName
+import com.sarangem.zenwell.domain.packageinfo.getAppNameFromPackageName
+import com.sarangem.zenwell.service.overlay.OverlayWindow
 import kotlinx.coroutines.Job
 
 data class ScheduleInfo(
-    private val service: AppBlockerService,
+    private val service: AppLockerService,
     val schedule: Schedules,
     val appNamesList: List<AppNames>,
     val supervisorJob: Job
@@ -35,7 +36,8 @@ data class ScheduleInfo(
             service = service,
             schedule = schedule,
             targetApp = app.copy(
-                viewTitle = app.viewTitle ?: getAppNameFromPackageName(service, app.packageName) ?: app.packageName
+                viewTitle = app.viewTitle ?: getAppNameFromPackageName(service, app.packageName)
+                ?: app.packageName
             ),
             supervisorJob = supervisorJob,
             content = { onTimerEnd, onExit ->

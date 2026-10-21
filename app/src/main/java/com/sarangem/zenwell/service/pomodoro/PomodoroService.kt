@@ -8,6 +8,9 @@ package com.sarangem.zenwell.service.pomodoro
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import com.sarangem.zenwell.service.notifications.POMODORO_NOTIFICATION_ID
+import com.sarangem.zenwell.service.notifications.createPomodoroNotification
+import com.sarangem.zenwell.service.notifications.createPomodoroNotificationChannel
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -62,8 +65,8 @@ class PomodoroService : Service() {
             /* notification = */ createPomodoroNotification(
                 context = this,
                 state = pomodoroManager.state.value,
-                playSound = (intent.action ==  PomodoroServiceActions.FRESH_START.name )||
-                    (intent.action == PomodoroServiceActions.SKIP.name)
+                playSound = (intent.action == PomodoroServiceActions.FRESH_START.name) ||
+                        (intent.action == PomodoroServiceActions.SKIP.name)
             )
         )
 

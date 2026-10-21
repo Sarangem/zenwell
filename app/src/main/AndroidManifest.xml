@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" tools:ignore="ExactAlarmPolicy" />
 
     <application
-        android:name =".database.hilt.ZenwellHiltApplication"
+        android:name =".ZenwellApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.AppBlockerService"
+        <service android:name=".service.AppLockerService"
             android:exported="false"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             tools:ignore="AccessibilityPolicy">

@@ -50,13 +50,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.tables.AppNames
-import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
+import com.sarangem.zenwell.model.AppNames
+import com.sarangem.zenwell.ui.common.SkipShowcaseGuideButton
 import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
 import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.MyPackageInfo
-import com.sarangem.zenwell.utils.getInstalledApps
+import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
+import com.sarangem.zenwell.domain.packageinfo.getInstalledApps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -128,7 +128,7 @@ fun ChooseAppList(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.small)
             ) {
                 Text(
-                    text = stringResource(R.string.choose_apps),
+                    text = stringResource(R.string.apps_to_lock),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 AnimatedVisibility(installedAppList.isNotEmpty() || selectedAppsList?.isEmpty() == true) {
@@ -141,7 +141,7 @@ fun ChooseAppList(
             IconButton(onClick = { expanded = true }) {
                 Icon(
                     painterResource(R.drawable.filled_arrow_right),
-                    contentDescription = stringResource(R.string.show_apps_to_block)
+                    contentDescription = stringResource(R.string.show_apps_to_lock)
                 )
             }
         }
@@ -272,7 +272,7 @@ val showcase2Modifier: @Composable (
         shapeMargin = 0.dp,
         backgroundAlpha = 0.9f,
         scrollState = state,
-        fixedContent = { SkipGuideButton(skip) }
+        fixedContent = { SkipShowcaseGuideButton(skip) }
     ) {
         Text(
             text = stringResource(R.string.showcase_2),

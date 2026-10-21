@@ -27,9 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.tables.AppNames
-import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.model.MathOperators
+import com.sarangem.zenwell.model.AppNames
+import com.sarangem.zenwell.model.Schedules
+import com.sarangem.zenwell.domain.math.MathOperators
 import com.sarangem.zenwell.model.UnlockMethod
 import com.sarangem.zenwell.ui.screens.edit.fields.*
 import com.sarangem.zenwell.ui.theme.sizing

@@ -13,4 +13,4 @@ import javax.inject.Inject
 @HiltViewModel
 class PomodoroViewModel @Inject constructor(
     val pomodoroManager: PomodoroManager
-) : ViewModel() {}
+) : ViewModel()

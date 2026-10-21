@@ -1,0 +1,25 @@
+/*
+ * Copyright (c) 2026 Proneel Pal <palproneel@gmail.com>
+ * Licensed under the GNU General Public License v3.0 or later.
+ */
+
+package com.sarangem.zenwell.data.typeconverters
+
+import androidx.room.TypeConverter
+
+class WeekdaysListConverter {
+
+    @TypeConverter
+    fun fromWeekdaysList(value: List<Int>): String {
+        return value.joinToString(",") { it.toString() }
+    }
+
+    @TypeConverter
+    fun toWeekdaysList(value: String): List<Int> {
+        return if(value.isBlank()){
+            emptyList()
+        } else {
+            value.split(",").map { it.toInt() }
+        }
+    }
+}

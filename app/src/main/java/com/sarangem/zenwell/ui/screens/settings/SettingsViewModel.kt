@@ -9,9 +9,9 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sarangem.zenwell.database.repository.SchedulesRepository
+import com.sarangem.zenwell.data.repository.SchedulesRepository
 import com.sarangem.zenwell.model.BackupData
-import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.service.AppLockerService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -75,7 +75,7 @@ class SettingsViewModel @Inject constructor(
                             val restoredData = json.decodeFromString<List<BackupData>>(jsonString)
                             repository.restoreAllData(restoredData)
                             withContext(Dispatchers.IO) {
-                                AppBlockerService.instance?.initializeRepository()
+                                AppLockerService.instance?.initializeRepository()
                             }
                         }
                 }.isSuccess

@@ -10,7 +10,7 @@ import android.content.Context
 import android.os.Process
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sarangem.zenwell.database.repository.SchedulesRepository
+import com.sarangem.zenwell.data.repository.SchedulesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

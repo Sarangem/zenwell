@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.common.PermissionRequestCard
+import com.sarangem.zenwell.ui.common.SkipShowcaseGuideButton
 import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
 
 @Composable
@@ -52,7 +53,7 @@ val showcase0Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip 
         shape = MaterialTheme.shapes.medium,
         shapeMargin = 0.dp,
         backgroundAlpha = 0.9f,
-        fixedContent = { SkipGuideButton(skip) }
+        fixedContent = { SkipShowcaseGuideButton(skip) }
     ) {
         Text(
             text = stringResource(R.string.showcase_0),

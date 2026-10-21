@@ -7,10 +7,10 @@ package com.sarangem.zenwell.ui.screens.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sarangem.zenwell.database.repository.SchedulesRepository
-import com.sarangem.zenwell.database.tables.AppNames
-import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.data.repository.SchedulesRepository
+import com.sarangem.zenwell.model.AppNames
+import com.sarangem.zenwell.model.Schedules
+import com.sarangem.zenwell.service.AppLockerService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,14 +38,14 @@ class EditViewModel @Inject constructor(
 
     fun updateSchedule(schedule: Schedules) {
         _uiState.update {
-            _uiState.value.copy(
+            it.copy(
                 schedule = schedule,
                 validationErrors = validateSchedule(schedule)
             )
         }
     }
     fun updateSelectedAppsList(selectedAppsList: List<AppNames>) {
-        _uiState.update { _uiState.value.copy(selectedAppsList = selectedAppsList) }
+        _uiState.update { it.copy(selectedAppsList = selectedAppsList) }
     }
 
     fun initialize(schedule: Schedules) {
@@ -73,7 +73,7 @@ class EditViewModel @Inject constructor(
                 selectedAppsList = selectedAppsList,
                 pastAppList = pastApps
             )
-            AppBlockerService.instance?.initializeRepository()
+            AppLockerService.instance?.initializeRepository()
         }
     }
 
@@ -81,7 +81,7 @@ class EditViewModel @Inject constructor(
         val schedule = _uiState.value.schedule
         viewModelScope.launch(Dispatchers.IO) {
             schedulesRepository.deleteSchedule(schedule)
-            AppBlockerService.instance?.initializeRepository()
+            AppLockerService.instance?.initializeRepository()
         }
     }
 }

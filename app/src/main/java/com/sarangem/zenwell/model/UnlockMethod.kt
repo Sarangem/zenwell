@@ -9,7 +9,7 @@ import androidx.annotation.StringRes
 import com.sarangem.zenwell.R
 
 enum class UnlockMethod(@get:StringRes val title: Int) {
-    StrictBlock(R.string.strict_block),
+    StrictBlock(R.string.strict_lock),
     Timer(R.string.timer),
     Breathing(R.string.breathing),
     MathProblem(R.string.math_problem),

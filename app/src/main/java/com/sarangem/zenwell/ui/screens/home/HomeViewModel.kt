@@ -11,10 +11,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.repository.SchedulesRepository
-import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.database.tables.UserPreferences
-import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.data.repository.SchedulesRepository
+import com.sarangem.zenwell.model.Schedules
+import com.sarangem.zenwell.model.UserPreferences
+import com.sarangem.zenwell.service.AppLockerService
 import com.sarangem.zenwell.service.pomodoro.PomodoroManager
 import com.sarangem.zenwell.service.pomodoro.PomodoroService
 import com.sarangem.zenwell.service.pomodoro.PomodoroServiceActions
@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
                     current.copy(
                         schedulesList = schedules.sortedBy { it.title.lowercase() },
                         userPreferences = prefs,
-                        showAccessibilityPermissionRationale = AppBlockerService.instance == null
+                        showAccessibilityPermissionRationale = AppLockerService.instance == null
                     )
                 }
             }.collect()
@@ -72,7 +72,7 @@ class HomeViewModel @Inject constructor(
     fun recheckPermission(){
         _uiState.update {
             it.copy(
-                showAccessibilityPermissionRationale = AppBlockerService.instance == null
+                showAccessibilityPermissionRationale = AppLockerService.instance == null
             )
         }
     }
@@ -95,7 +95,7 @@ class HomeViewModel @Inject constructor(
             title = title,
             isPomodoro = isPomodoro
         )
-        AppBlockerService.instance?.initializeRepository()
+        AppLockerService.instance?.initializeRepository()
         return newSchedule
     }
 
@@ -106,7 +106,7 @@ class HomeViewModel @Inject constructor(
                 .forEach {
                     schedulesRepository.updateSchedule(it.copy(isActive = true))
                 }
-            AppBlockerService.instance?.initializeRepository()
+            AppLockerService.instance?.initializeRepository()
         }
     }
     

@@ -11,7 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.sarangem.zenwell.ui.screens.ZenwellAppScreen
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
-import com.sarangem.zenwell.utils.createNotificationChannel
+import com.sarangem.zenwell.service.notifications.createNotificationChannel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

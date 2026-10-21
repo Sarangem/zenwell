@@ -5,7 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens.stats
 
-import com.sarangem.zenwell.utils.MyPackageInfo
+import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
 
 data class StatsUiState(
     val isPermissionGranted: Boolean = true,

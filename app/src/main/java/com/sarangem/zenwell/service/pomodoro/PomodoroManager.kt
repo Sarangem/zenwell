@@ -8,9 +8,12 @@ package com.sarangem.zenwell.service.pomodoro
 import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
-import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.service.AppBlockerService
-import com.sarangem.zenwell.utils.millisToString
+import com.sarangem.zenwell.model.Schedules
+import com.sarangem.zenwell.service.AppLockerService
+import com.sarangem.zenwell.domain.time.millisToString
+import com.sarangem.zenwell.service.checkAndLockApps
+import com.sarangem.zenwell.service.notifications.POMODORO_NOTIFICATION_ID
+import com.sarangem.zenwell.service.notifications.deleteNotificationById
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -139,7 +142,7 @@ class PomodoroManager @Inject constructor(
         if (state.value.status == PomodoroStatus.IDLE) return
         timerJob?.cancel()
         timerJob = null
-        deletePomodoroNotification(context)
+        deleteNotificationById(POMODORO_NOTIFICATION_ID, context)
         _state.update { PomodoroState() }
         removeOverlayWindow()
         timeWhenPaused = 0L
@@ -149,8 +152,8 @@ class PomodoroManager @Inject constructor(
     }
 
     private fun removeOverlayWindow() {
-        AppBlockerService.instance?.onAccessibilityEvent(null)
-        if(!_state.value.isWorkTime) AppBlockerService.instance
+        AppLockerService.instance?.checkAndLockApps()
+        if(!_state.value.isWorkTime) AppLockerService.instance
             ?.openedWindows
             ?.firstOrNull { it.schedule.id == _state.value.schedule.id }
             ?.close()

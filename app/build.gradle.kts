@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.coil.compose)
     implementation(libs.kotlin.serialization.json)
+    implementation(libs.com.jakewharton.timber)
     ksp(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     debugImplementation(libs.androidx.ui.tooling)

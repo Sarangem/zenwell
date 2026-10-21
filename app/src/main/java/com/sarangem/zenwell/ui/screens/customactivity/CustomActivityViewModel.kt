@@ -10,9 +10,9 @@ import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.YOUTUBE_PACKAGE_NAME
 import com.sarangem.zenwell.YOUTUBE_SHORTS_NAME
 import com.sarangem.zenwell.YOUTUBE_SHORTS_VIEW_ID
-import com.sarangem.zenwell.database.repository.SchedulesRepository
-import com.sarangem.zenwell.database.tables.AppNames
-import com.sarangem.zenwell.service.AppBlockerService
+import com.sarangem.zenwell.data.repository.SchedulesRepository
+import com.sarangem.zenwell.model.AppNames
+import com.sarangem.zenwell.service.AppLockerService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,7 +55,7 @@ class CustomActivityViewModel @Inject constructor(
     
     private suspend fun updateAccessibilityService() {
         withContext(Dispatchers.IO) {
-            AppBlockerService.instance?.initializeRepository()
+            AppLockerService.instance?.initializeRepository()
         }
     }
 

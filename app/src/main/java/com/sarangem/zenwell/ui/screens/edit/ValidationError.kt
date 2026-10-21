@@ -5,8 +5,8 @@
 
 package com.sarangem.zenwell.ui.screens.edit
 
-import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.model.MathOperators
+import com.sarangem.zenwell.model.Schedules
+import com.sarangem.zenwell.domain.math.MathOperators
 import com.sarangem.zenwell.model.UnlockMethod
 
 enum class ValidationError {

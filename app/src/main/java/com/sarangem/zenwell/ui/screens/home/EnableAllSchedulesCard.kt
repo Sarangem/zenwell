@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.tables.Schedules
+import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.ui.common.PermissionRequestCard
 
 @Composable

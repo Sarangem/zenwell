@@ -45,7 +45,7 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.common.PermissionRequestCard
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.getInstalledApps
+import com.sarangem.zenwell.domain.packageinfo.getInstalledApps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

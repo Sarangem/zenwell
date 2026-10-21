@@ -52,14 +52,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.model.MathProblem
+import com.sarangem.zenwell.model.Schedules
+import com.sarangem.zenwell.domain.math.MathProblem
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
 import com.sarangem.zenwell.ui.theme.Green500
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.generateMathProblem
+import com.sarangem.zenwell.domain.math.generateMathProblem
 import kotlinx.coroutines.launch
 
 @Composable

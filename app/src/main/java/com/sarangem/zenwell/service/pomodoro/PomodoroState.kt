@@ -6,8 +6,8 @@
 package com.sarangem.zenwell.service.pomodoro
 
 import androidx.compose.runtime.Immutable
-import com.sarangem.zenwell.database.tables.Schedules
-import com.sarangem.zenwell.utils.millisToString
+import com.sarangem.zenwell.model.Schedules
+import com.sarangem.zenwell.domain.time.millisToString
 
 enum class PomodoroStatus { IDLE, RUNNING, PAUSED }
 

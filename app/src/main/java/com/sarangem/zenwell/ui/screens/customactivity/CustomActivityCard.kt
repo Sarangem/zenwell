@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.MyPackageInfo
+import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
 
 @Composable
 fun CustomActivityCard(

@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.utils.MyPackageInfo
+import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

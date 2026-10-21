@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.UnlockMethod
-import com.sarangem.zenwell.ui.screens.home.SkipGuideButton
+import com.sarangem.zenwell.ui.common.SkipShowcaseGuideButton
 import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
 import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
 
@@ -110,7 +110,7 @@ val showcase3Modifier: @Composable (
         shapeMargin = 0.dp,
         backgroundAlpha = 0.9f,
         scrollState = state,
-        fixedContent = { SkipGuideButton(skip) }
+        fixedContent = { SkipShowcaseGuideButton(skip) }
     ) {
         Text(
             text = stringResource(R.string.showcase_3),

@@ -5,7 +5,7 @@
 
 <resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Zenwell</string>
-    <string name="strict_block">"Strict Lock"</string>
+    <string name="strict_lock">"Strict Lock"</string>
     <string name="timer">Timer</string>
     <string name="breathing">Breathing</string>
     <string name="math_problem">"Math Problem"</string>
@@ -13,8 +13,8 @@
     <string name="edit_this_schedule">"Edit this schedule"</string>
     <string name="schedule_title">"Schedule Title"</string>
     <string name="unlock_method">"Unlock method"</string>
-    <string name="choose_apps">"Apps to Lock"</string>
-    <string name="show_apps_to_block">"Show apps to lock"</string>
+    <string name="apps_to_lock">"Apps to Lock"</string>
+    <string name="show_apps_to_lock">"Show apps to lock"</string>
     <string name="go_back">"Go back"</string>
     <string name="to">" to "</string>
     <string name="edit">Edit</string>
@@ -27,7 +27,7 @@
     <string name="cancel">Cancel</string>
     <string name="active">Active</string>
     <string name="schedule">"Schedule "</string>
-    <string name="app_blocker_service_description">Zenwell uses this service to know which app you are using and show a screen to cure your phone addiction.</string>
+    <string name="app_locker_service_description">Zenwell uses this service to know which app you are using and locks that app to cure your addiction.</string>
     <string name="accessibility_service_permission">Let’s unlock your focus goals! Zenwell needs &lt;b&gt;Accessibility permission&lt;/b&gt; to see which apps are open so it can keep your screen time in check.</string>
     <string name="timer_duration">"Timer duration"</string>
     <string name="seconds">seconds</string>
@@ -42,8 +42,8 @@
     <string name="breathing_cycle_duration">Breathing cycle duration</string>
     <string name="choose_week_days">Active Weekdays</string>
     <string name="notify_before_closing">"Notify before locking again"</string>
-    <string name="block_notification_description">"Send a notification before locking the app again."</string>
-    <string name="block_notification_message">%1$s would soon lock %2$s</string>
+    <string name="app_lock_notification_description">"Send a notification before locking the app again."</string>
+    <string name="app_lock_notification_message">%1$s would soon lock %2$s</string>
     <string name="notification_time_invalid">Notification should be sent before app is m,kj locked</string>
     <string name="all">All</string>
     <string name="regular">Regular</string>
@@ -144,7 +144,7 @@
     <string name="positive_motivation">reclaimed yesterday than the past week. That\'s a huge win!</string>
     <string name="negative_motivation">wasted being distracted yesterday?? Today is a new chance to unplug early.</string>
     <string name="all_apps">All apps</string>
-    <string name="blocked_apps_only">Locked apps only</string>
+    <string name="locked_apps_only">Locked apps only</string>
     <string name="bar_graph_for">"Bar graph for "</string>
     <string name="stats">Stats</string>
     <string name="play_background_media">Play background media</string>
