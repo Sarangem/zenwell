@@ -20,6 +20,7 @@ import com.sarangem.zenwell.ui.overlay.TaskItem
 import com.sarangem.zenwell.ui.overlay.TasksScreen
 import com.sarangem.zenwell.ui.overlay.TypingScreen
 import com.sarangem.zenwell.domain.packageinfo.getAppNameFromPackageName
+import com.sarangem.zenwell.service.overlay.AudioFocusController
 import com.sarangem.zenwell.service.overlay.OverlayWindow
 import kotlinx.coroutines.Job
 
@@ -31,6 +32,7 @@ data class ScheduleInfo(
 ) {
     val appsByPackage: Map<String, List<AppNames>> = appNamesList.groupBy { it.packageName }
 
+    val audioFocusController = AudioFocusController(service)
     val overlayWindowList: List<OverlayWindow> = appNamesList.map { app ->
         OverlayWindow(
             service = service,
@@ -40,6 +42,7 @@ data class ScheduleInfo(
                 ?: app.packageName
             ),
             supervisorJob = supervisorJob,
+            audioFocus = audioFocusController,
             content = { onTimerEnd, onExit ->
 
                 if (schedule.isPomodoro) {

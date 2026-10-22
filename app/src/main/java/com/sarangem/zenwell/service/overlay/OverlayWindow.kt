@@ -50,11 +50,11 @@ class OverlayWindow(
     val schedule: Schedules,
     var content: @Composable (() -> Unit, () -> Unit) -> Unit,
     private val service: AppLockerService,
+    private val audioFocus: AudioFocusController,
     supervisorJob: Job,
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisorJob)
     private val notificationId = "${schedule.id}$targetApp".hashCode().absoluteValue
-    private val audioFocus = if (!schedule.playBackgroundMedia) AudioFocusController(service) else null
     private val vmStore = ViewModelStore()
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var composeView: ComposeView? = null
@@ -133,7 +133,7 @@ class OverlayWindow(
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
             lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
             service.openedWindows.add(this)
-            audioFocus?.request()
+            if(!schedule.playBackgroundMedia) audioFocus.request()
             Timber.d("Successfully added composeView")
 
         } catch (e: Exception) {
@@ -147,7 +147,7 @@ class OverlayWindow(
         if (composeView == null) return
         try {
             windowManager.removeView(composeView)
-            audioFocus?.abandon()
+            if(!schedule.playBackgroundMedia) audioFocus.abandon()
             vmStore.clear()
             composeView?.disposeComposition()
             Timber.d("Successfully removed compose view")
