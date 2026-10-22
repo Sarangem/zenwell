@@ -21,12 +21,11 @@ fun AppLockerService.checkAndLockApps(eventWindowId: Int? = null) {
 
     for (windowInfo in windows) {
 
-        // probably a keyboard type
+        if (windowInfo.type != AccessibilityWindowInfo.TYPE_APPLICATION) continue
         if (windowInfo.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD &&
             eventWindowId == windowInfo.id
-        ) return
-
-        if (windowInfo.type != AccessibilityWindowInfo.TYPE_APPLICATION) continue
+        ) continue // probably a keyboard type
+        if (windowInfo.isInPictureInPictureMode) continue
 
         val root = windowInfo.root ?: continue
         val currentPackage = root.packageName?.toString() ?: continue
