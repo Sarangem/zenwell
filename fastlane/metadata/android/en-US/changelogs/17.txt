@@ -1,0 +1,3 @@
+- Now only support devices ≥ Android 9
+- New unlock method: Complete Tasks - complete a set amount of tasks before opening the distracting app
+- Fix major pomodoro bug

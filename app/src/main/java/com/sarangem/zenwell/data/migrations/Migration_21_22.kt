@@ -115,5 +115,14 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
         )
         db.execSQL("DROP TABLE `user_prefs`")
         db.execSQL("ALTER TABLE `user_prefs_new` RENAME TO `user_prefs`")
+
+        // Reset notification time to 0 for pomodoro or strict lock schedules
+        db.execSQL(
+            """
+            UPDATE `schedules`
+            SET `notification_time` = 0
+            WHERE `is_pomodoro` = 1 OR `unlock_method` = 'StrictBlock'
+            """.trimIndent()
+        )
     }
 }

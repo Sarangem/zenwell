@@ -41,7 +41,6 @@ fun PermissionRequestCard(
     Row(
         modifier
             .fillMaxWidth()
-            .padding(MaterialTheme.sizing.small)
             .shadow(
                 elevation = MaterialTheme.sizing.tiny,
                 shape = MaterialTheme.shapes.small
