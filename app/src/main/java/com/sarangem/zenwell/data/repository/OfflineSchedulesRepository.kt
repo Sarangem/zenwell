@@ -70,9 +70,9 @@ class OfflineSchedulesRepository @Inject constructor(
         val pastAppSet = pastAppList.toMutableSet()
         for (app in selectedAppsList) {
             if (!pastAppSet.any {
-                it.packageName != app.packageName &&
-                    it.viewKeyword != app.viewKeyword &&
-                    it.viewId != app.viewId
+                it.packageName == app.packageName &&
+                    it.viewKeyword == app.viewKeyword &&
+                    it.viewId == app.viewId
                 }
             ) {
                 val appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword).firstOrNull()

@@ -14,7 +14,25 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 val MIGRATION_21_22 = object : Migration(21, 22) {
     override fun migrate(db: SupportSQLiteDatabase) {
 
-        // migrate app_names table
+        // Migrate app_names table
+
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `blocked_apps_backup` (
+                `id` INTEGER PRIMARY KEY NOT NULL,
+                `schedule_id` INTEGER NOT NULL,
+                `app_id` INTEGER NOT NULL
+            )
+            """.trimIndent()
+        )
+        db.execSQL(
+            """
+            INSERT INTO `blocked_apps_backup` (`id`, `schedule_id`, `app_id`)
+            SELECT `id`, `schedule_id`, `app_id` FROM `blocked_apps`
+            """.trimIndent()
+        )
+
+        db.execSQL("DROP TABLE `blocked_apps`")
 
         db.execSQL(
             """
@@ -38,7 +56,7 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
                     contentValuesOf(
                         "id" to row.getInt(0),
                         "packageName" to title.substringBefore(":id/"),
-                        "viewId" to title,
+                        "viewId" to if (title.contains(":id/")) title else null,
                         "viewKeyword" to null,
                         "viewTitle" to row.getStringOrNull(2)
                     )
@@ -56,7 +74,30 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
             """.trimIndent()
         )
 
-        // migrate user_preferences table
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `blocked_apps` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `schedule_id` INTEGER NOT NULL,
+                `app_id` INTEGER NOT NULL,
+                FOREIGN KEY(`schedule_id`) REFERENCES `schedules`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+                FOREIGN KEY(`app_id`) REFERENCES `app_names`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            INSERT INTO `blocked_apps` (`id`, `schedule_id`, `app_id`)
+            SELECT `id`, `schedule_id`, `app_id` FROM `blocked_apps_backup`
+            """.trimIndent()
+        )
+        db.execSQL("DROP TABLE `blocked_apps_backup`")
+
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_blocked_apps_schedule_id` ON `blocked_apps` (`schedule_id`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_blocked_apps_app_id` ON `blocked_apps` (`app_id`)")
+
+        // Migrate user_preferences table
 
         db.execSQL(
             """
