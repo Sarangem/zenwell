@@ -22,63 +22,58 @@ import kotlinx.coroutines.flow.Flow
 interface ScheduleDao {
 
     @Query("SELECT * FROM schedules ORDER BY is_active DESC, start_time ASC")
-    fun getAllSchedules() : Flow<List<Schedules>>
-
-    @Query("SELECT * FROM schedules WHERE id=:id")
-    fun getScheduleInfoById(id: Int): Flow<Schedules>
+    fun getAllSchedules(): Flow<List<Schedules>>
 
     @Query("SELECT COUNT(*) FROM schedules")
-    fun getSchedulesCount(): Flow<Int>
+    suspend fun getSchedulesCount(): Int
 
     @Query("SELECT * FROM app_names")
-    fun getAllApps(): Flow<List<AppNames>>
+    suspend fun getAllApps(): List<AppNames>
 
-    @Query("SELECT * FROM blocked_apps")
-    fun getAllAppRelations(): Flow<List<BlockedApps>>
-
-    @Query("SELECT id FROM app_names WHERE packageName = :packageName AND viewId IS :viewId AND viewKeyword IS :viewKeyword")
-    fun getAppId(packageName: String, viewId: String?, viewKeyword: String?): Flow<Int>
+    @Query("""
+        SELECT id FROM app_names WHERE 
+        packageName = :packageName AND viewId IS :viewId AND viewKeyword IS :viewKeyword
+        LIMIT 1
+    """)
+    suspend fun getAppId(packageName: String, viewId: String?, viewKeyword: String?): Int
 
     @Query("""
         SELECT * FROM app_names WHERE id IN (
-            SELECT app_id FROM blocked_apps WHERE schedule_id=:id
-        )""")
-    fun getAppNamesById(id: Int): Flow<List<AppNames>>
+            SELECT app_id FROM blocked_apps WHERE schedule_id = :id
+        )
+    """)
+    suspend fun getAppNamesById(id: Int): List<AppNames>
 
-    @Query("SELECT id FROM blocked_apps WHERE app_id=:appId")
-    fun getAppRelationByAppId(appId: Int): Flow<List<Int>>
+    @Query("SELECT id FROM blocked_apps WHERE app_id = :appId")
+    suspend fun getAppRelationByAppId(appId: Int): List<Int>
 
-    @Query("SELECT * FROM blocked_apps WHERE schedule_id=:scheduleId")
-    fun getAppRelationByScheduleId(scheduleId: Int): Flow<List<BlockedApps>>
-
-    @Query("SELECT * FROM user_prefs")
+    @Query("SELECT * FROM user_prefs WHERE id = 1 LIMIT 1")
     fun getUserPreferences(): Flow<UserPreferences?>
 
     @Query("SELECT * FROM app_names WHERE viewTitle IS NOT NULL")
     fun getCustomApps(): Flow<List<AppNames>>
 
     @Upsert
-    fun upsertAppNames(appNames: AppNames)
+    suspend fun upsertAppNames(appNames: AppNames)
 
     @Upsert
-    fun upsertUserPreferences(userPreferences: UserPreferences)
+    suspend fun upsertUserPreferences(userPreferences: UserPreferences)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAppRelation(blockedApps: BlockedApps)
+    suspend fun insertAppRelation(blockedApps: BlockedApps)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertSchedule(schedules: Schedules): Long
+    suspend fun insertSchedule(schedules: Schedules): Long
 
     @Update
-    fun updateSchedule(schedules: Schedules)
+    suspend fun updateSchedule(schedules: Schedules)
 
     @Delete
-    fun deleteSchedule(schedules: Schedules)
+    suspend fun deleteSchedule(schedules: Schedules)
 
     @Delete
-    fun deleteAppNames(appNames: AppNames)
+    suspend fun deleteAppNames(appNames: AppNames)
 
-    @Query("DELETE from blocked_apps WHERE schedule_id=:scheduleId AND app_id=:appId")
-    fun deleteAppRelation(scheduleId: Int, appId: Int)
-
+    @Query("DELETE FROM blocked_apps WHERE schedule_id = :scheduleId AND app_id = :appId")
+    suspend fun deleteAppRelation(scheduleId: Int, appId: Int)
 }

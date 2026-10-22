@@ -13,7 +13,6 @@ import com.sarangem.zenwell.model.UserPreferences
 import com.sarangem.zenwell.model.BackupData
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class OfflineSchedulesRepository @Inject constructor(
@@ -21,12 +20,11 @@ class OfflineSchedulesRepository @Inject constructor(
 ) : SchedulesRepository {
 
     override fun getAllSchedules()= scheduleDao.getAllSchedules()
-    override fun getScheduleInfoById(id: Int)= scheduleDao.getScheduleInfoById(id)
-    override fun getSchedulesCount()= scheduleDao.getSchedulesCount()
-    override fun getAppNamesById(id: Int)= scheduleDao.getAppNamesById(id)
-    override fun getAllApps()= scheduleDao.getAllApps()
     override fun getUserPreferences()= scheduleDao.getUserPreferences().map { it ?: UserPreferences() }
     override fun getCustomApps() = scheduleDao.getCustomApps()
+    override suspend fun getSchedulesCount()= scheduleDao.getSchedulesCount()
+    override suspend fun getAllApps()= scheduleDao.getAllApps()
+    override suspend fun getAppNamesById(id: Int)= scheduleDao.getAppNamesById(id)
     override suspend fun upsertApp(appName: AppNames)= scheduleDao.upsertAppNames(appName)
     override suspend fun upsertUserPreferences(userPreferences: UserPreferences)= scheduleDao.upsertUserPreferences(userPreferences)
     override suspend fun deleteApp(appName: AppNames)= scheduleDao.deleteAppNames(appName)
@@ -40,7 +38,7 @@ class OfflineSchedulesRepository @Inject constructor(
             data.add(
                 BackupData(
                     schedule = schedule,
-                    appNamesList = getAppNamesById(schedule.id).first()
+                    appNamesList = getAppNamesById(schedule.id)
                 )
             )
         }
@@ -75,15 +73,13 @@ class OfflineSchedulesRepository @Inject constructor(
                     it.viewId == app.viewId
                 }
             ) {
-                val appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword).firstOrNull()
-                if (appId == null || appId == 0) {
-                    upsertApp(app.copy(id = 0))
-                }
+                val appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword)
+                if (appId == 0) upsertApp(app.copy(id = 0))
 
                 scheduleDao.insertAppRelation(
                     BlockedApps(
                         scheduleId = schedule.id,
-                        appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword).firstOrNull() ?: 0
+                        appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword)
                     )
                 )
             } else {
@@ -94,7 +90,7 @@ class OfflineSchedulesRepository @Inject constructor(
         for (app in pastAppSet) {
             scheduleDao.deleteAppRelation(
                 scheduleId = schedule.id,
-                appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword).firstOrNull() ?: 0
+                appId = scheduleDao.getAppId(app.packageName, app.viewId, app.viewKeyword)
             )
         }
 
@@ -107,10 +103,9 @@ class OfflineSchedulesRepository @Inject constructor(
     }
 
     private suspend fun removeAppNameIfUnused() {
-        val appIds = scheduleDao.getAllApps().first()
-        for (app in appIds) {
+        for (app in scheduleDao.getAllApps()) {
             if (app.viewId != null || app.viewKeyword != null) continue // do not remove custom views
-            if (scheduleDao.getAppRelationByAppId(app.id).first().isNotEmpty()) continue // app is not referenced
+            if (scheduleDao.getAppRelationByAppId(app.id).isNotEmpty()) continue // app is not referenced
             scheduleDao.deleteAppNames(app)
         }
     }

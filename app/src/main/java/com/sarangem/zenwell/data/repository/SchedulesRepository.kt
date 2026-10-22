@@ -13,12 +13,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface SchedulesRepository {
     fun getAllSchedules(): Flow<List<Schedules>>
-    fun getScheduleInfoById(id: Int): Flow<Schedules>
-    fun getSchedulesCount(): Flow<Int>
-    fun getAppNamesById(id: Int): Flow<List<AppNames>>
-    fun getAllApps(): Flow<List<AppNames>>
     fun getUserPreferences(): Flow<UserPreferences>
     fun getCustomApps(): Flow<List<AppNames>>
+    suspend fun getSchedulesCount(): Int
+    suspend fun getAllApps(): List<AppNames>
+    suspend fun getAppNamesById(id: Int): List<AppNames>
     suspend fun deleteSchedule(schedule: Schedules)
     suspend fun addNewSchedule(schedule: Schedules): Int
     suspend fun upsertApp(appName: AppNames)

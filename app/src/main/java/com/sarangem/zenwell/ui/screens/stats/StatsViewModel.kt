@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -45,9 +44,8 @@ class StatsViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 val dailyUsage = getDailyAppUsage(context, _uiState)
                 val blockedApps = schedulesRepository.getAllApps()
-                    .firstOrNull()
-                    ?.map { it.packageName }
-                    ?.distinct() ?: listOf()
+                    .map { it.packageName }
+                    .distinct()
                 val weeklyAverageInMinutes = getWeeklyAppUsageAverageInMinutes(context)
                 val filteredDailyUsage = filterDailyUsage(dailyUsage, blockedApps, _uiState.value.statsFilter)
                 _uiState.update { state ->

@@ -55,7 +55,7 @@ class AppLockerService : AccessibilityService() {
                 ScheduleInfo(
                     service = this,
                     schedule = schedule,
-                    appNamesList = schedulesRepository.getAppNamesById(schedule.id).first(),
+                    appNamesList = schedulesRepository.getAppNamesById(schedule.id),
                     supervisorJob = supervisorJob
                 )
             )

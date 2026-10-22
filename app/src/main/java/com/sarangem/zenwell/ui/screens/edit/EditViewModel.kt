@@ -15,7 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,8 +49,8 @@ class EditViewModel @Inject constructor(
 
     fun initialize(schedule: Schedules) {
         viewModelScope.launch(Dispatchers.IO) {
-            val selectedAppsList = schedulesRepository.getAppNamesById(schedule.id).first()
-            val viewsList = schedulesRepository.getAllApps().first().filter { it.viewTitle != null }
+            val selectedAppsList = schedulesRepository.getAppNamesById(schedule.id)
+            val viewsList = schedulesRepository.getAllApps().filter { it.viewTitle != null }
             _uiState.update {
                 _uiState.value.copy(
                     schedule = schedule,

@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -82,9 +81,8 @@ class HomeViewModel @Inject constructor(
         isPomodoro: Boolean
     ): Schedules {
         val title =
-            context.getString(R.string.schedule) + schedulesRepository.getSchedulesCount()
-                .first()
-                .plus(1)
+            context.getString(R.string.schedule) +
+            schedulesRepository.getSchedulesCount().plus(1)
         val newSchedule = Schedules(
             id = schedulesRepository.addNewSchedule(
                 Schedules(
