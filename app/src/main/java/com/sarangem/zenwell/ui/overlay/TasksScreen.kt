@@ -45,6 +45,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.model.TaskItem
+import com.sarangem.zenwell.model.TaskStatus
 import com.sarangem.zenwell.ui.overlay.common.APP_BLOCKED
 import com.sarangem.zenwell.ui.overlay.common.OpenableMessageCard
 import com.sarangem.zenwell.ui.overlay.common.OverlayScaffold
@@ -215,23 +217,6 @@ fun TaskStatusIndicator(modifier: Modifier, status: TaskStatus) {
         }
     }
 }
-
-enum class TaskStatus {
-    TODO,
-    IN_PROGRESS,
-    DONE;
-    fun next(): TaskStatus = when (this) {
-        TODO -> IN_PROGRESS
-        IN_PROGRESS -> DONE
-        DONE -> TODO
-    }
-}
-
-data class TaskItem(
-    val id: Int = 0,
-    val text: String = "",
-    val status: TaskStatus = TaskStatus.TODO
-)
 
 @Preview
 @Composable

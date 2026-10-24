@@ -14,7 +14,7 @@ import com.sarangem.zenwell.R
 import com.sarangem.zenwell.data.repository.SchedulesRepository
 import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.model.UserPreferences
-import com.sarangem.zenwell.service.AppLockerService
+import com.sarangem.zenwell.service.applock.AppLockerService
 import com.sarangem.zenwell.service.pomodoro.PomodoroManager
 import com.sarangem.zenwell.service.pomodoro.PomodoroService
 import com.sarangem.zenwell.service.pomodoro.PomodoroServiceActions

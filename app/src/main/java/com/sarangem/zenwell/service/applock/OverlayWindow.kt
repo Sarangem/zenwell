@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.service.overlay
+package com.sarangem.zenwell.service.applock
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
@@ -26,8 +26,8 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.AppNames
 import com.sarangem.zenwell.model.Schedules
-import com.sarangem.zenwell.service.AppLockerService
-import com.sarangem.zenwell.service.checkAndLockApps
+import com.sarangem.zenwell.model.TaskItem
+import com.sarangem.zenwell.model.TaskStatus
 import com.sarangem.zenwell.service.notifications.createAppLockNotification
 import com.sarangem.zenwell.service.notifications.deleteNotificationById
 import com.sarangem.zenwell.service.pomodoro.PomodoroManager
@@ -48,7 +48,7 @@ import kotlin.time.Duration.Companion.seconds
 class OverlayWindow(
     val targetApp: AppNames,
     val schedule: Schedules,
-    var content: @Composable (() -> Unit, () -> Unit) -> Unit,
+    var content: @Composable (() -> Unit, () -> Unit, List<TaskItem>, (List<TaskItem>) -> Unit) -> Unit,
     private val service: AppLockerService,
     private val audioFocus: AudioFocusController,
     supervisorJob: Job,
@@ -58,6 +58,10 @@ class OverlayWindow(
     private val vmStore = ViewModelStore()
     private val windowManager = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var composeView: ComposeView? = null
+
+    var tasksList = schedule.tasks.lines()
+        .filter { it.isNotBlank() }
+        .mapIndexed { index, line -> TaskItem(id = index, text = line.trim()) }
 
     private var notifyAfterTime = 0L
     private var lockAfterTime = 0L
@@ -105,7 +109,9 @@ class OverlayWindow(
                             /* onExit = */ {
                                 service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                                 close()
-                            }
+                            },
+                            /* tasksList = */ tasksList,
+                            /* updateTasksList = */ { tasksList = it }
                         )
                     }
                 }
@@ -185,6 +191,7 @@ class OverlayWindow(
                 )
             }
             while (SystemClock.elapsedRealtime() < lockAfterTime) delay(2.seconds)
+            tasksList = tasksList.map { it.copy(status = TaskStatus.TODO) }
             deleteNotificationById(
                 id = notificationId,
                 context = service

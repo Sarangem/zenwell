@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.service
+package com.sarangem.zenwell.service.applock
 
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityWindowInfo
@@ -16,15 +16,15 @@ import kotlin.collections.forEach
 fun AppLockerService.checkAndLockApps(eventWindowId: Int? = null) {
     Timber.d("There are ${windows.size} and they are $windows")
 
-    val currentVisibleTargets = mutableListOf<AppNames>()
+    val visibleOverlayWindows = mutableSetOf<OverlayWindow>()
     val currentlyActiveSchedules = scheduleInfoList.filterActiveSchedules()
 
     for (windowInfo in windows) {
 
-        if (windowInfo.type != AccessibilityWindowInfo.TYPE_APPLICATION) continue
         if (windowInfo.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD &&
             eventWindowId == windowInfo.id
-        ) continue // probably a keyboard type
+        ) return // probably a keyboard type
+        if (windowInfo.type != AccessibilityWindowInfo.TYPE_APPLICATION) continue
         if (windowInfo.isInPictureInPictureMode) continue
 
         val root = windowInfo.root ?: continue
@@ -33,25 +33,24 @@ fun AppLockerService.checkAndLockApps(eventWindowId: Int? = null) {
         Timber.d("Checking schedule for app $currentPackage")
 
         currentlyActiveSchedules.forEach { scheduleInfo ->
-            scheduleInfo.appsByPackage[currentPackage]?.forEach { appRule ->
-                if (!root.matches(appRule)) return@forEach
-                val overlayWindow = scheduleInfo.overlayWindowList
-                    .firstOrNull { it.targetApp.id == appRule.id } ?: return@forEach
-                currentVisibleTargets.add(overlayWindow.targetApp)
-                Timber.i("Opening window for schedule ${scheduleInfo.schedule.id} and ${overlayWindow.targetApp}")
-                overlayWindow.open(pomodoroManager)
+            scheduleInfo.overlaysByPackage[currentPackage]?.forEach { window ->
+                if (root.matches(window.targetApp)) {
+                    visibleOverlayWindows.add(window)
+                }
             }
         }
 
-        windowInfo.recycle()
     }
 
+    visibleOverlayWindows.forEach { it.open(pomodoroManager) }
+
     openedWindows
-        .filter { it.targetApp !in currentVisibleTargets }
+        .filterNot { it in visibleOverlayWindows }
         .forEach { overlayWindow ->
             Timber.i("Closing window for schedule ${overlayWindow.schedule.id} and ${overlayWindow.targetApp}")
             overlayWindow.close()
         }
+
     Timber.d("Accessibility Event completed")
 }
 

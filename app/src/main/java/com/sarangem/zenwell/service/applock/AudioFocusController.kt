@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.service.overlay
+package com.sarangem.zenwell.service.applock
 
 import android.content.Context
 import android.media.AudioAttributes

@@ -12,12 +12,11 @@ import com.sarangem.zenwell.YOUTUBE_SHORTS_NAME
 import com.sarangem.zenwell.YOUTUBE_SHORTS_VIEW_ID
 import com.sarangem.zenwell.data.repository.SchedulesRepository
 import com.sarangem.zenwell.model.AppNames
-import com.sarangem.zenwell.service.AppLockerService
+import com.sarangem.zenwell.service.applock.AppLockerService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,9 +40,8 @@ class CustomActivityViewModel @Inject constructor(
     fun initialize() {
         if (isInitialized) return
         isInitialized = true
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             schedulesRepository.getCustomApps()
-                .flowOn(Dispatchers.IO)
                 .collect { customApps ->
                     _uiState.update { currentList ->
                         val unsavedNewItems = currentList.filter { it.appName.id == 0 && !it.isSaved }

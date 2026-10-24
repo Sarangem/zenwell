@@ -9,9 +9,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import com.sarangem.zenwell.model.Schedules
-import com.sarangem.zenwell.service.AppLockerService
+import com.sarangem.zenwell.service.applock.AppLockerService
 import com.sarangem.zenwell.domain.time.millisToString
-import com.sarangem.zenwell.service.checkAndLockApps
+import com.sarangem.zenwell.service.applock.checkAndLockApps
 import com.sarangem.zenwell.service.notifications.POMODORO_NOTIFICATION_ID
 import com.sarangem.zenwell.service.notifications.deleteNotificationById
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -70,7 +70,7 @@ class PomodoroManager @Inject constructor(
             isWorkSegmentToExpire = state.value.isWorkTime
         )
         timerJob?.cancel()
-        timerJob = scope.launch {
+        timerJob = scope.launch(Dispatchers.IO) {
             while (true) {
                 val remaining = (state.value.totalSegmentTime + startTime + pausedFor) - SystemClock.elapsedRealtime()
                 _state.update {
@@ -83,11 +83,11 @@ class PomodoroManager @Inject constructor(
                         }
                     )
                 }
-                if (remaining <= 0L) {
-                    onSegmentEnd()
-                    break
-                }
+                if (remaining <= 0L) break
                 delay(0.2.seconds)
+            }
+            scope.launch(Dispatchers.Main) {
+                onSegmentEnd()
             }
         }
     }

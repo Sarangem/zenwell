@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.service
+package com.sarangem.zenwell.service.applock
 
 import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
@@ -11,7 +11,6 @@ import android.content.Intent
 import android.os.SystemClock
 import android.view.accessibility.AccessibilityEvent
 import com.sarangem.zenwell.data.repository.SchedulesRepository
-import com.sarangem.zenwell.service.overlay.OverlayWindow
 import com.sarangem.zenwell.service.pomodoro.PomodoroManager
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
@@ -32,12 +31,14 @@ class AppLockerService : AccessibilityService() {
 
     val supervisorJob = SupervisorJob()
     val scheduleInfoList: MutableList<ScheduleInfo> = mutableListOf()
+    lateinit var audioFocusController: AudioFocusController
     @Inject lateinit var schedulesRepository: SchedulesRepository
     @Inject lateinit var pomodoroManager: PomodoroManager
 
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
+        audioFocusController = AudioFocusController(this)
 
         CoroutineScope(Dispatchers.IO).launch {
             initializeRepository()
@@ -83,7 +84,7 @@ class AppLockerService : AccessibilityService() {
 
     val openedWindows = mutableListOf<OverlayWindow>()
     var lastCheckedTime: Long = 0L
-    
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
             if ( (event.contentChangeTypes and (

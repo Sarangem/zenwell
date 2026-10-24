@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.data.repository.SchedulesRepository
 import com.sarangem.zenwell.model.AppNames
 import com.sarangem.zenwell.model.Schedules
-import com.sarangem.zenwell.service.AppLockerService
+import com.sarangem.zenwell.service.applock.AppLockerService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

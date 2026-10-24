@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.data.repository.SchedulesRepository
 import com.sarangem.zenwell.model.BackupData
-import com.sarangem.zenwell.service.AppLockerService
+import com.sarangem.zenwell.service.applock.AppLockerService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
