@@ -302,8 +302,7 @@ fun EditScreenContents(
                         DetailsCardWithNumberField(
                             R.string.number_of_pomodoro_sessions,
                             pomodoroSessionNumber,
-                            null,
-                            canBeZero = false
+                            placeholder = stringResource(R.string.unlimited),
                         ) { updateSchedule(copy(pomodoroSessionNumber = it)) }
 
                         LabelDetailsCard(

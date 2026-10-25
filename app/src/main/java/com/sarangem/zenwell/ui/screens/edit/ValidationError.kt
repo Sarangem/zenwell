@@ -17,7 +17,7 @@ enum class ValidationError {
 
 fun validateSchedule(s: Schedules): Set<ValidationError> = with(s) {
     if (isPomodoro) {
-        return if (pomodoroWorkTimeInMinutes == 0 || pomodoroRestTimeInMinutes == 0 || pomodoroSessionNumber == 0) {
+        return if (pomodoroWorkTimeInMinutes == 0 || pomodoroRestTimeInMinutes == 0) {
             setOf(ValidationError.Default)
         } else emptySet()
     }

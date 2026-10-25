@@ -123,6 +123,7 @@ data class Schedules(
 
     // number of pomodoro sessions
     // only if pomodoro enabled
+    // infinite sessions (or run until stopped) if == 0
     @ColumnInfo(name = "pomodoro_session_number")
     val pomodoroSessionNumber: Int = 5,
 

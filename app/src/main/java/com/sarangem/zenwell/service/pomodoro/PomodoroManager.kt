@@ -99,7 +99,10 @@ class PomodoroManager @Inject constructor(
                 isWorkTime = !it.isWorkTime
             )
         }
-        if (state.value.sessionsCompleted >= state.value.schedule.pomodoroSessionNumber) {
+        if (
+            state.value.schedule.pomodoroSessionNumber != 0 &&
+            state.value.sessionsCompleted >= state.value.schedule.pomodoroSessionNumber
+        ) {
             onPomodoroEnd()
         } else {
             expiryAlarmScheduler.delete()
