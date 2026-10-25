@@ -21,7 +21,7 @@ fun createAppLockNotification(
 ) {
     val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager ?: return
     val builder = NotificationCompat.Builder(context, APP_LOCK_NOTIFICATION_CHANNEL_ID)
-        .setSmallIcon(R.drawable.ic_notification_icon)
+        .setSmallIcon(R.drawable.ic_base_foreground)
         .setContentTitle(message)
         .setVibrate(LongArray(0))
         .setSound(null)
