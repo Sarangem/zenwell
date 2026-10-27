@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.common
+package com.sarangem.zenwell.ui.screens.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

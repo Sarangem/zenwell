@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.Schedules
-import com.sarangem.zenwell.ui.common.PermissionRequestCard
+import com.sarangem.zenwell.ui.screens.common.PermissionRequestCard
 import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable

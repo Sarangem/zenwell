@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.common
+package com.sarangem.zenwell.ui.screens.common
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
@@ -40,8 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.Schedules
-import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
-import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
+import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.sequenceShowcaseTarget
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

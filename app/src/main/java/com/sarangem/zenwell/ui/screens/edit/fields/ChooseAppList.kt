@@ -51,9 +51,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.AppNames
-import com.sarangem.zenwell.ui.common.SkipShowcaseGuideButton
-import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
-import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
+import com.sarangem.zenwell.ui.screens.common.SkipShowcaseGuideButton
+import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
 import com.sarangem.zenwell.domain.packageinfo.getInstalledApps

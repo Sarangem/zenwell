@@ -9,8 +9,8 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.sarangem.zenwell.service.notifications.POMODORO_NOTIFICATION_ID
+import com.sarangem.zenwell.service.notifications.createNotificationChannel
 import com.sarangem.zenwell.service.notifications.createPomodoroNotification
-import com.sarangem.zenwell.service.notifications.createPomodoroNotificationChannel
 import com.sarangem.zenwell.service.notifications.deleteNotificationById
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
@@ -29,7 +29,7 @@ class PomodoroService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        createPomodoroNotificationChannel(this)
+        createNotificationChannel(this)
 
         serviceScope.launch {
             var hasStateChanged = false

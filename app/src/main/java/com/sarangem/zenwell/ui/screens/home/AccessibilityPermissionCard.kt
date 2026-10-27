@@ -21,9 +21,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.common.PermissionRequestCard
-import com.sarangem.zenwell.ui.common.SkipShowcaseGuideButton
-import com.sarangem.zenwell.ui.common.sequenceshowcase.sequenceShowcaseTarget
+import com.sarangem.zenwell.ui.screens.common.PermissionRequestCard
+import com.sarangem.zenwell.ui.screens.common.SkipShowcaseGuideButton
+import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable

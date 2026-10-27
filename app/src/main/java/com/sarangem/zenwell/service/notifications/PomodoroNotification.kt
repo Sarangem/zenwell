@@ -6,7 +6,6 @@
 package com.sarangem.zenwell.service.notifications
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -21,17 +20,6 @@ import com.sarangem.zenwell.service.pomodoro.*
 const val POMODORO_NOTIFICATION_CHANNEL_ID = "PomodoroNotification"
 const val POMODORO_NOTIFICATION_ID = 1
 
-fun createPomodoroNotificationChannel(context: Context) {
-    val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager ?: return
-    manager.createNotificationChannel(
-        NotificationChannel(
-            /* id = */ POMODORO_NOTIFICATION_CHANNEL_ID,
-            /* name = */ context.getString(R.string.pomodoro_timer),
-            /* importance = */ NotificationManager.IMPORTANCE_DEFAULT
-        )
-    )
-}
-
 fun createPomodoroNotification(
     context: Context,
     state: PomodoroState,
@@ -39,18 +27,19 @@ fun createPomodoroNotification(
     workSegmentColor: Int,
     restSegmentColor: Int
 ): Notification {
+    val isPaused = state.status == PomodoroStatus.PAUSED
 
     val builder = NotificationCompat.Builder(context, POMODORO_NOTIFICATION_CHANNEL_ID)
-        .setSilent(setSilent)
+        .setSilent(if (isPaused) true else setSilent)
         .setContentTitle(state.formattedTime)
         .setShortCriticalText(state.formattedTime)
-        .setOngoing(state.status != PomodoroStatus.PAUSED)
-        .setRequestPromotedOngoing(state.status != PomodoroStatus.PAUSED)
+        .setOngoing(!isPaused)
+        .setRequestPromotedOngoing(!isPaused)
         .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         .setWhen(
-            if (state.status != PomodoroStatus.PAUSED) {
+            if (!isPaused) {
                 0L
             } else {
                 System.currentTimeMillis() + state.remainingMillis

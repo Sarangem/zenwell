@@ -46,10 +46,10 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.service.pomodoro.PomodoroState
-import com.sarangem.zenwell.ui.common.NewScheduleFAB
+import com.sarangem.zenwell.ui.screens.common.NewScheduleFAB
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.LocalSequenceShowcaseState
 import kotlinx.coroutines.launch
 
 @Composable

@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.navigation
+package com.sarangem.zenwell.ui.screens.navigation
 
 import android.content.Context
 import androidx.annotation.DrawableRes
@@ -39,7 +39,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.Schedules
-import com.sarangem.zenwell.ui.common.NewScheduleFAB
+import com.sarangem.zenwell.ui.screens.common.NewScheduleFAB
 import com.sarangem.zenwell.ui.theme.sizing
 
 @Preview(showBackground = true)

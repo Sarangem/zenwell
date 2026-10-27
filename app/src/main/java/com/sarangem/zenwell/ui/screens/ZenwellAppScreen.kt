@@ -5,6 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,9 +33,10 @@ import com.sarangem.zenwell.ui.screens.home.HomeViewModel
 import com.sarangem.zenwell.ui.screens.pomodoro.PomodoroScreen
 import com.sarangem.zenwell.ui.screens.settings.SettingsScreen
 import com.sarangem.zenwell.ui.screens.stats.StatsScreen
-import com.sarangem.zenwell.ui.common.sequenceshowcase.SequenceShowcase
-import com.sarangem.zenwell.ui.navigation.*
+import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.SequenceShowcase
+import com.sarangem.zenwell.ui.screens.navigation.*
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ZenwellAppScreen() {
     val backStack = rememberNavBackStack(HomePage)
@@ -42,7 +44,8 @@ fun ZenwellAppScreen() {
     val editViewModel: EditViewModel = hiltViewModel()
     val customActivityViewModel: CustomActivityViewModel = hiltViewModel()
 
-    val isExpanded = currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
+    val isExpanded = currentWindowAdaptiveInfoV2().windowSizeClass
+        .isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
     val firstEntry = homeViewModel.uiState.collectAsState().value.userPreferences.firstEntry
     SequenceShowcase {
         Scaffold(
@@ -59,7 +62,7 @@ fun ZenwellAppScreen() {
                     setAsExistingUser = homeViewModel::setAsExistingUser
                 )
             }
-        ) { padding -> padding
+        ) {
             Row(Modifier.fillMaxSize()) {
                 if(isExpanded) AppNavigationRail(backStack = backStack)
                 NavDisplay(

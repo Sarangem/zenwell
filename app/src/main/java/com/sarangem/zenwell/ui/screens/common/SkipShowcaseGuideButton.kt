@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.common
+package com.sarangem.zenwell.ui.screens.common
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.common.sequenceshowcase.LocalSequenceShowcaseState
+import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.LocalSequenceShowcaseState
 import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable

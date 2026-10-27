@@ -24,6 +24,14 @@ fun createNotificationChannel(context: Context) {
             description = context.getString(R.string.app_lock_notification_description)
         }
     )
+
+    manager.createNotificationChannel(
+        NotificationChannel(
+            /* id = */ POMODORO_NOTIFICATION_CHANNEL_ID,
+            /* name = */ context.getString(R.string.pomodoro_timer),
+            /* importance = */ NotificationManager.IMPORTANCE_DEFAULT
+        )
+    )
 }
 
 fun deleteNotificationById(

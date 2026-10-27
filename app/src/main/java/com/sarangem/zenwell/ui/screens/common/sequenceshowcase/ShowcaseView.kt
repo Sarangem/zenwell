@@ -25,9 +25,8 @@
  * SOFTWARE.
  */
 
-package com.sarangem.zenwell.ui.common.sequenceshowcase
+package com.sarangem.zenwell.ui.screens.common.sequenceshowcase
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
@@ -66,6 +65,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import timber.log.Timber
 import kotlin.math.roundToInt
 
 /**
@@ -101,7 +101,7 @@ fun ShowcaseView(
 ) {
     // Prevent crash if coordinates are not attached
     if (!targetCoordinates.isAttached) {
-        Log.w("ShowcaseView", "Target coordinates are not attached, skipping showcase")
+        Timber.w("Target coordinates are not attached, skipping showcase")
         return
     }
 

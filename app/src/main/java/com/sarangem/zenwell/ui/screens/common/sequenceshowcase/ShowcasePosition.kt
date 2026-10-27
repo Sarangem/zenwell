@@ -25,7 +25,7 @@
  * SOFTWARE.
  */
 
-package com.sarangem.zenwell.ui.common.sequenceshowcase
+package com.sarangem.zenwell.ui.screens.common.sequenceshowcase
 
 /**
  * A sealed interface that represents the position of a showcase dialog relative to a target element.

@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.ui.navigation
+package com.sarangem.zenwell.ui.screens.navigation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
