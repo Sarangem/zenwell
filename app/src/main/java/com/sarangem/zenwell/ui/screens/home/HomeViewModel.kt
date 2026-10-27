@@ -7,6 +7,7 @@ package com.sarangem.zenwell.ui.screens.home
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.material3.ColorScheme
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -110,10 +111,11 @@ class HomeViewModel @Inject constructor(
     
     fun startPomodoro(
         context: Context,
-        schedule: Schedules
+        schedule: Schedules,
+        colorScheme: ColorScheme
     ): Boolean {
         if (pomodoroManager.state.value.status != PomodoroStatus.IDLE) return false
-        pomodoroManager.loadSchedule(schedule)
+        pomodoroManager.preStart(schedule, colorScheme)
         ContextCompat.startForegroundService(
             /* context = */ context,
             /* intent = */ Intent(context, PomodoroService::class.java).apply {

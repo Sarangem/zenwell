@@ -64,6 +64,7 @@ fun HomeScreen(
     val homeUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pomodoroState by viewModel.pomodoroState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val colorScheme = MaterialTheme.colorScheme
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val singlePomodoroSessionRes = stringResource(R.string.error_single_pomodoro)
@@ -101,7 +102,7 @@ fun HomeScreen(
         enableAllSchedules = viewModel::enableAllSchedules,
         userScrollEnabled = !showcaseState.showCaseVisible,
         startPomodoro = { schedule ->
-            val started = viewModel.startPomodoro(context, schedule)
+            val started = viewModel.startPomodoro(context, schedule, colorScheme)
             if (!started) {
                 scope.launch {
                     snackbarHostState.showSnackbar(

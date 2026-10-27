@@ -11,6 +11,7 @@ import android.os.IBinder
 import com.sarangem.zenwell.service.notifications.POMODORO_NOTIFICATION_ID
 import com.sarangem.zenwell.service.notifications.createPomodoroNotification
 import com.sarangem.zenwell.service.notifications.createPomodoroNotificationChannel
+import com.sarangem.zenwell.service.notifications.deleteNotificationById
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +43,9 @@ class PomodoroService : Service() {
                     createPomodoroNotification(
                         context = this@PomodoroService,
                         state = it,
-                        playSound = hasStateChanged
+                        setSilent = !hasStateChanged,
+                        workSegmentColor = pomodoroManager.notificationWorkColor,
+                        restSegmentColor = pomodoroManager.notificationRestColor
                     )
                 }
         }
@@ -65,8 +68,9 @@ class PomodoroService : Service() {
             /* notification = */ createPomodoroNotification(
                 context = this,
                 state = pomodoroManager.state.value,
-                playSound = (intent.action == PomodoroServiceActions.FRESH_START.name) ||
-                        (intent.action == PomodoroServiceActions.SKIP.name)
+                setSilent = intent.action != PomodoroServiceActions.FRESH_START.name,
+                workSegmentColor = pomodoroManager.notificationWorkColor,
+                restSegmentColor = pomodoroManager.notificationRestColor
             )
         )
 
@@ -77,6 +81,8 @@ class PomodoroService : Service() {
 
     override fun onDestroy() {
         serviceScope.cancel()
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        deleteNotificationById(POMODORO_NOTIFICATION_ID, this)
         pomodoroManager.onPomodoroEnd()
         super.onDestroy()
     }

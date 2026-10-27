@@ -8,6 +8,8 @@ package com.sarangem.zenwell.service.pomodoro
 import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
+import androidx.compose.material3.ColorScheme
+import androidx.compose.ui.graphics.toArgb
 import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.service.applock.AppLockerService
 import com.sarangem.zenwell.domain.time.millisToString
@@ -43,7 +45,17 @@ class PomodoroManager @Inject constructor(
     private var timeWhenPaused = 0L
     private var pausedFor = 0L
 
-    fun loadSchedule(schedule: Schedules) = _state.update { PomodoroState(schedule = schedule) }
+    var notificationWorkColor: Int = 0
+    var notificationRestColor: Int = 0
+
+    fun preStart(
+        schedule: Schedules,
+        colorScheme: ColorScheme
+    ) {
+        _state.update { PomodoroState(schedule = schedule) }
+        notificationWorkColor = colorScheme.primary.toArgb()
+        notificationRestColor = colorScheme.tertiary.toArgb()
+    }
 
     fun onSegmentStart() {
         startTime = SystemClock.elapsedRealtime()
@@ -145,7 +157,6 @@ class PomodoroManager @Inject constructor(
         if (state.value.status == PomodoroStatus.IDLE) return
         timerJob?.cancel()
         timerJob = null
-        deleteNotificationById(POMODORO_NOTIFICATION_ID, context)
         _state.update { PomodoroState() }
         removeOverlayWindow()
         timeWhenPaused = 0L

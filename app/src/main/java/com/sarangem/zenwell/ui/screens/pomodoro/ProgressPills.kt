@@ -31,12 +31,13 @@ fun ProgressPills(
     sessionsCompleted: Int,
     modifier: Modifier = Modifier
 ) {
-    val pillDescription = stringResource(R.string.pomodoro_sessions_left)
+    if (totalSessions == 0) return
+    val pillDescription = stringResource(R.string.sessions_completed, sessionsCompleted, totalSessions)
     Row(
         modifier = modifier
             .padding(MaterialTheme.sizing.small)
             .semantics(mergeDescendants = true) {
-                contentDescription = pillDescription + (totalSessions - sessionsCompleted)
+                contentDescription = pillDescription
             },
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny),
         verticalAlignment = Alignment.CenterVertically

@@ -12,13 +12,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.sarangem.zenwell.MainActivity
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.service.pomodoro.PomodoroService
-import com.sarangem.zenwell.service.pomodoro.PomodoroServiceActions
-import com.sarangem.zenwell.service.pomodoro.PomodoroState
-import com.sarangem.zenwell.service.pomodoro.PomodoroStatus
+import com.sarangem.zenwell.service.pomodoro.*
 
 const val POMODORO_NOTIFICATION_CHANNEL_ID = "PomodoroNotification"
 const val POMODORO_NOTIFICATION_ID = 1
@@ -37,28 +35,28 @@ fun createPomodoroNotificationChannel(context: Context) {
 fun createPomodoroNotification(
     context: Context,
     state: PomodoroState,
-    playSound: Boolean = false,
+    setSilent: Boolean = true,
+    workSegmentColor: Int,
+    restSegmentColor: Int
 ): Notification {
-    val isPaused = state.status == PomodoroStatus.PAUSED
-    val totalMillis = state.totalSegmentTime.toInt()
-    val elapsedMillis = (state.totalSegmentTime - state.remainingMillis).toInt()
-    val canPause = if (state.isWorkTime) state.schedule.showPauseInWorkTime else state.schedule.showPauseInRestTime
-    val canSkip = if (state.isWorkTime) state.schedule.showSkipInWorkTime else state.schedule.showSkipInRestTime
 
     val builder = NotificationCompat.Builder(context, POMODORO_NOTIFICATION_CHANNEL_ID)
-        .setSmallIcon(if (state.isWorkTime) R.drawable.filled_work else R.drawable.outlined_local_cafe)
-        .setContentTitle(
-            if (state.isWorkTime) context.getString(R.string.work_time_notification)
-            else context.getString(R.string.rest_time_notification)
-        )
-        .setContentText(state.formattedTime)
-        .setProgress(totalMillis, elapsedMillis, false)
-        .setWhen(System.currentTimeMillis() + state.remainingMillis)
-        .setOnlyAlertOnce(!playSound)
-        .setOngoing(!playSound && !isPaused)
-        .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+        .setSilent(setSilent)
+        .setContentTitle(state.formattedTime)
+        .setShortCriticalText(state.formattedTime)
+        .setOngoing(state.status != PomodoroStatus.PAUSED)
+        .setRequestPromotedOngoing(state.status != PomodoroStatus.PAUSED)
+        .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        .setWhen(
+            if (state.status != PomodoroStatus.PAUSED) {
+                0L
+            } else {
+                System.currentTimeMillis() + state.remainingMillis
+            }
+        )
+        .setShowWhen(false)
         .setContentIntent(
             PendingIntent.getActivity(
                 /* context = */ context,
@@ -69,10 +67,51 @@ fun createPomodoroNotification(
                 /* flags = */ PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
         )
+        .addPomodoroActions(context, state)
+
+    if (state.isWorkTime) {
+        builder
+            .setSmallIcon(R.drawable.filled_work)
+            .setColor(workSegmentColor)
+            .setSubText(context.getString(R.string.work_time_notification))
+    } else {
+        builder
+            .setSmallIcon(R.drawable.outlined_local_cafe)
+            .setColor(restSegmentColor)
+            .setSubText(context.getString(R.string.rest_time_notification))
+    }
+
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+        builder.setStyle(
+            NotificationCompat.ProgressStyle()
+                .addAllSegments(state, workSegmentColor, restSegmentColor)
+                .setProgress(getNotificationProgress(state))
+        )
+    } else {
+        builder.setProgress(
+            /* max = */ state.totalSegmentTime.toInt(),
+            /* progress = */ (state.totalSegmentTime - state.remainingMillis).toInt(),
+            /* indeterminate = */ false
+        )
+    }
+
+    val notification = builder.build()
+    val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager
+    manager?.notify(POMODORO_NOTIFICATION_ID, notification)
+    return notification
+}
+
+private fun NotificationCompat.Builder.addPomodoroActions(
+    context: Context,
+    state: PomodoroState
+): NotificationCompat.Builder {
+    val isPaused = state.status == PomodoroStatus.PAUSED
+    val canPause = if (state.isWorkTime) state.schedule.showPauseInWorkTime else state.schedule.showPauseInRestTime
+    val canSkip = if (state.isWorkTime) state.schedule.showSkipInWorkTime else state.schedule.showSkipInRestTime
 
     if (canPause) {
         val toggleAction = if (isPaused) PomodoroServiceActions.RESUME else PomodoroServiceActions.PAUSE
-        builder.addAction(
+        addAction(
             /* icon = */ if (isPaused) R.drawable.filled_play_arrow else R.drawable.filled_pause,
             /* title = */ if (isPaused) context.getString(R.string.resume) else context.getString(R.string.pause),
             /* intent = */ PendingIntent.getService(
@@ -85,7 +124,7 @@ fun createPomodoroNotification(
     }
 
     if (canSkip) {
-        builder.addAction(
+        addAction(
             /* icon = */ R.drawable.filled_fast_forward,
             /* title = */ context.getString(R.string.skip),
             /* intent = */  PendingIntent.getService(
@@ -97,8 +136,36 @@ fun createPomodoroNotification(
         )
     }
 
-    val notification = builder.build()
-    val manager = context.getSystemService(NOTIFICATION_SERVICE) as? NotificationManager
-    manager?.notify(POMODORO_NOTIFICATION_ID, notification)
-    return notification
+    return this
+}
+
+private fun NotificationCompat.ProgressStyle.addAllSegments(
+    state: PomodoroState,
+    workSegmentColor: Int,
+    restSegmentColor: Int
+): NotificationCompat.ProgressStyle {
+    repeat(state.schedule.pomodoroSessionNumber.coerceAtLeast(1)) {
+        addProgressSegment(
+            NotificationCompat.ProgressStyle
+                .Segment(state.schedule.pomodoroWorkTimeInMinutes * 60 * 1000)
+                .setColor(workSegmentColor)
+        )
+        addProgressSegment(
+            NotificationCompat.ProgressStyle
+                .Segment(state.schedule.pomodoroRestTimeInMinutes * 60 * 1000)
+                .setColor(restSegmentColor)
+        )
+    }
+    return this
+}
+
+private fun getNotificationProgress(state: PomodoroState): Int {
+    var totalSegmentMin = state.schedule.pomodoroWorkTimeInMinutes
+    if (state.schedule.pomodoroSessionNumber != 0) {
+        totalSegmentMin += (
+            state.schedule.pomodoroWorkTimeInMinutes + state.schedule.pomodoroRestTimeInMinutes
+        ) * state.sessionsCompleted
+    }
+    if (!state.isWorkTime) totalSegmentMin += state.schedule.pomodoroRestTimeInMinutes
+    return (totalSegmentMin * 60 * 1000L - state.remainingMillis).toInt()
 }

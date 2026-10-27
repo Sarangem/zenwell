@@ -132,7 +132,6 @@
     <string name="enter_focus_mode">Enter focus mode</string>
     <string name="clear">Clear</string>
     <string name="none_selected_yet">None selected yet</string>
-    <string name="pomodoro_sessions_left">"Pomodoro sessions left: "</string>
     <string name="show_exit_button">Show exit button</string>
     <string name="exit">Exit</string>
     <string name="statistics">Statistics</string>
@@ -156,10 +155,7 @@
     <string name="showcase_4">Save and enter your focus zone</string>
     <string name="run_all_day">Run all day</string>
     <string name="overnight_schedule_description">Runs overnight: %1$s to %2$s, and %3$s to %4$s</string>
-    <plurals name="schedules_inactive">
-        <item quantity="one">%1$d of %2$d schedule inactive</item>
-        <item quantity="other">%1$d of %2$d schedules inactive</item>
-    </plurals>
+    <string name="schedules_inactive">&lt;b&gt;%1$d/%2$d&lt;/b&gt; schedules inactive</string>
     <string name="enable_all">Enable all</string>
     <string name="complete_tasks">Complete tasks</string>
     <string name="never">Never</string>
@@ -172,4 +168,5 @@
     <string name="pomodoro_time">%1$d + %2$d min</string>
     <string name="pomodoro_time_with_start">Start (%1$d + %2$d min)</string>
     <string name="unlimited">Unlimited</string>
+    <string name="sessions_completed">%1$d/%2$d sessions completed</string>
 </resources>

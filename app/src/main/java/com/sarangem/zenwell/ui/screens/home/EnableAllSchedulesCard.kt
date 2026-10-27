@@ -12,7 +12,6 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.Schedules
@@ -27,9 +26,8 @@ fun EnableAllSchedulesCard(
     val schedulesInactive = remember(schedulesList) { schedulesList.count { !it.isActive } }
     AnimatedVisibility(schedulesInactive > 0) {
         PermissionRequestCard(
-            text = pluralStringResource(
-                id = R.plurals.schedules_inactive,
-                count = schedulesInactive,
+            text = stringResource(
+                id = R.string.schedules_inactive,
                 schedulesInactive, schedulesList.size
             ),
             buttonText = stringResource(R.string.enable_all),
