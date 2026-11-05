@@ -6,8 +6,7 @@
 package com.sarangem.zenwell.ui.screens.navigation
 
 import android.content.Context
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
-import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.ui.screens.common.NewScheduleFAB
 import com.sarangem.zenwell.ui.theme.sizing
@@ -64,9 +62,7 @@ fun AppNavigationFAB(
                     .padding(end = if(last == HomePage) MaterialTheme.sizing.floatingBar else 0.dp)
                     .align(Alignment.BottomCenter)
             ) {
-                BottomBarIcon(backStack, HomePage, R.drawable.filled_home, R.string.home)
-                BottomBarIcon(backStack, StatsPage, R.drawable.outlined_bar_chart, R.string.stats)
-                BottomBarIcon(backStack, SettingsPage, R.drawable.outlined_settings, R.string.settings)
+                NavIcons.entries.forEach { BottomBarIcon(backStack, it) }
             }
             AnimatedVisibility(
                 backStack.last() == HomePage,
@@ -82,32 +78,32 @@ fun AppNavigationFAB(
 @Composable
 fun BottomBarIcon(
     backStack: NavBackStack<NavKey>,
-    navKey: NavKey,
-    @DrawableRes icon: Int,
-    @StringRes name: Int
+    navIcon: NavIcons
 ){
-    val isSelected = backStack.last() == navKey
+    val isSelected = navIcon.isSelected(backStack.last())
     Row(
         modifier = Modifier
             .clip(FloatingToolbarDefaults.ContainerShape)
             .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Unspecified)
-            .clickable { if (!isSelected) navKey.addToStack(backStack) }
+            .clickable { if (!isSelected) navIcon.key.addToStack(backStack) }
             .padding(MaterialTheme.sizing.medium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ){
-        Icon(
-            painter = painterResource(icon),
-            contentDescription = if(isSelected) null else stringResource(name),
-            modifier = Modifier.size(MaterialTheme.sizing.large),
-            tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else LocalContentColor.current
-        )
+        AnimatedContent(isSelected) {
+            Icon(
+                painter = painterResource(navIcon.iconRes(it)),
+                contentDescription = if (isSelected) null else stringResource(navIcon.labelRes),
+                modifier = Modifier.size(MaterialTheme.sizing.large),
+                tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else LocalContentColor.current
+            )
+        }
         AnimatedVisibility(isSelected){
             Text(
-                text = stringResource(name),
+                text = stringResource(navIcon.labelRes),
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(start = 2.dp)
+                modifier = Modifier.padding(start = MaterialTheme.sizing.tiny)
             )
         }
     }

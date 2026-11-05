@@ -5,6 +5,7 @@
 
 package com.sarangem.zenwell.ui.screens.navigation
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationRail
@@ -16,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
-import com.sarangem.zenwell.R
 
 @Composable
 fun AppNavigationRail(
@@ -24,24 +24,25 @@ fun AppNavigationRail(
     backStack: NavBackStack<NavKey>
 ) {
     val last = backStack.last()
+
     NavigationRail(modifier.fillMaxHeight()) {
-        NavigationRailItem(
-            selected = last == HomePage || last == EditPage,
-            onClick = { HomePage.addToStack(backStack) },
-            icon = { Icon(painterResource(R.drawable.filled_home), contentDescription = null) },
-            label = { Text(stringResource(R.string.home)) }
-        )
-        NavigationRailItem(
-            selected = last == StatsPage,
-            onClick = { StatsPage.addToStack(backStack) },
-            icon = { Icon(painterResource(R.drawable.outlined_bar_chart), contentDescription = null) },
-            label = { Text(stringResource(R.string.stats)) }
-        )
-        NavigationRailItem(
-            selected = last == SettingsPage || last == CustomActivityPage,
-            onClick = { SettingsPage.addToStack(backStack) },
-            icon = { Icon(painterResource(R.drawable.outlined_settings), contentDescription = null) },
-            label = { Text(stringResource(R.string.settings)) }
-        )
+        NavIcons.entries.forEach { navIcon ->
+
+            val isSelected = navIcon.isSelected(last)
+            NavigationRailItem(
+                selected = isSelected,
+                onClick = { navIcon.key.addToStack(backStack) },
+                icon = {
+                    AnimatedContent(isSelected) {
+                        Icon(
+                            painter = painterResource(navIcon.iconRes(it)),
+                            contentDescription = null
+                        )
+                    }
+            },
+                label = { Text(stringResource(navIcon.labelRes)) }
+            )
+        }
+
     }
 }
