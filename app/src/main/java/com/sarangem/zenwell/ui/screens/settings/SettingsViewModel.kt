@@ -10,29 +10,16 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarangem.zenwell.data.repository.SchedulesRepository
-import com.sarangem.zenwell.model.BackupData
-import com.sarangem.zenwell.service.applock.AppLockerService
+import com.sarangem.zenwell.domain.backup.createBackup
+import com.sarangem.zenwell.domain.backup.restoreBackup
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val repository: SchedulesRepository
 ) : ViewModel() {
-
-    private val json = Json {
-        prettyPrint = true
-        encodeDefaults = true
-        ignoreUnknownKeys = true
-    }
 
     fun createBackup(
         uri: Uri,
@@ -40,24 +27,10 @@ class SettingsViewModel @Inject constructor(
         onResult: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
-            val success = withContext(Dispatchers.IO) {
-                runCatching {
-                    val data = repository.getAllData()
-                    val jsonString = json.encodeToString(data)
-                    context
-                        .contentResolver
-                        .openOutputStream(uri)
-                        ?.use { outputStream ->
-                            BufferedWriter(OutputStreamWriter(outputStream)).use {
-                                it.write(jsonString)
-                            }
-                        }
-                }.isSuccess
-            }
+            val success = createBackup(uri, context, repository)
             onResult(success)
         }
     }
-
 
     fun restoreBackup(
         uri: Uri,
@@ -65,21 +38,7 @@ class SettingsViewModel @Inject constructor(
         onResult: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
-            val success = withContext(Dispatchers.IO) {
-                runCatching {
-                    context
-                        .contentResolver
-                        .openInputStream(uri)
-                        ?.use { inputStream ->
-                            val jsonString = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
-                            val restoredData = json.decodeFromString<List<BackupData>>(jsonString)
-                            repository.restoreAllData(restoredData)
-                            withContext(Dispatchers.IO) {
-                                AppLockerService.instance?.initializeRepository()
-                            }
-                        }
-                }.isSuccess
-            }
+            val success = restoreBackup(uri, context, repository)
             onResult(success)
         }
     }

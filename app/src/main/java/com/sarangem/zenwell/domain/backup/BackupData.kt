@@ -3,8 +3,10 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.model
+package com.sarangem.zenwell.domain.backup
 
+import com.sarangem.zenwell.model.AppNames
+import com.sarangem.zenwell.model.Schedules
 import kotlinx.serialization.Serializable
 
 @Serializable

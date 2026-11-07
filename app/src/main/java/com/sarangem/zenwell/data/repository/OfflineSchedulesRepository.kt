@@ -10,9 +10,7 @@ import com.sarangem.zenwell.model.AppNames
 import com.sarangem.zenwell.model.BlockedApps
 import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.model.UserPreferences
-import com.sarangem.zenwell.model.BackupData
 import jakarta.inject.Inject
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class OfflineSchedulesRepository @Inject constructor(
@@ -30,32 +28,6 @@ class OfflineSchedulesRepository @Inject constructor(
     override suspend fun deleteApp(appName: AppNames)= scheduleDao.deleteAppNames(appName)
     override suspend fun addNewSchedule(schedule: Schedules)= scheduleDao.insertSchedule(schedule).toInt()
     override suspend fun updateSchedule(schedule: Schedules)= scheduleDao.updateSchedule(schedule)
-
-    override suspend fun getAllData(): List<BackupData> {
-        val schedulesList = getAllSchedules().first()
-        val data = mutableListOf<BackupData>()
-        schedulesList.forEach { schedule ->
-            data.add(
-                BackupData(
-                    schedule = schedule,
-                    appNamesList = getAppNamesById(schedule.id)
-                )
-            )
-        }
-        return data
-    }
-
-    override suspend fun restoreAllData(list: List<BackupData>) {
-        list.forEach { data ->
-            data.appNamesList.forEach { upsertApp(it.copy(id = 0)) }
-            val id = addNewSchedule(data.schedule.copy(id = 0))
-            saveToDatabase(
-                schedule = data.schedule.copy(id = id),
-                selectedAppsList = data.appNamesList,
-                pastAppList = listOf()
-            )
-        }
-    }
 
     override suspend fun saveToDatabase(
         schedule: Schedules,

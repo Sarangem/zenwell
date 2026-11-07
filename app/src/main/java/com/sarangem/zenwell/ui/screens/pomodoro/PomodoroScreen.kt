@@ -100,10 +100,7 @@ fun PomodoroScreen(
             PomodoroControls(
                 isPaused = uiState.status == PomodoroStatus.PAUSED,
                 isWorkTime = uiState.isWorkTime,
-                showPauseInWorkTime = uiState.schedule.showPauseInWorkTime,
-                showSkipInWorkTime = uiState.schedule.showSkipInWorkTime,
-                showPauseInRestTime = uiState.schedule.showPauseInRestTime,
-                showSkipInRestTime = uiState.schedule.showSkipInRestTime,
+                schedule = uiState.schedule,
                 onEnd = onEnd,
                 onPause = onPause,
                 onResume = onResume,
