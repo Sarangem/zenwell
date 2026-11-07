@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,6 +80,8 @@ fun TasksScreen(
             }
             .sortedWith(compareBy({ it.status == TaskStatus.DONE }, { it.id }))
         updateTasksList(sortedTasks)
+    }
+    LaunchedEffect(sortedTasks) {
         if (sortedTasks.isNotEmpty() && sortedTasks.all { it.status == TaskStatus.DONE }) {
             if (!requireManualUnlock) onTimerEnd()
             showOpen = true
