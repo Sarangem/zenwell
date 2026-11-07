@@ -139,6 +139,12 @@ data class Schedules(
     @ColumnInfo(name = "show_skip_in_rest_time")
     val showSkipInRestTime: Boolean = true,
 
+    @ColumnInfo(defaultValue = "1")
+    val showEndInWorkTime: Boolean = true,
+
+    @ColumnInfo(defaultValue = "1")
+    val showEndInRestTime: Boolean = true,
+
     @ColumnInfo(name = "show_exit")
     val showExit: Boolean = true,
 

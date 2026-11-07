@@ -15,7 +15,7 @@ enum class ValidationError {
     MathEquationNumOperands,
 }
 
-fun validateSchedule(s: Schedules): Set<ValidationError> = with(s) {
+fun validateSchedule(schedule: Schedules): Set<ValidationError> = with(schedule) {
     if (isPomodoro) {
         return if (pomodoroWorkTimeInMinutes == 0 || pomodoroRestTimeInMinutes == 0) {
             setOf(ValidationError.Default)

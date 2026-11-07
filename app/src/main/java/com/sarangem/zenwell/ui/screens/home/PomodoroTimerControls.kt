@@ -77,7 +77,7 @@ fun PomodoroTimerControls(
                 Column(Modifier.align(Alignment.TopEnd)) {
                     Icon(
                         painterResource(if (isWorkTime) R.drawable.filled_work else R.drawable.outlined_local_cafe),
-                        contentDescription = stringResource(if (isWorkTime) R.string.work_time else R.string.rest_time),
+                        contentDescription = stringResource(if (isWorkTime) R.string.work_segment else R.string.rest_segment),
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(MaterialTheme.sizing.large)
                     )

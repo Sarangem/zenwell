@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.ui.screens.edit.fields.ShowConfirmDialog
 import com.sarangem.zenwell.ui.theme.sizing
 
@@ -38,11 +39,17 @@ fun PomodoroControls(
     onResume: () -> Unit,
     onSkip: () -> Unit,
     isWorkTime: Boolean,
-    showPauseInWorkTime: Boolean,
-    showSkipInWorkTime: Boolean,
-    showPauseInRestTime: Boolean,
-    showSkipInRestTime: Boolean,
+    schedule: Schedules
 ) {
+    val showPause = (isWorkTime && schedule.showPauseInWorkTime) || (!isWorkTime && schedule.showPauseInRestTime)
+    val showSkip = (isWorkTime && schedule.showSkipInWorkTime) || (!isWorkTime && schedule.showSkipInRestTime)
+    val showEnd = if (schedule.pomodoroSessionNumber == 0) {
+        true // force show END button in unlimited pomodoro sessions
+    } else {
+        (isWorkTime && schedule.showEndInWorkTime) || (!isWorkTime && schedule.showEndInRestTime)
+    }
+    if (!showPause && !showSkip && !showEnd) return
+
     // skip dialog
     var isSkipChecked by remember { mutableStateOf(false) }
     if (isSkipChecked) {
@@ -72,9 +79,6 @@ fun PomodoroControls(
             onDismiss = { isStopChecked = false }
         )
     }
-
-    val showPause = (isWorkTime && showPauseInWorkTime) || (!isWorkTime && showPauseInRestTime)
-    val showSkip = (isWorkTime && showSkipInWorkTime) || (!isWorkTime && showSkipInRestTime)
 
     HorizontalFloatingToolbar(
         expanded = true,
@@ -107,28 +111,30 @@ fun PomodoroControls(
         Spacer(Modifier.width(ButtonGroupDefaults.ConnectedSpaceBetween))
 
         // 2. end button (Middle / Dynamic)
-        ToggleButton(
-            modifier = Modifier.weight(1f, false),
-            checked = isStopChecked,
-            onCheckedChange = { isStopChecked = !isStopChecked },
-            shapes = when {
-                showPause && showSkip -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                showPause && !showSkip -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                !showPause && showSkip -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                else -> ButtonGroupDefaults.connectedMiddleButtonShapes(MaterialTheme.shapes.extraLargeIncreased)
-            },
-            colors = ToggleButtonDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                checkedContainerColor = MaterialTheme.colorScheme.error,
-                checkedContentColor = MaterialTheme.colorScheme.onError,
-            )
-        ) {
-            Icon(
-                painterResource(R.drawable.filled_bold_close),
-                contentDescription = stringResource(R.string.end),
-                modifier = Modifier.size(MaterialTheme.sizing.image)
-            )
+        if (showEnd) {
+            ToggleButton(
+                modifier = Modifier.weight(1f, false),
+                checked = isStopChecked,
+                onCheckedChange = { isStopChecked = !isStopChecked },
+                shapes = when {
+                    showPause && showSkip -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                    showPause && !showSkip -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    !showPause && showSkip -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes(MaterialTheme.shapes.extraLargeIncreased)
+                },
+                colors = ToggleButtonDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    checkedContainerColor = MaterialTheme.colorScheme.error,
+                    checkedContentColor = MaterialTheme.colorScheme.onError,
+                )
+            ) {
+                Icon(
+                    painterResource(R.drawable.filled_bold_close),
+                    contentDescription = stringResource(R.string.end),
+                    modifier = Modifier.size(MaterialTheme.sizing.image)
+                )
+            }
         }
         Spacer(Modifier.width(ButtonGroupDefaults.ConnectedSpaceBetween))
 

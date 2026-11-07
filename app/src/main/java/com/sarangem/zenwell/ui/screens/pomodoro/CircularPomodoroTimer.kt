@@ -79,7 +79,7 @@ fun CircularPomodoroTimer(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     painter = painterResource(if (isWork) R.drawable.filled_work else R.drawable.outlined_local_cafe),
-                    contentDescription = stringResource(if (isWork) R.string.work_time else R.string.rest_time),
+                    contentDescription = stringResource(if (isWork) R.string.work_segment else R.string.rest_segment),
                     modifier = Modifier
                         .weight(1f, false)
                         .size(MaterialTheme.sizing.image)

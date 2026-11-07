@@ -49,8 +49,8 @@
     <string name="regular">Regular</string>
     <string name="pomodoro">Pomodoro</string>
     <string name="end">End</string>
-    <string name="work_time">Work Time</string>
-    <string name="rest_time">Rest Time</string>
+    <string name="work_segment">Work Segment</string>
+    <string name="rest_segment">Rest Segment</string>
     <string name="expanded">Expanded</string>
     <string name="collapsed">Collapsed</string>
     <string name="regular_schedule">Regular schedule</string>
@@ -68,9 +68,9 @@
     <string name="work_time_notification">"Work"</string>
     <string name="rest_time_notification">"Rest"</string>
     <string name="skip">Skip</string>
-    <string name="actions_to_show_in_work_time">Actions to show in Work Time</string>
+    <string name="actions_to_show_in_work_segment">Actions to show in Work Segment</string>
     <string name="pause_resume">Pause/ Resume</string>
-    <string name="actions_to_show_in_rest_time">Actions to show in Rest Time</string>
+    <string name="actions_to_show_in_rest_segment">Actions to show in Rest Segment</string>
     <string name="edit_screen_placeholder_text">Select a schedule to view details</string>
     <string name="problem">Problem</string>
     <string name="wrong_answer">Answer is incorrect</string>

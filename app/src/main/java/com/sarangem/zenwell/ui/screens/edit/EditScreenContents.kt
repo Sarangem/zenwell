@@ -102,7 +102,7 @@ fun EditScreenContents(
                                         }
                                     }
                                 )
-                                AnimatedVisibility(runsAllDay()) {
+                                AnimatedVisibility(!runsAllDay()) {
                                     ChooseActiveTime(
                                         startTimeInMinutes,
                                         { updateSchedule(copy(startTimeInMinutes = it)) },
@@ -287,14 +287,14 @@ fun EditScreenContents(
                 if (isPomodoro) {
                     DetailsCardColumn {
                         DetailsCardWithNumberField(
-                            R.string.work_time,
+                            R.string.work_segment,
                             pomodoroWorkTimeInMinutes,
                             R.string.minutes,
                             canBeZero = false
                         ) { updateSchedule(copy(pomodoroWorkTimeInMinutes = it)) }
 
                         DetailsCardWithNumberField(
-                            R.string.rest_time,
+                            R.string.rest_segment,
                             pomodoroRestTimeInMinutes,
                             R.string.minutes,
                             canBeZero = false
@@ -307,7 +307,7 @@ fun EditScreenContents(
                         ) { updateSchedule(copy(pomodoroSessionNumber = it)) }
 
                         LabelDetailsCard(
-                            R.string.actions_to_show_in_work_time,
+                            R.string.actions_to_show_in_work_segment,
                             listOf(
                                 LabelState(
                                     R.string.pause_resume,
@@ -316,11 +316,16 @@ fun EditScreenContents(
                                 LabelState(
                                     R.string.skip,
                                     showSkipInWorkTime,
-                                ) { updateSchedule(copy(showSkipInWorkTime = it)) }
+                                ) { updateSchedule(copy(showSkipInWorkTime = it)) },
+                                LabelState(
+                                    R.string.end,
+                                    showEndInWorkTime,
+                                    pomodoroSessionNumber != 0
+                                ) { updateSchedule(copy(showEndInWorkTime = it)) }
                             )
                         )
                         LabelDetailsCard(
-                            R.string.actions_to_show_in_rest_time,
+                            R.string.actions_to_show_in_rest_segment,
                             listOf(
                                 LabelState(
                                     R.string.pause_resume,
@@ -329,7 +334,12 @@ fun EditScreenContents(
                                 LabelState(
                                     R.string.skip,
                                     showSkipInRestTime,
-                                ) { updateSchedule(copy(showSkipInRestTime = it)) }
+                                ) { updateSchedule(copy(showSkipInRestTime = it)) },
+                                LabelState(
+                                    R.string.end,
+                                    showEndInRestTime,
+                                    pomodoroSessionNumber != 0
+                                ) { updateSchedule(copy(showEndInRestTime = it)) }
                             )
                         )
                         LabelDetailsCard(
