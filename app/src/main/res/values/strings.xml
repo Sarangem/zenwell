@@ -153,7 +153,7 @@
     <string name="showcase_2">Pick the apps that interrupt your flow</string>
     <string name="showcase_3">Add mindful friction like breathing exercises or math challenges</string>
     <string name="showcase_4">Save and enter your focus zone</string>
-    <string name="run_all_day">Run all day</string>
+    <string name="all_day">All day</string>
     <string name="overnight_schedule_description">Runs overnight: %1$s to %2$s, and %3$s to %4$s</string>
     <string name="schedules_inactive">&lt;b&gt;%1$d/%2$d&lt;/b&gt; schedules inactive</string>
     <string name="enable_all">Enable all</string>

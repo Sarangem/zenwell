@@ -75,7 +75,7 @@ fun SchedulesCard(
                         fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.size(MaterialTheme.sizing.extraSmall))
-                    PomodoroStartButton(
+                    ScheduleTimeInfo(
                         schedule = schedule,
                         tint = tint,
                         startPomodoro = {

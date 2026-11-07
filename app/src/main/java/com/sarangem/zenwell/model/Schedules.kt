@@ -153,3 +153,7 @@ data class Schedules(
     val tasks: String = ""
 
 ) : Parcelable
+
+fun Schedules.runsAllDay(): Boolean {
+    return this.startTimeInMinutes == 0 && this.endTimeInMinutes == 23*60+59
+}

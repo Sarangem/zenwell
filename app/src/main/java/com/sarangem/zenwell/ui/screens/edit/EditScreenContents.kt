@@ -31,6 +31,7 @@ import com.sarangem.zenwell.model.AppNames
 import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.domain.math.MathOperators
 import com.sarangem.zenwell.model.UnlockMethod
+import com.sarangem.zenwell.model.runsAllDay
 import com.sarangem.zenwell.ui.screens.edit.fields.*
 import com.sarangem.zenwell.ui.theme.sizing
 
@@ -91,8 +92,8 @@ fun EditScreenContents(
                         ) {
                             Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)) {
                                 DetailsSwitchCard(
-                                    title = R.string.run_all_day,
-                                    isChecked = startTimeInMinutes == 0 && endTimeInMinutes == 23*60+59,
+                                    title = R.string.all_day,
+                                    isChecked = runsAllDay(),
                                     updateValue = {
                                         if(it) {
                                             updateSchedule(copy(startTimeInMinutes = 0, endTimeInMinutes = 23*60+59))
@@ -101,7 +102,7 @@ fun EditScreenContents(
                                         }
                                     }
                                 )
-                                AnimatedVisibility(startTimeInMinutes != 0 || endTimeInMinutes != 23*60+59) {
+                                AnimatedVisibility(runsAllDay()) {
                                     ChooseActiveTime(
                                         startTimeInMinutes,
                                         { updateSchedule(copy(startTimeInMinutes = it)) },
