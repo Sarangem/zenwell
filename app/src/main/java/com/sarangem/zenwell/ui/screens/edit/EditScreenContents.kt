@@ -24,6 +24,10 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sarangem.zenwell.R
@@ -91,17 +95,23 @@ fun EditScreenContents(
                             exit = shrinkVertically() + fadeOut()
                         ) {
                             Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.sizing.tiny)) {
+                                var pastStartTime by rememberSaveable { mutableIntStateOf(6*60) }
+                                var pastEndTime by rememberSaveable { mutableIntStateOf(18*60) }
+
                                 DetailsSwitchCard(
                                     title = R.string.all_day,
                                     isChecked = runsAllDay(),
                                     updateValue = {
                                         if(it) {
+                                            pastStartTime = startTimeInMinutes
+                                            pastEndTime = endTimeInMinutes
                                             updateSchedule(copy(startTimeInMinutes = 0, endTimeInMinutes = 23*60+59))
                                         } else {
-                                            updateSchedule(copy(startTimeInMinutes = 6*60, endTimeInMinutes = 18*60))
+                                            updateSchedule(copy(startTimeInMinutes = pastStartTime, endTimeInMinutes = pastEndTime))
                                         }
                                     }
                                 )
+
                                 AnimatedVisibility(!runsAllDay()) {
                                     ChooseActiveTime(
                                         startTimeInMinutes,
