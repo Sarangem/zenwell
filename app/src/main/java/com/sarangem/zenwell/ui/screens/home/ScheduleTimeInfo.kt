@@ -48,23 +48,6 @@ fun ScheduleTimeInfo(
 
     if (schedule.isPomodoro) {
 
-        Text(
-            text = if (schedule.runsAllDay()) {
-                stringResource(R.string.all_day)
-            } else {
-                stringResource(
-                    R.string.schedule_time,
-                    minutesToString(schedule.startTimeInMinutes, is24Hour),
-                    minutesToString(schedule.endTimeInMinutes, is24Hour)
-                )
-            },
-            style = MaterialTheme.typography.labelLarge,
-            color = tint,
-            fontWeight = FontWeight.Bold,
-        )
-
-    } else {
-
         AnimatedContent(
             targetState = isPomodoroRunning,
             transitionSpec = { fadeIn() togetherWith fadeOut() },
@@ -83,6 +66,23 @@ fun ScheduleTimeInfo(
                 PomodoroStartButton(schedule, startPomodoro)
             }
         }
+
+    } else {
+
+        Text(
+            text = if (schedule.runsAllDay()) {
+                stringResource(R.string.all_day)
+            } else {
+                stringResource(
+                    R.string.schedule_time,
+                    minutesToString(schedule.startTimeInMinutes, is24Hour),
+                    minutesToString(schedule.endTimeInMinutes, is24Hour)
+                )
+            },
+            style = MaterialTheme.typography.labelLarge,
+            color = tint,
+            fontWeight = FontWeight.Bold,
+        )
 
     }
 }

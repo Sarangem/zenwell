@@ -5,84 +5,99 @@
 
 package com.sarangem.zenwell.ui.screens.edit.fields
 
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.insert
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.style.TextIndent
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.em
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.ui.theme.ZenwellTheme
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ChooseTasks(
     tasks: String,
     updateTasks: (String) -> Unit = {}
 ) {
+    val state = rememberTextFieldState(tasks)
+    LaunchedEffect(state) {
+        snapshotFlow { state.text.toString() }.collectLatest { updateTasks(it) }
+    }
+    var getLayout by remember { mutableStateOf<(() -> TextLayoutResult?)?>(null) }
+    val layoutDirection = LocalLayoutDirection.current
+    val outlineColor = MaterialTheme.colorScheme.outline
+
     DetailsCard {
         Text(
             text = stringResource(R.string.tasks_list),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f)
         )
+
         OutlinedTextField(
-            modifier = Modifier.weight(2f),
-            value = tasks,
+            modifier = Modifier
+                .weight(2f)
+                .drawBehind {
+                    val layout = getLayout?.invoke() ?: return@drawBehind
+                    val contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel()
+                    val left = contentPadding.calculateLeftPadding(layoutDirection).toPx()
+                    val top = (size.height - layout.getLineBottom(layout.lineCount - 1)) / 2
+                    layout.layoutInput.text.forEachIndexed { i, c ->
+                        if (c == '\n') {
+                            val y = top + layout.getLineBottom(layout.getLineForOffset(i))
+                            drawLine(
+                                color = outlineColor,
+                                start = Offset(left, y),
+                                end = Offset(size.width - left, y),
+                                strokeWidth = 1.dp.toPx()
+                            )
+                        }
+                    }
+                },
+            state = state,
             shape = MaterialTheme.shapes.large,
-            onValueChange = updateTasks,
-            visualTransformation = LineNumberTransformation
+            onTextLayout = { getLayout = it },
+            outputTransformation = OutputTransformation {
+                var offset = 0
+                asCharSequence().lines().forEachIndexed { i, line ->
+                    val prefix = "${i + 1}. "
+                    insert(offset, prefix)
+                    addStyle(
+                        spanStyle = SpanStyle(outlineColor),
+                        start = offset,
+                        end = offset + prefix.length
+                    )
+                    offset += prefix.length + line.length + 1
+                }
+            }
         )
     }
 }
 
-object LineNumberTransformation : VisualTransformation {
-    override fun filter(text: AnnotatedString): TransformedText {
-        val lines = text.text.split('\n')
-        val maxPrefixLength = "${lines.size}. ".length
-        val out = buildAnnotatedString {
-            lines.forEachIndexed { i, line ->
-                val prefix = "${i + 1}. ".padEnd(maxPrefixLength)
-                withStyle(SpanStyle(color = Color.Gray)) { append(prefix) }
-                append(line)
-                if (i != lines.lastIndex) append("\n")
-            }
-            addStyle(
-                ParagraphStyle(textIndent = TextIndent(restLine = (maxPrefixLength * 0.55f).em)),
-                0, length
-            )
-        }
-        return TransformedText(out, object : OffsetMapping {
-            override fun originalToTransformed(offset: Int): Int {
-                var lineIdx = 0
-                for (i in 0 until offset) {
-                    if (text.text[i] == '\n') lineIdx++
-                }
-                return offset + (lineIdx + 1) * maxPrefixLength
-            }
-            override fun transformedToOriginal(offset: Int): Int {
-                var orig = 0
-                var trans = 0
-                for ((i, line) in lines.withIndex()) {
-                    trans += maxPrefixLength
-                    if (offset < trans) return orig
-                    val len = line.length + if (i == lines.lastIndex) 0 else 1
-                    if (offset <= trans + len) return orig + (offset - trans)
-
-                    orig += len
-                    trans += len
-                }
-                return orig
-            }
-        })
+@Preview(showBackground = true)
+@Composable
+fun ChooseTasksPreview() {
+    ZenwellTheme {
+        ChooseTasks(
+            tasks = "Close your eyes\nTake a deep breath\nLook outside"
+        )
     }
 }
