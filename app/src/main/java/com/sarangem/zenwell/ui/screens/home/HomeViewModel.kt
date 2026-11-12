@@ -124,8 +124,6 @@ class HomeViewModel @Inject constructor(
         )
         return true
     }
-
-    fun endPomodoro() = pomodoroManager.onPomodoroEnd()
 }
 
 data class HomeUiState(

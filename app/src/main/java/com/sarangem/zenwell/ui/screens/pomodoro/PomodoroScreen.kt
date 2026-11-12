@@ -124,6 +124,7 @@ fun PomodoroScreen(
                 progress = uiState.progress,
                 formattedTime = uiState.formattedTime,
                 isWork = uiState.isWorkTime,
+                isPaused = uiState.status == PomodoroStatus.PAUSED,
                 modifier = Modifier.weight(1f)
             )
             Spacer(Modifier.height(MaterialTheme.sizing.floatingBar))

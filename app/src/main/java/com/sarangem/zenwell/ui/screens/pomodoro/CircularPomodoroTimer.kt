@@ -42,7 +42,8 @@ fun CircularPomodoroTimer(
     modifier: Modifier = Modifier,
     progress: Float,
     formattedTime: String,
-    isWork: Boolean
+    isWork: Boolean,
+    isPaused: Boolean
 ) {
     val animatedProgress by key(isWork){
         animateFloatAsState(
@@ -67,7 +68,7 @@ fun CircularPomodoroTimer(
             ),
             amplitude = { progress ->
                 val lowProgress = progress <= 0.1f || progress >= 0.95f
-                if (isWork || lowProgress) 0f else 1f
+                if (isWork || lowProgress || isPaused) 0f else 1f
             },
             color = if (isWork) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
             wavelength = 40.dp

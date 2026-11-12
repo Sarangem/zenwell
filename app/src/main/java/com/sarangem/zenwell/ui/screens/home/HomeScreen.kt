@@ -58,7 +58,7 @@ fun HomeScreen(
     scheduleClicked: Int = 0,
     viewModel: HomeViewModel = hiltViewModel(),
     openEditScreen: (Schedules) -> Unit = {},
-    openPomodoroScreen: (Schedules) -> Unit = {},
+    openPomodoroScreen: () -> Unit = {},
 ) {
     val showcaseState = LocalSequenceShowcaseState.current
     val homeUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -111,7 +111,6 @@ fun HomeScreen(
                 }
             }
         },
-        endPomodoro = viewModel::endPomodoro,
         pomodoroState = pomodoroState,
         snackbarHostState = snackbarHostState
     )
@@ -129,12 +128,11 @@ fun HomeScreen(
     updateUiState: (HomeUiState) -> Unit = {},
     recheckPermission: () -> Unit = {},
     openEditScreen: (Schedules) -> Unit = {},
-    openPomodoroScreen: (Schedules) -> Unit = {},
+    openPomodoroScreen: () -> Unit = {},
     setAsExistingUser: () -> Unit = {},
     enableAllSchedules: () -> Unit = {},
     userScrollEnabled: Boolean = true,
     startPomodoro: (Schedules) -> Unit = {},
-    endPomodoro: () -> Unit = {},
     pomodoroState: PomodoroState = PomodoroState(),
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
@@ -235,10 +233,9 @@ fun HomeScreen(
                             .padding(MaterialTheme.sizing.small),
                         schedule = schedule,
                         isClicked = schedule.id == scheduleClicked,
-                        openEditScreen = openEditScreen,
+                        openEditScreen = { openEditScreen(schedule) },
                         openPomodoroScreen = openPomodoroScreen,
                         startPomodoro = { startPomodoro(schedule) },
-                        endPomodoro = endPomodoro,
                         pomodoroState = pomodoroState
                     )
                 }
@@ -266,7 +263,8 @@ fun HomeScreenPreview() {
                         id = 2,
                         title = "A reallyyyyyyyyyyyyyyyyyyyyyyyyy long name",
                         startTimeInMinutes = 0,
-                        endTimeInMinutes = 1 * 60 + 1
+                        endTimeInMinutes = 1 * 60 + 1,
+                        isPomodoro = true
                     ),
                     Schedules(
                         id = 3,
