@@ -25,7 +25,6 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityScreen
-import com.sarangem.zenwell.ui.screens.customactivity.CustomActivityViewModel
 import com.sarangem.zenwell.ui.screens.edit.EditScreen
 import com.sarangem.zenwell.ui.screens.edit.EditViewModel
 import com.sarangem.zenwell.ui.screens.home.HomeScreen
@@ -42,7 +41,6 @@ fun ZenwellAppScreen() {
     val backStack = rememberNavBackStack(HomePage)
     val homeViewModel: HomeViewModel = hiltViewModel()
     val editViewModel: EditViewModel = hiltViewModel()
-    val customActivityViewModel: CustomActivityViewModel = hiltViewModel()
 
     val isExpanded = currentWindowAdaptiveInfoV2().windowSizeClass
         .isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
@@ -122,7 +120,6 @@ fun ZenwellAppScreen() {
                                 modifier = Modifier.fillMaxSize(),
                                 openCustomActivityScreen = {
                                     CustomActivityPage.addToStack(backStack)
-                                    customActivityViewModel.initialize()
                                 }
                             )
                         }
@@ -132,7 +129,6 @@ fun ZenwellAppScreen() {
                         ) {
                             CustomActivityScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                viewModel = customActivityViewModel,
                                 showTopAppBar = LocalBackButtonVisibility.current,
                                 goBack = { backStack.removeLastOrNull() }
                             )

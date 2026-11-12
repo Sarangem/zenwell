@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.AppNames
@@ -57,10 +58,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun CustomActivityScreen(
     modifier: Modifier = Modifier,
-    viewModel: CustomActivityViewModel,
     showTopAppBar: Boolean = true,
     goBack: () -> Unit = {},
 ) {
+    val viewModel: CustomActivityViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var installedAppList by remember { mutableStateOf<List<MyPackageInfo>>(listOf()) }

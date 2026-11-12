@@ -44,13 +44,13 @@ data class ListDetailScene<T : Any>(
         Row(modifier = Modifier.fillMaxSize()) {
             Column(modifier =
                 Modifier
-                    .weight(0.4f)
+                    .weight(4f)
                     .animateContentSize()
             ) { listEntry.Content() }
             if(isHome || detailEntry != null) {
                 CompositionLocalProvider(LocalBackButtonVisibility provides false) {
                     AnimatedContent(
-                        modifier = Modifier.weight(0.6f),
+                        modifier = Modifier.weight(6f),
                         targetState = detailEntry,
                         transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) }
                     ) { target ->

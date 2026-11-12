@@ -46,6 +46,7 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 import com.sarangem.zenwell.R
 import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.service.pomodoro.PomodoroState
+import com.sarangem.zenwell.service.pomodoro.PomodoroStatus
 import com.sarangem.zenwell.ui.screens.common.NewScheduleFAB
 import com.sarangem.zenwell.ui.theme.ZenwellTheme
 import com.sarangem.zenwell.ui.theme.sizing
@@ -276,6 +277,13 @@ fun HomeScreenPreview() {
                 )
             ),
             scheduleClicked = 1,
+            pomodoroState = PomodoroState(
+                schedule = Schedules(2),
+                status = PomodoroStatus.RUNNING,
+                isWorkTime = false,
+                totalSegmentTime = 5*60*1000,
+                remainingMillis = 3*60*1000
+            )
         )
     }
 }

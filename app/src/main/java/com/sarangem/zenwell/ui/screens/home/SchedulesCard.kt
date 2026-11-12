@@ -11,48 +11,46 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.domain.time.is24Hour
-import com.sarangem.zenwell.domain.time.minutesToString
 import com.sarangem.zenwell.model.Schedules
-import com.sarangem.zenwell.model.runsAllDay
 import com.sarangem.zenwell.service.pomodoro.PomodoroState
 import com.sarangem.zenwell.service.pomodoro.PomodoroStatus
 import com.sarangem.zenwell.ui.theme.sizing
+
+private val STROKE_HEIGHT = 24.dp
+private val STROKE_WIDTH = 12.dp
 
 @Composable
 fun SchedulesCard(
@@ -70,16 +68,15 @@ fun SchedulesCard(
         ActivityResultContracts.RequestPermission()
     ) {}
 
-    Column(
-        modifier = modifier.clip(MaterialTheme.shapes.medium)
-    ) {
-        AnimatedVisibility(isPomodoroRunning) { PomodoroProgressBar(pomodoroState) }
-
+    Box(modifier) {
         Row(
             Modifier
-                .animateContentSize()
+                .padding(
+                    top = if (isPomodoroRunning) STROKE_HEIGHT / 2 else 0.dp
+                )
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth()
+                .clip(MaterialTheme.shapes.medium)
         ) {
             ScheduleDetails(
                 modifier = Modifier
@@ -88,12 +85,12 @@ fun SchedulesCard(
                 schedule, isClicked, openEditScreen
             )
 
-            if(schedule.isPomodoro){
+            if (schedule.isPomodoro) {
                 AnimatedContent(
                     isPomodoroRunning,
                     modifier = Modifier
                         .fillMaxHeight()
-                        .weight(1f),
+                        .weight(1f)
                 ) {
                     if (it) {
                         PomodoroTimerControls(pomodoroState, openPomodoroScreen)
@@ -102,7 +99,7 @@ fun SchedulesCard(
                             startPomodoro = {
                                 startPomodoro()
                                 openPomodoroScreen()
-                                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                     permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                                 }
                             }
@@ -111,6 +108,11 @@ fun SchedulesCard(
                 }
             }
         }
+
+        AnimatedVisibility(
+            visible = isPomodoroRunning,
+            modifier = Modifier.align(Alignment.TopStart)
+        ) { PomodoroProgressBar(pomodoroState) }
     }
 }
 
@@ -122,123 +124,24 @@ fun PomodoroProgressBar(state: PomodoroState) = with(state) {
             animationSpec = tween(durationMillis = 200, easing = LinearEasing),
         )
     }
-    LinearProgressIndicator(
+    LinearWavyProgressIndicator(
         modifier = Modifier
-            .height(MaterialTheme.sizing.medium)
+            .height(STROKE_HEIGHT)
             .fillMaxWidth(),
         progress = { animatedProgress },
+        stroke = Stroke(
+            width = with(LocalDensity.current) { STROKE_WIDTH.toPx() },
+            cap = StrokeCap.Round
+        ),
+        amplitude = { progress ->
+            val lowProgress = progress <= 0.1f || progress >= 0.95f
+            if (isWorkTime || lowProgress || status == PomodoroStatus.PAUSED) 0f else 1f
+        },
         color = if (isWorkTime) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
-        trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        strokeCap = StrokeCap.Square,
+        trackColor = Color.Transparent,
         gapSize = 0.dp,
-        drawStopIndicator = {}
+        wavelength = 40.dp
     )
-}
-
-@Composable
-fun ScheduleDetails(
-    modifier: Modifier = Modifier,
-    schedule: Schedules,
-    isClicked: Boolean,
-    openEditScreen: () -> Unit = {}
-) {
-    val context = LocalContext.current
-    val is24Hour = remember { is24Hour(context) }
-    val tint = if (schedule.isActive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
-
-    Column(
-        modifier
-            .background(
-                if (isClicked) {
-                    MaterialTheme.colorScheme.tertiary.copy(alpha = 0.25f)
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainer
-                }
-            )
-            .clickable(
-                onClick = openEditScreen,
-                onClickLabel = stringResource(R.string.edit_this_schedule)
-            )
-            .padding(MaterialTheme.sizing.medium)
-    ) {
-        Text(
-            text = schedule.title,
-            style = MaterialTheme.typography.headlineSmall,
-            color = tint,
-            fontWeight = FontWeight.Bold,
-        )
-        Spacer(modifier = Modifier.size(MaterialTheme.sizing.extraSmall))
-
-        if (schedule.isPomodoro) {
-            Text(
-                text = stringResource(
-                    R.string.pomodoro_time,
-                    schedule.pomodoroWorkTimeInMinutes,
-                    schedule.pomodoroRestTimeInMinutes
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                color = tint
-            )
-        } else {
-            Text(
-                text = if (schedule.runsAllDay()) {
-                    stringResource(R.string.all_day)
-                } else {
-                    stringResource(
-                        R.string.schedule_time,
-                        minutesToString(schedule.startTimeInMinutes, is24Hour),
-                        minutesToString(schedule.endTimeInMinutes, is24Hour)
-                    )
-                },
-                style = MaterialTheme.typography.labelLarge,
-                color = tint,
-                fontWeight = FontWeight.Bold,
-            )
-        }
-    }
-}
-
-@Composable
-fun PomodoroTimerControls(
-    state: PomodoroState,
-    openPomodoroScreen: () -> Unit = {}
-) = with(state) {
-    Column(
-        modifier = Modifier
-            .background(
-                if (isWorkTime) {
-                    MaterialTheme.colorScheme.tertiaryContainer
-                } else {
-                    MaterialTheme.colorScheme.primaryContainer
-                }
-            )
-            .clickable(
-                onClick = openPomodoroScreen,
-                onClickLabel = stringResource(R.string.open_pomodoro_timer)
-            )
-            .padding(MaterialTheme.sizing.small),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            painterResource(if (isWorkTime) R.drawable.filled_work else R.drawable.outlined_local_cafe),
-            contentDescription = stringResource(if (isWorkTime) R.string.work_segment else R.string.rest_segment),
-            modifier = Modifier.size(MaterialTheme.sizing.large)
-        )
-        Text(
-            text = formattedTime,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Monospace,
-            maxLines = 1
-        )
-        AnimatedVisibility(status == PomodoroStatus.PAUSED) {
-            Icon(
-                painter = painterResource(R.drawable.filled_pause),
-                contentDescription = stringResource(R.string.currently_paused)
-            )
-        }
-    }
 }
 
 @Composable
