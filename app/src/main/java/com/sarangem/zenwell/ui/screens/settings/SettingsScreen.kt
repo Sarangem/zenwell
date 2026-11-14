@@ -199,6 +199,8 @@ fun SettingsScreen(
                 }
             }
 
+            PasswordSettingsSection()
+
             Column {
                 Text(
                     stringResource(R.string.report_issue),
