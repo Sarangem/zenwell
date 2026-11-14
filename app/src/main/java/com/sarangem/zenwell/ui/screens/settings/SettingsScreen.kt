@@ -5,7 +5,13 @@
 
 package com.sarangem.zenwell.ui.screens.settings
 
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
+import android.content.Intent
 import android.net.Uri
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import com.sarangem.zenwell.ZenwellAdminReceiver
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -117,10 +123,31 @@ fun SettingsScreen(
         }
     }
 
+    val adminComponent = remember { ComponentName(context, ZenwellAdminReceiver::class.java) }
+    val devicePolicyManager = remember { context.getSystemService(DevicePolicyManager::class.java) }
+    var isAdminActive by remember { mutableStateOf(devicePolicyManager.isAdminActive(adminComponent)) }
+    val adminExplanation = stringResource(R.string.uninstall_protection_explanation)
+    val adminLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { isAdminActive = devicePolicyManager.isAdminActive(adminComponent) }
+
     SettingsScreen(
         modifier = modifier,
         snackbarHostState = snackbarHostState,
         openCustomActivityScreen = openCustomActivityScreen,
+        isAdminActive = isAdminActive,
+        enableAdmin = {
+            adminLauncher.launch(
+                Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+                    putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)
+                    putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, adminExplanation)
+                }
+            )
+        },
+        disableAdmin = {
+            devicePolicyManager.removeActiveAdmin(adminComponent)
+            isAdminActive = devicePolicyManager.isAdminActive(adminComponent)
+        },
         createBackup = { createBackup.launch("zenwell_backup.json") },
         restoreBackup = { restoreBackup.launch(arrayOf("application/json")) }
     )
@@ -133,7 +160,10 @@ fun SettingsScreen(
     openCustomActivityScreen: () -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
     createBackup: () -> Unit = {},
-    restoreBackup: () -> Unit = {}
+    restoreBackup: () -> Unit = {},
+    isAdminActive: Boolean = false,
+    enableAdmin: () -> Unit = {},
+    disableAdmin: () -> Unit = {}
 ) {
     val isExpanded = currentWindowAdaptiveInfoV2()
         .windowSizeClass
@@ -141,6 +171,25 @@ fun SettingsScreen(
     val uriHandler = LocalUriHandler.current
     var showCrashLog by remember { mutableStateOf(false) }
     if (showCrashLog) CrashLogDialog { showCrashLog = false }
+    var showDisableAdminDialog by remember { mutableStateOf(false) }
+    if (showDisableAdminDialog) {
+        AlertDialog(
+            onDismissRequest = { showDisableAdminDialog = false },
+            title = { Text(stringResource(R.string.protection_turn_off_title)) },
+            text = { Text(stringResource(R.string.protection_turn_off_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDisableAdminDialog = false
+                    disableAdmin()
+                }) { Text(stringResource(R.string.protection_turn_off)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDisableAdminDialog = false }) {
+                    Text(stringResource(R.string.protection_cancel))
+                }
+            }
+        )
+    }
 
     Scaffold(
         modifier = modifier,
@@ -195,6 +244,32 @@ fun SettingsScreen(
                         title = stringResource(R.string.restore_data),
                         description = stringResource(R.string.restore_data_description),
                         onClick = restoreBackup
+                    )
+                }
+            }
+
+            Column {
+                Text(
+                    stringResource(R.string.protection_section),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = MaterialTheme.sizing.extraSmall)
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(MaterialTheme.shapes.medium)
+                ) {
+                    SettingsActionCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = R.drawable.filled_lock_protection,
+                        title = stringResource(R.string.uninstall_protection_title),
+                        description = stringResource(
+                            if (isAdminActive) R.string.uninstall_protection_on
+                            else R.string.uninstall_protection_off
+                        ),
+                        onClick = {
+                            if (isAdminActive) showDisableAdminDialog = true else enableAdmin()
+                        }
                     )
                 }
             }
