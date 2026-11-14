@@ -169,4 +169,21 @@
     <string name="pomodoro_time_with_start">Start (%1$d + %2$d min)</string>
     <string name="unlimited">Unlimited</string>
     <string name="sessions_completed">%1$d/%2$d sessions completed</string>
+    <string name="app_password_section">App lock</string>
+    <string name="app_password_title">App password</string>
+    <string name="app_password_off">Off. Tap to require a password when Zenwell opens</string>
+    <string name="app_password_on">On. Tap to change or remove it</string>
+    <string name="app_password_set">Set password</string>
+    <string name="app_password_change">Change password</string>
+    <string name="app_password_current">Current password</string>
+    <string name="app_password_new">New password</string>
+    <string name="app_password_confirm">Confirm new password</string>
+    <string name="app_password_wrong">Wrong password</string>
+    <string name="app_password_too_short">Use at least 4 characters</string>
+    <string name="app_password_mismatch">Passwords do not match</string>
+    <string name="app_password_save">Save</string>
+    <string name="app_password_remove">Remove</string>
+    <string name="app_password_cancel">Cancel</string>
+    <string name="app_password_locked_title">Zenwell is locked</string>
+    <string name="app_password_unlock">Unlock</string>
 </resources>
