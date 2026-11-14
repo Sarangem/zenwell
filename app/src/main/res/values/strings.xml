@@ -169,4 +169,13 @@
     <string name="pomodoro_time_with_start">Start (%1$d + %2$d min)</string>
     <string name="unlimited">Unlimited</string>
     <string name="sessions_completed">%1$d/%2$d sessions completed</string>
+    <string name="protection_section">Protection</string>
+    <string name="uninstall_protection_title">Uninstall protection</string>
+    <string name="uninstall_protection_off">Register Zenwell as a device administrator so it is harder to uninstall</string>
+    <string name="uninstall_protection_on">On. Zenwell cannot be uninstalled until you turn this off</string>
+    <string name="uninstall_protection_explanation">While this is on, Zenwell is harder to uninstall. It does not get any other control over your device.</string>
+    <string name="protection_turn_off_title">Turn off protection?</string>
+    <string name="protection_turn_off_message">Zenwell will no longer be protected from uninstallation.</string>
+    <string name="protection_turn_off">Turn off</string>
+    <string name="protection_cancel">Cancel</string>
 </resources>
