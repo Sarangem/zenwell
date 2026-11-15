@@ -35,7 +35,7 @@ class PomodoroService : Service() {
                 .filter { it.status != PomodoroStatus.IDLE }
                 .distinctUntilChanged { old, new ->
                     hasStateChanged = old.status != new.status || old.isWorkTime != new.isWorkTime
-                    old.formattedTime == new.formattedTime
+                    old.formattedTime == new.formattedTime && old.status == new.status
                 }
                 .collect {
                     createPomodoroNotification(
