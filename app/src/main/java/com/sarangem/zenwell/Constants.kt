@@ -11,3 +11,5 @@ const val YOUTUBE_SHORTS_NAME = "YouTube Shorts"
 
 const val CRASH_LOG_FILE = "crash_log.txt"
 const val GITHUB_REPO_ISSUES_URL = "https://github.com/sarangem/zenwell/issues/new"
+
+const val OPEN_POMODORO_DIRECTLY = "OPEN_POMODORO_DIRECTLY"

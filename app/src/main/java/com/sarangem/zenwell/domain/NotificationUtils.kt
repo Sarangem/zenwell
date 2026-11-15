@@ -3,13 +3,15 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.service.notifications
+package com.sarangem.zenwell.domain
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.service.applock.APP_LOCK_NOTIFICATION_CHANNEL_ID
+import com.sarangem.zenwell.service.pomodoro.POMODORO_NOTIFICATION_CHANNEL_ID
 import timber.log.Timber
 
 fun createNotificationChannel(context: Context) {

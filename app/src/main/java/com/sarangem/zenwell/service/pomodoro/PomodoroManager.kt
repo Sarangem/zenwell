@@ -14,8 +14,6 @@ import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.service.applock.AppLockerService
 import com.sarangem.zenwell.domain.time.millisToString
 import com.sarangem.zenwell.service.applock.checkAndLockApps
-import com.sarangem.zenwell.service.notifications.POMODORO_NOTIFICATION_ID
-import com.sarangem.zenwell.service.notifications.deleteNotificationById
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton

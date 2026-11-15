@@ -28,8 +28,7 @@ import com.sarangem.zenwell.model.AppNames
 import com.sarangem.zenwell.model.Schedules
 import com.sarangem.zenwell.model.TaskItem
 import com.sarangem.zenwell.model.TaskStatus
-import com.sarangem.zenwell.service.notifications.createAppLockNotification
-import com.sarangem.zenwell.service.notifications.deleteNotificationById
+import com.sarangem.zenwell.domain.deleteNotificationById
 import com.sarangem.zenwell.service.pomodoro.PomodoroManager
 import com.sarangem.zenwell.service.pomodoro.PomodoroStatus
 import com.sarangem.zenwell.ui.theme.ZenwellTheme

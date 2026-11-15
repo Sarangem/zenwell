@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.service.notifications
+package com.sarangem.zenwell.service.pomodoro
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -14,8 +14,8 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.sarangem.zenwell.MainActivity
+import com.sarangem.zenwell.OPEN_POMODORO_DIRECTLY
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.service.pomodoro.*
 
 const val POMODORO_NOTIFICATION_CHANNEL_ID = "PomodoroNotification"
 const val POMODORO_NOTIFICATION_ID = 1
@@ -52,6 +52,7 @@ fun createPomodoroNotification(
                 /* requestCode = */ 0,
                 /* intent = */ Intent(context, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    putExtra(OPEN_POMODORO_DIRECTLY, true)
                 },
                 /* flags = */ PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )

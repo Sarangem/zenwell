@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License v3.0 or later.
  */
 
-package com.sarangem.zenwell.service.notifications
+package com.sarangem.zenwell.service.applock
 
 import android.app.NotificationManager
 import android.content.Context

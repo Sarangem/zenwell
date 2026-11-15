@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -37,14 +38,22 @@ import com.sarangem.zenwell.ui.screens.navigation.*
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ZenwellAppScreen() {
+fun ZenwellAppScreen(openPomodoroScreen: Int) {
+
     val backStack = rememberNavBackStack(HomePage)
+    LaunchedEffect(openPomodoroScreen) {
+        if (openPomodoroScreen > 0) {
+            backStack.clear()
+            backStack.addAll(listOf(HomePage, PomodoroPage))
+        }
+    }
+
     val homeViewModel: HomeViewModel = hiltViewModel()
     val editViewModel: EditViewModel = hiltViewModel()
-
     val isExpanded = currentWindowAdaptiveInfoV2().windowSizeClass
         .isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
     val firstEntry = homeViewModel.uiState.collectAsState().value.userPreferences.firstEntry
+
     SequenceShowcase {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
