@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -28,8 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
+import com.sarangem.zenwell.ui.theme.sizing
 
 sealed interface StatsFilter {
     data object AllApps : StatsFilter
@@ -37,7 +36,6 @@ sealed interface StatsFilter {
     data class Custom(val packageName: String) : StatsFilter
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsFilterDropdown(
     modifier: Modifier = Modifier,

@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,9 +47,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.domain.time.is24Hour
 import com.sarangem.zenwell.domain.time.minutesToString
+import com.sarangem.zenwell.ui.theme.sizing
 
 @Composable
 fun ChooseActiveTime(
@@ -182,7 +181,6 @@ fun ClockButton(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun AdvancedTimePickerDialog(
@@ -259,7 +257,6 @@ fun OvernightScheduleNotice(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun convertToTimePickerState(timeInMinutes: Int, context: Context): TimePickerState {
     return TimePickerState(
         initialHour = (timeInMinutes / 60),

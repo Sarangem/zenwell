@@ -50,13 +50,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
+import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
+import com.sarangem.zenwell.domain.packageinfo.getInstalledApps
 import com.sarangem.zenwell.model.AppNames
 import com.sarangem.zenwell.ui.screens.common.SkipShowcaseGuideButton
 import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.LocalSequenceShowcaseState
 import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
-import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
-import com.sarangem.zenwell.domain.packageinfo.getInstalledApps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -179,7 +179,7 @@ fun ChooseAppList(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BottomSheetContents(
     modifier: Modifier = Modifier,

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumExtendedFloatingActionButton
@@ -32,7 +31,6 @@ import com.sarangem.zenwell.ui.theme.sizing
 
 const val APP_BLOCKED = "This app is fully blocked"
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun OverlayScaffold(
     modifier: Modifier = Modifier,
@@ -81,7 +79,6 @@ fun OverlayScaffold(
 
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun OverlayScaffold(
     modifier: Modifier = Modifier,

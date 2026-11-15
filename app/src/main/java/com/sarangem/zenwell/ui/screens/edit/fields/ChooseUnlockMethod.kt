@@ -9,7 +9,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -34,7 +33,6 @@ import com.sarangem.zenwell.ui.screens.common.SkipShowcaseGuideButton
 import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.LocalSequenceShowcaseState
 import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.sequenceShowcaseTarget
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseUnlockMethod(
     unlockMethod: UnlockMethod,

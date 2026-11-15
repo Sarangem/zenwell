@@ -63,7 +63,6 @@ fun EditScreenPlaceholder(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview(showBackground = true)
 @Composable
 fun EditScreenPlaceholderPreview() {

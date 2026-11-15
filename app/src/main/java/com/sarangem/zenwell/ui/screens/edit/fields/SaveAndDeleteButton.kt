@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +39,6 @@ import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.LocalSequenceShow
 import com.sarangem.zenwell.ui.screens.common.sequenceshowcase.sequenceShowcaseTarget
 import com.sarangem.zenwell.ui.theme.sizing
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SaveAndDeleteButton(
     modifier: Modifier = Modifier,
@@ -155,7 +153,6 @@ fun SaveAndDeleteButton(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 val showcase4Modifier: @Composable (skipGuide: () -> Unit) -> Modifier = { skip ->
     Modifier.sequenceShowcaseTarget(
         index = 4,

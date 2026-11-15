@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +35,6 @@ import com.sarangem.zenwell.ui.theme.sizing
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TimerScreen(
     modifier: Modifier = Modifier,

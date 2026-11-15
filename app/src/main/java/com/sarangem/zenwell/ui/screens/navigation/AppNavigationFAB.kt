@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
@@ -41,7 +40,6 @@ import com.sarangem.zenwell.ui.screens.common.NewScheduleFAB
 import com.sarangem.zenwell.ui.theme.sizing
 
 @Preview(showBackground = true)
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppNavigationFAB(
     backStack: NavBackStack<NavKey> = rememberNavBackStack(HomePage),
@@ -74,7 +72,6 @@ fun AppNavigationFAB(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BottomBarIcon(
     backStack: NavBackStack<NavKey>,

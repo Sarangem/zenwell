@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -29,10 +28,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import coil3.compose.AsyncImage
 import com.sarangem.zenwell.R
-import com.sarangem.zenwell.ui.theme.sizing
 import com.sarangem.zenwell.domain.packageinfo.MyPackageInfo
+import com.sarangem.zenwell.ui.theme.sizing
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListDropdownCard(
     currentApp: String,

@@ -9,7 +9,6 @@ import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.Icon
@@ -67,7 +66,6 @@ fun NewScheduleFAB(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun RegularEntryScheduleFAB(
     modifier: Modifier = Modifier,
@@ -159,7 +157,6 @@ fun RegularEntryScheduleFAB(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FirstEntryScheduleFAB(
     modifier: Modifier = Modifier,
